@@ -6,7 +6,7 @@ experiment in cognitive and social science, focusing on how we interpret
 sentences.
 
 It is developed for my PhD on interpretation and cultural evolution, and is
-part of the [http://www.iscpif.fr/tiki-index.php?page=SEP](Science en Poche)
+part of the [Science en Poche](http://www.iscpif.fr/tiki-index.php?page=SEP)
 project encouraging the use of mobile devices in science and citizen
 empowerment.
 
@@ -19,7 +19,7 @@ Related repositories
 --------------------
 
 The functional description of the app lives in the
-[https://github.com/interpretation-experiment/gistr-blueprints](gistr-blueprints)
+[gistr-blueprints](https://github.com/interpretation-experiment/gistr-blueprints)
 repository. The variable parameters live in the
-[https://github.com/interpretation-experiment/gistr-parameters](gistr-parameters)
+[gistr-parameters](https://github.com/interpretation-experiment/gistr-parameters)
 repository.
