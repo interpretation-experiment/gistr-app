@@ -1,0 +1,14 @@
+{
+  "name": "Gistr",
+  "description": "Interpret the world over",
+  "launch_path": "/index.html",
+  "icons": {
+    "128": "/assets/img/prelogo-128.png"
+  },
+  "developer": {
+    "name": "Sébastien Lerique",
+    "url": "https://mehho.net/sl"
+  },
+  "default_locale": "en",
+  "fullscreen": true
+}
