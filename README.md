@@ -2,13 +2,13 @@ Gistr
 =====
 
 Gistr is both a mobile "broken telephone" (or "chinese whispers") game and an
-experiment in cognitive and social science, focusing on how we make sense and
+experiment in cognitive and social science studying how we make sense and
 interpret.
 
 It is developed for my PhD on interpretation and cultural evolution, and is
 part of the [Science en Poche](http://www.iscpif.fr/tiki-index.php?page=SEP)
-project which helps with the use of mobile devices in research and more
-generally global-local situations.
+project which develops the use of mobile devices in research and more broadly
+global-local situations.
 
 Colophon
 --------
