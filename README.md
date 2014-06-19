@@ -22,4 +22,5 @@ The functional description of the app lives in the
 [gistr-blueprints](https://github.com/interpretation-experiment/gistr-blueprints)
 repository. The variable parameters live in the
 [gistr-parameters](https://github.com/interpretation-experiment/gistr-parameters)
-repository.
+repository. The experiment website lives in the
+[gistr.io](https://github.com/interpretation-experiment/gistr.io) repository.
