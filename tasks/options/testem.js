@@ -16,7 +16,7 @@ module.exports = {
         'tmp/result/**/*.js'
       ],
       launch_in_dev: ['PhantomJS', 'Firefox', 'Chromium'],
-      launch_in_ci: ['PhantomJS', 'Chrome'],
+      launch_in_ci: ['PhantomJS'],
     }
   },
   browsers: {
