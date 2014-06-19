@@ -7,9 +7,16 @@ Environment
 Clone the repository, cd into it, then:
 
 ```sh
+# Set up virtual environment
 mkvirtualenv gistr-app
 pip install nodeenv
 nodeenv -p              # Install node inside the virtualenv
+
+# Install global dependencies
+npm install -g grunt-cli bower
+
+# Install local dependencies
+npm install
 ```
 
 Hacking
