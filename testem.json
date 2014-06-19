@@ -10,5 +10,5 @@
   "src_files": [
     "tmp/result/**/*.js"
   ],
-  "launch_in_dev": ["PhantomJS", "Firefox", "Chromium"]
+  "launch_in_dev": ["PhantomJS", "Firefox"]
 }
