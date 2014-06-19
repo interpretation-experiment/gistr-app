@@ -3,7 +3,7 @@
   "description": "Interpret the world over",
   "launch_path": "/index.html",
   "icons": {
-    "128": "/assets/img/prelogo-128.png"
+    "128": "/assets/images/prelogo-128.png"
   },
   "developer": {
     "name": "Sébastien Lerique",
