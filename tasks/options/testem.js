@@ -15,8 +15,8 @@ module.exports = {
       src_files: [
         'tmp/result/**/*.js'
       ],
-      launch_in_dev: ['PhantomJS', 'Chrome'],
-      launch_in_ci: ['PhantomJS', 'Chrome'],
+      launch_in_dev: ['PhantomJS', 'Firefox', 'Chromium'],
+      launch_in_ci: ['PhantomJS', 'Firefox', 'Chromium'],
     }
   },
   browsers: {
@@ -38,6 +38,7 @@ module.exports = {
                      'Chrome',
                      'ChromeCanary',
                      'Firefox',
+                     'Chromium',
                      'Safari',
                      'IE7',
                      'IE8',
@@ -46,6 +47,7 @@ module.exports = {
                      'Chrome',
                      'ChromeCanary',
                      'Firefox',
+                     'Chromium',
                      'Safari',
                      'IE7',
                      'IE8',
