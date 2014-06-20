@@ -10,30 +10,35 @@ module('Acceptances - Index', {
 });
 
 test('index renders', function(){
-  expect(10);
+  expect(13);
 
   visit('/').then(function(){
-    var title = find('h2#title');
-    var list = find('ul li');
-    var pPick = find('p#pick');
-    var inputNickname = find('input[name=nickname]');
-    var buttonSeed = find('button[name=seed]');
-    var buttonInterpret = find('button[name=interpret]');
+    var hTitle = find('h2#title');
+    var pSentences = find('p#sentences');
+    var lSentences = find('ul li');
+    var lNickname = find('label[for=nickname]');
+    var iNickname = find('input[name=nickname]');
+    var bSeed = find('button[name=seed]');
+    var bInterpret = find('button[name=interpret]');
 
-    equal(title.text(), 'Gistr');
+    equal(hTitle.text(), 'Gistr');
 
-    equal(list.length, 3);
-    equal(list.text(), 'redyellowblue');
+    equal(pSentences.text(), 'Sentences being turned on their head right now:');
 
-    equal(pPick.text(), 'Pick a nickname');
+    equal(lSentences.length, 3);
+    equal(lSentences.text(), 'redyellowblue');
 
-    equal(inputNickname.attr('placeholder'), 'e.g. hoory-horse');
-    equal(inputNickname.attr('autofocus'), 'autofocus');
+    equal(lNickname.text(), 'Pick a nickname');
 
-    equal(buttonSeed.text(), 'New seed');
-    equal(buttonSeed.attr('type'), 'submit');
+    equal(iNickname.attr('id'), 'nickname');
+    equal(iNickname.attr('type'), 'text');
+    equal(iNickname.attr('placeholder'), 'e.g. hoory-horse');
+    equal(iNickname.attr('autofocus'), 'autofocus');
 
-    equal(buttonInterpret.text(), 'Interpret');
-    equal(buttonInterpret.attr('type'), 'submit');
+    equal(bSeed.text(), 'New seed');
+    equal(bSeed.attr('type'), 'submit');
+
+    equal(bInterpret.text(), 'Interpret');
+    equal(bInterpret.attr('type'), 'submit');
   });
 });
