@@ -1,7 +1,7 @@
 var App;
 
 module('Acceptances - Index', {
-  setup: function(){
+  setup: function() {
     App = startApp();
   },
   teardown: function() {
@@ -9,10 +9,12 @@ module('Acceptances - Index', {
   }
 });
 
-test('index renders', function(){
-  expect(13);
+test('index renders', function() {
+  expect(16);
 
-  visit('/').then(function(){
+  visit('/').then(function() {
+    var pNetstatus = find('p#netstatus');
+    var sNetstatus = pNetstatus.find('span');
     var hTitle = find('h2#title');
     var pSentences = find('p#sentences');
     var lSentences = find('ul li');
@@ -20,6 +22,11 @@ test('index renders', function(){
     var iNickname = find('input[name=nickname]');
     var bSeed = find('button[name=seed]');
     var bInterpret = find('button[name=interpret]');
+
+    equal(pNetstatus.text(), 'Network status: ' + sNetstatus.text());
+
+    equal(sNetstatus.text(), 'checking');
+    equal(sNetstatus.attr('class'), 'checking');
 
     equal(hTitle.text(), 'Gistr');
 
