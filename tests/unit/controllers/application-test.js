@@ -10,10 +10,13 @@ test('it exists', function() {
 });
 
 test('#netstatus', function() {
+
   equal(this.subject().get('netstatus'), 'checking');
   this.subject().setOnline();
+
   equal(this.subject().get('netstatus'), 'online');
   this.subject().setOffline();
+
   equal(this.subject().get('netstatus'), 'offline');
   var self = this;
   this.subject().updateNetstatus().always(function () {
