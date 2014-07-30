@@ -45,7 +45,7 @@ test('index renders', function() {
     equal(bSeed.text(), 'New seed');
     equal(bSeed.attr('type'), 'submit');
 
-    equal(bInterpret.text(), 'Interpret');
+    equal(bInterpret.text(), 'Gist up!');
     equal(bInterpret.attr('type'), 'submit');
   });
 });
