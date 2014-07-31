@@ -6,6 +6,7 @@ import ApplicationController from 'appkit/controllers/application';
 moduleFor('controller:application', 'Unit - ApplicationController');
 
 test('it exists', function() {
+  expect(1);
   ok(this.subject() instanceof ApplicationController);
 });
 
