@@ -30,7 +30,7 @@ test('index renders', function() {
     equal(hTitle.text(), 'Gistr');
 
     equal(aPlay.text(), 'Play');
-    equal(aPlay.attr('href'), '#');
+    equal(aPlay.attr('href'), '/play');
 
     equal(aLike.text(), 'Like');
     equal(aLike.attr('href'), '#');
