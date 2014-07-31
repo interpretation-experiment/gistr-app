@@ -1,9 +1,14 @@
+// FIXME: untested because ran into problems. Try again later.
 var Sentence = DS.Model.extend({
   author: DS.belongsTo('user'),
   // TODO: add date
   // TODO: add location
-  from: DS.belongsTo('sentence'),
-  children: DS.hasMany('sentence'),
+  from: DS.belongsTo('sentence', {
+    inverse: 'children'
+  }),
+  children: DS.hasMany('sentence', {
+    inverse: 'from'
+  }),
   text: DS.attr('string')
 });
 
