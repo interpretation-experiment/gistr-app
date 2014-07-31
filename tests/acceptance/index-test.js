@@ -42,6 +42,6 @@ test('index renders', function() {
     equal(aAbout.attr('href'), '/about');
 
     equal(aSettings.text(), 'Settings');
-    equal(aSettings.attr('href'), '#');
+    equal(aSettings.attr('href'), '/settings');
   });
 });
