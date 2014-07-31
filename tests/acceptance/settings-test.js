@@ -12,7 +12,8 @@ module('Acceptances - Settings', {
 test('settings renders', function() {
   expect(7);
 
-  visit('/settings').then(function() {
+  visit('/settings');
+  andThen(function() {
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
     var aBack = find('a#back');

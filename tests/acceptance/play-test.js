@@ -12,7 +12,8 @@ module('Acceptances - Play', {
 test('play renders', function() {
   expect(5);
 
-  visit('/play').then(function() {
+  visit('/play');
+  andThen(function() {
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
     var aHome = find('a#home');

@@ -12,7 +12,8 @@ module('Acceptances - Index', {
 test('index renders', function() {
   expect(14);
 
-  visit('/').then(function() {
+  visit('/');
+  andThen(function() {
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
     var hTitle = find('h2#title');
