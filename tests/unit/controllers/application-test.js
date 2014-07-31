@@ -10,16 +10,15 @@ test('it exists', function() {
 });
 
 test('#netstatus', function() {
+  expect(3);
 
-  equal(this.subject().get('netstatus'), 'checking');
-  this.subject().setOnline();
+  var controller = this.subject();
 
-  equal(this.subject().get('netstatus'), 'online');
-  this.subject().setOffline();
+  equal(controller.get('netstatus'), 'checking');
 
-  equal(this.subject().get('netstatus'), 'offline');
-  var self = this;
-  this.subject().updateNetstatus().always(function () {
-    equal(self.subject().get('netstatus'), 'online');
-  });
+  controller.setOnline();
+  equal(controller.get('netstatus'), 'online');
+
+  controller.setOffline();
+  equal(controller.get('netstatus'), 'offline');
 });
