@@ -10,18 +10,17 @@ module('Acceptances - Index', {
 });
 
 test('index renders', function() {
-  expect(16);
+  expect(14);
 
   visit('/').then(function() {
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
     var hTitle = find('h2#title');
-    var pSentences = find('p#sentences');
-    var lSentences = find('ul li');
-    var lNickname = find('label[for=nickname]');
-    var iNickname = find('input[name=nickname]');
-    var bSeed = find('button[name=seed]');
-    var bInterpret = find('button[name=interpret]');
+    var aPlay = find('a#play');
+    var aLike = find('a#like');
+    var aShare = find('a#share');
+    var aAbout = find('a#about');
+    var aSettings = find('a#settings');
 
     equal(pNetstatus.text(), 'Network status: ' + sNetstatus.text());
 
@@ -30,22 +29,19 @@ test('index renders', function() {
 
     equal(hTitle.text(), 'Gistr');
 
-    equal(pSentences.text(), 'Sentences being turned on their head right now:');
+    equal(aPlay.text(), 'Play');
+    equal(aPlay.attr('href'), '#');
 
-    equal(lSentences.length, 3);
-    equal(lSentences.text(), 'redyellowblue');
+    equal(aLike.text(), 'Like');
+    equal(aLike.attr('href'), '#');
 
-    equal(lNickname.text(), 'Pick a nickname');
+    equal(aShare.text(), 'Share');
+    equal(aShare.attr('href'), '#');
 
-    equal(iNickname.attr('id'), 'nickname');
-    equal(iNickname.attr('type'), 'text');
-    equal(iNickname.attr('placeholder'), 'e.g. hoory-horse');
-    equal(iNickname.attr('autofocus'), 'autofocus');
+    equal(aAbout.text(), 'About');
+    equal(aAbout.attr('href'), '#');
 
-    equal(bSeed.text(), 'New seed');
-    equal(bSeed.attr('type'), 'submit');
-
-    equal(bInterpret.text(), 'Gist up!');
-    equal(bInterpret.attr('type'), 'submit');
+    equal(aSettings.text(), 'Settings');
+    equal(aSettings.attr('href'), '#');
   });
 });
