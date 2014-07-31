@@ -39,7 +39,7 @@ test('index renders', function() {
     equal(aShare.attr('href'), '#');
 
     equal(aAbout.text(), 'About');
-    equal(aAbout.attr('href'), '#');
+    equal(aAbout.attr('href'), '/about');
 
     equal(aSettings.text(), 'Settings');
     equal(aSettings.attr('href'), '#');
