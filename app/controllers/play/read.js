@@ -1,5 +1,6 @@
 export default Ember.ObjectController.extend({
   // FIXME: get from params/model
+  // FIXME: make sure it's reset at each visit
   countdown: 5,
 
   // FIXME: get from params/model
