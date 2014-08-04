@@ -11,9 +11,10 @@ test("it exists", function() {
 });
 
 test("it decorates an outgoing transition", function() {
-  expect(1);
+  expect(2);
   var dummyTransition = {};
   this.subject().set('routeName', 'dummy-route');
+  equal(dummyTransition.originName, undefined);
   this.subject()._willTransition(dummyTransition);
   equal(dummyTransition.originName, 'dummy-route');
 });
