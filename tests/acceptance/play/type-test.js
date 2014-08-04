@@ -12,6 +12,8 @@ module('Acceptances - Play/Type', {
 test('play/type renders', function() {
   expect(11);
 
+  visit('/play/read');
+  visit('/play/ok');
   visit('/play/type');
   andThen(function() {
     var pNetstatus = find('p#netstatus');
@@ -45,6 +47,8 @@ test('play/type renders', function() {
 test('navigate to home', function() {
   expect(6);
 
+  visit('/play/read');
+  visit('/play/ok');
   visit('/play/type');
   andThen(function() {
     equal(currentRouteName(), 'play.type');
@@ -58,4 +62,27 @@ test('navigate to home', function() {
     equal(currentPath(), 'index');
     equal(currentURL(), '/');
   });
+});
+
+test('coming from elsewhere than /play/read redirects', function() {
+  expect(6);
+
+  visit('/');
+  visit('/play/type');
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
+
+  visit('/');
+  visit('/play/read');
+  visit('/play/type');
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
+  // FIXME: add a test for read->ok->type->home and back button
+  // FIXME: add a test for read->ok->type->next and back button
 });

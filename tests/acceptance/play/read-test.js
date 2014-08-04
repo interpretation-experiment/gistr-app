@@ -10,10 +10,14 @@ module('Acceptances - Play/Read', {
 });
 
 test('play/read renders', function() {
-  expect(7);
+  expect(10);
 
   visit('/play/read');
   andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
     var aHome = find('a#home');
