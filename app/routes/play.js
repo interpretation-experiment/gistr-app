@@ -4,7 +4,10 @@ export default Ember.Route.extend({
     return this.store.find('sentence', '1');
   },
 
-  afterModel: function() {
-    this.transitionTo('play.read');
+  afterModel: function(sentence, transition) {
+    if (transition.targetName === 'play.index') {
+      // Go directly to play.read
+      this.transitionTo('play.read');
+    }
   }
 });
