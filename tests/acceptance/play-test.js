@@ -50,3 +50,14 @@ test('navigate from home to play and back', function() {
     equal(currentURL(), '/');
   });
 });
+
+test('navigate directly to play', function() {
+  expect(3);
+
+  visit('/play');
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
+});
