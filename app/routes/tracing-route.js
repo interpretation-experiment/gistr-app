@@ -36,7 +36,7 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    willTransition: function(transition){
+    willTransition: function(transition) {
       this._willTransition(transition);
     }
   },
