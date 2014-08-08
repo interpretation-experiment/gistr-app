@@ -1,3 +1,5 @@
+import ceiling from 'appkit/utils/ceiling';
+
 export default Ember.ObjectController.extend({
   actions: {
     // FIXME: untested
@@ -14,30 +16,34 @@ export default Ember.ObjectController.extend({
   duration: 5,
 
   // FIXME: get from params/model
-  ceilingPrecision: 1,  // n times per second
-  renderPrecision: 1,   // n times per second
+  precision: 1,  // n times per second
 
   // FIXME: untested
   _startCountdown: function(route, callback) {
     var duration = this.get('duration');
     this.set('countdown', duration);
     this.set('lastNow', performance.now());
+
     this.set('transitionTimer',
              Ember.run.later(route, callback, duration * 1000));
     this.set('renderTimer',
              Ember.run.later(this, this._updateCountdown,
-                             1000 / this.get('renderPrecision')));
+                             1000 / this.get('precision')));
   },
 
   // FIXME: untested
   _updateCountdown: function() {
     var now = performance.now(),
-        diff = now - this.get('lastNow');
+        diff = now - this.get('lastNow'),
+        precision = this.get('precision'),
+        countdown = ceiling(this.get('countdown') - diff / 1000, precision);
+
     this.set('lastNow', now);
-    this.set('countdown', this.get('countdown') - diff / 1000);
-    if (this.get('countdown') > 0) {
+    this.set('countdown', countdown);
+
+    if (countdown > 0) {
       Ember.run.later(this, this._updateCountdown,
-                      1000 / this.get('renderPrecision'));
+                      1000 / this.get('precision'));
     }
   },
 
