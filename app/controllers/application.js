@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
 
   // FIXME: untested because ran into problems. Try again later.
   updateNetstatus: function() {
-    var self = this;
+    var that = this;
 
     return $.ajax({
       // FIXME: change this url to the backend url
@@ -19,20 +19,20 @@ export default Ember.Controller.extend({
       type: 'HEAD'
     }).done(function(data, status, xhr) {
       if (status === 'success')
-        self.setOnline();
+        that.setOnline();
       else
-        self.setOffline();
+        that.setOffline();
     }).fail(function(xhr, status, error) {
-      self.setOffline();
+      that.setOffline();
     });
   },
 
   // FIXME: untested because ran into problems. Try again later.
   updateNetstatusLoop: function() {
-    var self = this;
+    var that = this;
 
     this.updateNetstatus().always(function() {
-      Ember.run.later(self, function() {
+      Ember.run.later(that, function() {
         this.updateNetstatusLoop();
       }, 3000);
     });
