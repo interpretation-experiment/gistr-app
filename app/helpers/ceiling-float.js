@@ -4,6 +4,6 @@
 
 // FIXME: untested
 export default Ember.Handlebars.makeBoundHelper(function(number, precision) {
-  return Math.round(number * precision) / precision;
+  return Math.ceil(number * precision) / precision;
 });
 

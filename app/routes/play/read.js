@@ -6,9 +6,22 @@ export default TracingRoute.extend({
     // FIXME: untested
     controller.set('model', sentence);
     if (!window.ENV.testing) {
-      controller.startCountdown(this, function() {
+      controller.send('startCountdown', this, function() {
         this.transitionTo('play.ok');
       });
     }
+  },
+
+  actions: {
+    // FIXME: untested
+    willTransition: function(transition) {
+      this._willTransition(transition);
+    }
+  },
+
+  // FIXME: untested
+  _willTransition: function(transition) {
+    this._super(transition);
+    this.controller.send('cancelCountdown');
   }
 });
