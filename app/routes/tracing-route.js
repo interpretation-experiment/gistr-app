@@ -38,6 +38,8 @@ export default Ember.Route.extend({
   actions: {
     willTransition: function(transition) {
       this._willTransition(transition);
+      // Keep bubbling
+      return true;
     }
   },
 
