@@ -13,7 +13,7 @@ export default Ember.Controller.extend({
   updateNetstatus: function() {
     var that = this;
 
-    return $.ajax({
+    return Ember.$.ajax({
       // FIXME: change this url to the backend url
       url: window.location.origin,
       type: 'HEAD'
