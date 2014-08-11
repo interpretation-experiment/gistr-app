@@ -12,7 +12,7 @@ module('Acceptances - Play/Read', {
 });
 
 test('play/read renders', function() {
-  var precision = 3,
+  var precision = 4,
       prController = App.__container__.lookup('controller:play/read'),
       nCountdownTests = prController.get('duration') * precision + 1;
   expect(11 + 2 * nCountdownTests);
