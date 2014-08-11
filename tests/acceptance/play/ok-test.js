@@ -1,3 +1,5 @@
+import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+
 var App;
 
 module('Acceptances - Play/Ok', {
@@ -11,6 +13,8 @@ module('Acceptances - Play/Ok', {
 
 test('play/ok renders', function() {
   expect(7);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
@@ -36,6 +40,8 @@ test('play/ok renders', function() {
 test('navigate to home', function() {
   expect(6);
 
+  cancelPlayTime(App);
+
   visit('/play/read');
   visit('/play/ok');
   andThen(function() {
@@ -54,6 +60,8 @@ test('navigate to home', function() {
 
 test('coming from elsewhere than /play/read redirects', function() {
   expect(6);
+
+  cancelPlayTime(App);
 
   visit('/');
   visit('/play/ok');

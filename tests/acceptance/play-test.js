@@ -1,5 +1,6 @@
-var App,
-    testDuration = 0.5;
+import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+
+var App;
 
 module('Acceptances - Play', {
   setup: function() {
@@ -13,12 +14,7 @@ module('Acceptances - Play', {
 test('play renders', function() {
   expect(8);
 
-  // Shorten countdown of play.read, and cancel transition to play.ok
-  var prController = App.__container__.lookup('controller:play/read');
-  prController.set('duration', testDuration);
-  prController.addObserver('transitionTimer', function() {
-    Ember.run.cancel(prController.get('transitionTimer'));
-  });
+  cancelPlayTime(App);
 
   visit('/play');
   andThen(function() {
@@ -43,12 +39,7 @@ test('play renders', function() {
 test('navigate from home to play and back', function() {
   expect(6);
 
-  // Shorten countdown of play.read, and cancel transition to play.ok
-  var prController = App.__container__.lookup('controller:play/read');
-  prController.set('duration', testDuration);
-  prController.addObserver('transitionTimer', function() {
-    Ember.run.cancel(prController.get('transitionTimer'));
-  });
+  cancelPlayTime(App);
 
   visit('/');
   click('#play');
@@ -72,12 +63,7 @@ test('navigate directly to play', function() {
   // FIXME: add a test for when the user manually sets the location to /play, after a first load
   // (the visit method doesn't cover this.)
 
-  // Shorten countdown of play.read, and cancel transition to play.ok
-  var prController = App.__container__.lookup('controller:play/read');
-  prController.set('duration', testDuration);
-  prController.addObserver('transitionTimer', function() {
-    Ember.run.cancel(prController.get('transitionTimer'));
-  });
+  cancelPlayTime(App);
 
   visit('/play');
   andThen(function() {

@@ -1,3 +1,5 @@
+import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+
 var App;
 
 module('Acceptances - Play/Type', {
@@ -11,6 +13,8 @@ module('Acceptances - Play/Type', {
 
 test('play/type renders', function() {
   expect(11);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
@@ -47,6 +51,8 @@ test('play/type renders', function() {
 test('navigate to home', function() {
   expect(6);
 
+  cancelPlayTime(App);
+
   visit('/play/read');
   visit('/play/ok');
   visit('/play/type');
@@ -66,6 +72,8 @@ test('navigate to home', function() {
 
 test('coming from elsewhere than /play/read redirects', function() {
   expect(6);
+
+  cancelPlayTime(App);
 
   visit('/');
   visit('/play/type');

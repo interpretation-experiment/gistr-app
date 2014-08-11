@@ -1,3 +1,5 @@
+import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+
 var App;
 
 module('Acceptances - Play/Read', {
@@ -88,11 +90,7 @@ test('play/read renders', function() {
 test('navigate from home to play and back', function() {
   expect(6);
 
-  // Cancel transition to play.ok
-  var prController = App.__container__.lookup('controller:play/read');
-  prController.addObserver('transitionTimer', function() {
-    Ember.run.cancel(prController.get('transitionTimer'));
-  });
+  cancelPlayTime(App);
 
   visit('/');
   click('#play');
