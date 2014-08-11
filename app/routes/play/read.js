@@ -3,13 +3,14 @@ import TracingRoute from 'appkit/routes/tracing-route';
 // FIXME: model should be recreated each time we enter here
 export default TracingRoute.extend({
   setupController: function(controller, sentence) {
-    // FIXME: untested
     controller.set('model', sentence);
-    if (!window.ENV.testing) {
-      controller.send('startCountdown', this, function() {
+
+    var that = this;
+    Ember.run(function() {
+      controller.send('startCountdown', that, function() {
         this.transitionTo('play.ok');
       });
-    }
+    });
   },
 
   actions: {
@@ -19,7 +20,6 @@ export default TracingRoute.extend({
     }
   },
 
-  // FIXME: untested
   _willTransition: function(transition) {
     this._super(transition);
     this.controller.send('cancelCountdown');
