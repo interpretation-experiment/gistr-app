@@ -58,7 +58,7 @@ test('play/read renders', function() {
         var aHome = find('a#home');
         var pInstructions = find('p#instructions');
         var bqText = find('blockquote#text');
-        var pCountdown = find('p#countdown');
+        pCountdown = find('p#countdown');
 
         equal(pNetstatus.text(), 'Network status: ' + sNetstatus.text());
 
@@ -88,6 +88,12 @@ test('play/read renders', function() {
 test('navigate from home to play and back', function() {
   expect(6);
 
+  // Cancel transition to play.ok
+  var prController = App.__container__.lookup('controller:play/read');
+  prController.addObserver('transitionTimer', function() {
+    Ember.run.cancel(prController.get('transitionTimer'));
+  });
+
   visit('/');
   click('#play');
   andThen(function() {
@@ -103,3 +109,7 @@ test('navigate from home to play and back', function() {
     equal(currentURL(), '/');
   });
 });
+
+// TODO: test it transitions when reaching 0
+
+// TODO: test it transitions after 5 seconds
