@@ -5,11 +5,8 @@ export default TracingRoute.extend({
   setupController: function(controller, sentence) {
     controller.set('model', sentence);
 
-    var that = this;
-    Ember.run(function() {
-      controller.send('startCountdown', that, function() {
-        this.transitionTo('play.ok');
-      });
+    controller.send('startCountdown', this, function() {
+      this.transitionTo('play.ok');
     });
   },
 
