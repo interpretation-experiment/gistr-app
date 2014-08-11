@@ -21,14 +21,11 @@ export default Ember.ObjectController.extend({
   // FIXME: untested
   _startCountdown: function(route, callback) {
     var duration = this.get('duration');
-    this.set('countdown', duration);
-    this.set('lastNow', Date.now());
-
     this.set('transitionTimer',
              Ember.run.later(route, callback, duration * 1000));
-    this.set('renderTimer',
-             Ember.run.later(this, this._updateCountdown,
-                             1000 / this.get('precision')));
+
+    this._setCountdown(duration);
+    this._reschedule();
   },
 
   // FIXME: untested
@@ -36,15 +33,10 @@ export default Ember.ObjectController.extend({
     var now = Date.now(),
         diff = now - this.get('lastNow'),
         precision = this.get('precision'),
-        countdown = ceiling(this.get('countdown') - diff / 1000, precision);
+        countdownPrec = this.get('countdownPrec') - diff / 1000;
 
-    this.set('lastNow', now);
-    this.set('countdown', countdown);
-
-    if (countdown > 0) {
-      Ember.run.later(this, this._updateCountdown,
-                      1000 / this.get('precision'));
-    }
+    this._setCountdown(countdownPrec);
+    this._reschedule();
   },
 
   // FIXME: untested
@@ -60,6 +52,22 @@ export default Ember.ObjectController.extend({
     if (!!renderTimer) {
       Ember.run.cancel(renderTimer);
       this.set('renderTimer', undefined);
+    }
+  },
+
+  // FIXME: untested
+  _setCountdown: function(countdownPrec) {
+    this.set('countdownPrec', countdownPrec);
+    this.set('countdown', ceiling(countdownPrec, this.get('precision')));
+  },
+
+  // FIXME: untested
+  _reschedule: function() {
+    if (this.get('countdown') > 0) {
+      this.set('lastNow', Date.now());
+      this.set('renderTimer',
+               Ember.run.later(this, this._updateCountdown,
+                               1000 / this.get('precision')));
     }
   }
 });
