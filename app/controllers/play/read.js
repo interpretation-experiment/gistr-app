@@ -22,7 +22,7 @@ export default Ember.ObjectController.extend({
   _startCountdown: function(route, callback) {
     var duration = this.get('duration');
     this.set('countdown', duration);
-    this.set('lastNow', performance.now());
+    this.set('lastNow', Date.now());
 
     this.set('transitionTimer',
              Ember.run.later(route, callback, duration * 1000));
@@ -33,7 +33,7 @@ export default Ember.ObjectController.extend({
 
   // FIXME: untested
   _updateCountdown: function() {
-    var now = performance.now(),
+    var now = Date.now(),
         diff = now - this.get('lastNow'),
         precision = this.get('precision'),
         countdown = ceiling(this.get('countdown') - diff / 1000, precision);
