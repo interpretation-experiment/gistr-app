@@ -9,7 +9,7 @@ export default Ember.Controller.extend({
     this.set('netstatus', 'offline');
   },
 
-  // FIXME: untested because ran into problems. Try again later.
+  // FIXME[try promises]: untested
   updateNetstatus: function() {
     var that = this;
 
@@ -27,7 +27,7 @@ export default Ember.Controller.extend({
     });
   },
 
-  // FIXME: untested because ran into problems. Try again later.
+  // FIXME[try promises]: untested
   updateNetstatusLoop: function() {
     var that = this;
 
