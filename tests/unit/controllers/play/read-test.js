@@ -71,11 +71,11 @@ test("_updateCountdown sets correct new countdown and reschedules", function() {
   var controller = this.subject();
 
   controller.set('content', {});
-  controller.set('lastNow', Date.now() - 50 * 1000);  // now - 50ms
-  controller.set('countdownPrec', 1000);
+  controller.set('lastNow', Date.now() - 50);  // now - 50ms
+  controller.set('countdownPrec', 1);
   controller._setCountdown = function(value) {
-    ok(value > 949);
-    ok(value < 951);
+    ok(value > 0.940);
+    ok(value < 0.960);
   };
   controller._reschedule = function() {
     ok(true);
@@ -141,4 +141,18 @@ test("_cancelCountdown cancels renderTimer", function() {
     controller._cancelCountdown();
     equal(controller.get('renderTimer'), undefined);
   });
+});
+
+test("_setCountdown sets new countdown", function() {
+  expect(2);
+
+  var controller = this.subject();
+
+  // Refine precision
+  controller.set('content', {});
+  controller.set('precision', 4);
+
+  controller._setCountdown(1.2);
+  equal(controller.get('countdownPrec'), 1.2);
+  equal(controller.get('countdown'), 1.25);
 });

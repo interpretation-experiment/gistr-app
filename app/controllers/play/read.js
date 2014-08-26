@@ -49,7 +49,6 @@ export default Ember.ObjectController.extend({
     }
   },
 
-  // FIXME: untested
   _setCountdown: function(countdownPrec) {
     this.set('countdownPrec', countdownPrec);
     this.set('countdown', ceiling(countdownPrec, this.get('precision')));
