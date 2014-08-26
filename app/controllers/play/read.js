@@ -2,11 +2,9 @@ import ceiling from 'appkit/utils/ceiling';
 
 export default Ember.ObjectController.extend({
   actions: {
-    // FIXME: untested
     startCountdown: function(route, callback) {
       this._startCountdown(route, callback);
     },
-    // FIXME: untested
     cancelCountdown: function() {
       this._cancelCountdown();
     }

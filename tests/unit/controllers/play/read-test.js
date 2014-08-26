@@ -21,3 +21,14 @@ test("startCountdown calls the right method", function() {
 
   controller.send('startCountdown', 'dummy-route', 'dummy-callback');
 });
+
+test("cancelCountdown calls the right method", function() {
+  expect(1);
+
+  var controller = this.subject();
+  controller._cancelCountdown = function() {
+    ok(true);
+  };
+
+  controller.send('cancelCountdown');
+});
