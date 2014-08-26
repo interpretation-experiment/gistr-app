@@ -12,10 +12,10 @@ export default Ember.ObjectController.extend({
     }
   },
 
-  // FIXME: get from params/model
+  // TODO: get from params/model
   duration: 5,
 
-  // FIXME: get from params/model
+  // TODO: get from params/model
   precision: 1,  // n times per second
 
   // FIXME: untested
