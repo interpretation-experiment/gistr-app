@@ -82,3 +82,63 @@ test("_updateCountdown sets correct new countdown and reschedules", function() {
   };
   controller._updateCountdown();
 });
+
+test("_cancelCountdown cancels transitionTimer", function() {
+  expect(2);
+
+  var controller = this.subject(),
+      transitionTimerHasRun = false;
+
+  return new Ember.RSVP.Promise(function(resolve, reject) {
+    controller.set('content', {});
+    // Set a transitionTimer that fails the test
+    var transitionTimer = Ember.run.later(this, function() {
+      transitionTimerHasRun = true;
+    }, 10);
+    controller.set('transitionTimer', transitionTimer);
+
+    // Set a timer to check transitionTimer was cancelled
+    Ember.run.later(this, function() {
+      if (transitionTimerHasRun) {
+        reject('transitionTimer should be cancelled');
+      } else {
+        resolve('transitionTimer was cancelled');
+        ok(true);
+      }
+    }, 20);
+
+    // launch cancellation of timer
+    controller._cancelCountdown();
+    equal(controller.get('transitionTimer'), undefined);
+  });
+});
+
+test("_cancelCountdown cancels renderTimer", function() {
+  expect(2);
+
+  var controller = this.subject(),
+      renderTimerHasRun = false;
+
+  return new Ember.RSVP.Promise(function(resolve, reject) {
+    controller.set('content', {});
+    // Set a renderTimer that fails the test
+    var renderTimer = Ember.run.later(this, function() {
+      renderTimerHasRun = true;
+    }, 10);
+    controller.set('renderTimer', renderTimer);
+
+    // Set a timer to check renderTimer was cancelled
+    Ember.run.later(this, function() {
+      if (renderTimerHasRun) {
+        reject('renderTimer should be cancelled');
+      } else {
+        resolve('renderTimer was cancelled');
+        ok(true);
+      }
+    }, 20);
+
+    // launch cancellation of timer
+    controller._cancelCountdown();
+    equal(controller.get('renderTimer'), undefined);
+  });
+});

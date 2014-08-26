@@ -34,7 +34,6 @@ export default Ember.ObjectController.extend({
     this._reschedule();
   },
 
-  // FIXME: untested
   _cancelCountdown: function() {
     var transitionTimer = this.get('transitionTimer'),
         renderTimer = this.get('renderTimer');
