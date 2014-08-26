@@ -1,4 +1,4 @@
-// FIXME: untested because ran into problems. Try again later.
+// WONTFIX: Not unit-tested, because runs into erros. See 'test-models' branch.
 var Sentence = DS.Model.extend({
   author: DS.belongsTo('user'),
   // TODO: add date
