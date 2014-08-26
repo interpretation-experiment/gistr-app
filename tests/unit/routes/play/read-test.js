@@ -71,8 +71,7 @@ test("setupController ultimately transitions to play.ok", function() {
   equal(route.get('transitioningTo'), 'play.ok');
 });
 
-// TODO: test willTransition in acceptance tests
-// Testing willTransition action goes into acceptance tests, since it ultimately
+// Testing willTransition action is covered by acceptance tests, since it ultimately
 // needs a full-blown router.
 
 test("_willTransition sends cancelCountdown to controller", function() {

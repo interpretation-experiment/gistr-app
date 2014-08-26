@@ -11,9 +11,9 @@ export default TracingRoute.extend({
   },
 
   actions: {
-    // WONTFIX: Not unit-tested.
     // Testing this action needs a full-blown app,
-    // because it triggers other events on the router
+    // because it triggers other events on the router.
+    // So it's not unit-tested, but is covered by acceptance tests.
     willTransition: function(transition) {
       this._willTransition(transition);
     }

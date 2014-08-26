@@ -111,3 +111,5 @@ test('navigate from home to play and back', function() {
 // TODO: test it transitions when reaching 0
 
 // TODO: test it transitions after 5 seconds
+
+// TODO: test it cancels the countdown if transitioned out of this route
