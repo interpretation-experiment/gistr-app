@@ -52,8 +52,8 @@ test("_startCountdown starts transitionTimer, sets countdown, and reschedules",
 
     // Shorten transitionTimer
     controller.duration = 1;
-    controller._setCountdown = function() {
-      ok(true);
+    controller._setCountdown = function(duration) {
+      equal(duration, 1);
     };
     controller._reschedule = function() {
       ok(true);
