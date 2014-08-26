@@ -52,8 +52,8 @@ test("_startCountdown starts transitionTimer, sets countdown, and reschedules",
 
     // Shorten transitionTimer
     controller.duration = 1;
-    controller._setCountdown = function(duration) {
-      equal(duration, 1);
+    controller._setCountdown = function(value) {
+      equal(value, 1);
     };
     controller._reschedule = function() {
       ok(true);
@@ -63,4 +63,22 @@ test("_startCountdown starts transitionTimer, sets countdown, and reschedules",
     controller._startCountdown(context, callback);
     ok(!!controller.get('transitionTimer'));
   });
+});
+
+test("_updateCountdown sets correct new countdown and reschedules", function() {
+  expect(3);
+
+  var controller = this.subject();
+
+  controller.set('content', {});
+  controller.set('lastNow', Date.now() - 50 * 1000);  // now - 50ms
+  controller.set('countdownPrec', 1000);
+  controller._setCountdown = function(value) {
+    ok(value > 949);
+    ok(value < 951);
+  };
+  controller._reschedule = function() {
+    ok(true);
+  };
+  controller._updateCountdown();
 });

@@ -25,7 +25,6 @@ export default Ember.ObjectController.extend({
     this._reschedule();
   },
 
-  // FIXME: untested
   _updateCountdown: function() {
     var now = Date.now(),
         diff = now - this.get('lastNow'),
