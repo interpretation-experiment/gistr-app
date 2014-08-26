@@ -160,3 +160,48 @@ test("_setCountdown sets new countdown value", function() {
   equal(controller.get('countdownPrec'), 1.2);
   equal(controller.get('countdown'), 1.25);
 });
+
+test("_reschedule sets lastNow and launches _updateCountdown with proper delay, " +
+     "iff countdownPrec > 0", function() {
+  expect(5);
+
+  var controller = this.subject();
+
+  // Set negative countdownPrec
+  controller.set('content', {});
+  controller.set('countdownPrec', -1);
+
+  // Nothing happens
+  controller._reschedule();
+  equal(controller.get('lastNow'), undefined);
+  equal(controller.get('renderTimer'), undefined);
+
+  // Set new positive countdownPrec, and refine precision to speed up test
+  controller.set('countdownPrec', 1);
+  controller.set('precision', 4);
+
+  // It sets lastNow and calls _updateCountdown, setting renderTimer
+
+  var now = Date.now(),
+      updateCountdownHasRun = false;
+  controller._updateCountdown = function() {
+    updateCountdownHasRun = true;
+    // less than 5ms difference, allowing for runtime imprecisions
+    ok(Math.abs(Date.now() - now - 250) < 5);
+    // less than 5ms difference, allowing for runtime imprecisions
+    ok(Math.abs(controller.get('lastNow') - now) < 5);
+  };
+
+  return new Ember.RSVP.Promise(function(resolve, reject) {
+    Ember.run.later(this, function() {
+      if (updateCountdownHasRun) {
+        resolve('_updateCountdown has run');
+      } else {
+        reject('_updateCountdown should have run');
+      }
+    }, 300);
+
+    controller._reschedule();
+    ok(!!controller.get('renderTimer'));
+  });
+});

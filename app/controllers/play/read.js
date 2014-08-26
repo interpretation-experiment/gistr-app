@@ -54,7 +54,6 @@ export default Ember.ObjectController.extend({
     this.set('countdown', ceiling(countdownPrec, this.get('precision')));
   },
 
-  // FIXME: untested
   _reschedule: function() {
     if (this.get('countdownPrec') > 0) {
       this.set('lastNow', Date.now());
