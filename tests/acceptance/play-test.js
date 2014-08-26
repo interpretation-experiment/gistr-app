@@ -60,9 +60,6 @@ test('navigate from home to play and back', function() {
 test('navigate directly to play', function() {
   expect(3);
 
-  // FIXME: add a test for when the user manually sets the location to /play, after a first load
-  // (the visit method doesn't cover this.)
-
   cancelPlayTime(App);
 
   visit('/play');
