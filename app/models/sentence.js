@@ -1,8 +1,8 @@
 // WONTFIX: Not unit-tested, because runs into errors. See 'test-models' branch.
 var Sentence = DS.Model.extend({
   author: DS.belongsTo('user'),
-  // TODO: add date
-  // TODO: add location
+  // TODO[after backend send]: add date
+  // TODO[search location]: add location
   from: DS.belongsTo('sentence', {
     inverse: 'children'
   }),

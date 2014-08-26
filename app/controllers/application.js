@@ -14,7 +14,7 @@ export default Ember.Controller.extend({
     var that = this;
 
     return Ember.$.ajax({
-      // TODO: change this url to the backend url
+      // TODO[after backend]: change this url to the backend url
       url: window.location.origin,
       type: 'HEAD'
     }).done(function(data, status, xhr) {

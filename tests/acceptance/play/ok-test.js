@@ -80,6 +80,6 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
-  // FIXME: add a test for read->ok->type and back button
-  // FIXME: add a test for read->ok->home and back button
+  // FIXME[search back button]: add a test for read->ok->type and back button
+  // FIXME[search back button]: add a test for read->ok->home and back button
 });
