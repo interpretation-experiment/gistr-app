@@ -1,4 +1,4 @@
-// WONTFIX: Not unit-tested, because runs into erros. See 'test-models' branch.
+// WONTFIX: Not unit-tested, because runs into errors. See 'test-models' branch.
 var Sentence = DS.Model.extend({
   author: DS.belongsTo('user'),
   // TODO: add date
