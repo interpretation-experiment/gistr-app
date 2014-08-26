@@ -16,7 +16,6 @@ export default Ember.ObjectController.extend({
   // TODO: get from params/model
   precision: 1,  // n times per second
 
-  // FIXME: untested
   _startCountdown: function(route, callback) {
     var duration = this.get('duration');
     this.set('transitionTimer',

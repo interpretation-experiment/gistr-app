@@ -32,3 +32,35 @@ test("cancelCountdown calls the right method", function() {
 
   controller.send('cancelCountdown');
 });
+
+test("_startCountdown starts transitionTimer, sets countdown, and reschedules",
+     function() {
+  expect(5);
+
+  var controller = this.subject(),
+      context = { goodContext: true };
+
+  return new Ember.RSVP.Promise(function(resolve, reject) {
+    var callback = function() {
+      // Callback is called
+      ok(true);
+      // called in the right context
+      ok(this.goodContext);
+      // resolve promise to close test
+      resolve(true);
+    };
+
+    // Shorten transitionTimer
+    controller.duration = 1;
+    controller._setCountdown = function() {
+      ok(true);
+    };
+    controller._reschedule = function() {
+      ok(true);
+    };
+    controller.set('content', {});
+
+    controller._startCountdown(context, callback);
+    ok(!!controller.get('transitionTimer'));
+  });
+});
