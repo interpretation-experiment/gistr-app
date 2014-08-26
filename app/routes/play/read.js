@@ -11,7 +11,9 @@ export default TracingRoute.extend({
   },
 
   actions: {
-    // FIXME: untested
+    // WONTFIX: Not unit-tested.
+    // Testing this action needs a full-blown app,
+    // because it triggers other events on the router
     willTransition: function(transition) {
       this._willTransition(transition);
     }
