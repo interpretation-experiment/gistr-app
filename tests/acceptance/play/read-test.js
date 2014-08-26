@@ -108,18 +108,26 @@ test('navigate from home to play and back', function() {
   });
 });
 
-//test("read transitions to ok after X seconds, and countdown has reached 0", function() {
-  //expect(1);
+test("read transitions to ok after X seconds, and countdown has reached 0", function() {
+  expect(5);
 
-  //var now = Date.now(),
-      //controller = App.__container__.lookup('controller:play/read');
+  var duration = 1,
+      precision = 4,
+      controller = App.__container__.lookup('controller:play/read');
 
-  //controller.set('precision', precision);
-  //visit('/play/read');
-//});
+  controller.set('duration', duration);
+  controller.set('precision', precision);
+  var now = Date.now();
+  visit('/play/read');
+  andThen(function() {
+    equal(currentRouteName(), 'play.ok');
+    equal(currentPath(), 'play.ok');
+    equal(currentURL(), '/play/ok');
 
-// TODO: test it transitions when reaching 0
-
-// TODO: test it transitions after 5 seconds
+    equal(controller.get('countdown'), 0.25);
+    // Less than 200ms difference, allowing for runtime imprecisions
+    ok(Math.abs(Date.now() - now - duration * 1000) < 200);
+  });
+});
 
 // TODO: test it cancels the countdown if transitioned out of this route
