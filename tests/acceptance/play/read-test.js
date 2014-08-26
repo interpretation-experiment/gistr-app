@@ -13,31 +13,31 @@ module('Acceptances - Play/Read', {
 
 test('play/read renders', function() {
   var precision = 4,
-      prController = App.__container__.lookup('controller:play/read'),
-      nCountdownTests = prController.get('duration') * precision + 1;
+      controller = App.__container__.lookup('controller:play/read'),
+      nCountdownTests = controller.get('duration') * precision + 1;
   expect(11 + 2 * nCountdownTests);
 
-  prController.set('precision', precision);
+  controller.set('precision', precision);
 
   // Cancel transition to play.ok
-  prController.addObserver('transitionTimer', function() {
-    Ember.run.cancel(prController.get('transitionTimer'));
+  controller.addObserver('transitionTimer', function() {
+    Ember.run.cancel(controller.get('transitionTimer'));
   });
 
   // Create our test array of countdown values
   var countdownValues = [],
       countdownValuesExpected = [],
-      countdownPrediction = prController.get('duration');
+      countdownPrediction = controller.get('duration');
   for (var i = 0; i < nCountdownTests; i++) {
     countdownValuesExpected.push(countdownPrediction);
     countdownPrediction -= 1 / precision;
   }
 
-  prController._reschedule = function() {
+  controller._reschedule = function() {
     // Test for proper rendering
     andThen(function() {
       var pCountdown = find('p#countdown'),
-          countdown = prController.get('countdown');
+          countdown = controller.get('countdown');
 
       countdownValues.push(countdown);
       equal(pCountdown.text(), 'Time left: ' + countdown + ' seconds');
@@ -45,10 +45,10 @@ test('play/read renders', function() {
       // Are we done?
       if (countdown > 0) {
         // No: reset lastNow and restart the countdown
-        prController.set('lastNow', Date.now());
-        prController.set('renderTimer',
-                         Ember.run.later(prController, prController._updateCountdown,
-                                         1000 / prController.get('precision')));
+        controller.set('lastNow', Date.now());
+        controller.set('renderTimer',
+                       Ember.run.later(controller, controller._updateCountdown,
+                                       1000 / controller.get('precision')));
       } else {
         // Yes: test for proper final rendering
         equal(currentRouteName(), 'play.read');
@@ -107,6 +107,16 @@ test('navigate from home to play and back', function() {
     equal(currentURL(), '/');
   });
 });
+
+//test("read transitions to ok after X seconds, and countdown has reached 0", function() {
+  //expect(1);
+
+  //var now = Date.now(),
+      //controller = App.__container__.lookup('controller:play/read');
+
+  //controller.set('precision', precision);
+  //visit('/play/read');
+//});
 
 // TODO: test it transitions when reaching 0
 
