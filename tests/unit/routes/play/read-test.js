@@ -31,26 +31,24 @@ test("setupController sets up the model", function() {
   deepEqual(controller.get('model'), sentence);
 });
 
-test("setupController sends startCountdown to controller", function() {
-  expect(2);
+test("_startCountdown ultimately sends startCountdown to controller", function() {
+  expect(1);
   var route = this.subject(),
       controller = route.controllerFor('play/read');
 
   controller.reopen({
     actions: {
       startCountdown: function(route, callback) {
-        this.countdownStarted = true;
+        ok(true);
       }
     }
   });
 
-  equal(controller.get('countdownStarted'), undefined);
-  route.setupController(controller);
-  equal(controller.get('countdownStarted'), true);
+  route._startCountdown(controller);
 });
 
-test("setupController ultimately transitions to play.ok", function() {
-  expect(2);
+test("_startCountdown ultimately transitions to play.ok", function() {
+  expect(1);
   var route = this.subject(),
       controller = route.controllerFor('play/read');
 
@@ -63,12 +61,25 @@ test("setupController ultimately transitions to play.ok", function() {
   });
 
   route.transitionTo = function(targetName) {
-    this.transitioningTo = targetName;
+    equal(targetName, 'play.ok');
   };
 
-  equal(route.get('transitioningTo'), undefined);
+  route._startCountdown(controller);
+});
+
+test("setupController calls _startCountdown, but not if startCountdown is false", function() {
+  expect(1);
+  var route = this.subject(),
+      controller = route.controllerFor('play/read');
+
+  route._startCountdown = function(controller) {
+    ok(true);
+  };
+
+  route.startCountdown = false;
   route.setupController(controller);
-  equal(route.get('transitioningTo'), 'play.ok');
+  route.startCountdown = true;
+  route.setupController(controller);
 });
 
 // Testing willTransition action is covered by acceptance tests, since it ultimately

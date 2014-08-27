@@ -5,9 +5,9 @@ export default TracingRoute.extend({
   setupController: function(controller, sentence) {
     controller.set('model', sentence);
 
-    controller.send('startCountdown', this, function() {
-      this.transitionTo('play.ok');
-    });
+    if (this.get('startCountdown')) {
+      this._startCountdown(controller);
+    }
   },
 
   actions: {
@@ -22,5 +22,15 @@ export default TracingRoute.extend({
   _willTransition: function(transition) {
     this._super(transition);
     this.controller.send('cancelCountdown');
+  },
+
+  // FIXME: test
+  startCountdown: true,
+
+  // FIXME: test
+  _startCountdown: function(controller) {
+    controller.send('startCountdown', this, function() {
+      this.transitionTo('play.ok');
+    });
   }
 });
