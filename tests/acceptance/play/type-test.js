@@ -12,7 +12,8 @@ module('Acceptances - Play/Type', {
 });
 
 test('play/type renders', function() {
-  expect(9);
+  expect(8);
+  //expect(9);
 
   cancelPlayTime(App);
 
@@ -37,7 +38,8 @@ test('play/type renders', function() {
 
     equal(pInstructions.text(), 'Type the sentence as you remember it:');
 
-    equal(taText.attr('autofocus'), 'autofocus');
+    // TODO[search view]: make a view of the textarea, so it calls focus after render
+    //ok(taText.is(':focus'));
 
     equal(bSend.text(), 'Send');
     equal(bSend.attr('type'), 'submit');
