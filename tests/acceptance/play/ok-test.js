@@ -30,10 +30,10 @@ test('play/ok renders', function() {
     equal(sNetstatus.attr('class'), 'checking');
 
     equal(aHome.text(), 'Home');
-    equal(aHome.attr('href'), '/');
+    equal(aHome.attr('href'), '#/');
 
     equal(aOk.text(), 'Ok?');
-    equal(aOk.attr('href'), '/play/type');
+    equal(aOk.attr('href'), '#/play/type');
   });
 });
 
@@ -58,8 +58,8 @@ test('navigate to home', function() {
   });
 });
 
-test('coming from elsewhere than /play/read redirects', function() {
-  expect(12);
+test('coming from elsewhere than /play/read redirects [from /]', function() {
+  expect(3);
 
   cancelPlayTime(App);
 
@@ -70,6 +70,12 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
+});
+
+test('coming from elsewhere than /play/read redirects [from /play/type]', function() {
+  expect(3);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
@@ -80,10 +86,22 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
+});
+
+test('coming from elsewhere than /play/read redirects [from /play/ok then /play/type then back]',
+     function() {
+  expect(6);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
   visit('/play/type');
+  andThen(function() {
+    equal(currentRouteName(), 'play.type');
+    equal(currentPath(), 'play.type');
+    equal(currentURL(), '/play/type');
+  });
   andThen(function() {
     window.history.back();
   });
@@ -92,10 +110,22 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
+});
+
+test('coming from elsewhere than /play/read redirects [from /play/ok then home then back]',
+     function() {
+  expect(6);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
   click('#home');
+  andThen(function() {
+    equal(currentRouteName(), 'index');
+    equal(currentPath(), 'index');
+    equal(currentURL(), '/');
+  });
   andThen(function() {
     window.history.back();
   });

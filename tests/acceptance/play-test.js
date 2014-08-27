@@ -32,7 +32,7 @@ test('play renders', function() {
     equal(sNetstatus.attr('class'), 'checking');
 
     equal(aHome.text(), 'Home');
-    equal(aHome.attr('href'), '/');
+    equal(aHome.attr('href'), '#/');
   });
 });
 

@@ -33,7 +33,7 @@ test('play/type renders', function() {
     equal(sNetstatus.attr('class'), 'checking');
 
     equal(aHome.text(), 'Home');
-    equal(aHome.attr('href'), '/');
+    equal(aHome.attr('href'), '#/');
 
     equal(pInstructions.text(), 'Type the sentence as you remember it:');
 
@@ -66,8 +66,8 @@ test('navigate to home', function() {
   });
 });
 
-test('coming from elsewhere than /play/read redirects', function() {
-  expect(15);
+test('coming from elsewhere than /play/ok redirects [from /]', function() {
+  expect(3);
 
   cancelPlayTime(App);
 
@@ -78,6 +78,12 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
+});
+
+test('coming from elsewhere than /play/ok redirects [from /play/read]', function() {
+  expect(3);
+
+  cancelPlayTime(App);
 
   visit('/');
   visit('/play/read');
@@ -87,11 +93,23 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
+});
+
+test('coming from elsewhere than /play/ok redirects [from /play/type then home then back]',
+     function() {
+  expect(6);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
   visit('/play/type');
   click('#home');
+  andThen(function() {
+    equal(currentRouteName(), 'index');
+    equal(currentPath(), 'index');
+    equal(currentURL(), '/');
+  });
   andThen(function() {
     window.history.back();
   });
@@ -100,6 +118,13 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
+});
+
+test('coming from elsewhere than /play/ok redirects [from /play/type then send then back]',
+     function() {
+  expect(6);
+
+  cancelPlayTime(App);
 
   visit('/play/read');
   visit('/play/ok');
@@ -119,3 +144,5 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentURL(), '/play/read');
   });
 });
+
+// TODO: add test for read > ok > type > send > back and check the countdown works
