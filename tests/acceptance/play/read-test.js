@@ -1,4 +1,5 @@
 import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+import startPlayTime from 'appkit/tests/helpers/start-play-time';
 
 var App;
 
@@ -111,23 +112,60 @@ test('navigate from home to play and back', function() {
 test("read transitions to ok after X seconds, and countdown has reached 0", function() {
   expect(5);
 
-  var duration = 1,
+  var now = 0,
+      duration = 1,
       precision = 4,
       controller = App.__container__.lookup('controller:play/read');
 
   controller.set('duration', duration);
   controller.set('precision', precision);
-  var now = Date.now();
+
+  cancelPlayTime(App);
   visit('/play/read');
+  andThen(function() {
+    now = Date.now();
+    startPlayTime(App);
+  });
   andThen(function() {
     equal(currentRouteName(), 'play.ok');
     equal(currentPath(), 'play.ok');
     equal(currentURL(), '/play/ok');
 
-    equal(controller.get('countdown'), 0.25);
-    // Less than 200ms difference, allowing for runtime imprecisions
-    ok(Math.abs(Date.now() - now - duration * 1000) < 200);
+    var countdown = controller.get('countdown');
+    ok(countdown === 1 / precision || countdown === 0);
+    // Less than 50ms difference, allowing for runtime imprecisions
+    ok(Math.abs(Date.now() - now - duration * 1000) < 50);
   });
 });
 
-// TODO: test it cancels the countdown if transitioned out of this route
+test("countdown is cancelled if we transition out of play/read", function() {
+  expect(1);
+
+  var duration = 2,
+      precision = 4,
+      route = App.__container__.lookup('route:play/read'),
+      controller = App.__container__.lookup('controller:play/read');
+
+  controller.set('duration', duration);
+  controller.set('precision', precision);
+
+  cancelPlayTime(App);
+  visit('/play/read');
+  andThen(function() {
+    startPlayTime(App);
+    Ember.run.later(this, function() {
+      route.transitionTo('/');
+    }, duration * 1000 / 4);
+  });
+  return new Ember.RSVP.Promise(function(resolve, reject) {
+    controller.reopen({
+      actions: {
+        cancelCountdown: function() {
+          console.log(this.get('countdown'));
+          ok(this.get('countdown') > duration / 2);
+          resolve(true);
+        }
+      }
+    });
+  });
+});
