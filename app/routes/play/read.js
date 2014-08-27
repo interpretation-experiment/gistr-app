@@ -3,8 +3,7 @@ import TracingRoute from 'appkit/routes/tracing-route';
 // TODO[after backend]: model should be recreated each time we enter here
 export default TracingRoute.extend({
   setupController: function(controller, sentence) {
-    controller.set('model', sentence);
-
+    this._super(controller, sentence);
     if (this.get('startCountdown')) {
       this._startCountdown(controller);
     }
