@@ -12,7 +12,7 @@ export default TracingRoute.extend({
   },
 
   _sendSentence: function() {
-    // TODO[after backend]
+    // TODO[after backend]: send sentence
     // sends the sentence
     // waits for answer
     // transitions to play/read
