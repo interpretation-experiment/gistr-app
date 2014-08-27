@@ -168,3 +168,55 @@ test("countdown is cancelled if we transition out of play/read", function() {
     });
   });
 });
+
+test('countdown is launched even when doing read > ok > type > send > back button',
+    function() {
+  expect(6);
+
+  var route = App.__container__.lookup('route:play/read'),
+      controller = App.__container__.lookup('controller:play/read'),
+      timesEntered = 0,
+      lastEnterTime = 0;
+
+  route._didTransitionWrapped = route._didTransition;
+  route._didTransition = function() {
+    lastEnterTime = Date.now();
+    timesEntered += 1;
+    this._didTransitionWrapped();
+  };
+
+  activatePlayTime(App, false);
+
+  visit('/play/read');  // Entered once
+  visit('/play/ok');
+  visit('/play/type');
+  andThen(function() {
+    activatePlayTime(App, true, 2, 4);
+  });
+  andThen(function() {
+    click('button[name=send]');  // Entered twice
+
+    // After one second, back button is hit
+    Ember.run.later(this, function() {
+      window.history.back();  // Entered three times
+    }, 1000);
+
+    // So after two seconds, we're still over one second in the countdown
+    Ember.run.later(this, function() {
+      // Since we're over one second (but not too much over that we're above 1.25),
+      // the ceiling function in countdown gives us 1.25
+      equal(controller.get('countdown'), 1.25);
+    }, 2000);
+  });
+
+  // After all this, we're at ok with the right timing
+  andThen(function() {
+    equal(currentRouteName(), 'play.ok');
+    equal(currentPath(), 'play.ok');
+    equal(currentURL(), '/play/ok');
+
+    equal(timesEntered, 3);
+    // Allowing for 50ms difference (since this does NOT include rendering)
+    ok(Math.abs(Date.now() - lastEnterTime - 2000) < 50);
+  });
+});
