@@ -59,7 +59,7 @@ test('navigate to home', function() {
 });
 
 test('coming from elsewhere than /play/read redirects', function() {
-  expect(6);
+  expect(12);
 
   cancelPlayTime(App);
 
@@ -80,6 +80,28 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
-  // FIXME[search back button]: add a test for read->ok->type and back button
-  // FIXME[search back button]: add a test for read->ok->home and back button
+
+  visit('/play/read');
+  visit('/play/ok');
+  visit('/play/type');
+  andThen(function() {
+    window.history.back();
+  });
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
+
+  visit('/play/read');
+  visit('/play/ok');
+  click('#home');
+  andThen(function() {
+    window.history.back();
+  });
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
 });

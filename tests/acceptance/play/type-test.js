@@ -91,7 +91,7 @@ test('coming from elsewhere than /play/read redirects', function() {
   visit('/play/read');
   visit('/play/ok');
   visit('/play/type');
-  visit('/');
+  click('#home');
   andThen(function() {
     window.history.back();
   });
