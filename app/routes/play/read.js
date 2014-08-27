@@ -24,10 +24,8 @@ export default TracingRoute.extend({
     this.controller.send('cancelCountdown');
   },
 
-  // FIXME: test
   startCountdown: true,
 
-  // FIXME: test
   _startCountdown: function(controller) {
     controller.send('startCountdown', this, function() {
       this.transitionTo('play.ok');
