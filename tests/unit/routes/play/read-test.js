@@ -14,23 +14,6 @@ test("it exists and is a tracing route", function() {
   ok(this.subject() instanceof TracingRoute);
 });
 
-test("setupController sets up the model", function() {
-  expect(1);
-  var sentence = { text: 'dummy text' },
-      route = this.subject(),
-      controller = route.controllerFor('play/read');
-
-  // Neutralize the countdown starting
-  controller.reopen({
-    actions: {
-      startCountdown: function(route, callback) { }
-    }
-  });
-
-  route.setupController(controller, sentence);
-  deepEqual(controller.get('model'), sentence);
-});
-
 test("_startCountdown ultimately sends startCountdown to controller", function() {
   expect(1);
   var route = this.subject(),
@@ -67,7 +50,7 @@ test("_startCountdown ultimately transitions to play.ok", function() {
   route._startCountdown(controller);
 });
 
-test("setupController calls _startCountdown, but not if startCountdown is false", function() {
+test("_didTransition calls _startCountdown, but not if startCountdown is false", function() {
   expect(1);
   var route = this.subject(),
       controller = route.controllerFor('play/read');
@@ -77,13 +60,10 @@ test("setupController calls _startCountdown, but not if startCountdown is false"
   };
 
   route.startCountdown = false;
-  route.setupController(controller);
+  route._didTransition();
   route.startCountdown = true;
-  route.setupController(controller);
+  route._didTransition();
 });
-
-// Testing willTransition action is covered by acceptance tests, since it ultimately
-// needs a full-blown router.
 
 test("_willTransition sends cancelCountdown to controller", function() {
   expect(2);
