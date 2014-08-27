@@ -12,7 +12,7 @@ module('Acceptances - Play/Type', {
 });
 
 test('play/type renders', function() {
-  expect(11);
+  expect(9);
 
   cancelPlayTime(App);
 
@@ -24,7 +24,6 @@ test('play/type renders', function() {
     var sNetstatus = pNetstatus.find('span');
     var aHome = find('a#home');
     var pInstructions = find('p#instructions');
-    var fForm = find('form');
     var taText = find('textarea[name=text]');
     var bSend = find('button[name=send]');
 
@@ -37,9 +36,6 @@ test('play/type renders', function() {
     equal(aHome.attr('href'), '/');
 
     equal(pInstructions.text(), 'Type the sentence as you remember it:');
-
-    equal(fForm.attr('action'), '#');
-    equal(fForm.attr('method'), 'post');
 
     equal(taText.attr('autofocus'), 'autofocus');
 
@@ -71,7 +67,7 @@ test('navigate to home', function() {
 });
 
 test('coming from elsewhere than /play/read redirects', function() {
-  expect(6);
+  expect(15);
 
   cancelPlayTime(App);
 
@@ -91,6 +87,35 @@ test('coming from elsewhere than /play/read redirects', function() {
     equal(currentPath(), 'play.read');
     equal(currentURL(), '/play/read');
   });
-  // FIXME[search back button]: add a test for read->ok->type->home and back button
-  // FIXME[search back button]: add a test for read->ok->type->next and back button
+
+  visit('/play/read');
+  visit('/play/ok');
+  visit('/play/type');
+  visit('/');
+  andThen(function() {
+    window.history.back();
+  });
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
+
+  visit('/play/read');
+  visit('/play/ok');
+  visit('/play/type');
+  click('button[name=send]');
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
+  andThen(function() {
+    window.history.back();
+  });
+  andThen(function() {
+    equal(currentRouteName(), 'play.read');
+    equal(currentPath(), 'play.read');
+    equal(currentURL(), '/play/read');
+  });
 });

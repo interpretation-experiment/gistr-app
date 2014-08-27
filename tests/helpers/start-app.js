@@ -12,7 +12,7 @@ function startApp(attrs) {
   }, attrs); // but you can override;
 
   Router.reopen({
-    location: 'none'
+    location: 'history'
   });
 
   Ember.run(function(){
