@@ -17,7 +17,6 @@ export default TracingRoute.extend({
     // waits for answer
     // transitions to play/read
     // and test this
-    console.log('sends the sentence');
     this.transitionTo('play.read');
   }
 });

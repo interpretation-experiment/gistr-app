@@ -161,7 +161,6 @@ test("countdown is cancelled if we transition out of play/read", function() {
     controller.reopen({
       actions: {
         cancelCountdown: function() {
-          console.log(this.get('countdown'));
           ok(this.get('countdown') > duration / 2);
           resolve(true);
         }
