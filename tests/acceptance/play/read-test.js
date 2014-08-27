@@ -1,4 +1,4 @@
-import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+import activatePlayTime from 'appkit/tests/helpers/activate-play-time';
 import startPlayTime from 'appkit/tests/helpers/start-play-time';
 
 var App;
@@ -91,7 +91,7 @@ test('play/read renders', function() {
 test('navigate from home to play and back', function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/');
   click('#play');
@@ -120,7 +120,7 @@ test("read transitions to ok after X seconds, and countdown has reached 0", func
   controller.set('duration', duration);
   controller.set('precision', precision);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
   visit('/play/read');
   andThen(function() {
     now = Date.now();
@@ -149,7 +149,7 @@ test("countdown is cancelled if we transition out of play/read", function() {
   controller.set('duration', duration);
   controller.set('precision', precision);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
   visit('/play/read');
   andThen(function() {
     startPlayTime(App);

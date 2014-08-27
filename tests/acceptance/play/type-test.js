@@ -1,4 +1,4 @@
-import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+import activatePlayTime from 'appkit/tests/helpers/activate-play-time';
 
 var App;
 
@@ -15,7 +15,7 @@ test('play/type renders', function() {
   expect(8);
   //expect(9);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -49,7 +49,7 @@ test('play/type renders', function() {
 test('navigate to home', function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -71,7 +71,7 @@ test('navigate to home', function() {
 test('coming from elsewhere than /play/ok redirects [from /]', function() {
   expect(3);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/');
   visit('/play/type');
@@ -85,7 +85,7 @@ test('coming from elsewhere than /play/ok redirects [from /]', function() {
 test('coming from elsewhere than /play/ok redirects [from /play/read]', function() {
   expect(3);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/');
   visit('/play/read');
@@ -101,7 +101,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then home t
      function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -126,7 +126,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then send t
      function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -146,5 +146,3 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then send t
     equal(currentURL(), '/play/read');
   });
 });
-
-// TODO: add test for read > ok > type > send > back and check the countdown works

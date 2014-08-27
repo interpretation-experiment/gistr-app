@@ -1,4 +1,4 @@
-import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+import activatePlayTime from 'appkit/tests/helpers/activate-play-time';
 
 var App;
 
@@ -14,7 +14,7 @@ module('Acceptances - Play', {
 test('play renders', function() {
   expect(8);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play');
   andThen(function() {
@@ -39,7 +39,7 @@ test('play renders', function() {
 test('navigate from home to play and back', function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/');
   click('#play');
@@ -60,7 +60,7 @@ test('navigate from home to play and back', function() {
 test('navigate directly to play', function() {
   expect(3);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play');
   andThen(function() {

@@ -1,4 +1,4 @@
-import cancelPlayTime from 'appkit/tests/helpers/cancel-play-time';
+import activatePlayTime from 'appkit/tests/helpers/activate-play-time';
 
 var App;
 
@@ -14,7 +14,7 @@ module('Acceptances - Play/Ok', {
 test('play/ok renders', function() {
   expect(7);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -40,7 +40,7 @@ test('play/ok renders', function() {
 test('navigate to home', function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -61,7 +61,7 @@ test('navigate to home', function() {
 test('coming from elsewhere than /play/read redirects [from /]', function() {
   expect(3);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/');
   visit('/play/ok');
@@ -75,7 +75,7 @@ test('coming from elsewhere than /play/read redirects [from /]', function() {
 test('coming from elsewhere than /play/read redirects [from /play/type]', function() {
   expect(3);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -92,7 +92,7 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then /play/
      function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
@@ -116,7 +116,7 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then home t
      function() {
   expect(6);
 
-  cancelPlayTime(App);
+  activatePlayTime(App, false);
 
   visit('/play/read');
   visit('/play/ok');
