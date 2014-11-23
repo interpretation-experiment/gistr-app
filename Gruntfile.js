@@ -128,7 +128,7 @@ module.exports = function(grunt) {
 
   // Testing
   // -------
-  grunt.registerTask('test', "Run your apps's tests once. Uses Google Chrome by default.", [
+  grunt.registerTask('test', "Run your apps's tests once.", [
                      'clean:debug', 'build:debug', 'testem:ci:basic' ]);
 
   grunt.registerTask('test:ci', "Run your app's tests in PhantomJS. For use in continuous integration (i.e. Travis CI).", [
