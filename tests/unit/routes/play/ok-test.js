@@ -1,8 +1,8 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import PlayOkRoute from 'appkit/routes/play/ok';
-import TracingRoute from 'appkit/routes/tracing-route';
+import PlayOkRoute from 'gistr-app/routes/play/ok';
+import TracingRoute from 'gistr-app/routes/tracing-route';
 
 moduleFor('route:play/ok', "Unit - PlayOkRoute");
 

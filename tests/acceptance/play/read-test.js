@@ -1,5 +1,7 @@
-import activatePlayTime from 'appkit/tests/helpers/activate-play-time';
-import startPlayTime from 'appkit/tests/helpers/start-play-time';
+import Ember from 'ember';
+
+import activatePlayTime from '../../helpers/activate-play-time';
+import startPlayTime from '../../helpers/start-play-time';
 
 var App;
 

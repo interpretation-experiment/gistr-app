@@ -6,13 +6,13 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  //this.route('about');
-  //this.route('settings');
-  //this.resource('play', function() {
-    //this.route('read');
-    //this.route('ok');
-    //this.route('type');
-  //});
+  this.route('about');
+  this.route('settings');
+  this.resource('play', function() {
+    this.route('read');
+    this.route('ok');
+    this.route('type');
+  });
 });
 
 export default Router;

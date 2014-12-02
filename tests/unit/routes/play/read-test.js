@@ -1,8 +1,8 @@
 import { test, moduleFor } from 'ember-qunit';
+import Ember from 'ember';
 
-
-import PlayReadRoute from 'appkit/routes/play/read';
-import TracingRoute from 'appkit/routes/tracing-route';
+import PlayReadRoute from 'gistr-app/routes/play/read';
+import TracingRoute from 'gistr-app/routes/tracing-route';
 
 moduleFor('route:play/read', "Unit - PlayReadRoute", {
   needs: ['controller:play/read']

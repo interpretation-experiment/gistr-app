@@ -1,4 +1,4 @@
-import TracingRoute from 'appkit/routes/tracing-route';
+import TracingRoute from '../tracing-route';
 
 // TODO[after backend]: model should be recreated each time we enter here
 export default TracingRoute.extend({

@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import ApplicationController from 'appkit/controllers/application';
+import ApplicationController from 'gistr-app/controllers/application';
 
 moduleFor('controller:application', 'Unit - ApplicationController');
 

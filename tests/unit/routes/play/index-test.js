@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import PlayIndexRoute from 'appkit/routes/play/index';
+import PlayIndexRoute from 'gistr-app/routes/play/index';
 
 moduleFor('route:play/index', "Unit - PlayIndexRoute");
 

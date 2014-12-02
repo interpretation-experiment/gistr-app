@@ -1,4 +1,5 @@
-import ceiling from 'appkit/utils/ceiling';
+import Ember from 'ember';
+import ceiling from '../../utils/ceiling';
 
 export default Ember.ObjectController.extend({
   actions: {

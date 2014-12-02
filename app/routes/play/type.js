@@ -1,4 +1,4 @@
-import TracingRoute from 'appkit/routes/tracing-route';
+import TracingRoute from '../tracing-route';
 
 export default TracingRoute.extend({
   authorizedOrigins: ['play.ok'],

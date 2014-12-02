@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
+import Ember from 'ember';
 
-
-import PlayReadController from 'appkit/controllers/play/read';
+import PlayReadController from 'gistr-app/controllers/play/read';
 
 moduleFor('controller:play/read', "Unit - PlayReadController");
 

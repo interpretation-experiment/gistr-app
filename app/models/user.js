@@ -1,3 +1,5 @@
+import DS from 'ember-data';
+
 // FIXME: Not unit-tested, because runs into errors. See 'test-models' branch.
 var User = DS.Model.extend({
   nickname: DS.attr('string'),

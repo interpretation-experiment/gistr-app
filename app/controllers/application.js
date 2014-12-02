@@ -1,3 +1,5 @@
+import Ember from 'ember';
+
 export default Ember.Controller.extend({
   netstatus: 'checking',
 
@@ -17,12 +19,13 @@ export default Ember.Controller.extend({
       // TODO[after backend]: change this url to the backend url
       url: window.location.origin,
       type: 'HEAD'
-    }).done(function(data, status, xhr) {
-      if (status === 'success')
+    }).done(function(data, status/*, xhr*/) {
+      if (status === 'success') {
         that.setOnline();
-      else
+      } else {
         that.setOffline();
-    }).fail(function(xhr, status, error) {
+      }
+    }).fail(function(/*xhr, status, error*/) {
       that.setOffline();
     });
   },
