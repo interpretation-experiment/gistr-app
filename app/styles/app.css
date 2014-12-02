@@ -1,0 +1,15 @@
+html, body {
+    margin: 20px;
+}
+
+p#netstatus span.checking {
+  color: #b70;
+}
+
+p#netstatus span.online {
+  color: #180;
+}
+
+p#netstatus span.offline {
+  color: #80a;
+}
