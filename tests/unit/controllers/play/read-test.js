@@ -58,8 +58,8 @@ test("_startCountdown starts transitionTimer with proper delay, " +
       ok(true);
       // called in the right context
       ok(this.goodContext);
-      // less than 5ms difference, allowing for runtime imprecisions
-      ok(Math.abs(Date.now() - now - 250) < 5);
+      // less than 10ms difference, allowing for runtime imprecisions
+      ok(Math.abs(Date.now() - now - 250) < 10);
       // resolve promise to close test
       resolve(true);
     };

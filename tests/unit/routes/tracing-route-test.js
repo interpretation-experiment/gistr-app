@@ -110,7 +110,7 @@ test("it always throws an error if authorizedOrigins is defined but not a list "
   transition.originName = 'unauthed-route';
   tracingRoute.authorizedOrigins = 'not-a-list';
   tracingRoute.unauthorizedOriginRedirect = 'redirect-route';
-  raises(function() {
+  throws(function() {
     tracingRoute.beforeModel(transition);
   }, "has defined 'authorizedOrigins' but it's not a list");
 
@@ -134,13 +134,13 @@ test("it always throws an error if authorizedOrigins is defined " +
   transition.originName = 'unauthed-route';
   tracingRoute.authorizedOrigins = ['authed-route1', 'authed-route2'];
   // Don't define unauthorizedOriginRedirect
-  raises(function() {
+  throws(function() {
     tracingRoute.beforeModel(transition);
   }, "has defined 'authorizedOrigins' but no 'unauthorizedOriginRedirect'");
 
   // An authorized route
   transition.originName = 'authed-route1';
-  raises(function() {
+  throws(function() {
     tracingRoute.beforeModel(transition);
   }, "has defined 'authorizedOrigins' but no 'unauthorizedOriginRedirect'");
 });

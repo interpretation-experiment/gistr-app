@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import startApp from '../helpers/start-app';
 import activatePlayTime from '../helpers/activate-play-time';
 
 var App;

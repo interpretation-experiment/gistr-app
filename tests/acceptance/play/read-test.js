@@ -1,5 +1,5 @@
 import Ember from 'ember';
-
+import startApp from '../../helpers/start-app';
 import activatePlayTime from '../../helpers/activate-play-time';
 import startPlayTime from '../../helpers/start-play-time';
 
@@ -135,8 +135,8 @@ test("read transitions to ok after X seconds, and countdown has reached 0", func
 
     var countdown = controller.get('countdown');
     ok(countdown === 1 / precision || countdown === 0);
-    // Less than 50ms difference, allowing for runtime imprecisions
-    ok(Math.abs(Date.now() - now - duration * 1000) < 50);
+    // Less than 300ms difference, allowing for runtime imprecisions
+    ok(Math.abs(Date.now() - now - duration * 1000) < 300);
   });
 });
 
@@ -218,7 +218,7 @@ test('countdown is launched even when doing read > ok > type > send > back butto
     equal(currentURL(), '/play/ok');
 
     equal(timesEntered, 3);
-    // Allowing for 50ms difference (since this does NOT include rendering)
-    ok(Math.abs(Date.now() - lastEnterTime - 2000) < 50);
+    // Allowing for 300ms difference (since this does NOT include rendering)
+    ok(Math.abs(Date.now() - lastEnterTime - 2000) < 300);
   });
 });

@@ -20,11 +20,7 @@ export default Ember.Controller.extend({
       url: window.location.origin,
       type: 'HEAD'
     }).done(function(data, status/*, xhr*/) {
-      if (status === 'success') {
-        that.setOnline();
-      } else {
-        that.setOffline();
-      }
+      that.setOnline();
     }).fail(function(/*xhr, status, error*/) {
       that.setOffline();
     });
