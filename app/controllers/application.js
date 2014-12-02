@@ -19,7 +19,7 @@ export default Ember.Controller.extend({
       // TODO[after backend]: change this url to the backend url
       url: window.location.origin,
       type: 'HEAD'
-    }).done(function(data, status/*, xhr*/) {
+    }).done(function(/*data, status, xhr*/) {
       that.setOnline();
     }).fail(function(/*xhr, status, error*/) {
       that.setOffline();
