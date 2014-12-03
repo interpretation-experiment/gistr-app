@@ -30,7 +30,7 @@ test('about renders', function() {
     equal(sNetstatus.attr('class'), 'checking');
 
     equal(aBack.text(), 'Back');
-    equal(aBack.attr('href'), '#/');
+    equal(aBack.attr('href'), '/');
 
     equal(hTitle.text(), 'About Gistr');
 

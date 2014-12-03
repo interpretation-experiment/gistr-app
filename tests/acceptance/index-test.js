@@ -34,7 +34,7 @@ test('index renders', function() {
     equal(hTitle.text(), 'Gistr');
 
     equal(aPlay.text(), 'Play');
-    equal(aPlay.attr('href'), '#/play');
+    equal(aPlay.attr('href'), '/play');
 
     equal(aLike.text(), 'Like');
     equal(aLike.attr('href'), '#');
@@ -43,9 +43,9 @@ test('index renders', function() {
     equal(aShare.attr('href'), '#');
 
     equal(aAbout.text(), 'About');
-    equal(aAbout.attr('href'), '#/about');
+    equal(aAbout.attr('href'), '/about');
 
     equal(aSettings.text(), 'Settings');
-    equal(aSettings.attr('href'), '#/settings');
+    equal(aSettings.attr('href'), '/settings');
   });
 });

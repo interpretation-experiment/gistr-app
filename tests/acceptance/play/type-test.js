@@ -36,7 +36,7 @@ test('play/type renders', function() {
     equal(sNetstatus.attr('class'), 'checking');
 
     equal(aHome.text(), 'Home');
-    equal(aHome.attr('href'), '#/');
+    equal(aHome.attr('href'), '/');
 
     equal(pInstructions.text(), 'Type the sentence as you remember it:');
 
@@ -115,7 +115,11 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then home t
     equal(currentURL(), '/');
   });
   andThen(function() {
-    window.history.back();
+    // This should be window.history.back();
+    // But, dong so needs the router to use HashLocation for testing in browser,
+    // which in turn makes the test server hang for an unknown reason.
+    // So falling back to this for now.
+    visit('/play/type');
   });
   andThen(function() {
     equal(currentRouteName(), 'play.read');
@@ -140,7 +144,11 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then send t
     equal(currentURL(), '/play/read');
   });
   andThen(function() {
-    window.history.back();
+    // This should be window.history.back();
+    // But, dong so needs the router to use HashLocation for testing in browser,
+    // which in turn makes the test server hang for an unknown reason.
+    // So falling back to this for now.
+    visit('/play/type');
   });
   andThen(function() {
     equal(currentRouteName(), 'play.read');
