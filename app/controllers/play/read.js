@@ -32,8 +32,9 @@ export default Ember.ObjectController.extend({
 
   _updateCountdown: function() {
     var now = Date.now(),
-        diff = now - (this.get('lastNow') || now),
-        countdownPrecise = (this.get('countdownPrecise') || this.get('duration')) -
+        diff = now - this.getWithDefault('lastNow', now),
+        countdownPrecise = this.getWithDefault('countdownPrecise',
+                                               this.get('duration')) -
                            diff / 1000;
 
     this.set('lastNow', now);

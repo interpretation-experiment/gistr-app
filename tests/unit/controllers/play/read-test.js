@@ -88,25 +88,22 @@ test("_updateCountdown gets default values for lastNow " +
   ok(controller.get('countdownPrecise') === controller.get('duration'));
 });
 
-//test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", function() {
-  //expect(2);
+test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", function() {
+  expect(3);
 
-  //var controller = this.subject();
+  var controller = this.subject();
 
-  //// Manually set content since it's not injected
-  //controller.set('content', {});
+  // Manually set content since it's not injected
+  controller.set('content', {});
 
-  //controller.set('lastNow', Date.now() - 50);
-  //controller.set('countdownPrec', 1);
-  //controller._setCountdown = function(value) {
-    //// less than 5ms difference, allowing for runtime imprecisions
-    //ok(Math.abs(value - 0.95) < 0.005);
-  //};
-  //controller._reschedule = function() {
-    //ok(true);
-  //};
-  //controller._updateCountdown();
-//});
+  controller.set('lastNow', 0);
+  controller.set('countdownPrecise', 1);
+  clock.tick(100);
+  controller._updateCountdown();
+  ok(controller.get('lastNow') === 100);
+  ok(controller.get('countdownPrecise') === 0.9);
+  ok(controller.get('countdown') === 1);
+});
 
 //test("_cancelCountdown cancels transitionTimer", function() {
   //expect(2);
