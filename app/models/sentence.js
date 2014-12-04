@@ -1,4 +1,6 @@
-// WONTFIX: Not unit-tested, because runs into errors. See 'test-models' branch.
+import DS from 'ember-data';
+
+// FIXME: Not unit-tested, because runs into errors. See 'test-models' branch.
 var Sentence = DS.Model.extend({
   author: DS.belongsTo('user'),
   // TODO[after backend send]: add date
@@ -12,6 +14,7 @@ var Sentence = DS.Model.extend({
   text: DS.attr('string')
 });
 
+// FIXME: use mocks instead of fixtures
 Sentence.reopenClass({
   FIXTURES: [
     { id: '1', author: '1', from: null, children: ['2', '3'], text: 'Some first sentence' },

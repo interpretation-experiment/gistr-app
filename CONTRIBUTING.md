@@ -13,7 +13,7 @@ pip install nodeenv
 nodeenv -p              # Install node inside the virtualenv
 
 # Install global dependencies
-npm install -g grunt-cli bower
+npm install -g ember-cli bower phantomjs
 
 # Install local dependencies
 npm install

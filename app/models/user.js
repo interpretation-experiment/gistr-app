@@ -1,9 +1,12 @@
-// WONTFIX: Not unit-tested, because runs into errors. See 'test-models' branch.
+import DS from 'ember-data';
+
+// FIXME: Not unit-tested, because runs into errors. See 'test-models' branch.
 var User = DS.Model.extend({
   nickname: DS.attr('string'),
   sentences: DS.hasMany('sentence')
 });
 
+// FIXME: use mocks instead of fixtures
 User.reopenClass({
   FIXTURES: [
     { id: '1', nickname: 'jane', sentences: ['1', '5'] },
