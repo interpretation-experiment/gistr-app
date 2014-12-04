@@ -76,48 +76,35 @@ test('coming from elsewhere than /play/ok redirects [from /play/read]', function
   visitChain(['/', '/play/read/', '/play/type'], 'play.read');
 });
 
-test('coming from elsewhere than /play/ok redirects [from /play/type then home then back]',
-     function() {
-  expect(2);
 
-  activatePlayTime(App, false);
+var outButtons = {'#home': 'index', 'button[name=send]': 'play.read'},
+    outButton,
+    outRoute,
+    redirectTest = function() {
+      expect(2);
 
-  visitChain(['/play/read/', '/play/ok', '/play/type']);
-  click('#home');
-  andThen(function() {
-    equal(currentRouteName(), 'index');
-  });
-  andThen(function() {
-    // This should be window.history.back();
-    // But, dong so needs the router to use HashLocation for testing in browser,
-    // which in turn makes the test server hang for an unknown reason.
-    // So falling back to this for now.
-    visit('/play/type');
-  });
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-  });
-});
+      activatePlayTime(App, false);
 
-test('coming from elsewhere than /play/ok redirects [from /play/type then send then back]',
-     function() {
-  expect(2);
+      visitChain(['/play/read/', '/play/ok', '/play/type']);
+      click(outButton);
+      andThen(function() {
+        equal(currentRouteName(), outRoute);
+      });
+      andThen(function() {
+        // This should be window.history.back();
+        // But, dong so needs the router to use HashLocation for testing in browser,
+        // which in turn makes the test server hang for an unknown reason.
+        // So falling back to this for now.
+        visit('/play/type');
+      });
+      andThen(function() {
+        equal(currentRouteName(), 'play.read');
+      });
+    };
 
-  activatePlayTime(App, false);
+for (outButton in outButtons) {
+  outRoute = outButtons[outButton];
 
-  visitChain(['/play/read/', '/play/ok', '/play/type']);
-  click('button[name=send]');
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-  });
-  andThen(function() {
-    // This should be window.history.back();
-    // But, dong so needs the router to use HashLocation for testing in browser,
-    // which in turn makes the test server hang for an unknown reason.
-    // So falling back to this for now.
-    visit('/play/type');
-  });
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-  });
-});
+  test('coming from elsewhere than /play/ok redirects [from /play/type then ' +
+       outButton + ' then back]', redirectTest);
+}
