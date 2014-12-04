@@ -60,12 +60,12 @@ test("_startCountdown starts transitionTimer and renderTimer with proper delay, 
   controller._startCountdown(context, callback);
   ok(!!controller.get('transitionTimer'));
   ok(!!controller.get('renderTimer'));
-  ok(controller._updateCountdown.callCount === 1);
+  equal(controller._updateCountdown.callCount, 1);
 
   // Tick to just before the timer triggers
   clock.tick(duration * 1000 - 1);
-  ok(callback.callCount === 0);
-  ok(controller._updateCountdown.callCount === duration * precision);
+  equal(callback.callCount, 0);
+  equal(controller._updateCountdown.callCount, duration * precision);
 
   // Trigger the timer
   clock.tick(1);
@@ -81,11 +81,11 @@ test("_updateCountdown gets default values for lastNow " +
   // Manually set content since it's not injected
   controller.set('content', {});
 
-  ok(controller.get('lastNow') === undefined);
-  ok(controller.get('countdownPrecise') === undefined);
+  equal(controller.get('lastNow'), undefined);
+  equal(controller.get('countdownPrecise'), undefined);
   controller._updateCountdown();
-  ok(controller.get('lastNow') === 0);
-  ok(controller.get('countdownPrecise') === controller.get('duration'));
+  equal(controller.get('lastNow'), 0);
+  equal(controller.get('countdownPrecise'), controller.get('duration'));
 });
 
 test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", function() {
@@ -100,40 +100,34 @@ test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", f
   controller.set('countdownPrecise', 1);
   clock.tick(100);
   controller._updateCountdown();
-  ok(controller.get('lastNow') === 100);
-  ok(controller.get('countdownPrecise') === 0.9);
-  ok(controller.get('countdown') === 1);
+  equal(controller.get('lastNow'), 100);
+  equal(controller.get('countdownPrecise'), 0.9);
+  equal(controller.get('countdown'), 1);
 });
 
-//test("_cancelCountdown cancels transitionTimer", function() {
-  //expect(2);
+test("_cancelCountdown cancels transitionTimer", function() {
+  expect(3);
 
-  //var controller = this.subject(),
-      //transitionTimerHasRun = false;
+  var controller = this.subject(),
+      callback = sinon.spy();
 
-  //controller.set('content', {});
-  //// Set a transitionTimer that fails the test
-  //var transitionTimer = Ember.run.later(this, function() {
-    //transitionTimerHasRun = true;
-  //}, 10);
-  //controller.set('transitionTimer', transitionTimer);
+  // Manually set content since it's not injected
+  controller.set('content', {});
 
-  //return new Ember.RSVP.Promise(function(resolve, reject) {
-    //// Set a timer to check transitionTimer was cancelled
-    //Ember.run.later(this, function() {
-      //if (transitionTimerHasRun) {
-        //reject('transitionTimer should be cancelled');
-      //} else {
-        //resolve('transitionTimer was cancelled');
-        //ok(true);
-      //}
-    //}, 20);
+  // Set a transitionTimer that should not run
+  var transitionTimer = setTimeout(Ember.run.bind(this, callback), 10);
+  controller.set('transitionTimer', transitionTimer);
 
-    //// launch cancellation of timer
-    //controller._cancelCountdown();
-    //equal(controller.get('transitionTimer'), undefined);
-  //});
-//});
+  // Tick halfway through and cancel timer
+  clock.tick(5);
+  equal(callback.callCount, 0);
+  controller._cancelCountdown();
+
+  // Tick all the way through and over
+  clock.tick(10);
+  equal(callback.callCount, 0);
+  equal(controller.get('transitionTimer'), undefined);
+});
 
 //test("_cancelCountdown cancels renderTimer", function() {
   //expect(2);
