@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import startApp from '../../helpers/start-app';
 import activatePlayTime from '../../helpers/activate-play-time';
+import visitChain from '../../helpers/visit-chain';
 
 var App;
 
@@ -19,9 +20,7 @@ test('play/type renders', function() {
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  visit('/play/type');
+  visitChain(['/play/read', '/play/ok', '/play/type']);
   andThen(function() {
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
@@ -53,12 +52,7 @@ test('navigate to home', function() {
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  visit('/play/type');
-  andThen(function() {
-    equal(currentRouteName(), 'play.type');
-  });
+  visitChain(['/play/read', '/play/ok', '/play/type'], 'play.type');
 
   click('#home');
   andThen(function() {
@@ -71,11 +65,7 @@ test('coming from elsewhere than /play/ok redirects [from /]', function() {
 
   activatePlayTime(App, false);
 
-  visit('/');
-  visit('/play/type');
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-  });
+  visitChain(['/', '/play/type'], 'play.read');
 });
 
 test('coming from elsewhere than /play/ok redirects [from /play/read]', function() {
@@ -83,12 +73,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/read]', function
 
   activatePlayTime(App, false);
 
-  visit('/');
-  visit('/play/read');
-  visit('/play/type');
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-  });
+  visitChain(['/', '/play/read/', '/play/type'], 'play.read');
 });
 
 test('coming from elsewhere than /play/ok redirects [from /play/type then home then back]',
@@ -97,9 +82,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then home t
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  visit('/play/type');
+  visitChain(['/play/read/', '/play/ok', '/play/type']);
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
@@ -122,9 +105,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then send t
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  visit('/play/type');
+  visitChain(['/play/read/', '/play/ok', '/play/type']);
   click('button[name=send]');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
