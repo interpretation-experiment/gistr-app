@@ -38,7 +38,7 @@ test('settings renders', function() {
 });
 
 test('navigate from home to settings and back', function() {
-  expect(6);
+  expect(2);
 
   visit('/');
   click('#settings');

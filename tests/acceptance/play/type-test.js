@@ -49,7 +49,7 @@ test('play/type renders', function() {
 });
 
 test('navigate to home', function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
@@ -67,7 +67,7 @@ test('navigate to home', function() {
 });
 
 test('coming from elsewhere than /play/ok redirects [from /]', function() {
-  expect(3);
+  expect(1);
 
   activatePlayTime(App, false);
 
@@ -79,7 +79,7 @@ test('coming from elsewhere than /play/ok redirects [from /]', function() {
 });
 
 test('coming from elsewhere than /play/ok redirects [from /play/read]', function() {
-  expect(3);
+  expect(1);
 
   activatePlayTime(App, false);
 
@@ -93,7 +93,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/read]', function
 
 test('coming from elsewhere than /play/ok redirects [from /play/type then home then back]',
      function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
@@ -118,7 +118,7 @@ test('coming from elsewhere than /play/ok redirects [from /play/type then home t
 
 test('coming from elsewhere than /play/ok redirects [from /play/type then send then back]',
      function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
