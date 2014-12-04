@@ -23,7 +23,7 @@ export default Ember.ObjectController.extend({
 
     this.set('transitionTimer',
              setTimeout(Ember.run.bind(route, callback), duration * 1000));
-    this.set('renderTimer',
+    this.set('renderInterval',
              setInterval(Ember.run.bind(this, this._updateCountdown),
                          1 + 1000.0 / precision));
 
@@ -33,27 +33,27 @@ export default Ember.ObjectController.extend({
   _updateCountdown: function() {
     var now = Date.now(),
         diff = now - this.getWithDefault('lastNow', now),
-        countdownPrecise = this.getWithDefault('countdownPrecise',
+        preciseCountdown = this.getWithDefault('preciseCountdown',
                                                this.get('duration')) -
                            diff / 1000;
 
     this.set('lastNow', now);
-    this.set('countdownPrecise', countdownPrecise);
-    this.set('countdown', ceiling(countdownPrecise, this.get('precision')));
+    this.set('preciseCountdown', preciseCountdown);
+    this.set('countdown', ceiling(preciseCountdown, this.get('precision')));
   },
 
   _cancelCountdown: function() {
     var transitionTimer = this.get('transitionTimer'),
-        renderTimer = this.get('renderTimer');
+        renderInterval = this.get('renderInterval');
 
     if (!!transitionTimer) {
       clearTimeout(transitionTimer);
       this.set('transitionTimer', undefined);
     }
 
-    if (!!renderTimer) {
-      clearInterval(renderTimer);
-      this.set('renderTimer', undefined);
+    if (!!renderInterval) {
+      clearInterval(renderInterval);
+      this.set('renderInterval', undefined);
     }
   }
 });

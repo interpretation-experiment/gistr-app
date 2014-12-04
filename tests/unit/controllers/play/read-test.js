@@ -39,7 +39,7 @@ test("cancelCountdown calls the right method", function() {
   ok(controller._cancelCountdown.calledOnce);
 });
 
-test("_startCountdown starts transitionTimer and renderTimer with proper delay, " +
+test("_startCountdown starts transitionTimer and renderInterval with proper delay, " +
      "does first countdown update", function() {
   expect(7);
 
@@ -59,7 +59,7 @@ test("_startCountdown starts transitionTimer and renderTimer with proper delay, 
 
   controller._startCountdown(context, callback);
   ok(!!controller.get('transitionTimer'));
-  ok(!!controller.get('renderTimer'));
+  ok(!!controller.get('renderInterval'));
   equal(controller._updateCountdown.callCount, 1);
 
   // Tick to just before the timer triggers
@@ -73,7 +73,7 @@ test("_startCountdown starts transitionTimer and renderTimer with proper delay, 
 });
 
 test("_updateCountdown gets default values for lastNow " +
-     "and countdownPrecise if not set", function() {
+     "and preciseCountdown if not set", function() {
   expect(4);
 
   var controller = this.subject();
@@ -82,13 +82,14 @@ test("_updateCountdown gets default values for lastNow " +
   controller.set('content', {});
 
   equal(controller.get('lastNow'), undefined);
-  equal(controller.get('countdownPrecise'), undefined);
+  equal(controller.get('preciseCountdown'), undefined);
   controller._updateCountdown();
   equal(controller.get('lastNow'), 0);
-  equal(controller.get('countdownPrecise'), controller.get('duration'));
+  equal(controller.get('preciseCountdown'), controller.get('duration'));
 });
 
-test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", function() {
+test("_updateCountdown sets correct lastNow, preciseCountdown, " +
+     "and countdown", function() {
   expect(3);
 
   var controller = this.subject();
@@ -97,12 +98,12 @@ test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", f
   controller.set('content', {});
 
   controller.set('lastNow', 0);
-  controller.set('countdownPrecise', 1);
+  controller.set('preciseCountdown', 1);
   controller.set('precision', 4);
   clock.tick(400);
   controller._updateCountdown();
   equal(controller.get('lastNow'), 400);
-  equal(controller.get('countdownPrecise'), 0.6);
+  equal(controller.get('preciseCountdown'), 0.6);
   equal(controller.get('countdown'), 0.75);
 });
 
@@ -130,7 +131,7 @@ test("_cancelCountdown cancels transitionTimer", function() {
   equal(controller.get('transitionTimer'), undefined);
 });
 
-test("_cancelCountdown cancels renderTimer", function() {
+test("_cancelCountdown cancels renderInterval", function() {
   expect(3);
 
   var controller = this.subject(),
@@ -139,9 +140,9 @@ test("_cancelCountdown cancels renderTimer", function() {
   // Manually set content since it's not injected
   controller.set('content', {});
 
-  // Set a renderTimer that should not run
-  var renderTimer = setInterval(Ember.run.bind(this, callback), 10);
-  controller.set('renderTimer', renderTimer);
+  // Set a renderInterval that should not run
+  var renderInterval = setInterval(Ember.run.bind(this, callback), 10);
+  controller.set('renderInterval', renderInterval);
 
   // Tick a few cycles
   clock.tick(35);
@@ -151,5 +152,5 @@ test("_cancelCountdown cancels renderTimer", function() {
   // Tick more cycles
   clock.tick(45);
   equal(callback.callCount, 3);
-  equal(controller.get('renderTimer'), undefined);
+  equal(controller.get('renderInterval'), undefined);
 });
