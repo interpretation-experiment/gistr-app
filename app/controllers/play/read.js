@@ -18,12 +18,14 @@ export default Ember.ObjectController.extend({
   precision: 1,  // updates per second
 
   _startCountdown: function(route, callback) {
-    var duration = this.get('duration');
+    var duration = this.get('duration'),
+        precision = this.get('precision');
+
     this.set('transitionTimer',
              setTimeout(Ember.run.bind(route, callback), duration * 1000));
     this.set('renderTimer',
              setInterval(Ember.run.bind(this, this._updateCountdown),
-                         1 + 1000.0 / this.get('precision')));
+                         1 + 1000.0 / precision));
 
     this._updateCountdown();
   },
@@ -31,11 +33,12 @@ export default Ember.ObjectController.extend({
   _updateCountdown: function() {
     var now = Date.now(),
         diff = now - (this.get('lastNow') || now),
-        countdownPrec = (this.get('countdownPrec') || this.get('duration')) - diff / 1000;
+        countdownPrecise = (this.get('countdownPrecise') || this.get('duration')) -
+                           diff / 1000;
 
     this.set('lastNow', now);
-    this.set('countdownPrec', countdownPrec);
-    this.set('countdown', ceiling(countdownPrec, this.get('precision')));
+    this.set('countdownPrecise', countdownPrecise);
+    this.set('countdown', ceiling(countdownPrecise, this.get('precision')));
   },
 
   _cancelCountdown: function() {
@@ -48,7 +51,7 @@ export default Ember.ObjectController.extend({
     }
 
     if (!!renderTimer) {
-      clearTimeout(renderTimer);
+      clearInterval(renderTimer);
       this.set('renderTimer', undefined);
     }
   }
