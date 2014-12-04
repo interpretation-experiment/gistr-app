@@ -12,10 +12,10 @@ export default Ember.ObjectController.extend({
   },
 
   // TODO[after backend]: get from params/model
-  duration: 5,
+  duration: 5,   // in seconds
 
   // TODO[after backend]: get from params/model
-  precision: 1,  // n times per second
+  precision: 1,  // updates per second
 
   _startCountdown: function(route, callback) {
     var duration = this.get('duration');
