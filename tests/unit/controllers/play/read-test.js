@@ -98,11 +98,12 @@ test("_updateCountdown sets correct lastNow, countdownPrecise, and countdown", f
 
   controller.set('lastNow', 0);
   controller.set('countdownPrecise', 1);
-  clock.tick(100);
+  controller.set('precision', 4);
+  clock.tick(400);
   controller._updateCountdown();
-  equal(controller.get('lastNow'), 100);
-  equal(controller.get('countdownPrecise'), 0.9);
-  equal(controller.get('countdown'), 1);
+  equal(controller.get('lastNow'), 400);
+  equal(controller.get('countdownPrecise'), 0.6);
+  equal(controller.get('countdown'), 0.75);
 });
 
 test("_cancelCountdown cancels transitionTimer", function() {
@@ -129,91 +130,26 @@ test("_cancelCountdown cancels transitionTimer", function() {
   equal(controller.get('transitionTimer'), undefined);
 });
 
-//test("_cancelCountdown cancels renderTimer", function() {
-  //expect(2);
+test("_cancelCountdown cancels renderTimer", function() {
+  expect(3);
 
-  //var controller = this.subject(),
-      //renderTimerHasRun = false;
+  var controller = this.subject(),
+      callback = sinon.spy();
 
-  //controller.set('content', {});
-  //// Set a renderTimer that fails the test
-  //var renderTimer = Ember.run.later(this, function() {
-    //renderTimerHasRun = true;
-  //}, 10);
-  //controller.set('renderTimer', renderTimer);
+  // Manually set content since it's not injected
+  controller.set('content', {});
 
-  //return new Ember.RSVP.Promise(function(resolve, reject) {
-    //// Set a timer to check renderTimer was cancelled
-    //Ember.run.later(this, function() {
-      //if (renderTimerHasRun) {
-        //reject('renderTimer should be cancelled');
-      //} else {
-        //resolve('renderTimer was cancelled');
-        //ok(true);
-      //}
-    //}, 20);
+  // Set a renderTimer that should not run
+  var renderTimer = setInterval(Ember.run.bind(this, callback), 10);
+  controller.set('renderTimer', renderTimer);
 
-    //// launch cancellation of timer
-    //controller._cancelCountdown();
-    //equal(controller.get('renderTimer'), undefined);
-  //});
-//});
+  // Tick a few cycles
+  clock.tick(35);
+  equal(callback.callCount, 3);
+  controller._cancelCountdown();
 
-//test("_setCountdown sets new countdown value", function() {
-  //expect(2);
-
-  //var controller = this.subject();
-
-  //// Refine precision
-  //controller.set('content', {});
-  //controller.set('precision', 4);
-
-  //controller._setCountdown(1.2);
-  //equal(controller.get('countdownPrec'), 1.2);
-  //equal(controller.get('countdown'), 1.25);
-//});
-
-//test("_reschedule sets lastNow and launches _updateCountdown with proper delay, " +
-     //"iff countdownPrec > 0", function() {
-  //expect(5);
-
-  //var controller = this.subject();
-
-  //// Set negative countdownPrec
-  //controller.set('content', {});
-  //controller.set('countdownPrec', -1);
-
-  //// Nothing happens
-  //controller._reschedule();
-  //equal(controller.get('lastNow'), undefined);
-  //equal(controller.get('renderTimer'), undefined);
-
-  //// Set new positive countdownPrec, and refine precision to speed up test
-  //controller.set('countdownPrec', 1);
-  //controller.set('precision', 4);
-
-  //// It sets lastNow and calls _updateCountdown, setting renderTimer
-
-  //var now = Date.now(),
-      //updateCountdownHasRun = false;
-  //controller._updateCountdown = function() {
-    //updateCountdownHasRun = true;
-    //// less than 5ms difference, allowing for runtime imprecisions
-    //ok(Math.abs(Date.now() - now - 250) < 5);
-    //// less than 5ms difference, allowing for runtime imprecisions
-    //ok(Math.abs(controller.get('lastNow') - now) < 5);
-  //};
-
-  //return new Ember.RSVP.Promise(function(resolve, reject) {
-    //Ember.run.later(this, function() {
-      //if (updateCountdownHasRun) {
-        //resolve('_updateCountdown has run');
-      //} else {
-        //reject('_updateCountdown should have run');
-      //}
-    //}, 300);
-
-    //controller._reschedule();
-    //ok(!!controller.get('renderTimer'));
-  //});
-//});
+  // Tick more cycles
+  clock.tick(45);
+  equal(callback.callCount, 3);
+  equal(controller.get('renderTimer'), undefined);
+});

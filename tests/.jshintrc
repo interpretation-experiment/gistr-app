@@ -5,6 +5,7 @@
     "window",
     "location",
     "setTimeout",
+    "setInterval",
     "$",
     "-Promise",
     "QUnit",
