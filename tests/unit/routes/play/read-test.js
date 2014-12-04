@@ -27,7 +27,7 @@ test("_startCountdown sends startCountdown to controller", function() {
   });
 
   route._startCountdown(controller);
-  ok(callback.called);
+  ok(callback.calledOnce);
 });
 
 test("_startCountdown ultimately transitions to play.ok", function() {
