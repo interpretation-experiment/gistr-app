@@ -21,18 +21,21 @@ export default Ember.ObjectController.extend({
     var duration = this.get('duration');
     this.set('transitionTimer',
              setTimeout(Ember.run.bind(route, callback), duration * 1000));
+    this.set('renderTimer',
+             setInterval(Ember.run.bind(this, this._updateCountdown),
+                         1 + 1000.0 / this.get('precision')));
 
-    this._setCountdown(duration);
-    this._reschedule();
+    this._updateCountdown();
   },
 
   _updateCountdown: function() {
     var now = Date.now(),
-        diff = now - this.get('lastNow'),
-        countdownPrec = this.get('countdownPrec') - diff / 1000;
+        diff = now - (this.get('lastNow') || now),
+        countdownPrec = (this.get('countdownPrec') || this.get('duration')) - diff / 1000;
 
-    this._setCountdown(countdownPrec);
-    this._reschedule();
+    this.set('lastNow', now);
+    this.set('countdownPrec', countdownPrec);
+    this.set('countdown', ceiling(countdownPrec, this.get('precision')));
   },
 
   _cancelCountdown: function() {
@@ -47,20 +50,6 @@ export default Ember.ObjectController.extend({
     if (!!renderTimer) {
       clearTimeout(renderTimer);
       this.set('renderTimer', undefined);
-    }
-  },
-
-  _setCountdown: function(countdownPrec) {
-    this.set('countdownPrec', countdownPrec);
-    this.set('countdown', ceiling(countdownPrec, this.get('precision')));
-  },
-
-  _reschedule: function() {
-    if (this.get('countdownPrec') > 0) {
-      this.set('lastNow', Date.now());
-      this.set('renderTimer',
-               setTimeout(Ember.run.bind(this, this._updateCountdown),
-                          1000.0 / this.get('precision')));
     }
   }
 });

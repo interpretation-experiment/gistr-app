@@ -39,11 +39,13 @@ test("cancelCountdown calls the right method", function() {
   ok(controller._cancelCountdown.calledOnce);
 });
 
-test("_startCountdown starts transitionTimer with proper delay, " +
-     "sets countdown, and reschedules", function() {
-  expect(6);
+test("_startCountdown starts transitionTimer and renderTimer with proper delay, " +
+     "does first countdown update", function() {
+  expect(7);
 
   var controller = this.subject(),
+      duration = controller.get('duration'),
+      precision = controller.get('precision'),
       context = { goodContext: true },
       callback = sinon.spy(function() {
         // We're called in the right context
@@ -53,21 +55,21 @@ test("_startCountdown starts transitionTimer with proper delay, " +
   // Manually set content since it's not injected
   controller.set('content', {});
 
-  controller._setCountdown = sinon.spy();
-  controller._reschedule = sinon.spy();
+  controller._updateCountdown = sinon.spy();
 
   controller._startCountdown(context, callback);
   ok(!!controller.get('transitionTimer'));
+  ok(!!controller.get('renderTimer'));
+  ok(controller._updateCountdown.callCount === 1);
 
   // Tick to just before the timer triggers
-  clock.tick(controller.get('duration') * 1000 - 1);
+  clock.tick(duration * 1000 - 1);
   ok(callback.callCount === 0);
+  ok(controller._updateCountdown.callCount === duration * precision);
+
   // Trigger the timer
   clock.tick(1);
   ok(callback.calledOnce);
-  // These methods were called only once overall
-  ok(controller._setCountdown.calledOnce);
-  ok(controller._reschedule.calledOnce);
 });
 
 //test("_updateCountdown sets correct new countdown and reschedules", function() {
@@ -75,8 +77,10 @@ test("_startCountdown starts transitionTimer with proper delay, " +
 
   //var controller = this.subject();
 
+  //// Manually set content since it's not injected
   //controller.set('content', {});
-  //controller.set('lastNow', Date.now() - 50);  // now - 50ms
+
+  //controller.set('lastNow', Date.now() - 50);
   //controller.set('countdownPrec', 1);
   //controller._setCountdown = function(value) {
     //// less than 5ms difference, allowing for runtime imprecisions
