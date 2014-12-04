@@ -27,15 +27,15 @@ export default Ember.ObjectController.extend({
              setInterval(Ember.run.bind(this, this._updateCountdown),
                          1 + 1000.0 / precision));
 
+    this.set('lastNow', Date.now());
+    this.set('preciseCountdown', duration);
     this._updateCountdown();
   },
 
   _updateCountdown: function() {
     var now = Date.now(),
-        diff = now - this.getWithDefault('lastNow', now),
-        preciseCountdown = this.getWithDefault('preciseCountdown',
-                                               this.get('duration')) -
-                           diff / 1000;
+        diff = now - this.get('lastNow'),
+        preciseCountdown = this.get('preciseCountdown') - diff / 1000;
 
     this.set('lastNow', now);
     this.set('preciseCountdown', preciseCountdown);

@@ -72,18 +72,19 @@ test("_startCountdown starts transitionTimer and renderInterval with proper dela
   ok(callback.calledOnce);
 });
 
-test("_updateCountdown gets default values for lastNow " +
-     "and preciseCountdown if not set", function() {
-  expect(4);
+test("_startCountdown sets values for lastNow and preciseCountdown even " +
+     "if set", function() {
+  expect(2);
 
   var controller = this.subject();
 
   // Manually set content since it's not injected
   controller.set('content', {});
 
-  equal(controller.get('lastNow'), undefined);
-  equal(controller.get('preciseCountdown'), undefined);
-  controller._updateCountdown();
+  controller.set('lastNow', 1000);
+  controller.set('preciseCountdown', controller.get('duration') + 10);
+
+  controller._startCountdown();
   equal(controller.get('lastNow'), 0);
   equal(controller.get('preciseCountdown'), controller.get('duration'));
 });
