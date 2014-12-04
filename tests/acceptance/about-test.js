@@ -46,14 +46,10 @@ test('navigate from home to about and back', function() {
   click('#about');
   andThen(function() {
     equal(currentRouteName(), 'about');
-    equal(currentPath(), 'about');
-    equal(currentURL(), '/about');
   });
 
   click('#back');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });

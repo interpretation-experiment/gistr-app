@@ -21,8 +21,6 @@ test('play renders', function() {
   visit('/play');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
 
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
@@ -47,15 +45,11 @@ test('navigate from home to play and back', function() {
   click('#play');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });
 
@@ -67,7 +61,5 @@ test('navigate directly to play', function() {
   visit('/play');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });

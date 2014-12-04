@@ -44,14 +44,10 @@ test('navigate from home to settings and back', function() {
   click('#settings');
   andThen(function() {
     equal(currentRouteName(), 'settings');
-    equal(currentPath(), 'settings');
-    equal(currentURL(), '/settings');
   });
 
   click('#back');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });

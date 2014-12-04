@@ -48,15 +48,11 @@ test('navigate to home', function() {
   visit('/play/ok');
   andThen(function() {
     equal(currentRouteName(), 'play.ok');
-    equal(currentPath(), 'play.ok');
-    equal(currentURL(), '/play/ok');
   });
 
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });
 
@@ -69,8 +65,6 @@ test('coming from elsewhere than /play/read redirects [from /]', function() {
   visit('/play/ok');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });
 
@@ -85,8 +79,6 @@ test('coming from elsewhere than /play/read redirects [from /play/type]', functi
   visit('/play/ok');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });
 
@@ -101,8 +93,6 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then /play/
   visit('/play/type');
   andThen(function() {
     equal(currentRouteName(), 'play.type');
-    equal(currentPath(), 'play.type');
-    equal(currentURL(), '/play/type');
   });
   andThen(function() {
     // This should be window.history.back();
@@ -113,8 +103,6 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then /play/
   });
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });
 
@@ -129,8 +117,6 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then home t
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
   andThen(function() {
     // This should be window.history.back();
@@ -141,7 +127,5 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then home t
   });
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });
