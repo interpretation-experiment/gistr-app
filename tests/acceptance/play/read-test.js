@@ -53,7 +53,7 @@ test('play/read renders', function() {
     startPlayTime(App);
     Ember.run.later(this, function() {
       equal(pCountdown.text(), 'Time left: 0.1 seconds');
-    }, 200);
+    }, 300);
   });
 });
 
@@ -74,33 +74,32 @@ test('navigate from home to play and back', function() {
   });
 });
 
-//test("read transitions to ok after X seconds, and countdown has reached 0", function() {
-  //expect(3);
+test("read transitions to ok after X seconds, and countdown has reached 0", function() {
+  expect(2);
 
-  //var now = 0,
-      //duration = 1,
-      //precision = 4,
-      //controller = App.__container__.lookup('controller:play/read');
+  var now = 0,
+      duration = 0.2,
+      precision = 10,
+      controller = App.__container__.lookup('controller:play/read');
 
-  //controller.set('duration', duration);
-  //controller.set('precision', precision);
+  controller.set('duration', duration);
+  controller.set('precision', precision);
 
-  //activatePlayTime(App, false);
+  activatePlayTime(App, false);
 
-  //visit('/play/read');
-  //andThen(function() {
-    //now = Date.now();
-    //startPlayTime(App);
-  //});
-  //andThen(function() {
-    //equal(currentRouteName(), 'play.ok');
-
-    //var countdown = controller.get('countdown');
-    //ok(countdown === 1 / precision || countdown === 0);
-    //// Less than 300ms difference, allowing for runtime imprecisions
-    //ok(Math.abs(Date.now() - now - duration * 1000) < 300);
-  //});
-//});
+  visit('/play/read');
+  andThen(function() {
+    now = Date.now();
+    startPlayTime(App);
+    Ember.run.later(this, function() {
+      equal(currentRouteName(), 'play.ok');
+    }, 300);
+  });
+  andThen(function() {
+    var countdown = controller.get('countdown');
+    ok(countdown === 1 / precision || countdown === 0);
+  });
+});
 
 //test("countdown is cancelled if we transition out of play/read", function() {
   //expect(1);
