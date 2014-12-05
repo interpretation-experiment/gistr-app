@@ -90,7 +90,7 @@ function redirectTest(outButton, outRoute) {
     });
     andThen(function() {
       // This should be window.history.back();
-      // But, dong so needs the router to use HashLocation for testing in browser,
+      // But, doing so needs the router to use HashLocation for testing in browser,
       // which in turn makes the test server hang for an unknown reason.
       // So falling back to this for now.
       visit('/play/type');
