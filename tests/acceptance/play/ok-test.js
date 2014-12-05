@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import startApp from '../../helpers/start-app';
 import activatePlayTime from '../../helpers/activate-play-time';
+import visitChain from '../../helpers/visit-chain';
 
 var App;
 
@@ -18,8 +19,7 @@ test('play/ok renders', function() {
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
+  visitChain(['/play/read', '/play/ok']);
   andThen(function() {
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
@@ -40,70 +40,41 @@ test('play/ok renders', function() {
 });
 
 test('navigate to home', function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  andThen(function() {
-    equal(currentRouteName(), 'play.ok');
-    equal(currentPath(), 'play.ok');
-    equal(currentURL(), '/play/ok');
-  });
+  visitChain(['/play/read', '/play/ok'], 'play.ok');
 
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });
 
 test('coming from elsewhere than /play/read redirects [from /]', function() {
-  expect(3);
+  expect(1);
 
   activatePlayTime(App, false);
 
-  visit('/');
-  visit('/play/ok');
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
-  });
+  visitChain(['/', '/play/ok'], 'play.read');
 });
 
 test('coming from elsewhere than /play/read redirects [from /play/type]', function() {
-  expect(3);
+  expect(1);
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  visit('/play/type');
-  visit('/play/ok');
-  andThen(function() {
-    equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
-  });
+  visitChain(['/play/read', '/play/ok', '/play/type', '/play/ok'], 'play.read');
 });
 
 test('coming from elsewhere than /play/read redirects [from /play/ok then /play/type then back]',
      function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
-  visit('/play/type');
-  andThen(function() {
-    equal(currentRouteName(), 'play.type');
-    equal(currentPath(), 'play.type');
-    equal(currentURL(), '/play/type');
-  });
+  visitChain(['/play/read', '/play/ok', '/play/type'], 'play.type');
   andThen(function() {
     // This should be window.history.back();
     // But, dong so needs the router to use HashLocation for testing in browser,
@@ -113,24 +84,19 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then /play/
   });
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });
 
 test('coming from elsewhere than /play/read redirects [from /play/ok then home then back]',
      function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
-  visit('/play/read');
-  visit('/play/ok');
+  visitChain(['/play/read', 'play/ok']);
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
   andThen(function() {
     // This should be window.history.back();
@@ -141,7 +107,5 @@ test('coming from elsewhere than /play/read redirects [from /play/ok then home t
   });
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });

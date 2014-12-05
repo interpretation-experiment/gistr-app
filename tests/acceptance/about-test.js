@@ -40,20 +40,16 @@ test('about renders', function() {
 });
 
 test('navigate from home to about and back', function() {
-  expect(6);
+  expect(2);
 
   visit('/');
   click('#about');
   andThen(function() {
     equal(currentRouteName(), 'about');
-    equal(currentPath(), 'about');
-    equal(currentURL(), '/about');
   });
 
   click('#back');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });

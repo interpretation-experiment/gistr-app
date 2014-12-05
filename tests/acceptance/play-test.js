@@ -14,15 +14,13 @@ module('Acceptances - Play', {
 });
 
 test('play renders', function() {
-  expect(8);
+  expect(6);
 
   activatePlayTime(App, false);
 
   visit('/play');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
 
     var pNetstatus = find('p#netstatus');
     var sNetstatus = pNetstatus.find('span');
@@ -39,7 +37,7 @@ test('play renders', function() {
 });
 
 test('navigate from home to play and back', function() {
-  expect(6);
+  expect(2);
 
   activatePlayTime(App, false);
 
@@ -47,27 +45,21 @@ test('navigate from home to play and back', function() {
   click('#play');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 
   click('#home');
   andThen(function() {
     equal(currentRouteName(), 'index');
-    equal(currentPath(), 'index');
-    equal(currentURL(), '/');
   });
 });
 
 test('navigate directly to play', function() {
-  expect(3);
+  expect(1);
 
   activatePlayTime(App, false);
 
   visit('/play');
   andThen(function() {
     equal(currentRouteName(), 'play.read');
-    equal(currentPath(), 'play.read');
-    equal(currentURL(), '/play/read');
   });
 });

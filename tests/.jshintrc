@@ -1,9 +1,11 @@
 {
   "predef": [
+    "sinon",
     "document",
     "window",
     "location",
     "setTimeout",
+    "setInterval",
     "$",
     "-Promise",
     "QUnit",

@@ -1,4 +1,4 @@
-Gistr [![Build Status](https://travis-ci.org/interpretation-experiment/gistr-app.svg?branch=master)](https://travis-ci.org/interpretation-experiment/gistr-app) [![Code Climate](https://codeclimate.com/github/interpretation-experiment/gistr-app.png)](https://codeclimate.com/github/interpretation-experiment/gistr-app)
+Gistr [![Build Status](https://travis-ci.org/interpretation-experiment/gistr-app.svg?branch=master)](https://travis-ci.org/interpretation-experiment/gistr-app) [![Code Climate](https://codeclimate.com/github/interpretation-experiment/gistr-app/badges/gpa.svg)](https://codeclimate.com/github/interpretation-experiment/gistr-app)
 =====
 
 Gistr is both a mobile "broken telephone" (or "chinese whispers") game and an
@@ -9,11 +9,6 @@ It is developed for my PhD on interpretation and cultural evolution, and is
 part of the [Science en Poche](http://www.iscpif.fr/tiki-index.php?page=SEP)
 project which develops the use of mobile devices in research and more broadly
 global-local situations.
-
-Colophon
---------
-
-Nothing for the moment.
 
 Related repositories
 --------------------
