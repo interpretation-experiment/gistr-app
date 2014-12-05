@@ -108,50 +108,32 @@ test("_updateCountdown sets correct lastNow, preciseCountdown, " +
   equal(controller.get('countdown'), 0.75);
 });
 
-test("_cancelCountdown cancels transitionTimer", function() {
-  expect(3);
+test("_cancelCountdown cancels transitionTimer and renderInterval", function() {
+  expect(6);
 
   var controller = this.subject(),
-      callback = sinon.spy();
+      transitionCallback = sinon.spy(),
+      renderCallback = sinon.spy();
 
   // Manually set content since it's not injected
   controller.set('content', {});
 
-  // Set a transitionTimer that should not run
-  var transitionTimer = setTimeout(Ember.run.bind(this, callback), 10);
+  // Set a timers that should not run
+  var transitionTimer = setTimeout(Ember.run.bind(this, transitionCallback), 20);
   controller.set('transitionTimer', transitionTimer);
+  var renderInterval = setInterval(Ember.run.bind(this, renderCallback), 5);
+  controller.set('renderInterval', renderInterval);
 
   // Tick halfway through and cancel timer
-  clock.tick(5);
-  equal(callback.callCount, 0);
+  clock.tick(12);
+  equal(transitionCallback.callCount, 0);
+  equal(renderCallback.callCount, 2);
   controller._cancelCountdown();
 
   // Tick all the way through and over
-  clock.tick(10);
-  equal(callback.callCount, 0);
+  clock.tick(12);
+  equal(transitionCallback.callCount, 0);
+  equal(renderCallback.callCount, 2);
   equal(controller.get('transitionTimer'), undefined);
-});
-
-test("_cancelCountdown cancels renderInterval", function() {
-  expect(3);
-
-  var controller = this.subject(),
-      callback = sinon.spy();
-
-  // Manually set content since it's not injected
-  controller.set('content', {});
-
-  // Set a renderInterval that should not run
-  var renderInterval = setInterval(Ember.run.bind(this, callback), 10);
-  controller.set('renderInterval', renderInterval);
-
-  // Tick a few cycles
-  clock.tick(35);
-  equal(callback.callCount, 3);
-  controller._cancelCountdown();
-
-  // Tick more cycles
-  clock.tick(45);
-  equal(callback.callCount, 3);
   equal(controller.get('renderInterval'), undefined);
 });
