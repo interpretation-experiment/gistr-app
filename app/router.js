@@ -13,6 +13,9 @@ Router.map(function() {
     this.route('ok');
     this.route('type');
   });
+  this.resource('suggest', function() {
+    this.route('new');
+  });
 });
 
 export default Router;

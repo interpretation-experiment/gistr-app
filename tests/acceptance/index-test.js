@@ -13,7 +13,7 @@ module('Acceptances - Index', {
 });
 
 test('index renders', function() {
-  expect(12);
+  expect(14);
 
   visit('/');
   andThen(function() {
@@ -21,6 +21,7 @@ test('index renders', function() {
     var sNetstatus = pNetstatus.find('span');
     var hTitle = find('h2#title');
     var aPlay = find('a#play');
+    var aSuggest = find('a#suggest');
     var aLike = find('a#like');
     var aAbout = find('a#about');
     var aSettings = find('a#settings');
@@ -34,6 +35,9 @@ test('index renders', function() {
 
     equal(aPlay.text(), 'Play');
     equal(aPlay.attr('href'), '/play');
+
+    equal(aSuggest.text(), 'Suggest sentence');
+    equal(aSuggest.attr('href'), '/suggest');
 
     equal(aLike.text(), 'Like');
     equal(aLike.attr('href'), '#');
