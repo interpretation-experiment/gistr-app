@@ -1,5 +1,10 @@
 html, body {
-    margin: 20px;
+  margin: 20px;
+}
+
+textarea {
+  max-width: 100%;
+  resize: vertical;
 }
 
 p#netstatus span.checking {
