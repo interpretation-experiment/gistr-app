@@ -17,8 +17,8 @@ module('Acceptances - Play/Read', {
 test('play/read renders', function() {
   expect(9);
 
-  var duration = 0.5,
-      precision = 4,
+  var duration = 0.2,
+      precision = 10,
       route = App.__container__.lookup('route:play/read'),
       controller = App.__container__.lookup('controller:play/read');
 
@@ -52,8 +52,8 @@ test('play/read renders', function() {
 
     startPlayTime(App);
     Ember.run.later(this, function() {
-      equal(pCountdown.text(), 'Time left: 0.25 seconds');
-    }, 1000);
+      equal(pCountdown.text(), 'Time left: 0.1 seconds');
+    }, 200);
   });
 });
 
