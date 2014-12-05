@@ -1,4 +1,4 @@
-Gistr [![Build Status](https://travis-ci.org/interpretation-experiment/gistr-app.svg?branch=master)](https://travis-ci.org/interpretation-experiment/gistr-app)
+Gistr [![Build Status](https://travis-ci.org/interpretation-experiment/gistr-app.svg?branch=master)](https://travis-ci.org/interpretation-experiment/gistr-app) [![Code Climate](https://codeclimate.com/github/interpretation-experiment/gistr-app/badges/gpa.svg)](https://codeclimate.com/github/interpretation-experiment/gistr-app)
 =====
 
 Gistr is both a mobile "broken telephone" (or "chinese whispers") game and an
