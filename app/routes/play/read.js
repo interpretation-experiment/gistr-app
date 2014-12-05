@@ -20,14 +20,10 @@ export default TracingRoute.extend({
   },
 
   _didTransition: function() {
-    this.set('wasAlreadyEntered', true);
-
     if (this.get('startCountdown')) {
       this._startCountdown(this.controllerFor('play/read'));
     }
   },
-
-  wasAlreadyEntered: false,
 
   startCountdown: true,
 
