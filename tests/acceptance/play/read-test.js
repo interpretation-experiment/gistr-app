@@ -101,36 +101,42 @@ test("read transitions to ok after X seconds, and countdown has reached 0", func
   });
 });
 
-//test("countdown is cancelled if we transition out of play/read", function() {
-  //expect(1);
+test("countdown is cancelled if we transition out of play/read", function() {
+  expect(2);
 
-  //var duration = 2,
-      //precision = 4,
-      //route = App.__container__.lookup('route:play/read'),
-      //controller = App.__container__.lookup('controller:play/read');
+  var duration = 0.2,
+      precision = 10,
+      lastCountdown,
+      route = App.__container__.lookup('route:play/read'),
+      controller = App.__container__.lookup('controller:play/read'),
+      oCancelCountdown = controller.get('_actions')['cancelCountdown'],
+      sCancelCountdown = sinon.spy(oCancelCountdown);
 
-  //controller.set('duration', duration);
-  //controller.set('precision', precision);
+  controller.set('duration', duration);
+  controller.set('precision', precision);
+  controller.reopen({
+    actions: {
+      cancelCountdown: sCancelCountdown
+    }
+  });
+  controller.addObserver('countdown', function() {
+    lastCountdown = controller.get('countdown');
+  });
 
-  //activatePlayTime(App, false);
-  //visit('/play/read');
-  //andThen(function() {
-    //startPlayTime(App);
-    //Ember.run.later(this, function() {
-      //route.transitionTo('/');
-    //}, duration * 1000 / 4);
-  //});
-  //return new Ember.RSVP.Promise(function(resolve, reject) {
-    //controller.reopen({
-      //actions: {
-        //cancelCountdown: function() {
-          //ok(this.get('countdown') > duration / 2);
-          //resolve(true);
-        //}
-      //}
-    //});
-  //});
-//});
+  activatePlayTime(App, false);
+  visit('/play/read');
+  andThen(function() {
+    startPlayTime(App);
+    Ember.run.later(this, function() {
+      route.transitionTo('/');
+    }, duration * 1000 / 4);
+  });
+  andThen(function() {
+    ok(lastCountdown > duration / 2);
+    ok(sCancelCountdown.calledOnce);
+    controller.removeObserver('countdown');
+  });
+});
 
 //test('countdown is launched even when doing read > ok > type > send > back button',
     //function() {
