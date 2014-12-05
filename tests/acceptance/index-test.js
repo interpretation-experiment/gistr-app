@@ -13,7 +13,7 @@ module('Acceptances - Index', {
 });
 
 test('index renders', function() {
-  expect(14);
+  expect(12);
 
   visit('/');
   andThen(function() {
@@ -22,7 +22,6 @@ test('index renders', function() {
     var hTitle = find('h2#title');
     var aPlay = find('a#play');
     var aLike = find('a#like');
-    var aShare = find('a#share');
     var aAbout = find('a#about');
     var aSettings = find('a#settings');
 
@@ -38,9 +37,6 @@ test('index renders', function() {
 
     equal(aLike.text(), 'Like');
     equal(aLike.attr('href'), '#');
-
-    equal(aShare.text(), 'Share');
-    equal(aShare.attr('href'), '#');
 
     equal(aAbout.text(), 'About');
     equal(aAbout.attr('href'), '/about');
