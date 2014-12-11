@@ -1,6 +1,5 @@
 import DS from 'ember-data';
 
-// FIXME: Not unit-tested, because runs into errors. See 'test-models' branch.
 var Sentence = DS.Model.extend({
   author: DS.belongsTo('user'),
   // TODO[after backend send]: add date
