@@ -19,3 +19,14 @@ repository. The variable parameters live in the
 [gistr-parameters](https://github.com/interpretation-experiment/gistr-parameters)
 repository. The experiment website lives in the
 [gistr.io](https://github.com/interpretation-experiment/gistr.io) repository.
+
+Notes
+-----
+Testing
+* https://github.com/jakerella/jquery-mockjax
+* https://github.com/trek/pretender
+* https://github.com/teddyzeenny/ember-data-factory
+* Getting fake timers with Ember right: https://stackoverflow.com/questions/21896003/how-do-i-test-ember-run-later-with-sinon
+
+Django
+* https://github.com/dustinfarris/ember-django-adapter
