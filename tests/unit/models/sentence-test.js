@@ -17,15 +17,15 @@ test('relationships are good', function() {
   var Sentence = this.store().modelFor('sentence'),
       relationships = Ember.get(Sentence, 'relationshipsByName'),
       author = relationships.get('author'),
-      from = relationships.get('from'),
+      parent = relationships.get('parent'),
       children = relationships.get('children');
 
   equal(author.key, 'author');
   equal(author.kind, 'belongsTo');
-  equal(from.key, 'from');
-  equal(from.kind, 'belongsTo');
-  equal(from.options.inverse, 'children');
+  equal(parent.key, 'parent');
+  equal(parent.kind, 'belongsTo');
+  equal(parent.options.inverse, 'children');
   equal(children.key, 'children');
   equal(children.kind, 'hasMany');
-  equal(children.options.inverse, 'from');
+  equal(children.options.inverse, 'parent');
 });

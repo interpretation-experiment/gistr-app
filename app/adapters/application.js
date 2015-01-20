@@ -1,11 +1,13 @@
-//import DS from 'ember-data';
-//import config from 'gistr/config/environment';
+import config from 'gistr/config/environment';
+import DS from 'ember-data';
 import DRFAdapter from './drf';
 
-//export default DS.RESTAdapter.extend({
-  //namespace: config.APP.apiNamespace
-//});
+var Adapter;
 
-//export default DS.FixtureAdapter.extend();
+if (config.environment === 'test') {
+  Adapter = DS.FixtureAdapter.extend();
+} else {
+  Adapter = DRFAdapter;
+}
 
-export default DRFAdapter;
+export default Adapter;
