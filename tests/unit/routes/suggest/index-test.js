@@ -1,5 +1,5 @@
 import { test, moduleFor } from 'ember-qunit';
-import SuggestIndexRoute from 'gistr-app/routes/suggest/index';
+import SuggestIndexRoute from 'gistr/routes/suggest/index';
 
 moduleFor('route:suggest/index', "Unit - SuggestIndexRoute");
 

@@ -1,8 +1,8 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import PlayTypeRoute from 'gistr-app/routes/play/type';
-import TracingRoute from 'gistr-app/routes/tracing-route';
+import PlayTypeRoute from 'gistr/routes/play/type';
+import TracingRoute from 'gistr/routes/tracing-route';
 
 moduleFor('route:play/type', "Unit - PlayTypeRoute");
 

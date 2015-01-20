@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import TracingRoute from 'gistr-app/routes/tracing-route';
+import TracingRoute from 'gistr/routes/tracing-route';
 
 moduleFor('route:tracing-route', "Unit - TracingRoute");
 

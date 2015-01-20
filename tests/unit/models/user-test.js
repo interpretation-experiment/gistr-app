@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import { test, moduleForModel } from 'ember-qunit';
-import UserModel from 'gistr-app/models/user';
+import UserModel from 'gistr/models/user';
 
 moduleForModel('user', 'Unit - User Model', {
   needs: ['model:user', 'model:sentence']

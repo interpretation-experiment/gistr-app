@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
 import Ember from 'ember';
 
-import PlayReadController from 'gistr-app/controllers/play/read';
+import PlayReadController from 'gistr/controllers/play/read';
 
 var clock;
 

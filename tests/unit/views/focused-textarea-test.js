@@ -1,5 +1,5 @@
 import {test, moduleFor} from 'ember-qunit';
-import FocusedTextAreaView from 'gistr-app/views/focused-textarea';
+import FocusedTextAreaView from 'gistr/views/focused-textarea';
 
 moduleFor('view:focused-textarea', 'Unit - FocusedTextAreaView');
 

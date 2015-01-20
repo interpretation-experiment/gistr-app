@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import ceiling from 'gistr-app/utils/ceiling';
+import ceiling from 'gistr/utils/ceiling';
 
 module("Unit - ceiling");
 

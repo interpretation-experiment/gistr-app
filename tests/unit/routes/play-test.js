@@ -1,5 +1,5 @@
 import { test, moduleFor } from 'ember-qunit';
-import PlayRoute from 'gistr-app/routes/play';
+import PlayRoute from 'gistr/routes/play';
 
 moduleFor('route:play', "Unit - PlayRoute");
 

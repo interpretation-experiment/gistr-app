@@ -1,7 +1,7 @@
 import { test, moduleFor } from 'ember-qunit';
 
 
-import ApplicationRoute from 'gistr-app/routes/application';
+import ApplicationRoute from 'gistr/routes/application';
 
 moduleFor('route:application', 'Unit - ApplicationRoute');
 
