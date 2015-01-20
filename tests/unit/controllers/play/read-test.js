@@ -7,9 +7,11 @@ var clock;
 
 moduleFor('controller:play/read', "Unit - PlayReadController", {
   setup: function() {
+    // FIXME: get tests using sinon clocks to work
     //clock = sinon.useFakeTimers();
   },
   teardown: function() {
+    // FIXME: get tests using sinon clocks to work
     //sinonPatcher.restore();
   }
 });
@@ -39,6 +41,7 @@ test("cancelCountdown calls the right method", function() {
   ok(controller._cancelCountdown.calledOnce);
 });
 
+// FIXME: get tests using sinon clocks to work
 //test("_startCountdown starts transitionTimer and renderInterval with proper delay, " +
      //"does first countdown update", function() {
   //expect(7);
@@ -72,6 +75,7 @@ test("cancelCountdown calls the right method", function() {
   //ok(callback.calledOnce);
 //});
 
+// FIXME: get tests using sinon clocks to work
 //test("_startCountdown sets values for lastNow and preciseCountdown even " +
      //"if set", function() {
   //expect(2);
@@ -89,6 +93,7 @@ test("cancelCountdown calls the right method", function() {
   //equal(controller.get('preciseCountdown'), controller.get('duration'));
 //});
 
+// FIXME: get tests using sinon clocks to work
 //test("_updateCountdown sets correct lastNow, preciseCountdown, " +
      //"and countdown", function() {
   //expect(3);
@@ -108,6 +113,7 @@ test("cancelCountdown calls the right method", function() {
   //equal(controller.get('countdown'), 0.75);
 //});
 
+// FIXME: get tests using sinon clocks to work
 //test("_cancelCountdown cancels transitionTimer and renderInterval", function() {
   //expect(6);
 
