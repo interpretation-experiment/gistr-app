@@ -8,13 +8,7 @@ Ember.MODEL_FACTORY_INJECTIONS = true;
 var App = Ember.Application.extend({
   modulePrefix: config.modulePrefix,
   podModulePrefix: config.podModulePrefix,
-  Resolver: Resolver,
-  ready: function() {
-    if (config.environment !== 'production') {
-      Ember.Logger.log("Non-production environment -> globalizing devTools");
-      this.devTools.globalize();
-    }
-  }
+  Resolver: Resolver
 });
 
 loadInitializers(App, config.modulePrefix);
