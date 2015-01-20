@@ -1,14 +1,16 @@
 import DS from 'ember-data';
 
 var Sentence = DS.Model.extend({
-  author: DS.belongsTo('user'),
-  // TODO[after backend send]: add date
+  author: DS.belongsTo('user', { async: true }),
+  created: DS.attr('date'),
   // TODO[search location]: add location
-  from: DS.belongsTo('sentence', {
-    inverse: 'children'
+  parent: DS.belongsTo('sentence', {
+    inverse: 'children',
+    async: true
   }),
   children: DS.hasMany('sentence', {
-    inverse: 'from'
+    inverse: 'parent',
+    async: true
   }),
   text: DS.attr('string')
 });
