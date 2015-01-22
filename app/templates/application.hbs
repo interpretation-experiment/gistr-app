@@ -1,3 +1,9 @@
 <p id="netstatus">Network status: <span {{bind-attr class="netstatus"}}>{{netstatus}}</span></p>
 
+{{#if session.isAuthenticated}}
+  <p>Howdy, {{session.user.username}}</p>
+{{else}}
+  <p>Not logged in</p>
+{{/if}}
+
 {{outlet}}

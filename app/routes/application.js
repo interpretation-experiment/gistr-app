@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import ApplicationRouteMixin from 'simple-auth/mixins/application-route-mixin';
 import config from '../config/environment';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(ApplicationRouteMixin, {
   // FIXME[try promises]: untested because ran into problems. Try again later.
   setupController: function(controller, model) {
     this._super(controller, model);
