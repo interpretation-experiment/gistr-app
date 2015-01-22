@@ -3,10 +3,11 @@
 <!-- TODO: test -->
 {{#if hasNickname}}
   <p>Howdy, {{nickname}}</p>
+  <button {{action 'clearNickname'}}>Change name</button>
 {{else}}
   <p>Pick a nickname:</p>
   {{error}}
-  <form {{action "pickUsername" on="submit"}}>
+  <form {{action "setNickname" on="submit"}}>
     {{view focused-textfield value=nickname}}
     <button type="submit">Save</button>
   </form>
