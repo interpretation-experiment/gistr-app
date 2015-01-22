@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import config from '../config/environment';
 
 export default Ember.Controller.extend({
   netstatus: 'checking',
@@ -13,11 +14,11 @@ export default Ember.Controller.extend({
 
   // FIXME[try promises]: untested
   updateNetstatus: function() {
-    var that = this;
+    var that = this,
+        pingBack = config.APP.API_HOST + config.APP.API_NAMESPACE + '/';
 
     return Ember.$.ajax({
-      // TODO[after backend]: change this url to the backend url
-      url: window.location.origin,
+      url: pingBack,
       type: 'HEAD'
     }).done(function(/*data, status, xhr*/) {
       that.setOnline();
