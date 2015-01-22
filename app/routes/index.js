@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   actions: {
+    // TODO: test
     pickUsername: function() {
       var controller = this.controllerFor('index'),
           nickname = controller.get('nickname');
