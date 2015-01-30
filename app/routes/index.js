@@ -4,9 +4,32 @@ export default Ember.Route.extend({
   // TODO: test
   setupController: function(controller, model) {
     this._super(controller, model);
+  },
 
-    if ('nickname' in localStorage) {
-      controller._setNickname(localStorage.nickname);
+  actions: {
+    login: function() {
+      var controller = this.controllerFor('index');
+      this.get('torii').open('spreadr', {
+        username: controller.get('username'),
+        password: controller.get('password')
+      }).then(function(authorization) {
+        controller.set('error', undefined);
+        controller.set('isAuthenticated', true);
+      }, function(error) {
+        var err = error.detail;
+        if ('detail' in error) {
+          err = error.detail;
+        } else if ('non_field_errors' in error) {
+          err = error.non_field_errors;
+        } else {
+          err = JSON.stringify(error);
+        }
+        controller.set('error', 'Oops! ' + err);
+      });
+    },
+
+    logout: function() {
+      this.get('torii').close('spreadr');
     }
   }
 });

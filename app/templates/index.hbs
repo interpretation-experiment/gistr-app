@@ -1,16 +1,21 @@
 <h2 id="title">Gistr</h2>
 
 <!-- TODO: test -->
-{{#if hasNickname}}
-  <p>Howdy, {{nickname}}</p>
-  <button {{action 'clearNickname'}}>Change name</button>
+{{#if isAuthenticated}}
+  <p>Howdy, {{user.username}}</p>
+  <a href="#" {{action "logout"}}>Logout</a>
 {{else}}
-  <p>Pick a nickname:</p>
-  {{error}}
-  <form {{action "setNickname" on="submit"}}>
-    {{view focused-textfield value=nickname}}
-    <button type="submit">Save</button>
-  </form>
+  {{#if isWorking}}
+    <p>Logging in...</p>
+  {{else}}
+    <p>Who are you?</p>
+    {{error}}
+    <form {{action "login" on="submit"}}>
+      {{view focused-textfield value=username}}
+      {{input type="password" value=password}}
+      <button type="submit">Login</button>
+    </form>
+  {{/if}}
 {{/if}}
 <!-- up to here -->
 

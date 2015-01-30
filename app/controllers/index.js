@@ -24,15 +24,6 @@ export default Ember.Controller.extend({
     this.set('nickname', undefined);
     delete localStorage.nickname;
     this.set('hasNickname', false);
-  },
-
-  actions: {
-    setNickname: function() {
-      this._setNickname(this.get('nickname'));
-    },
-
-    clearNickname: function() {
-      this._clearNickname();
-    }
   }
+
 });
