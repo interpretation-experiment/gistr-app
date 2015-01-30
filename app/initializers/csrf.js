@@ -8,7 +8,6 @@ function csrfSafeMethod(method) {
 export default {
   name: 'csrf',
   initialize: function() {
-    console.log('setup csrf');
     Ember.$.ajaxSetup({
       beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {

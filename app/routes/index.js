@@ -9,12 +9,13 @@ export default Ember.Route.extend({
   actions: {
     login: function() {
       var controller = this.controllerFor('index');
-      this.get('torii').open('spreadr', {
+      this.get('session').open('spreadr', {
         username: controller.get('username'),
         password: controller.get('password')
       }).then(function(authorization) {
         controller.set('error', undefined);
-        controller.set('isAuthenticated', true);
+        controller.set('username', undefined);
+        controller.set('password', undefined);
       }, function(error) {
         var err = error.detail;
         if ('detail' in error) {
@@ -25,11 +26,13 @@ export default Ember.Route.extend({
           err = JSON.stringify(error);
         }
         controller.set('error', 'Oops! ' + err);
+        controller.set('username', undefined);
+        controller.set('password', undefined);
       });
     },
 
     logout: function() {
-      this.get('torii').close('spreadr');
+      this.get('session').close('spreadr');
     }
   }
 });

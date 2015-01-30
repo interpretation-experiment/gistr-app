@@ -1,15 +1,15 @@
 <h2 id="title">Gistr</h2>
 
 <!-- TODO: test -->
-{{#if isAuthenticated}}
-  <p>Howdy, {{user.username}}</p>
+{{#if session.isAuthenticated}}
+  <p>Howdy, {{session.currentUser.username}}</p>
   <a href="#" {{action "logout"}}>Logout</a>
 {{else}}
-  {{#if isWorking}}
-    <p>Logging in...</p>
+  {{#if session.isWorking}}
+    <p>Logging you in...</p>
   {{else}}
     <p>Who are you?</p>
-    {{error}}
+    <p>{{error}}</p>
     <form {{action "login" on="submit"}}>
       {{view focused-textfield value=username}}
       {{input type="password" value=password}}

@@ -7,12 +7,12 @@ export default Ember.Object.extend({
     return new Ember.RSVP.Promise(function(resolve, reject) {
       Ember.$.ajax({
         type: 'POST',
+        dataType: 'json',
         url: config.APP.API_NAMESPACE + '/rest-auth/login/',
         data: {
           username: credentials.username,
           password: credentials.password
         },
-        dataType: 'json',
         success: Ember.run.bind(null, resolve),
         error: function(xhr, error, errorThrown) {
           var json = xhr.responseJSON,
