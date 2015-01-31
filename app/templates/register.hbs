@@ -2,4 +2,38 @@
 
 <h2>Register</h2>
 
-TBD.
+{{#if session.isAuthenticated}}
+  <p>{{session.username}}, log out first!</p>
+{{else}}
+  {{#if isRegistering}}
+    <p>Signing you up...</p>
+  {{else}}
+    <form {{action "register" on="submit"}}>
+      <div {{bind-attr class='errors.username:has-error'}}>
+        <span>{{errors.username}}</span>
+        {{view focused-textfield value=username placeholder='Username'}}
+      </div>
+      <div {{bind-attr class='errors.password1:has-error'}}>
+        <span>{{errors.password1}}</span>
+        {{input value=password1 type='password' placeholder='Password'}}
+      </div>
+      <div {{bind-attr class='errors.password2:has-error'}}>
+        <span>{{errors.password2}}</span>
+        {{input value=password2 type='password' placeholder='Repeat rassword'}}
+      </div>
+
+      {{#if errors.__all__}}
+        <div>
+          <strong>Oops!</strong> {{errors.__all__}}
+        </div>
+      {{/if}}
+      {{#if errors.non_field_errors}}
+        <div>
+          <strong>Oops!</strong> {{errors.non_field_errors}}
+        </div>
+      {{/if}}
+
+      {{input type='submit' value='Register'}}
+    </form>
+  {{/if}}
+{{/if}}

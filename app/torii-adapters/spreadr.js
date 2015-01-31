@@ -26,7 +26,6 @@ export default Ember.Object.extend({
   }.observes('token'),
 
   open: function(authorization) {
-    console.log('[open]');
     var self = this, store = this.get('store');
     this.set('token', authorization.key);
 
@@ -37,9 +36,7 @@ export default Ember.Object.extend({
         success: Ember.run.bind(null, resolve),
         error: Ember.run.bind(null, reject)
       }).then(function(user) {
-        console.log('[open] get me returned with id: ' + user.id);
         store.find('user', user.id).then(function(user) {
-          console.log('[open] get user returned with user: ' + JSON.stringify(user) + ' (' + user.get('username') + ')');
           return {
             isAuthenticated: true,
             currentUser: user,
@@ -47,7 +44,6 @@ export default Ember.Object.extend({
           };
         });
       }, function(xhr, error, errorThrown) {
-        console.log('[open] get me denied');
         self.set('token', null);
         return xhr.responseJSON || { non_field_errors: errorThrown };
       });
@@ -55,7 +51,6 @@ export default Ember.Object.extend({
   },
 
   fetch: function() {
-    console.log('[fetch]');
     var self = this, store = this.get('store');
     this.set('token', localStorage.gistr_spreadr_auth_token);
 
@@ -66,9 +61,7 @@ export default Ember.Object.extend({
         success: Ember.run.bind(null, resolve),
         error: Ember.run.bind(null, reject)
       }).then(function(user) {
-        console.log('[fetch] get me returned with id: ' + user.id);
         store.find('user', user.id).then(function(user) {
-          console.log('[fetch] get user returned with user: ' + JSON.stringify(user) + ' (' + user.get('username') + ')');
           return {
             isAuthenticated: true,
             currentUser: user,
@@ -76,7 +69,6 @@ export default Ember.Object.extend({
           };
         });
       }, function(xhr, error, errorThrown) {
-        console.log('[fetch] get me denied');
         self.set('token', null);
         return xhr.responseJSON || { non_field_errors: errorThrown };
       });

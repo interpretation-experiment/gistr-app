@@ -15,15 +15,7 @@ export default Ember.Object.extend({
         },
         success: Ember.run.bind(null, resolve),
         error: function(xhr, error, errorThrown) {
-          var json = xhr.responseJSON,
-              err;
-          if (!!json && xhr.status >= 400 && xhr.status < 500) {
-            // We should have some JSON
-            err = json;
-          } else {
-            err = errorThrown;
-          }
-          reject(err);
+          reject(xhr.responseJSON || { non_field_errors: errorThrown });
         }
       });
     });
