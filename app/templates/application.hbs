@@ -4,6 +4,10 @@
 {{#if session.isAuthenticated}}
   <p>You: {{session.username}}</p>
   <a href="#" {{action "logout"}}>Logout</a>
+{{else}}
+ {{#if session.isWorking}}
+   <p>Logging you in...</p>
+ {{/if}}
 {{/if}}
 <!-- up to here -->
 
