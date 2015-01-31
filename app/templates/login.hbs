@@ -8,7 +8,6 @@
   {{#if session.isWorking}}
     <p>Logging you in...</p>
   {{else}}
-    <p>Who are you?</p>
     <form {{action "login" on="submit"}}>
       <div {{bind-attr class='errors.username:has-error'}}>
         <span>{{errors.username}}</span>
