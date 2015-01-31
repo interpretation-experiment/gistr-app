@@ -1,23 +1,9 @@
 <h2 id="title">Gistr</h2>
 
-<!-- TODO: test -->
-{{#if session.isAuthenticated}}
-  <p>Howdy, {{session.currentUser.username}}</p>
-  <a href="#" {{action "logout"}}>Logout</a>
-{{else}}
-  {{#if session.isWorking}}
-    <p>Logging you in...</p>
-  {{else}}
-    <p>Who are you?</p>
-    <p>{{error}}</p>
-    <form {{action "login" on="submit"}}>
-      {{view focused-textfield value=username}}
-      {{input type="password" value=password}}
-      <button type="submit">Login</button>
-    </form>
-  {{/if}}
-{{/if}}
-<!-- up to here -->
+{{#unless session.isAuthenticated}}
+  {{link-to 'Sign in' 'login' id="login"}}
+  {{link-to 'Sign up' 'register' id="register"}}
+{{/unless}}
 
 {{link-to 'Play' 'play.read' id="play"}}
 

@@ -8,7 +8,7 @@ export default Ember.Route.extend({
 
     // Starting the infinite loop in tests will make the tests fail
     if (config.environment !== 'test'){
-      controller.updateNetstatusLoop();
+      //controller.updateNetstatusLoop();
     }
   }
 });

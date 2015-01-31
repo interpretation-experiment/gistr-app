@@ -36,6 +36,17 @@ export default Ember.Controller.extend({
         this.updateNetstatusLoop();
       }, 3000);
     });
+  },
+
+  init: function() {
+    this._super();
+    this.get('session').fetch('spreadr');
+  },
+
+  actions: {
+    logout: function() {
+      this.get('session').close('spreadr');
+    }
   }
 
 });
