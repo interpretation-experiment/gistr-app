@@ -2,9 +2,11 @@ import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
   text: null,
+  errors: null,
   reset: function() {
     this.setProperties({
-      text: null
+      text: null,
+      errors: null
     });
   },
   actions: {
@@ -14,11 +16,16 @@ export default Ember.ObjectController.extend({
     }
   },
   _sendSentence: function() {
+    var self = this;
+
     this.get('store').createRecord('sentence', {
       text: this.get('text'),
       parent: this.get('model')
-    }).save();
-    this.reset();
-    this.transitionToRoute('play.read');
+    }).save().then(function() {
+      self.reset();
+      self.transitionToRoute('play.read');
+    }, function(error) {
+      self.set('errors', error.errors);
+    });
   }
 });
