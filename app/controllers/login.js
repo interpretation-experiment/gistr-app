@@ -15,7 +15,7 @@ export default Ember.ObjectController.extend({
     login: function() {
       var self = this, data = this.getProperties('username', 'password');
 
-      this.get('session').open('spreadr', data).then(function(authorization) {
+      this.get('session').open('spreadr', data).then(function() {
         self.reset();
         self.transitionToRoute('index');
       }, function(errors) {

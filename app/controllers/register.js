@@ -31,7 +31,7 @@ export default Ember.ObjectController.extend({
           username: data.username,
           password: data.password1
         });
-      }).then(function(authorization) {
+      }).then(function() {
         self.reset();
         self.transitionToRoute('index');
       }, function(xhr, error, errorThrown) {

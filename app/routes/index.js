@@ -12,7 +12,7 @@ export default Ember.Route.extend({
       this.get('session').open('spreadr', {
         username: controller.get('username'),
         password: controller.get('password')
-      }).then(function(authorization) {
+      }).then(function() {
         controller.set('error', undefined);
         controller.set('username', undefined);
         controller.set('password', undefined);
