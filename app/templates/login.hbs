@@ -3,7 +3,8 @@
 <h2>Sign in</h2>
 
 {{#if session.isAuthenticated}}
-  <p>Howdy, {{session.username}}</p>
+  <p>Howdy, {{session.currentUser.username}}</p>
+  <a href="#" {{action "logout"}}>Sign out</a>
 {{else}}
   {{#if session.isWorking}}
     <p>Signing you in...</p>

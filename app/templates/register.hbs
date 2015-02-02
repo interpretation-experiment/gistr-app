@@ -3,7 +3,8 @@
 <h2>Sign up</h2>
 
 {{#if session.isAuthenticated}}
-  <p>{{session.username}}, log out first!</p>
+  <p>{{session.currentUser.username}}, log out first!</p>
+  <a href="#" {{action "logout"}}>Sign out</a>
 {{else}}
   {{#if isRegistering}}
     <p>Signing you up...</p>
