@@ -23,12 +23,9 @@ export default Ember.Route.extend({
       this.get('session').close('spreadr');
     },
     loggedIn: function(session) {
-      var self = this;
-
       // Request a profile if we have none
-      session.get('currentUser').then(function(user) {
-        return user.get('profile');
-      }).then(function(profile) {
+      var self = this;
+      session.get('currentUser').get('profile').then(function(profile) {
         if (!profile) {
           self.store.createRecord('profile', {}).save();
         }

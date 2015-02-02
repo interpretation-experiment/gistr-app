@@ -21,17 +21,22 @@ export default Ember.ObjectController.extend({
       var self = this, data = this.getProperties('username', 'password1', 'password2');
       this.set('isRegistering', true);
 
-      Ember.$.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: config.APP.API_NAMESPACE + '/rest-auth/registration/',
-        data: data,
+      new Ember.RSVP.Promise(function(resolve, reject) {
+        Ember.$.ajax({
+          type: 'POST',
+          dataType: 'json',
+          url: config.APP.API_NAMESPACE + '/rest-auth/registration/',
+          data: data,
+          success: Ember.run.bind(null, resolve),
+          error: Ember.run.bind(null, reject)
+        });
       }).then(function() {
         return self.get('session').open('spreadr', {
           username: data.username,
           password: data.password1
         });
       }).then(function() {
+        self.send('loggedIn', self.get('session'));
         self.reset();
         self.transitionToRoute('index');
       }, function(xhr, error, errorThrown) {
