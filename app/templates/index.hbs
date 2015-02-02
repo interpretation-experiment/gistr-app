@@ -1,9 +1,11 @@
 <h2 id="title">Gistr</h2>
 
-{{#unless session.isAuthenticated}}
+{{#if session.isAuthenticated}}
+  <a href="#" {{action "logout"}}>Sign out</a>
+{{else}}
   {{link-to 'Sign in' 'login' id="login"}}
   {{link-to 'Sign up' 'register' id="register"}}
-{{/unless}}
+{{/if}}
 
 {{link-to 'Play' 'play.read' id="play"}}
 

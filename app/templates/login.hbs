@@ -6,7 +6,7 @@
   <p>Howdy, {{session.username}}</p>
 {{else}}
   {{#if session.isWorking}}
-    <p>Logging you in...</p>
+    <p>Signing you in...</p>
   {{else}}
     <form {{action "login" on="submit"}}>
       <div {{bind-attr class='errors.username:has-error'}}>

@@ -25,71 +25,43 @@ export default Ember.Object.extend({
     this.setupAjax();
   }.observes('token'),
 
-  open: function(authorization) {
+  fetchSession: function() {
     var self = this, store = this.get('store');
-    this.set('token', authorization.key);
 
-    return new Ember.RSVP.Promise(function(resolve, reject) {
-      Ember.$.ajax({
-        dataType: 'json',
-        url: config.APP.API_NAMESPACE + '/rest-auth/user/',
-        success: Ember.run.bind(null, resolve),
-        error: Ember.run.bind(null, reject)
-      }).then(function(user) {
-        store.find('user', user.id).then(function(user) {
-          return {
-            isAuthenticated: true,
-            currentUser: user,
-            username: user.get('username')
-          };
-        });
-      }, function(xhr, error, errorThrown) {
-        self.set('token', null);
-        return xhr.responseJSON || { non_field_errors: errorThrown };
-      });
+    return Ember.$.ajax({
+      dataType: 'json',
+      url: config.APP.API_NAMESPACE + '/rest-auth/user/'
+    }).then(function(user) {
+      return store.find('user', user.id);
+    }).then(function(user) {
+      return { currentUser: user };
+    }, function(xhr, error, errorThrown) {
+      self.set('token', null);
+      return xhr.responseJSON || { non_field_errors: errorThrown };
     });
   },
 
-  fetch: function() {
-    var self = this, store = this.get('store');
-    this.set('token', localStorage.gistr_spreadr_auth_token);
+  open: function(authorization) {
+    this.set('token', authorization.key);
+    return this.fetchSession();
+  },
 
-    return new Ember.RSVP.Promise(function(resolve, reject) {
-      Ember.$.ajax({
-        dataType: 'json',
-        url: config.APP.API_NAMESPACE + '/rest-auth/user/',
-        success: Ember.run.bind(null, resolve),
-        error: Ember.run.bind(null, reject)
-      }).then(function(user) {
-        store.find('user', user.id).then(function(user) {
-          return {
-            isAuthenticated: true,
-            currentUser: user,
-            username: user.get('username')
-          };
-        });
-      }, function(xhr, error, errorThrown) {
-        self.set('token', null);
-        return xhr.responseJSON || { non_field_errors: errorThrown };
-      });
-    });
+  fetch: function() {
+    this.set('token', localStorage.gistr_spreadr_auth_token);
+    return this.fetchSession();
   },
 
   close: function() {
     var self = this;
 
-    return new Ember.RSVP.Promise(function(resolve, reject) {
-      Ember.$.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: config.APP.API_NAMESPACE + '/rest-auth/logout/',
-        success: Ember.run.bind(null, resolve),
-        error: Ember.run.bind(null, reject)
-      }).then(function() {
-        self.set('token', null);
-      }, function(xhr, error, errorThrown) {
-        return xhr.responseJSON || { non_field_errors: errorThrown };
-      });
+    return Ember.$.ajax({
+      type: 'POST',
+      dataType: 'json',
+      url: config.APP.API_NAMESPACE + '/rest-auth/logout/',
+    }).then(function() {
+      self.set('token', null);
+    }, function(xhr, error, errorThrown) {
+      return xhr.responseJSON || { non_field_errors: errorThrown };
     });
   }
 
