@@ -13,7 +13,8 @@
     "ember-qunit": "0.1.8",
     "ember-qunit-notifications": "0.0.4",
     "qunit": "~1.15.0",
-    "jquery-cookie": "~1.4.1"
+    "jquery-cookie": "~1.4.1",
+    "ember-fsm": "~0.4.1"
   },
   "devDependencies": {
     "sinonjs-built": "~1.9.1"
