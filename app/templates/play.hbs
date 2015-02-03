@@ -1,1 +1,31 @@
-{{ outlet }}
+{{#if stateIsTaskInstructions}}
+  <p>Task instructions: {{task.instructions}}</p>
+{{/if}}
+
+{{#if stateIsReading}}
+  <p>Sentence instructions: {{instructions}}</p>
+
+  <blockquote>Sentence text: {{text}}</blockquote>
+
+  <p>Time left: {{countdown}} seconds</p>
+{{/if}}
+
+{{#if stateIsHolding}}
+  <p>Hold task.</p>
+  <a href="#" {{action "held"}}>Ok</a>
+{{/if}}
+
+{{#if stateIsWriting}}
+  <form {{action "save" on="submit"}}>
+    <div {{bind-attr class='errors.text:has-error'}}>
+      <span>{{errors.text}}</span>
+      {{view focused-textarea value=text rows="3" cols="50"}}
+    </div>
+    {{#if errors.non_field_errors}}
+      <div>
+        <strong>Oops!</strong> {{errors.non_field_errors}}
+      </div>
+    {{/if}}
+    {{input type='submit' value='Continue'}}
+  </form>
+{{/if}}
