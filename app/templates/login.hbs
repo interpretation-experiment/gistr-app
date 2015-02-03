@@ -1,0 +1,31 @@
+{{link-to 'Home' 'index' id="home"}}
+
+<h2>Sign in</h2>
+
+{{#if session.isAuthenticated}}
+  <p>Howdy, {{session.currentUser.username}}</p>
+  <a href="#" {{action "logout"}}>Sign out</a>
+{{else}}
+  {{#if session.isWorking}}
+    <p>Signing you in...</p>
+  {{else}}
+    <form {{action "login" on="submit"}}>
+      <div {{bind-attr class='errors.username:has-error'}}>
+        <span>{{errors.username}}</span>
+        {{view focused-textfield value=username placeholder='Username'}}
+      </div>
+      <div {{bind-attr class='errors.password:has-error'}}>
+        <span>{{errors.password}}</span>
+        {{input value=password type='password' placeholder='Password'}}
+      </div>
+
+      {{#if errors.non_field_errors}}
+        <div>
+          <strong>Oops!</strong> {{errors.non_field_errors}}
+        </div>
+      {{/if}}
+
+      {{input type='submit' value='Log in'}}
+    </form>
+  {{/if}}
+{{/if}}

@@ -24,4 +24,6 @@ var sinon = pickFiles('bower_components/sinonjs-built/lib', {
   destDir: '/assets'
 });
 
+app.import('bower_components/jquery-cookie/jquery.cookie.js');
+
 module.exports = app.toTree(sinon);

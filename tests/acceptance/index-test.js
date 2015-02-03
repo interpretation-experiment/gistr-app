@@ -34,7 +34,7 @@ test('index renders', function() {
     equal(hTitle.text(), 'Gistr');
 
     equal(aPlay.text(), 'Play');
-    equal(aPlay.attr('href'), '/play');
+    equal(aPlay.attr('href'), '/play/read');
 
     equal(aSuggest.text(), 'Suggest sentence');
     equal(aSuggest.attr('href'), '/suggest');

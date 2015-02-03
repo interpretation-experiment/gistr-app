@@ -6,6 +6,8 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
+  this.route('login');
+  this.route('register');
   this.route('about');
   this.route('settings');
   this.resource('play', function() {

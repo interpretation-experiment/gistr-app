@@ -10,5 +10,26 @@ export default Ember.Route.extend({
     if (config.environment !== 'test'){
       controller.updateNetstatusLoop();
     }
+
+    // See if we're logged in
+    var self = this;
+    this.get('session').fetch('spreadr').then(function() {
+      self.send('loggedIn', self.get('session'));
+    });
+  },
+
+  actions: {
+    logout: function() {
+      this.get('session').close('spreadr');
+    },
+    loggedIn: function(session) {
+      // Request a profile if we have none
+      var self = this;
+      session.get('currentUser').get('profile').then(function(profile) {
+        if (!profile) {
+          self.store.createRecord('profile', {}).save();
+        }
+      });
+    }
   }
 });
