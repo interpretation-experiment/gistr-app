@@ -7,14 +7,14 @@ textarea {
   resize: vertical;
 }
 
-p#netstatus span.checking {
+span.checking {
   color: #b70;
 }
 
-p#netstatus span.online {
+span.online {
   color: #180;
 }
 
-p#netstatus span.offline {
+span.offline {
   color: #80a;
 }

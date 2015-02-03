@@ -1,18 +1,18 @@
-<h2 id="title">Gistr</h2>
+<h2>Home</h2>
 
 {{#if session.isAuthenticated}}
   <a href="#" {{action "logout"}}>Sign out</a>
 {{else}}
-  {{link-to 'Sign in' 'login' id="login"}}
-  {{link-to 'Sign up' 'register' id="register"}}
+  {{link-to 'Sign in' 'login'}}
+  {{link-to 'Sign up' 'register'}}
 {{/if}}
 
-{{link-to 'Play' 'play.read' id="play"}}
+{{link-to 'Play' 'play'}}
 
-{{link-to 'Suggest sentence' 'suggest' id="suggest"}}
+{{link-to 'Suggest sentence' 'suggest'}}
 
-<a id="like" href="#">Like</a>
+<a href="#">Like</a>
 
-{{link-to 'About' 'about' id="about"}}
+{{link-to 'About' 'about'}}
 
-{{link-to 'Settings' 'settings' id="settings"}}
+{{link-to 'Settings' 'settings'}}

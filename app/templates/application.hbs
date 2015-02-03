@@ -1,4 +1,4 @@
-<p id="netstatus">Network status: <span {{bind-attr class="netstatus"}}>{{netstatus}}</span></p>
+<p>Network status: <span {{bind-attr class="netstatus"}}>{{netstatus}}</span></p>
 
 <!-- TODO: test -->
 {{#if session.isAuthenticated}}
@@ -9,5 +9,7 @@
  {{/if}}
 {{/if}}
 <!-- up to here -->
+
+{{link-to 'Gistr' 'index'}}
 
 {{outlet}}

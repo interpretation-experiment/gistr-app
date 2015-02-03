@@ -10,11 +10,7 @@ Router.map(function() {
   this.route('register');
   this.route('about');
   this.route('settings');
-  this.resource('play', function() {
-    this.route('read');
-    this.route('ok');
-    this.route('type');
-  });
+  this.route('play');
   this.resource('suggest', function() {
     this.route('new');
   });
