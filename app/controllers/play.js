@@ -1,19 +1,33 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
+  /*
+   * Timing factors
+   */
   precision: 1,  // updates per second
   readDuration: 5,   // in seconds
   writeDuration: 5, // in seconds
 
+  /*
+   * Global progress variables
+   */
   count: 0,
+  resetProgress: function() {
+    this.setProperties({
+      'count': 0
+    });
+  },
+
+  /*
+   * Timing variables
+   */
   lastNow: null,
   readTime: null,
   readTimer: null,
   writeTime: null,
   writeTimer: null,
-  reset: function() {
+  resetTimers: function() {
     this.setProperties({
-      'count': 0,
       'lastNow': null,
       'readTime': null,
       'readTimer': null,
@@ -22,6 +36,17 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     });
   },
 
+  /*
+   * Global reset
+   */
+  reset: function() {
+    this.resetProgress();
+    this.resetTimers();
+  },
+
+  /*
+   * Timing observers and triggerers
+   */
   readTimeChanged: function() {
     var readTime = this.get('readTime');
     if (!!readTime && readTime <= 0) {
@@ -52,7 +77,6 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
       'readTimer': null
     });
   },
-
   writeTimeChanged: function() {
     var writeTime = this.get('writeTime');
     if (!!writeTime && writeTime <= 0) {
@@ -84,6 +108,9 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     });
   },
 
+  /*
+   * Trial progress actions
+   */
   actions: {
     read: function() {
       this.sendStateEvent('read');
@@ -105,6 +132,9 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     }
   },
 
+  /*
+   * Trial progress FSM states and events
+   */
   fsmStates: {
     initialState: 'instructions',
     reading: {
@@ -152,6 +182,9 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     }
   },
 
+  /*
+   * Trial progress state booleans
+   */
   stateIsInstructions: function() {
     return this.get('currentState') === 'instructions';
   }.property('currentState'),
@@ -173,6 +206,7 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   stateIsFinished: function() {
     return this.get('currentState') === 'finished';
   }.property('currentState')
+
 });
 /*
 
