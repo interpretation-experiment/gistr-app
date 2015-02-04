@@ -1,6 +1,6 @@
-import Ember from 'ember';
+import RestrictedRoute from './restricted-route';
 
-export default Ember.Route.extend({
+export default RestrictedRoute.extend({
   model: function() {
     return this.store.find('sentence', '1');
   },
