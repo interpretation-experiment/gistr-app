@@ -1,6 +1,5 @@
 import Ember from 'ember';
 import draw from 'gistr/utils/draw';
-import config from '../config/environment';
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, {
   /*
