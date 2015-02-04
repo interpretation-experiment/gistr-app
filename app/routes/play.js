@@ -11,7 +11,6 @@ export default RestrictedRoute.extend({
     });
   },
   setupController: function(controller, trees) {
-    console.log(trees);
     controller.set('untouchedTrees', trees);
   },
   actions: {

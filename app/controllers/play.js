@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import draw from 'gistr/utils/draw';
+import config from '../config/environment';
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, {
   /*
@@ -7,7 +8,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
    */
   precision: 1,  // updates per second
   readDuration: 5,   // in seconds
-  writeDuration: 5, // in seconds
+  writeDuration: 30, // in seconds
 
   /*
    * Global reset
@@ -23,9 +24,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
    */
   currentTree: null,
   currentSentence: null,
-  untouchedTreesCount: function() {
-    return this.get('untouchedTrees').get('length');
-  }.property('model'),
   resetModels: function() {
     this.setProperties({
       currentTree: null,
@@ -42,6 +40,59 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
     return tree.get('sentences').then(function(sentences) {
       self.set('currentSentence', draw(sentences));
     });
+  },
+
+  /*
+   * Input validation variables
+   */
+  errors: null,
+  text: null,
+  resetInput: function() {
+    this.setProperties({
+      errors: null,
+      text: null
+    });
+  },
+
+  /*
+   * Input upload
+   */
+  uploadSentence: function(transition) {
+    var self = this;
+
+    //console.log('uploadSentence');
+    //this.testTransition(transition);
+    return this.get('store').createRecord('sentence', {
+      text: self.get('text'),
+      parent: self.get('currentSentence')
+    }).save().then(function() {
+      console.log('save success');
+      self.resetInput();
+      self.get('currentTree').set('untouched', false);
+    }, function(error) {
+      console.log('save error');
+      //transition.abort();
+      //self.testTransition(transition);
+      self.set('errors', error.errors);
+    });
+  },
+  checkUpload: function() {
+    if (this.get('errors') === null) {
+      console.log('there are NO save errors');
+      this.sendStateEvent('verify');
+    } else {
+      console.log('there are save errors');
+      this.sendStateEvent('write');
+    }
+  },
+
+  testTransition: function(transition) {
+    console.log('resolutions: ' + JSON.stringify(transition.get('resolutions')));
+    console.log('rejections: ' + JSON.stringify(transition.get('rejections')));
+    console.log('aborted: ' + JSON.stringify(transition.get('isAborted')));
+    console.log('resolving: ' + JSON.stringify(transition.get('isResolving')));
+    console.log('resolved: ' + JSON.stringify(transition.get('isResolved')));
+    console.log('rejected: ' + JSON.stringify(transition.get('isRejected')));
   },
 
   /*
@@ -191,15 +242,27 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
       transition: { reading: 'holding' }
     },
     write: {
-      transition: { holding: 'writing' }
+      transitions: [
+        {
+          from: 'holding',
+          to: 'writing',
+          before: 'resetInput'
+        },
+        { uploaded: 'writing' }
+      ]
+    },
+    upload: {
+      transition: {
+        writing: 'uploaded',
+        didEnter: 'uploadSentence',
+        after: 'checkUpload'
+      }
+    },
+    verify: {
+      transition: { uploaded: 'verified' }
     },
     timeout: {
       transition: { writing: 'timedout' }
-    },
-    upload: {
-      // verify, try upload, if fail transition to error, then next
-      transition: { writing: 'verified' }
-      // set currentTree to seen. this updates available sentences. if too few, get from server
     },
     finish: {
       transition: { verified: 'finished' }
