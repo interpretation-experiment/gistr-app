@@ -10,12 +10,11 @@ export default Ember.ObjectController.extend({
     });
   },
   actions: {
-    // No need to test this
-    sendSentence: function() {
-      this._sendSentence();
+    uploadSentence: function() {
+      this._uploadSentence();
     }
   },
-  _sendSentence: function() {
+  _uploadSentence: function() {
     var self = this;
 
     this.get('store').createRecord('sentence', {

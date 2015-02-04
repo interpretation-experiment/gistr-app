@@ -11,9 +11,7 @@ Router.map(function() {
   this.route('about');
   this.route('settings');
   this.route('play');
-  this.resource('suggest', function() {
-    this.route('new');
-  });
+  this.route('suggest');
 });
 
 export default Router;
