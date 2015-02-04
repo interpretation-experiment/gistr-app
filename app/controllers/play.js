@@ -1,12 +1,48 @@
 import Ember from 'ember';
+import draw from 'gistr/utils/draw';
 
-export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
+export default Ember.Controller.extend(Ember.FSM.Stateful, {
   /*
    * Timing factors
    */
   precision: 1,  // updates per second
   readDuration: 5,   // in seconds
   writeDuration: 5, // in seconds
+
+  /*
+   * Global reset
+   */
+  reset: function() {
+    this.resetProgress();
+    this.resetTimers();
+    this.resetModels();
+  },
+
+  /*
+   * Current tree and sentence variables
+   */
+  currentTree: null,
+  currentSentence: null,
+  untouchedTreesCount: function() {
+    return this.get('untouchedTrees').get('length');
+  }.property('model'),
+  resetModels: function() {
+    this.setProperties({
+      currentTree: null,
+      currentSentence: null
+    });
+  },
+
+  /*
+   * Current tree and sentence selection
+   */
+  selectModels: function() {
+    var self = this, tree = draw(this.get('untouchedTrees'));
+    this.set('currentTree', tree);
+    return tree.get('sentences').then(function(sentences) {
+      self.set('currentSentence', draw(sentences));
+    });
+  },
 
   /*
    * Global progress variables
@@ -34,14 +70,6 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
       'writeTime': null,
       'writeTimer': null,
     });
-  },
-
-  /*
-   * Global reset
-   */
-  reset: function() {
-    this.resetProgress();
-    this.resetTimers();
   },
 
   /*
@@ -138,6 +166,7 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   fsmStates: {
     initialState: 'instructions',
     reading: {
+      willEnter: 'selectModels',
       didEnter: 'startReadTime',
       willExit: 'finishReadTime'
     },
@@ -168,7 +197,9 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
       transition: { writing: 'timedout' }
     },
     upload: {
+      // verify, try upload, if fail transition to error, then next
       transition: { writing: 'verified' }
+      // set currentTree to seen. this updates available sentences. if too few, get from server
     },
     finish: {
       transition: { verified: 'finished' }

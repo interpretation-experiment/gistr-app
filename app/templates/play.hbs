@@ -1,4 +1,5 @@
 <p>Completed count: {{count}}</p>
+<p>Untouched tree count: {{untouchedTreesCount}}</p>
 
 {{#if stateIsInstructions}}
   <p>Task instructions: {{task.instructions}}</p>
@@ -6,8 +7,8 @@
 {{/if}}
 
 {{#if stateIsReading}}
-  <p>Sentence instructions: {{instructions}}</p>
-  <blockquote>Sentence text: {{text}}</blockquote>
+  <p>Sentence instructions: {{currentSentence.instructions}}</p>
+  <blockquote>Sentence text: {{currentSentence.text}}</blockquote>
   <p>Time left: {{readTime}} seconds</p>
   <button {{action "hold"}}>Continue</button>
 {{/if}}
