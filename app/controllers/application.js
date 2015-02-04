@@ -1,41 +1,39 @@
 import Ember from 'ember';
 import config from '../config/environment';
 
-export default Ember.Controller.extend({
-  netstatus: 'checking',
+export default Ember.Controller.extend(Ember.FSM.Stateful, {
+  pingPeriod: 3,  // in seconds
 
-  setOnline: function() {
-    this.set('netstatus', 'online');
+  delayedCheck: function() {
+    Ember.run.later(this, function() {
+      this.sendStateEvent('check');
+    }, 1000 * this.get('pingPeriod'));
   },
-
-  setOffline: function() {
-    this.set('netstatus', 'offline');
-  },
-
-  // FIXME[try promises]: untested
-  updateNetstatus: function() {
-    var that = this,
-        pingBack = config.APP.API_HOST + config.APP.API_NAMESPACE + '/';
-
+  ping: function() {
     return Ember.$.ajax({
-      url: pingBack,
-      type: 'HEAD'
-    }).done(function(/*data, status, xhr*/) {
-      that.setOnline();
-    }).fail(function(/*xhr, status, error*/) {
-      that.setOffline();
+      url: config.APP.API_HOST + config.APP.API_NAMESPACE + '/',
+      type: 'HEAD',
+      timeout: this.get('pingPeriod') * 1000 / 3
     });
   },
 
-  // FIXME[try promises]: untested
-  updateNetstatusLoop: function() {
-    var that = this;
-
-    this.updateNetstatus().always(function() {
-      Ember.run.later(that, function() {
-        this.updateNetstatusLoop();
-      }, 3000);
-    });
+  fsmStates: {
+    initialState: 'unknown',
+    unknown: { didEnter: 'delayedCheck' },
+    online: { didEnter: 'delayedCheck' },
+    offline: { didEnter: 'delayedCheck' }
+  },
+  fsmEvents: {
+    check: {
+      transitions: { '$all': 'online' },
+      before: 'ping'
+    },
+    error: {
+      transition: { '$all': 'offline' }
+    },
+    reset: {
+      transition: { '$all': '$initial' }
+    }
   }
 
 });

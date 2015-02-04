@@ -146,7 +146,7 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     reset: {
       transition: {
         from: '$all',
-        to: 'instructions',
+        to: '$initial',
         didEnter: 'reset'
       }
     }

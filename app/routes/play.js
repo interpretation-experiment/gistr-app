@@ -5,7 +5,7 @@ export default Ember.Route.extend({
     return this.store.find('sentence', '1');
   },
   actions: {
-    willTransition: function(transition) {
+    willTransition: function(/*transition*/) {
       this.get('controller').send('reset');
     }
   }
