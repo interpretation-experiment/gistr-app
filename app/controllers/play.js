@@ -4,15 +4,23 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   precision: 1,  // updates per second
   readDuration: 5,   // in seconds
   writeDuration: 5, // in seconds
+
   count: 0,
-
   lastNow: null,
-
   readTime: null,
   readTimer: null,
-
   writeTime: null,
   writeTimer: null,
+  reset: function() {
+    this.setProperties({
+      'count': 0,
+      'lastNow': null,
+      'readTime': null,
+      'readTimer': null,
+      'writeTime': null,
+      'writeTimer': null,
+    });
+  },
 
   readTimeChanged: function() {
     var readTime = this.get('readTime');
@@ -22,21 +30,27 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   }.observes('readTime'),
   updateReadTime: function() {
     var now = Date.now(), diff = now - this.get('lastNow');
-    this.set('lastNow', now);
-    this.set('readTime', this.get('readTime')  - diff / 1000);
-    this.set('readTimer',
-             Ember.run.later(this, this.updateReadTime, 1000 / this.get('precision')));
+    this.setProperties({
+      'lastNow': now,
+      'readTime': this.get('readTime')  - diff / 1000,
+      'readTimer': Ember.run.later(this, this.updateReadTime,
+                                   1000 / this.get('precision'))
+    });
   },
   startReadTime: function() {
-    this.set('lastNow', Date.now());
-    this.set('readTime', this.get('readDuration'));
-    this.set('readTimer',
-             Ember.run.later(this, this.updateReadTime, 1000 / this.get('precision')));
+    this.setProperties({
+      'lastNow': Date.now(),
+      'readTime': this.get('readDuration'),
+      'readTimer': Ember.run.later(this, this.updateReadTime,
+                                   1000 / this.get('precision'))
+    });
   },
   finishReadTime: function() {
     Ember.run.cancel(this.get('readTimer'));
-    this.set('readTime', null);
-    this.set('readTimer', null);
+    this.setProperties({
+      'readTime': null,
+      'readTimer': null
+    });
   },
 
   writeTimeChanged: function() {
@@ -47,21 +61,27 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   }.observes('writeTime'),
   updateWriteTime: function() {
     var now = Date.now(), diff = now - this.get('lastNow');
-    this.set('lastNow', now);
-    this.set('writeTime', this.get('writeTime')  - diff / 1000);
-    this.set('writeTimer',
-             Ember.run.later(this, this.updateWriteTime, 1000 / this.get('precision')));
+    this.setProperties({
+      'lastNow': now,
+      'writeTime': this.get('writeTime')  - diff / 1000,
+      'writeTimer': Ember.run.later(this, this.updateWriteTime,
+                                    1000 / this.get('precision'))
+    });
   },
   startWriteTime: function() {
-    this.set('lastNow', Date.now());
-    this.set('writeTime', this.get('writeDuration'));
-    this.set('writeTimer',
-             Ember.run.later(this, this.updateWriteTime, 1000 / this.get('precision')));
+    this.setProperties({
+      'lastNow': Date.now(),
+      'writeTime': this.get('writeDuration'),
+      'writeTimer': Ember.run.later(this, this.updateWriteTime,
+                                    1000 / this.get('precision'))
+    });
   },
   finishWriteTime: function() {
     Ember.run.cancel(this.get('writeTimer'));
-    this.set('writeTime', null);
-    this.set('writeTimer', null);
+    this.setProperties({
+      'writeTime': null,
+      'writeTimer': null
+    });
   },
 
   actions: {
@@ -79,6 +99,9 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     },
     finish: function() {
       this.sendStateEvent('finish');
+    },
+    reset: function() {
+      this.sendStateEvent('reset');
     }
   },
 
@@ -119,6 +142,13 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     },
     finish: {
       transition: { verified: 'finished' }
+    },
+    reset: {
+      transition: {
+        from: '$all',
+        to: 'instructions',
+        didEnter: 'reset'
+      }
     }
   },
 
