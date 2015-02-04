@@ -1,29 +1,69 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
-  fsmStates: {
-    initialState: 'instructions'
-  },
-  fsmEvents: {
-    read: {
-      transitions: {
-        from: ['instructions', 'verified'],
-        to: 'reading'
-      }
-    },
-    hold: {
-      transition: { reading: 'holding' }
-    },
-    write: {
-      transition: { holding: 'writing' }
-    },
-    upload: {
-      transition: { writing: 'verified' }
-    },
-    finish: {
-      transition: { verified: 'finished' }
+  precision: 1,  // updates per second
+  readDuration: 5,   // in seconds
+  writeDuration: 5, // in seconds
+  count: 0,
+
+  lastNow: null,
+
+  readTime: null,
+  readTimer: null,
+
+  writeTime: null,
+  writeTimer: null,
+
+  readTimeChanged: function() {
+    var readTime = this.get('readTime');
+    if (!!readTime && readTime <= 0) {
+      this.sendStateEvent('hold');
     }
+  }.observes('readTime'),
+  updateReadTime: function() {
+    var now = Date.now(), diff = now - this.get('lastNow');
+    this.set('lastNow', now);
+    this.set('readTime', this.get('readTime')  - diff / 1000);
+    this.set('readTimer',
+             Ember.run.later(this, this.updateReadTime, 1000 / this.get('precision')));
   },
+  startReadTime: function() {
+    this.set('lastNow', Date.now());
+    this.set('readTime', this.get('readDuration'));
+    this.set('readTimer',
+             Ember.run.later(this, this.updateReadTime, 1000 / this.get('precision')));
+  },
+  finishReadTime: function() {
+    Ember.run.cancel(this.get('readTimer'));
+    this.set('readTime', null);
+    this.set('readTimer', null);
+  },
+
+  writeTimeChanged: function() {
+    var writeTime = this.get('writeTime');
+    if (!!writeTime && writeTime <= 0) {
+      this.sendStateEvent('timeout');
+    }
+  }.observes('writeTime'),
+  updateWriteTime: function() {
+    var now = Date.now(), diff = now - this.get('lastNow');
+    this.set('lastNow', now);
+    this.set('writeTime', this.get('writeTime')  - diff / 1000);
+    this.set('writeTimer',
+             Ember.run.later(this, this.updateWriteTime, 1000 / this.get('precision')));
+  },
+  startWriteTime: function() {
+    this.set('lastNow', Date.now());
+    this.set('writeTime', this.get('writeDuration'));
+    this.set('writeTimer',
+             Ember.run.later(this, this.updateWriteTime, 1000 / this.get('precision')));
+  },
+  finishWriteTime: function() {
+    Ember.run.cancel(this.get('writeTimer'));
+    this.set('writeTime', null);
+    this.set('writeTimer', null);
+  },
+
   actions: {
     read: function() {
       this.sendStateEvent('read');
@@ -41,6 +81,47 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
       this.sendStateEvent('finish');
     }
   },
+
+  fsmStates: {
+    initialState: 'instructions',
+    reading: {
+      didEnter: 'startReadTime',
+      willExit: 'finishReadTime'
+    },
+    writing: {
+      didEnter: 'startWriteTime',
+      willExit: 'finishWriteTime'
+    },
+    verified: {
+      didEnter: function() {
+        this.incrementProperty('count');
+      }
+    }
+  },
+  fsmEvents: {
+    read: {
+      transitions: {
+        from: ['instructions', 'verified', 'timedout'],
+        to: 'reading'
+      }
+    },
+    hold: {
+      transition: { reading: 'holding' }
+    },
+    write: {
+      transition: { holding: 'writing' }
+    },
+    timeout: {
+      transition: { writing: 'timedout' }
+    },
+    upload: {
+      transition: { writing: 'verified' }
+    },
+    finish: {
+      transition: { verified: 'finished' }
+    }
+  },
+
   stateIsInstructions: function() {
     return this.get('currentState') === 'instructions';
   }.property('currentState'),
@@ -53,6 +134,9 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   stateIsWriting: function() {
     return this.get('currentState') === 'writing';
   }.property('currentState'),
+  stateIsTimedout: function() {
+    return this.get('currentState') === 'timedout';
+  }.property('currentState'),
   stateIsVerified: function() {
     return this.get('currentState') === 'verified';
   }.property('currentState'),
@@ -61,67 +145,6 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
   }.property('currentState')
 });
 /*
-
-// --- controllers/play/read.js
-import Ember from 'ember';
-import ceiling from '../../utils/ceiling';
-
-export default Ember.ObjectController.extend({
-  actions: {
-    startCountdown: function(route, callback) {
-      this._startCountdown(route, callback);
-    },
-    cancelCountdown: function() {
-      this._cancelCountdown();
-    }
-  },
-
-  // TODO[after backend]: get from params/model
-  duration: 5,   // in seconds
-
-  // TODO[after backend]: get from params/model
-  precision: 1,  // updates per second
-
-  _startCountdown: function(route, callback) {
-    var duration = this.get('duration'),
-        precision = this.get('precision');
-
-    this.set('transitionTimer',
-             setTimeout(Ember.run.bind(route, callback), duration * 1000));
-    this.set('renderInterval',
-             setInterval(Ember.run.bind(this, this._updateCountdown),
-                         1 + 1000.0 / precision));
-
-    this.set('lastNow', Date.now());
-    this.set('preciseCountdown', duration);
-    this._updateCountdown();
-  },
-
-  _updateCountdown: function() {
-    var now = Date.now(),
-        diff = now - this.get('lastNow'),
-        preciseCountdown = this.get('preciseCountdown') - diff / 1000;
-
-    this.set('lastNow', now);
-    this.set('preciseCountdown', preciseCountdown);
-    this.set('countdown', ceiling(preciseCountdown, this.get('precision')));
-  },
-
-  _cancelCountdown: function() {
-    var transitionTimer = this.get('transitionTimer'),
-        renderInterval = this.get('renderInterval');
-
-    if (!!transitionTimer) {
-      clearTimeout(transitionTimer);
-      this.set('transitionTimer', undefined);
-    }
-
-    if (!!renderInterval) {
-      clearInterval(renderInterval);
-      this.set('renderInterval', undefined);
-    }
-  }
-});
 
 // --- controllers/play/type.js
 import Ember from 'ember';

@@ -1,3 +1,5 @@
+<p>Completed count: {{count}}</p>
+
 {{#if stateIsInstructions}}
   <p>Task instructions: {{task.instructions}}</p>
   <button {{action "read"}}>Continue</button>
@@ -6,7 +8,7 @@
 {{#if stateIsReading}}
   <p>Sentence instructions: {{instructions}}</p>
   <blockquote>Sentence text: {{text}}</blockquote>
-  <p>Time left: {{countdown}} seconds</p>
+  <p>Time left: {{readTime}} seconds</p>
   <button {{action "hold"}}>Continue</button>
 {{/if}}
 
@@ -28,6 +30,12 @@
     {{/if}}
     {{input type='submit' value='Continue'}}
   </form>
+  <p>Time left: {{writeTime}} seconds</p>
+{{/if}}
+
+{{#if stateIsTimedout}}
+  <p>Timed out.</p>
+  <button {{action "read"}}>Continue</button>
 {{/if}}
 
 {{#if stateIsVerified}}
