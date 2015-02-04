@@ -1,22 +1,22 @@
-{{#if stateIsTaskInstructions}}
+{{#if stateIsInstructions}}
   <p>Task instructions: {{task.instructions}}</p>
+  <button {{action "read"}}>Continue</button>
 {{/if}}
 
 {{#if stateIsReading}}
   <p>Sentence instructions: {{instructions}}</p>
-
   <blockquote>Sentence text: {{text}}</blockquote>
-
   <p>Time left: {{countdown}} seconds</p>
+  <button {{action "hold"}}>Continue</button>
 {{/if}}
 
 {{#if stateIsHolding}}
   <p>Hold task.</p>
-  <a href="#" {{action "held"}}>Ok</a>
+  <button {{action "write"}}>Continue</button>
 {{/if}}
 
 {{#if stateIsWriting}}
-  <form {{action "save" on="submit"}}>
+  <form {{action "upload" on="submit"}}>
     <div {{bind-attr class='errors.text:has-error'}}>
       <span>{{errors.text}}</span>
       {{view focused-textarea value=text rows="3" cols="50"}}
@@ -28,4 +28,13 @@
     {{/if}}
     {{input type='submit' value='Continue'}}
   </form>
+{{/if}}
+
+{{#if stateIsVerified}}
+  <p>Verified.</p>
+  <button {{action "read"}}>Continue</button>
+{{/if}}
+
+{{#if stateIsFinished}}
+  <p>Done.</p>
 {{/if}}

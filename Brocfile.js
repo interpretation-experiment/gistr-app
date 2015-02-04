@@ -25,5 +25,6 @@ var sinon = pickFiles('bower_components/sinonjs-built/lib', {
 });
 
 app.import('bower_components/jquery-cookie/jquery.cookie.js');
+app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
 
 module.exports = app.toTree(sinon);

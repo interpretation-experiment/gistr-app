@@ -1,3 +1,65 @@
+import Ember from 'ember';
+
+export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
+  fsmStates: {
+    initialState: 'instructions'
+  },
+  fsmEvents: {
+    read: {
+      transitions: {
+        from: ['instructions', 'verified'],
+        to: 'reading'
+      }
+    },
+    hold: {
+      transition: { reading: 'holding' }
+    },
+    write: {
+      transition: { holding: 'writing' }
+    },
+    upload: {
+      transition: { writing: 'verified' }
+    },
+    finish: {
+      transition: { verified: 'finished' }
+    }
+  },
+  actions: {
+    read: function() {
+      this.sendStateEvent('read');
+    },
+    hold: function() {
+      this.sendStateEvent('hold');
+    },
+    write: function() {
+      this.sendStateEvent('write');
+    },
+    upload: function() {
+      this.sendStateEvent('upload');
+    },
+    finish: function() {
+      this.sendStateEvent('finish');
+    }
+  },
+  stateIsInstructions: function() {
+    return this.get('currentState') === 'instructions';
+  }.property('currentState'),
+  stateIsReading: function() {
+    return this.get('currentState') === 'reading';
+  }.property('currentState'),
+  stateIsHolding: function() {
+    return this.get('currentState') === 'holding';
+  }.property('currentState'),
+  stateIsWriting: function() {
+    return this.get('currentState') === 'writing';
+  }.property('currentState'),
+  stateIsVerified: function() {
+    return this.get('currentState') === 'verified';
+  }.property('currentState'),
+  stateIsFinished: function() {
+    return this.get('currentState') === 'finished';
+  }.property('currentState')
+});
 /*
 
 // --- controllers/play/read.js
