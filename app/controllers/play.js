@@ -81,6 +81,21 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
   },
 
   /*
+   * Suggestion control
+   */
+  canSuggest: function() {
+    var user = this.get('session').get('currentUser');
+    // Staff can always suggest
+    if (this.get('session').get('currentUser').get('is_staff')) {
+      return true;
+    }
+
+    return user.get('profile').then(function(profile) {
+      return profile.get('suggestion_credit') > 0;
+    });
+  },
+
+  /*
    * Global progress variables
    */
   count: 0,

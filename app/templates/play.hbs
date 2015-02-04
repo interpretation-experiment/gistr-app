@@ -45,7 +45,15 @@
 
 {{#if isInEmpty}}
   <p>Oops! You've participated in all the available trees.</p>
-  <p>Maybe you have credit to {{link-to 'suggest' 'suggest'}} new sentences?</p>
+  {{#if session.currentUser.is_staff}}
+    <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
+  {{else}}
+    {{#if canSuggest}}
+      <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{session.currentUser.profile.suggestion_credit}} left)</p>
+    {{else}}
+      <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
+    {{/if}}
+  {{/if}}
 {{/if}}
 
 {{#if isInFinished}}

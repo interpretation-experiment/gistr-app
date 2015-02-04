@@ -1,14 +1,39 @@
-<p>Type in your new sentence:</p>
-
-<form {{action "uploadSentence" on="submit"}}>
-  <div {{bind-attr class='errors.text:has-error'}}>
-    <span>{{errors.text}}</span>
-    {{view focused-textarea value=text rows="3" cols="50"}}
-  </div>
-  {{#if errors.non_field_errors}}
-    <div>
-      <strong>Oops!</strong> {{errors.non_field_errors}}
-    </div>
+{{#if isInSuggesting}}
+  {{#if session.currentUser.is_staff}}
+    <p>You're staff, so suggest all you want.</p>
+  {{else}}
+    <p>Suggestion credit: {{session.currentUser.profile.suggestion_credit}}</p>
   {{/if}}
-  {{input type='submit' value='Continue'}}
-</form>
+  {{#if canSuggest}}
+    <p>Type in your new sentence:</p>
+
+    <form {{action "uploadSentence" on="submit"}}>
+      <div {{bind-attr class='errors.text:has-error'}}>
+        <span>{{errors.text}}</span>
+        {{view focused-textarea value=text rows="3" cols="50" disabled=isUploading}}
+      </div>
+      {{#if errors.non_field_errors}}
+        <div>
+          <strong>Oops!</strong> {{errors.non_field_errors}}
+        </div>
+      {{/if}}
+      {{input type='submit' value='Continue' disabled=isUploading}}
+    </form>
+  {{else}}
+    <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>
+  {{/if}}
+{{/if}}
+
+{{#if isInVerified}}
+  <p>Verified.</p>
+  {{#if session.currentUser.is_staff}}
+    <button {{action 'suggest'}}>Suggest again</button>
+  {{else}}
+    {{#if canSuggest}}
+    <button {{action 'suggest'}}>Suggest again ({{session.currentUser.profile.suggestion_credit}} left)</button>
+    {{else}}
+      <p>No credit left.</p>
+    {{/if}}
+  {{/if}}
+  {{link-to 'Play' 'play'}}
+{{/if}}
