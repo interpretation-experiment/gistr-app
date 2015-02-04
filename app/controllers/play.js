@@ -47,52 +47,33 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
    */
   errors: null,
   text: null,
+  isUploading: null,
   resetInput: function() {
     this.setProperties({
       errors: null,
-      text: null
+      text: null,
+      isUploading: null
     });
   },
 
   /*
    * Input upload
    */
-  uploadSentence: function(transition) {
+  _uploadSentence: function() {
     var self = this;
 
-    //console.log('uploadSentence');
-    //this.testTransition(transition);
+    this.set('isUploading', true);
     return this.get('store').createRecord('sentence', {
       text: self.get('text'),
       parent: self.get('currentSentence')
     }).save().then(function() {
-      console.log('save success');
       self.resetInput();
       self.get('currentTree').set('untouched', false);
+      self.sendStateEvent('upload');
     }, function(error) {
-      console.log('save error');
-      //transition.abort();
-      //self.testTransition(transition);
+      self.set('isUploading', false);
       self.set('errors', error.errors);
     });
-  },
-  checkUpload: function() {
-    if (this.get('errors') === null) {
-      console.log('there are NO save errors');
-      this.sendStateEvent('verify');
-    } else {
-      console.log('there are save errors');
-      this.sendStateEvent('write');
-    }
-  },
-
-  testTransition: function(transition) {
-    console.log('resolutions: ' + JSON.stringify(transition.get('resolutions')));
-    console.log('rejections: ' + JSON.stringify(transition.get('rejections')));
-    console.log('aborted: ' + JSON.stringify(transition.get('isAborted')));
-    console.log('resolving: ' + JSON.stringify(transition.get('isResolving')));
-    console.log('resolved: ' + JSON.stringify(transition.get('isResolved')));
-    console.log('rejected: ' + JSON.stringify(transition.get('isRejected')));
   },
 
   /*
@@ -200,14 +181,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
     write: function() {
       this.sendStateEvent('write');
     },
-    upload: function() {
-      this.sendStateEvent('upload');
-    },
     finish: function() {
       this.sendStateEvent('finish');
     },
     reset: function() {
       this.sendStateEvent('reset');
+    },
+    uploadSentence: function() {
+      this._uploadSentence();
     }
   },
 
@@ -223,7 +204,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
     },
     writing: {
       didEnter: 'startWriteTime',
-      willExit: 'finishWriteTime'
+      willExit: 'finishWriteTime',
+      didExit: 'resetInput'
     },
     verified: {
       didEnter: function() {
@@ -242,24 +224,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
       transition: { reading: 'holding' }
     },
     write: {
-      transitions: [
-        {
-          from: 'holding',
-          to: 'writing',
-          before: 'resetInput'
-        },
-        { uploaded: 'writing' }
-      ]
+      transition: { holding: 'writing' }
     },
     upload: {
-      transition: {
-        writing: 'uploaded',
-        didEnter: 'uploadSentence',
-        after: 'checkUpload'
-      }
-    },
-    verify: {
-      transition: { uploaded: 'verified' }
+      transition: { writing: 'verified' }
     },
     timeout: {
       transition: { writing: 'timedout' }
@@ -274,67 +242,5 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
         didEnter: 'reset'
       }
     }
-  },
-
-  /*
-   * Trial progress state booleans
-   */
-  stateIsInstructions: function() {
-    return this.get('currentState') === 'instructions';
-  }.property('currentState'),
-  stateIsReading: function() {
-    return this.get('currentState') === 'reading';
-  }.property('currentState'),
-  stateIsHolding: function() {
-    return this.get('currentState') === 'holding';
-  }.property('currentState'),
-  stateIsWriting: function() {
-    return this.get('currentState') === 'writing';
-  }.property('currentState'),
-  stateIsTimedout: function() {
-    return this.get('currentState') === 'timedout';
-  }.property('currentState'),
-  stateIsVerified: function() {
-    return this.get('currentState') === 'verified';
-  }.property('currentState'),
-  stateIsFinished: function() {
-    return this.get('currentState') === 'finished';
-  }.property('currentState')
-
-});
-/*
-
-// --- controllers/play/type.js
-import Ember from 'ember';
-
-export default Ember.ObjectController.extend({
-  text: null,
-  errors: null,
-  reset: function() {
-    this.setProperties({
-      text: null,
-      errors: null
-    });
-  },
-  actions: {
-    // No need to test this
-    sendSentence: function() {
-      this._sendSentence();
-    }
-  },
-  _sendSentence: function() {
-    var self = this;
-
-    this.get('store').createRecord('sentence', {
-      text: this.get('text'),
-      parent: this.get('model')
-    }).save().then(function() {
-      self.reset();
-      self.transitionToRoute('play.read');
-    }, function(error) {
-      self.set('errors', error.errors);
-    });
   }
 });
-
-*/

@@ -2,49 +2,49 @@
 <p>Untouched tree count: {{untouchedTrees.length}}</p>
 <p>Current state: {{currentState}}</p>
 
-{{#if stateIsInstructions}}
+{{#if isInInstructions}}
   <p>Task instructions: {{task.instructions}}</p>
   <button {{action "read"}}>Continue</button>
 {{/if}}
 
-{{#if stateIsReading}}
+{{#if isInReading}}
   <p>Sentence instructions: {{currentSentence.instructions}}</p>
   <blockquote>Sentence text: {{currentSentence.text}}</blockquote>
   <p>Time left: {{readTime}} seconds</p>
   <button {{action "hold"}}>Continue</button>
 {{/if}}
 
-{{#if stateIsHolding}}
+{{#if isInHolding}}
   <p>Hold task.</p>
   <button {{action "write"}}>Continue</button>
 {{/if}}
 
-{{#if stateIsWriting}}
-  <form {{action "upload" on="submit"}}>
+{{#if isInWriting}}
+  <form {{action "uploadSentence" on="submit"}}>
     <div {{bind-attr class='errors.text:has-error'}}>
       <span>{{errors.text}}</span>
-      {{view focused-textarea value=text rows="3" cols="50"}}
+      {{view focused-textarea value=text rows="3" cols="50" disabled=isUploading}}
     </div>
     {{#if errors.non_field_errors}}
       <div>
         <strong>Oops!</strong> {{errors.non_field_errors}}
       </div>
     {{/if}}
-    {{input type='submit' value='Continue'}}
+    {{input type='submit' value='Continue' disabled=isUploading}}
   </form>
   <p>Time left: {{writeTime}} seconds</p>
 {{/if}}
 
-{{#if stateIsTimedout}}
+{{#if isInTimedout}}
   <p>Timed out.</p>
   <button {{action "read"}}>Continue</button>
 {{/if}}
 
-{{#if stateIsVerified}}
+{{#if isInVerified}}
   <p>Verified.</p>
   <button {{action "read"}}>Continue</button>
 {{/if}}
 
-{{#if stateIsFinished}}
+{{#if isInFinished}}
   <p>Done.</p>
 {{/if}}
