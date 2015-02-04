@@ -1,6 +1,4 @@
-<p>Completed count: {{count}}</p>
-<p>Untouched tree count: {{untouchedTrees.length}}</p>
-<p>Current state: {{currentState}}</p>
+<p>Untouched trees: {{untouchedTrees.length}} / sentences sent: {{count}}</p>
 
 {{#if isInInstructions}}
   <p>Task instructions: {{task.instructions}}</p>
@@ -43,6 +41,11 @@
 {{#if isInVerified}}
   <p>Verified.</p>
   <button {{action "read"}}>Continue</button>
+{{/if}}
+
+{{#if isInEmpty}}
+  <p>Oops! You've participated in all the available trees.</p>
+  <p>Maybe you have credit to {{link-to 'suggest' 'suggest'}} new sentences?</p>
 {{/if}}
 
 {{#if isInFinished}}

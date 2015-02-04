@@ -40,6 +40,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
       self.set('currentSentence', draw(sentences));
     });
   },
+  watchUntouchedTrees: function() {
+    if (this.get('untouchedTrees').get('length') === 0) {
+      this.sendStateEvent('bail');
+    }
+  }.observes('untouchedTrees.length'),
 
   /*
    * Input validation variables
@@ -233,6 +238,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
     },
     finish: {
       transition: { verified: 'finished' }
+    },
+    bail: {
+      transition: {
+        from: ['instructions', 'verified'],
+        to: 'empty'
+      }
     },
     reset: {
       transition: {
