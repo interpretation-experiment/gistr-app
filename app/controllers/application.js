@@ -2,7 +2,7 @@ import Ember from 'ember';
 import config from '../config/environment';
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, {
-  pingPeriod: 3,  // in seconds
+  pingPeriod: 5,  // in seconds
 
   delayedCheck: function() {
     Ember.run.later(this, function() {
