@@ -1,8 +1,8 @@
 {{#if isInSuggesting}}
-  {{#if session.currentUser.is_staff}}
+  {{#if currentUser.is_staff}}
     <p>You're staff, so suggest all you want.</p>
   {{else}}
-    <p>Suggestion credit: {{session.currentUser.profile.suggestion_credit}}</p>
+    <p>Suggestion credit: {{currentProfile.suggestion_credit}}</p>
   {{/if}}
   {{#if canSuggest}}
     <p>Type in your new sentence:</p>
@@ -26,13 +26,13 @@
 
 {{#if isInVerified}}
   <p>Verified.</p>
-  {{#if session.currentUser.is_staff}}
+  {{#if currentUser.is_staff}}
     <button {{action 'suggest'}}>Suggest again</button>
   {{else}}
     {{#if canSuggest}}
-    <button {{action 'suggest'}}>Suggest again ({{session.currentUser.profile.suggestion_credit}} left)</button>
+      <button {{action 'suggest'}}>Suggest again ({{currentProfile.suggestion_credit}} left)</button>
     {{else}}
-      <p>No credit left.</p>
+      <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>
     {{/if}}
   {{/if}}
   {{link-to 'Play' 'play'}}

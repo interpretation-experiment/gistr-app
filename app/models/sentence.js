@@ -2,7 +2,10 @@ import DS from 'ember-data';
 
 var Sentence = DS.Model.extend({
   created: DS.attr('date'),
-  tree: DS.belongsTo('tree', { async: true }),
+  tree: DS.belongsTo('tree', {
+    inverse: 'sentences',
+    async: true
+  }),
   profile: DS.belongsTo('profile', { async: true }),
   parent: DS.belongsTo('sentence', {
     inverse: 'children',

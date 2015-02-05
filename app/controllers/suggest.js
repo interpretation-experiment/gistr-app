@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import SessionMixin from './session';
 
-export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
+export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Input validation variables
    */
@@ -44,17 +45,13 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
    * Suggestion control
    */
   canSuggest: function() {
-    var user = this.get('session').get('currentUser');
     // Staff can always suggest
-    if (this.get('session').get('currentUser').get('is_staff')) {
+    if (this.get('currentUser').get('is_staff')) {
       return true;
     }
 
-    return user.get('profile').then(function(profile) {
-      console.log('Can suggest: ' + (profile.get('suggestion_credit') > 0));
-      return profile.get('suggestion_credit') > 0;
-    });
-  }.property('session.currentUser.profile.suggestion_credit'),
+    return this.get('currentProfile').get('suggestion_credit') > 0;
+  }.property('currentProfile.suggestion_credit', 'currentUser.is_staff'),
 
   /*
    * Suggestion actions
@@ -81,7 +78,7 @@ export default Ember.ObjectController.extend(Ember.FSM.Stateful, {
     },
     verified: {
       didEnter: function() {
-        this.get('session').get('currentUser').get('profile').then(function(profile) {
+        this.get('currentProfile').then(function(profile) {
           profile.reload();
         });
       }
