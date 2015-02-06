@@ -16,6 +16,18 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
       timeout: this.get('pingPeriod') * 1000 / 3
     });
   },
+  currentIcon: function() {
+    var currentState = this.get('currentState');
+    if (currentState === 'online') {
+      return 'glyphicon-ok-sign';
+    }
+    if (currentState === 'offline') {
+      return 'glyphicon-remove-sign';
+    }
+    if (currentState === 'unknown') {
+      return 'glyphicon-question-sign';
+    }
+  }.property('currentState'),
 
   fsmStates: {
     initialState: 'unknown',

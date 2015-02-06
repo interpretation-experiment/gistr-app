@@ -1,5 +1,5 @@
 html, body {
-  margin: 20px;
+  /*margin: 0;*/
 }
 
 textarea {
@@ -7,14 +7,19 @@ textarea {
   resize: vertical;
 }
 
-span.unknown {
-  color: #b70;
+.home {
+  text-align: center;
 }
 
-span.online {
-  color: #180;
+.btn-home {
+  margin-top: 20px;
 }
 
-span.offline {
-  color: #80a;
+.greeting {
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.icon-big {
+  font-size: 36px;
 }

@@ -1,13 +1,3 @@
-<p>Network status: <span {{bind-attr class="currentState"}}>{{currentState}}</span></p>
-
-{{#if session.isAuthenticated}}
-  <p>You: {{session.currentUser.username}}</p>
-{{else}}
- {{#if session.isWorking}}
-   <p>Signing you in...</p>
- {{/if}}
-{{/if}}
-
-{{link-to 'Gistr' 'index'}}
-
-{{outlet}}
+<div class="container">
+  {{outlet}}
+</div>
