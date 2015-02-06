@@ -1,36 +1,46 @@
-<span class="pull-right icon-big"><span class="glyphicon glyphicon-cog"></span></span>
-<span class="clearfix"></span>
+<div class="container">
 
-<div class="home">
-  <h1>Gistr</h1>
-  <h3><small>A game (and experiment!) on interpretation</small></h3>
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1">
 
-  <div class="greeting">
-    {{#if session.isAuthenticated}}
-      <p>Howdy, {{session.currentUser.username}}</p>
-    {{else}}
-      {{link-to 'Sign in' 'login'}}
-      {{link-to 'Sign up' 'register'}}
-    {{/if}}
+      <span class="pull-right icon-big"><span class="glyphicon glyphicon-cog"></span></span>
+
+    </div>
   </div>
 
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-10 col-xs-offset-1">
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1 home">
 
-        <div class="row">
-          <div class="col-xs-6 col-sm-3">
-            {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            {{#link-to 'suggest' class="btn-home btn btn-lg btn-warning"}}Suggest {{bs-badge content=currentProfile.suggestion_credit}}{{/link-to}}
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            <a href="#" class="btn-home btn btn-lg btn-primary">Like</a>
-          </div>
-          <div class="col-xs-6 col-sm-3">
-            {{link-to 'About' 'about' class="btn-home btn btn-lg btn-info"}}
-          </div>
+      <h1>Gistr</h1>
+      <h3><small>A game (and experiment!) on interpretation</small></h3>
+
+      <div class="greeting">
+        {{#if session.isAuthenticated}}
+          <p>Howdy, {{session.currentUser.username}}</p>
+        {{else}}
+          {{link-to 'Sign in' 'login'}}
+          {{link-to 'Sign up' 'register'}}
+        {{/if}}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-10 col-xs-offset-1">
+      <div class="row home">
+
+        <div class="col-xs-6 col-sm-3">
+          {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
+        </div>
+        <div class="col-xs-6 col-sm-3">
+          {{#link-to 'suggest' class="btn-home btn btn-lg btn-warning"}}New {{#if currentUser.is_staff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestion_credit}}{{/if}}{{/link-to}}
+        </div>
+        <div class="col-xs-6 col-sm-3">
+          <a href="#" class="btn-home btn btn-lg btn-primary">Like</a>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+          {{link-to 'About' 'about' class="btn-home btn btn-lg btn-info"}}
         </div>
 
       </div>
