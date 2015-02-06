@@ -1,29 +1,45 @@
-<h2>Sign in</h2>
+<div class="row">
 
-{{#if session.isAuthenticated}}
-  <p>Howdy, {{session.currentUser.username}}</p>
-  <a href="#" {{action "logout"}}>Sign out</a>
-{{else}}
-  {{#if session.isWorking}}
-    <p>Signing you in...</p>
-  {{else}}
-    <form {{action "login" on="submit"}}>
-      <div {{bind-attr class='errors.username:has-error'}}>
-        <span>{{errors.username}}</span>
-        {{view focused-textfield value=username placeholder='Username'}}
-      </div>
-      <div {{bind-attr class='errors.password:has-error'}}>
-        <span>{{errors.password}}</span>
-        {{input value=password type='password' placeholder='Password'}}
-      </div>
+  <div class="col-xs-1">
+    <div class="pull-right icon-big">{{#link-to 'index'}}<span class="glyphicon glyphicon-menu-left"></span>{{/link-to}}</div>
+  </div>
 
-      {{#if errors.non_field_errors}}
-        <div>
-          <strong>Oops!</strong> {{errors.non_field_errors}}
-        </div>
+  <div class="col-xs-10">
+    <h2 class="page-title">Sign in</h2>
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-xs-10 col-xs-offset-1">
+
+    {{#if session.isAuthenticated}}
+      <p>Signed in as <strong>{{currentUser.username}}</strong>.</p>
+      <button class="btn btn-primary" {{bind-attr disabled=session.isWorking}} {{action "logout"}}>{{#if session.isWorking}}Signing you out{{else}}Sign out{{/if}}</button>
+    {{else}}
+      {{#if session.isWorking}}
+        <p>Signing you in...</p>
+      {{else}}
+        <form {{action "login" on="submit"}}>
+          <div {{bind-attr class='errors.username:has-error'}}>
+            <span>{{errors.username}}</span>
+            {{view focused-textfield value=username placeholder='Username'}}
+          </div>
+          <div {{bind-attr class='errors.password:has-error'}}>
+            <span>{{errors.password}}</span>
+            {{input value=password type='password' placeholder='Password'}}
+          </div>
+
+          {{#if errors.non_field_errors}}
+            <div>
+              <strong>Oops!</strong> {{errors.non_field_errors}}
+            </div>
+          {{/if}}
+
+          {{input type='submit' value='Log in'}}
+        </form>
       {{/if}}
+    {{/if}}
 
-      {{input type='submit' value='Log in'}}
-    </form>
-  {{/if}}
-{{/if}}
+  </div>
+</div>

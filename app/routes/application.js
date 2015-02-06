@@ -20,7 +20,10 @@ export default Ember.Route.extend({
 
   actions: {
     logout: function() {
-      this.get('session').close('spreadr');
+      var self = this;
+      this.get('session').close('spreadr').then(function() {
+        self.transitionTo('index');
+      });
     },
     loggedIn: function(session) {
       // Request a profile if we have none

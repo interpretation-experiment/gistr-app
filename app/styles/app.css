@@ -7,7 +7,7 @@ textarea {
   resize: vertical;
 }
 
-.home {
+.center {
   text-align: center;
 }
 
@@ -16,12 +16,19 @@ textarea {
 }
 
 .greeting {
-  margin-top: 20px;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+.page-title {
   margin-bottom: 50px;
 }
 
 .icon-big {
-  font-size: 36px;
+  margin-top: 20px;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
 }
 
 .icon-big a {
