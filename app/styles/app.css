@@ -23,3 +23,11 @@ textarea {
 .icon-big {
   font-size: 36px;
 }
+
+.icon-big a {
+  color: grey;
+}
+
+.icon-big a:hover {
+  color: black;
+}
