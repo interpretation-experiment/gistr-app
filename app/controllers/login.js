@@ -20,6 +20,9 @@ export default Ember.ObjectController.extend(SessionMixin, {
     }
   }.property('session.isWorking'),
   actions: {
+    reset: function() {
+      this.reset();
+    },
     login: function() {
       var self = this, data = this.getProperties('username', 'password');
 

@@ -25,6 +25,9 @@ export default Ember.ObjectController.extend(SessionMixin, {
     }
   }.property('isRegistering'),
   actions: {
+    reset: function() {
+      this.reset();
+    },
     register: function() {
       var self = this, data = this.getProperties('username', 'password1', 'password2');
       this.set('isRegistering', true);
