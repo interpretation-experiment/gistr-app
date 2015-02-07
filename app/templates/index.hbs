@@ -14,7 +14,7 @@
 
     <div class="greeting">
       {{#if session.isAuthenticated}}
-      <p>Howdy, <strong>{{session.currentUser.username}}</strong></p>
+        <p>Howdy, <strong>{{currentUser.username}}</strong></p>
       {{else}}
         {{link-to 'Sign in' 'login' class="btn btn-default"}}
         {{link-to 'Sign up' 'register' class="btn btn-primary"}}
