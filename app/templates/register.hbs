@@ -14,7 +14,7 @@
   <div class="col-xs-10 col-xs-offset-1">
 
     {{#if session.isAuthenticated}}
-      <p>Signed in as <strong>{{currentUser.username}}</strong>. Log out first!</p>
+      <p>Signed in as <strong>{{currentUser.username}}</strong>. Sign out first!</p>
       <button class="btn btn-primary" {{bind-attr disabled=session.isWorking}} {{action "logout"}}>{{#if session.isWorking}}Signing you out{{else}}Sign out{{/if}}</button>
     {{else}}
 

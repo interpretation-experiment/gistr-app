@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import SessionMixin from './session';
 import config from 'gistr/config/environment';
 
-export default Ember.ObjectController.extend({
+export default Ember.ObjectController.extend(SessionMixin, {
   username: null,
   password1: null,
   password2: null,
