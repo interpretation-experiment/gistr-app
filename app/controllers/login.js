@@ -12,6 +12,13 @@ export default Ember.ObjectController.extend(SessionMixin, {
       errors: null,
     });
   },
+  loginText: function() {
+    if (this.get('session').get('isWorking')) {
+      return 'Signing you in...';
+    } else {
+      return 'Sign in';
+    }
+  }.property('session.isWorking'),
   actions: {
     login: function() {
       var self = this, data = this.getProperties('username', 'password');

@@ -16,6 +16,13 @@ export default Ember.ObjectController.extend({
       isRegistering: null
     });
   },
+  registerText: function() {
+    if (this.get('isRegistering')) {
+      return 'Signing you up...';
+    } else {
+      return 'Sign up';
+    }
+  }.property('isRegistering'),
   actions: {
     register: function() {
       var self = this, data = this.getProperties('username', 'password1', 'password2');
