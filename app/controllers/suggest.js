@@ -15,6 +15,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       isUploading: null
     });
   },
+  uploadText: function() {
+    if (this.get('isUploading') === true) {
+      return 'Uploading...';
+    } else {
+      return 'Continue';
+    }
+  }.property('isUploading'),
 
   /*
    * Input upload
