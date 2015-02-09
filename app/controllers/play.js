@@ -6,7 +6,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Timing factors
    */
-  precision: 1,  // updates per second
+  precision: 10,  // updates per second
   readDuration: 5,   // in seconds
   writeDuration: 30, // in seconds
 
@@ -60,6 +60,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       isUploading: null
     });
   },
+  uploadText: function() {
+    if (this.get('isUploading') === true) {
+      return 'Uploading...';
+    } else {
+      return 'Continue';
+    }
+  }.property('isUploading'),
 
   /*
    * Input upload
@@ -119,6 +126,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       'writeTimer': null,
     });
   },
+  readProgress: function() {
+    var offset = 100 / (this.get('readDuration') * this.get('precision'));
+    return offset + 100 * (1 - this.get('readTime') / this.get('readDuration'));
+  }.property('readTime'),
+  writeProgress: function() {
+    var offset = 100 / (this.get('writeDuration') * this.get('precision'));
+    return offset + 100 * (1 - this.get('writeTime') / this.get('writeDuration'));
+  }.property('writeTime'),
 
   /*
    * Timing observers and triggerers
