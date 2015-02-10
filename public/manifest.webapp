@@ -12,8 +12,7 @@
     "url": "@@developerUrl"
   },
   "default_locale": "en",
-  "fullscreen": true,
+  "fullscreen": "true",
   "installs_allowed_from": ["https://marketplace.firefox.com", "*"],
-  "appcache_path": "/manifest.appcache",
   "permissions": {}
 }
