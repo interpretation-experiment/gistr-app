@@ -1,9 +1,10 @@
 {
   "name": "Gistr",
-  "description": "Interpret the world over",
+  "description": "A GWAP on Interpretation",
   "launch_path": "/index.html",
   "icons": {
-    "128": "/assets/images/prelogo-128.png"
+    "128": "/assets/images/prelogo-128.png",
+    "512": "/assets/images/prelogo-512.png"
   },
   "developer": {
     "name": "Sébastien Lerique",
