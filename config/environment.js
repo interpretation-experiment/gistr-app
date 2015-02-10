@@ -48,7 +48,9 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    // FIXME: API_HOST defaults to localhost:8000 if not told otherwise
+    // (should default to window.location, but well...)
+    ENV.APP.API_HOST = 'http://demo.gistr.io';
   }
 
   return ENV;
