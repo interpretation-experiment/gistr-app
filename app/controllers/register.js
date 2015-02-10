@@ -36,7 +36,7 @@ export default Ember.ObjectController.extend(SessionMixin, {
         Ember.$.ajax({
           type: 'POST',
           dataType: 'json',
-          url: config.APP.API_NAMESPACE + '/rest-auth/registration/',
+          url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/registration/',
           data: data,
           success: Ember.run.bind(null, resolve),
           error: Ember.run.bind(null, reject)

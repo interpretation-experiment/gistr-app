@@ -7,7 +7,7 @@ export default Ember.Object.extend({
     return Ember.$.ajax({
       type: 'POST',
       dataType: 'json',
-      url: config.APP.API_NAMESPACE + '/rest-auth/login/',
+      url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/login/',
       data: {
         username: credentials.username,
         password: credentials.password

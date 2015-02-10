@@ -31,7 +31,7 @@ export default Ember.Object.extend({
     return new Ember.RSVP.Promise(function(resolve, reject) {
       Ember.$.ajax({
         dataType: 'json',
-        url: config.APP.API_NAMESPACE + '/rest-auth/user/',
+        url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/user/',
         success: Ember.run.bind(null, resolve),
         error: Ember.run.bind(null, reject)
       });
@@ -62,7 +62,7 @@ export default Ember.Object.extend({
       Ember.$.ajax({
         type: 'POST',
         dataType: 'json',
-        url: config.APP.API_NAMESPACE + '/rest-auth/logout/',
+        url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/logout/',
         success: Ember.run.bind(null, resolve),
         error: Ember.run.bind(null, reject)
       });
