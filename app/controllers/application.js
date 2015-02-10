@@ -11,7 +11,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
   },
   ping: function() {
     return Ember.$.ajax({
-      url: config.APP.API_HOST + config.APP.API_NAMESPACE + '/',
+      url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/',
       type: 'HEAD',
       timeout: this.get('pingPeriod') * 1000 / 3
     });
