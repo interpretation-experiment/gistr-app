@@ -1,6 +1,6 @@
 {
   "version": "@@versionNumber",
-  "name": "@@appName",
+  "name": "Gistr",
   "description": "@@appDescription",
   "icons": {
     "128": "/assets/images/icons/icon-128.png",
