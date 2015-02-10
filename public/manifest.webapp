@@ -1,15 +1,17 @@
 {
-  "name": "Gistr",
-  "description": "A GWAP on Interpretation",
-  "launch_path": "/index.html",
+  "version": "@@versionNumber",
+  "name": "@@appName",
+  "description": "@@appDescription",
   "icons": {
-    "128": "/assets/images/prelogo-128.png",
-    "512": "/assets/images/prelogo-512.png"
+    "128": "/assets/images/icons/icon-128.png",
+    "512": "/assets/images/icons/icon-512.png"
   },
   "developer": {
-    "name": "Sébastien Lerique",
-    "url": "https://mehho.net/sl"
+    "name": "@@developerName",
+    "url": "@@developerUrl"
   },
-  "default_locale": "en",
-  "fullscreen": true
+  "launch_path": "/index.html",
+  "installs_allowed_from": ["https://marketplace.firefox.com", "*"],
+  "appcache_path": "/manifest.appcache",
+  "permissions": {}
 }
