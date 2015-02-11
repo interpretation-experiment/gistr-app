@@ -13,11 +13,15 @@
     <h3><small>A <strong {{bs-bind-tooltip content="Game With A Purpose"}}>GWAP</strong> on Interpretation</small></h3>
 
     <div class="greeting">
-      {{#if session.isAuthenticated}}
-        <p>Howdy, <strong>{{currentUser.username}}</strong></p>
+      {{#if session.isWorking}}
+        <p>Loading...</p>
       {{else}}
-        {{link-to 'Sign in' 'login' class="btn btn-default"}}
-        {{link-to 'Sign up' 'register' class="btn btn-primary"}}
+        {{#if session.isAuthenticated}}
+          <p>Howdy, <strong>{{currentUser.username}}</strong></p>
+        {{else}}
+          {{link-to 'Sign in' 'login' class="btn btn-default"}}
+          {{link-to 'Sign up' 'register' class="btn btn-primary"}}
+        {{/if}}
       {{/if}}
     </div>
 
