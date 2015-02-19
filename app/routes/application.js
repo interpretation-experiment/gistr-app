@@ -39,12 +39,10 @@ export default Ember.Route.extend({
     },
     loggedIn: function(session) {
       // Request a profile if we have none
-      var self = this;
-      session.get('currentUser').get('profile').then(function(profile) {
-        if (!profile) {
-          self.store.createRecord('profile', {}).save();
-        }
-      });
+      var profile = session.get('currentUser.profile');
+      if (!profile) {
+        this.store.createRecord('profile', {}).save();
+      }
     }
   }
 });
