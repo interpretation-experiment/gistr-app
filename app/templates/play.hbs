@@ -5,7 +5,7 @@
   </div>
 
   <div class="col-xs-9 col-sm-10">
-    <h2 class="page-title">Play <small>streak {{bs-badge content=count}} | free trees {{bs-badge content=untouchedTrees.length}}</small></h2>
+    <h2 class="page-title">Play <small>streak {{bs-badge content=count}} | free trees {{bs-badge content=currentProfile.untouchedTreesCount}}</small></h2>
   </div>
 
 </div>
@@ -68,11 +68,11 @@
     {{#if isInEmpty}}
       <h3>No more sentences!</h3>
       <p>You've participated in all the available trees.</p>
-      {{#if currentUser.is_staff}}
+      {{#if currentUser.isStaff}}
         <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
       {{else}}
         {{#if canSuggest}}
-          <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{currentProfile.suggestion_credit}} left)</p>
+          <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{currentProfile.suggestionCredit}} left)</p>
         {{else}}
           <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
         {{/if}}

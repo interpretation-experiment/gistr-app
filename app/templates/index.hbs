@@ -36,7 +36,7 @@
         {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
       </div>
       <div class="col-xs-6 col-sm-3">
-        {{#link-to 'suggest' class="btn-home btn btn-lg btn-success"}}New {{#if currentUser.is_staff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestion_credit}}{{/if}}{{/link-to}}
+        {{#link-to 'suggest' class="btn-home btn btn-lg btn-success"}}New {{#if currentUser.isStaff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestionCredit}}{{/if}}{{/link-to}}
       </div>
       <div class="col-xs-6 col-sm-3">
         <a href="#" class="btn-home btn btn-lg btn-info" {{bs-bind-tooltip content="Nothing for now!"}}>Like</a>

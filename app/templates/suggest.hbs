@@ -5,7 +5,7 @@
   </div>
 
   <div class="col-xs-9 col-sm-10">
-    <h2 class="page-title">Suggest new sentence <small>credits {{#if currentUser.is_staff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestion_credit}}{{/if}}</small></h2>
+    <h2 class="page-title">Suggest new sentence <small>credits {{#if currentUser.isStaff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestionCredit}}{{/if}}</small></h2>
   </div>
 
 </div>
@@ -42,12 +42,12 @@
 
       <p>That's recorded.</p>
 
-      {{#if currentUser.is_staff}}
+      {{#if currentUser.isStaff}}
         <button class="btn btn-default" {{action 'suggest'}}>Suggest again</button>
       {{else}}
 
         {{#if canSuggest}}
-          <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{bs-badge content=currentProfile.suggestion_credit}}</button>
+          <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{bs-badge content=currentProfile.suggestionCredit}}</button>
         {{else}}
           <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
         {{/if}}
