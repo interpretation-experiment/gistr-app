@@ -5,7 +5,7 @@ export default Ember.Route.extend({
   renderTemplate: function() {
     // Render default outlet
     this.render();
-    // render extra outlets
+    // Render extra outlets for bootstrap tooltips
     var controller = this.controllerFor('tooltip-box');
     this.render("bs-tooltip-box", {
       outlet: "bs-tooltip-box",
@@ -14,7 +14,6 @@ export default Ember.Route.extend({
     });
   },
 
-  // FIXME[try promises]: untested because ran into problems. Try again later.
   setupController: function(controller, model) {
     this._super(controller, model);
 
