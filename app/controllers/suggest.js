@@ -31,7 +31,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
 
     this.set('isUploading', true);
     this.get('store').createRecord('sentence', {
-      text: this.get('text')
+      text: this.get('text'),
+      language: 'english'  // FIXME: language
     }).save().then(function() {
       self.resetInput();
       self.sendStateEvent('upload');
@@ -53,12 +54,15 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   canSuggest: function() {
     // Staff can always suggest
-    if (this.get('currentUser').get('is_staff')) {
+    if (this.get('currentUser.isStaff')) {
       return true;
     }
 
-    return this.get('currentProfile').get('suggestion_credit') > 0;
-  }.property('currentProfile.suggestion_credit', 'currentUser.is_staff'),
+    return this.get('currentProfile.suggestionCredit') > 0;
+  }.property('currentProfile.suggestionCredit', 'currentUser.isStaff'),
+  updateCounts: function() {
+    return this.get('currentProfile').reload();
+  },
 
   /*
    * Suggestion actions
@@ -82,13 +86,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     initialState: 'suggesting',
     suggesting: {
       didExit: 'resetInput'
-    },
-    verified: {
-      didEnter: function() {
-        this.get('currentProfile').then(function(profile) {
-          profile.reload();
-        });
-      }
     }
   },
   fsmEvents: {
@@ -96,7 +93,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       transition: { verified: 'suggesting' }
     },
     upload: {
-      transition: { suggesting: 'verified' }
+      transition: {
+        from: 'suggesting',
+        to: 'verified',
+        afterEvent: 'updateCounts'
+      }
     },
     reset: {
       transition: {
