@@ -41,7 +41,9 @@ export default Ember.Route.extend({
       // Request a profile if we have none
       var profile = session.get('currentUser.profile');
       if (!profile) {
-        this.store.createRecord('profile', {}).save();
+        this.store.createRecord('profile', {
+          language: 'english'  // FIXME: language
+        }).save();
       }
     }
   }
