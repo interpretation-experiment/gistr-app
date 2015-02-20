@@ -1,4 +1,6 @@
+import randint from './randint';
+
 export default function draw(array) {
-  var index = Math.floor(Math.random() * array.get('length'));
+  var index = randint(array.get('length'));
   return array.objectAt(index);
 }

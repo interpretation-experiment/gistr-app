@@ -2,20 +2,12 @@ import RestrictedRoute from './restricted-route';
 
 export default RestrictedRoute.extend({
   model: function() {
-    return this.store.filter('tree', {
-      untouched: true,
-      page_size: 10,
-      sample: true
-    }, function(tree) {
-      return tree.get('untouched');
-    });
+    // FIXME: load X trees in one go
   },
-  setupController: function(controller, trees) {
-    controller.set('untouchedTrees', trees);
+  activate: function() {
+    this.controllerFor('play').watchUntouchedTreesCount();
   },
-  actions: {
-    willTransition: function(/*transition*/) {
-      this.get('controller').send('reset');
-    }
+  deactivate: function() {
+    this.get('controller').send('reset');
   }
 });

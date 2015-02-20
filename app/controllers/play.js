@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import SessionMixin from './session';
 import draw from 'gistr/utils/draw';
+import randint from 'gistr/utils/randint';
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
@@ -22,11 +23,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Current tree and sentence variables
    */
-  currentTree: null,
   currentSentence: null,
   resetModels: function() {
     this.setProperties({
-      currentTree: null,
       currentSentence: null
     });
   },
@@ -35,17 +34,25 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Current tree and sentence selection
    */
   selectModels: function() {
-    var self = this, tree = draw(this.get('untouchedTrees'));
-    this.set('currentTree', tree);
-    return tree.get('sentences').then(function(sentences) {
+    // FIXME: load X trees in one go in route's model hook
+    var self = this, profile = this.get('currentProfile'),
+        untouchedTreesCount = profile.get('untouchedTreesCount');
+
+    return this.store.find('tree', {
+      untouched_by_profile: profile.get('id'),
+      page_size: 1,
+      page: randint(untouchedTreesCount) + 1
+    }).then(function(trees) {
+      return trees.objectAt(0).get('sentences');
+    }).then(function(sentences) {
       self.set('currentSentence', draw(sentences));
     });
   },
-  watchUntouchedTrees: function() {
-    if (this.get('untouchedTrees').get('length') === 0) {
+  watchUntouchedTreesCount: function() {
+    if (this.get('currentProfile.untouchedTreesCount') === 0) {
       this.sendStateEvent('bail');
     }
-  }.observes('untouchedTrees.length'),
+  }.observes('currentProfile.untouchedTreesCount'),
 
   /*
    * Input validation variables
@@ -77,7 +84,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     this.set('isUploading', true);
     return this.get('store').createRecord('sentence', {
       text: self.get('text'),
-      parent: self.get('currentSentence')
+      parent: self.get('currentSentence'),
+      language: 'english'  // FIXME: language
     }).save().then(function() {
       self.resetInput();
       self.sendStateEvent('upload');
@@ -92,12 +100,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   canSuggest: function() {
     // Staff can always suggest
-    if (this.get('currentUser').get('is_staff')) {
+    if (this.get('currentUser.isStaff')) {
       return true;
     }
 
-    return this.get('currentProfile').get('suggestion_credit') > 0;
-  }.property('currentProfile.suggestion_credit', 'currentUser.is_staff'),
+    return this.get('currentProfile.suggestionCredit') > 0;
+  }.property('currentProfile.suggestionCredit', 'currentUser.isStaff'),
 
   /*
    * Global progress variables
@@ -107,6 +115,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     this.setProperties({
       'count': 0
     });
+  },
+  updateCounts: function() {
+    this.incrementProperty('count');
+    return this.get('currentProfile').reload();
   },
 
   /*
@@ -237,12 +249,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       didEnter: 'startWriteTime',
       willExit: 'finishWriteTime',
       didExit: 'resetInput'
-    },
-    verified: {
-      didEnter: function() {
-        this.incrementProperty('count');
-        this.get('currentTree').set('untouched', false);
-      }
     }
   },
   fsmEvents: {
@@ -259,7 +265,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       transition: { holding: 'writing' }
     },
     upload: {
-      transition: { writing: 'verified' }
+      transition: {
+        from: 'writing',
+        to: 'verified',
+        afterEvent: 'updateCounts'
+      }
     },
     timeout: {
       transition: { writing: 'timedout' }
