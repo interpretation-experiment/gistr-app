@@ -1,13 +1,12 @@
-import RestrictedRoute from './restricted-route';
+import Ember from 'ember';
+import RestrictedRouteMixin from './restricted';
+import FormRouteMixin from './form';
 
-export default RestrictedRoute.extend({
+export default Ember.Route.extend(RestrictedRouteMixin, FormRouteMixin, {
   model: function() {
     // FIXME: load X trees in one go
   },
   activate: function() {
     this.controllerFor('play').watchUntouchedTreesCount();
-  },
-  deactivate: function() {
-    this.get('controller').send('reset');
   }
 });

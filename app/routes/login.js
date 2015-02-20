@@ -1,7 +1,4 @@
 import Ember from 'ember';
+import FormRouteMixin from './form';
 
-export default Ember.Route.extend({
-  deactivate: function() {
-    this.get('controller').send('reset');
-  }
-});
+export default Ember.Route.extend(FormRouteMixin);

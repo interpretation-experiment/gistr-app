@@ -1,7 +1,5 @@
-import RestrictedRoute from './restricted-route';
+import Ember from 'ember';
+import RestrictedRouteMixin from './restricted';
+import FormRouteMixin from './form';
 
-export default RestrictedRoute.extend({
-  deactivate: function() {
-    this.get('controller').send('reset');
-  }
-});
+export default Ember.Route.extend(RestrictedRouteMixin, FormRouteMixin);
