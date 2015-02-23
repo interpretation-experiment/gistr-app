@@ -16,16 +16,16 @@ export default Ember.Route.extend({
     });
   },
 
-  activate: function() {
+  beforeModel: function(transition) {
     // Starting the infinite loop in tests will make the tests fail
     if (config.environment !== 'test'){
       this.controllerFor('application').sendStateEvent('check');
     }
 
-    // See if we're logged in
+    // See if we're logged in, and wait for the answer
     var self = this;
-    this.get('session').fetch('spreadr').then(function() {
-      self.send('loggedIn', self.get('session'));
+    return this.get('session').fetch('spreadr').then(function() {
+      transition.send('loggedIn', self.get('session'));
     });
   },
 
