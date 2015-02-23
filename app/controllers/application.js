@@ -1,9 +1,17 @@
 import Ember from 'ember';
-import config from '../config/environment';
+
+import config from 'gistr/config/environment';
+
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, {
+  /*
+   * Parameters
+   */
   pingPeriod: 5,  // in seconds
 
+  /*
+   * Online/offline ping functions
+   */
   delayedCheck: function() {
     Ember.run.later(this, function() {
       this.sendStateEvent('check');
@@ -16,19 +24,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
       timeout: this.get('pingPeriod') * 1000 / 3
     });
   },
-  currentIcon: function() {
-    var currentState = this.get('currentState');
-    if (currentState === 'online') {
-      return 'glyphicon-ok-sign';
-    }
-    if (currentState === 'offline') {
-      return 'glyphicon-remove-sign';
-    }
-    if (currentState === 'unknown') {
-      return 'glyphicon-question-sign';
-    }
-  }.property('currentState'),
 
+  /*
+   * Online/offline FSM states and events
+   */
   fsmStates: {
     initialState: 'unknown',
     unknown: { didEnter: 'delayedCheck' },

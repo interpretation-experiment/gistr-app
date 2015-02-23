@@ -1,27 +1,39 @@
 import Ember from 'ember';
-import SessionMixin from './session';
+
+import SessionMixin from 'gistr/mixins/session';
 import draw from 'gistr/utils/draw';
 import randint from 'gistr/utils/randint';
 
+
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
-   * Timing factors
+   * Timing parameters
    */
-  precision: 10,  // updates per second
+  precision: 10,     // updates per second
   readDuration: 5,   // in seconds
   writeDuration: 30, // in seconds
 
   /*
-   * Global reset
+   * Global progress and reset
    */
   reset: function() {
     this.resetProgress();
     this.resetTimers();
     this.resetModels();
   },
+  count: 0,
+  resetProgress: function() {
+    this.setProperties({
+      'count': 0
+    });
+  },
+  updateCounts: function() {
+    this.incrementProperty('count');
+    return this.get('currentProfile').reload();
+  },
 
   /*
-   * Current tree and sentence variables
+   * Current tree and sentence state and selection
    */
   currentSentence: null,
   resetModels: function() {
@@ -29,10 +41,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       currentSentence: null
     });
   },
-
-  /*
-   * Current tree and sentence selection
-   */
   selectModels: function() {
     // FIXME: load X trees in one go in route's model hook
     var self = this, profile = this.get('currentProfile'),
@@ -55,7 +63,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('currentProfile.untouchedTreesCount'),
 
   /*
-   * Input validation variables
+   * Input form fields, state, and upload
    */
   errors: null,
   text: null,
@@ -67,18 +75,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       isUploading: null
     });
   },
-  uploadText: function() {
-    if (this.get('isUploading') === true) {
-      return 'Uploading...';
-    } else {
-      return 'Continue';
-    }
-  }.property('isUploading'),
-
-  /*
-   * Input upload
-   */
-  _uploadSentence: function() {
+  uploadSentence: function() {
     var self = this;
 
     this.set('isUploading', true);
@@ -94,6 +91,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('errors', error.errors);
     });
   },
+  // FIXME: move to view
+  uploadText: function() {
+    if (this.get('isUploading') === true) {
+      return 'Uploading...';
+    } else {
+      return 'Continue';
+    }
+  }.property('isUploading'),
 
   /*
    * Suggestion control
@@ -106,20 +111,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
 
     return this.get('currentProfile.suggestionCredit') > 0;
   }.property('currentProfile.suggestionCredit', 'currentUser.isStaff'),
-
-  /*
-   * Global progress variables
-   */
-  count: 0,
-  resetProgress: function() {
-    this.setProperties({
-      'count': 0
-    });
-  },
-  updateCounts: function() {
-    this.incrementProperty('count');
-    return this.get('currentProfile').reload();
-  },
 
   /*
    * Timing variables
@@ -231,7 +222,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       this.sendStateEvent('reset');
     },
     uploadSentence: function() {
-      this._uploadSentence();
+      this.uploadSentence();
     }
   },
 

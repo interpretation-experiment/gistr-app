@@ -16,12 +16,10 @@ export default Ember.Route.extend({
     });
   },
 
-  setupController: function(controller, model) {
-    this._super(controller, model);
-
+  activate: function() {
     // Starting the infinite loop in tests will make the tests fail
     if (config.environment !== 'test'){
-      controller.sendStateEvent('check');
+      this.controllerFor('application').sendStateEvent('check');
     }
 
     // See if we're logged in

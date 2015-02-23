@@ -1,4 +1,6 @@
 import Ember from 'ember';
-import SessionMixin from './session';
+
+import SessionMixin from 'gistr/mixins/session';
+
 
 export default Ember.Controller.extend(SessionMixin);

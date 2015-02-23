@@ -1,9 +1,21 @@
 import Ember from 'ember';
-import SessionMixin from './session';
+
+import SessionMixin from 'gistr/mixins/session';
+
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
-   * Input validation variables
+   * Global progress and reset
+   */
+  reset: function() {
+    this.resetInput();
+  },
+  updateCounts: function() {
+    return this.get('currentProfile').reload();
+  },
+
+  /*
+   * Suggestion form fields, state, and upload
    */
   text: null,
   errors: null,
@@ -15,18 +27,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       isUploading: null
     });
   },
-  uploadText: function() {
-    if (this.get('isUploading') === true) {
-      return 'Uploading...';
-    } else {
-      return 'Continue';
-    }
-  }.property('isUploading'),
-
-  /*
-   * Input upload
-   */
-  _uploadSentence: function() {
+  uploadSentence: function() {
     var self = this;
 
     this.set('isUploading', true);
@@ -41,13 +42,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('errors', error.errors);
     });
   },
-
-  /*
-   * Global reset
-   */
-  reset: function() {
-    this.resetInput();
-  },
+  // FIXME: move to view
+  uploadText: function() {
+    if (this.get('isUploading') === true) {
+      return 'Uploading...';
+    } else {
+      return 'Continue';
+    }
+  }.property('isUploading'),
 
   /*
    * Suggestion control
@@ -60,9 +62,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
 
     return this.get('currentProfile.suggestionCredit') > 0;
   }.property('currentProfile.suggestionCredit', 'currentUser.isStaff'),
-  updateCounts: function() {
-    return this.get('currentProfile').reload();
-  },
 
   /*
    * Suggestion actions
@@ -75,7 +74,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       this.sendStateEvent('reset');
     },
     uploadSentence: function() {
-      this._uploadSentence();
+      this.uploadSentence();
     }
   },
 
