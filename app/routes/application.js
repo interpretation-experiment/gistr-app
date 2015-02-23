@@ -26,7 +26,7 @@ export default Ember.Route.extend({
     var self = this;
     return this.get('session').fetch('spreadr').then(function() {
       transition.send('loggedIn', self.get('session'));
-    });
+    }, function() {});
   },
 
   actions: {
