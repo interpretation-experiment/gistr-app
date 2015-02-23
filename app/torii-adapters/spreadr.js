@@ -1,15 +1,25 @@
 import Ember from 'ember';
+
 import config from 'gistr/config/environment';
 
+
 export default Ember.Object.extend({
-
+  /*
+   * Token variable and validation
+   */
   token: null,
-
+  tokenChanged: function() {
+    localStorage.gistr_spreadr_auth_token = this.get('token');
+    this.setupAjax();
+  }.observes('token'),
   hasValidToken: function() {
     var token = this.get('token');
     return (!Ember.isEmpty(token) && token != 'null' && token !== 'undefined');
   }.property('token'),
 
+  /*
+   * Set up the Ajax calls with a valid token
+   */
   setupAjax: function() {
     var self = this, token = this.get('token');
 
@@ -20,11 +30,9 @@ export default Ember.Object.extend({
     });
   },
 
-  tokenChanged: function() {
-    localStorage.gistr_spreadr_auth_token = this.get('token');
-    this.setupAjax();
-  }.observes('token'),
-
+  /*
+   * Fetch a session using the current token
+   */
   fetchSession: function() {
     var self = this, store = this.get('store');
 
@@ -45,16 +53,17 @@ export default Ember.Object.extend({
     });
   },
 
+  /*
+   * Adapter hooks: open, fetch, close session
+   */
   open: function(authorization) {
     this.set('token', authorization.key);
     return this.fetchSession();
   },
-
   fetch: function() {
     this.set('token', localStorage.gistr_spreadr_auth_token);
     return this.fetchSession();
   },
-
   close: function() {
     var self = this;
 
@@ -72,5 +81,4 @@ export default Ember.Object.extend({
       throw xhr.responseJSON || { non_field_errors: errorThrown };
     });
   }
-
 });

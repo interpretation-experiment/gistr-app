@@ -1,8 +1,9 @@
 import Ember from 'ember';
+
 import config from 'gistr/config/environment';
 
-export default Ember.Object.extend({
 
+export default Ember.Object.extend({
   open: function(credentials) {
     return Ember.$.ajax({
       type: 'POST',
@@ -16,5 +17,4 @@ export default Ember.Object.extend({
       return xhr.responseJSON || { non_field_errors: errorThrown };
     });
   }
-
 });

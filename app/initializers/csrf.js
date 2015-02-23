@@ -1,10 +1,14 @@
 import Ember from 'ember';
 
+
 function csrfSafeMethod(method) {
-  // these HTTP methods do not require CSRF protection
+  // These HTTP methods do not require CSRF protection
   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
+/*
+ * Set up Ajax with proper csrf cookie
+ */
 export default {
   name: 'csrf',
   initialize: function() {
