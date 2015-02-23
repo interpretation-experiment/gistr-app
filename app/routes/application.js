@@ -36,7 +36,7 @@ export default Ember.Route.extend({
         self.transitionTo('index');
       });
     },
-    loggedIn: function(session) {
+    loggedIn: function(/*session*/) {
       // Do nothing
     }
   }
