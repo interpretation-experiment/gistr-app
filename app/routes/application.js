@@ -1,5 +1,7 @@
 import Ember from 'ember';
-import config from '../config/environment';
+
+import config from 'gistr/config/environment';
+
 
 export default Ember.Route.extend({
   renderTemplate: function() {
