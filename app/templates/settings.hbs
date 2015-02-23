@@ -1,10 +1,20 @@
 {{page-header title="Settings"}}
 
 {{#page-body}}
-  <h3>Credentials</h3>
   {{#if session.isAuthenticated}}
+    <h3>About you</h3>
+    {{#if isProfileIncomplete}}
+      {{#bs-alert type="warning" dismiss=false}}
+        Please complete your profile!
+        <ul>
+          {{#each error in profileErrors}}<li>{{error}}</li>{{/each}}
+        </ul>
+      {{/bs-alert}}
+    {{/if}}
+
+    <h3>Credentials</h3>
     <p>Signed in as <strong>{{currentUser.username}}</strong>.</p>
-    <button class="btn btn-primary" {{bind-attr disabled=session.isWorking}} {{action "logout"}}>{{#if session.isWorking}}Signing you out{{else}}Sign out{{/if}}</button>
+    {{active-button class="btn btn-primary" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}
   {{else}}
     <p>No settings for now.</p>
     {{link-to 'Sign in' 'login' class="btn btn-default"}}
