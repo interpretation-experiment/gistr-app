@@ -43,7 +43,7 @@ export default Ember.ObjectController.extend(SessionMixin, {
     }).then(function() {
       self.send('loggedIn', self.get('session'));
       self.reset();
-      self.transitionToRoute('index');
+      self.transitionToRoute('settings');
     }, function(xhr, error, errorThrown) {
       self.set('isRegistering', false);
       self.set('errors', xhr.responseJSON || { __all__: errorThrown });

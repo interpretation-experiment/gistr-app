@@ -34,7 +34,11 @@
       <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
         <div class="col-sm-offset-2 col-sm-10">
           <span class="help-block">{{errors.non_field_errors}}</span>
-          {{active-input type='submit' class="btn btn-default" active=session.isWorking activeValue='Signing you in...' inactiveValue='Sign in'}}
+          {{#if attemptedTransition}}
+            {{active-input type='submit' class="btn btn-default" active=session.isWorking activeValue='Signing you in...' inactiveValue='Sign in and Play'}}
+          {{else}}
+            {{active-input type='submit' class="btn btn-default" active=session.isWorking activeValue='Signing you in...' inactiveValue='Sign in'}}
+          {{/if}}
         </div>
       </div>
 

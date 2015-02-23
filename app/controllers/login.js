@@ -4,6 +4,8 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.ObjectController.extend(SessionMixin, {
+  needs: ['settings'],
+
   /*
    * Login form fields
    */
@@ -26,10 +28,18 @@ export default Ember.ObjectController.extend(SessionMixin, {
     this.get('session').open('spreadr', data).then(function() {
       self.send('loggedIn', self.get('session'));
       self.reset();
-      if (!!attemptedTransition) {
-        attemptedTransition.retry();
+      if (!!self.get('currentProfile')) {
+        if (!!attemptedTransition) {
+          attemptedTransition.retry();
+        } else {
+          self.transitionToRoute('index');
+        }
       } else {
-        self.transitionToRoute('index');
+        if (!!attemptedTransition) {
+          // Forward attempted transition
+          self.get('controllers.settings').set('attemptedTransition', attemptedTransition);
+        }
+        self.transitionToRoute('settings');
       }
     }, function(errors) {
       self.set('errors', errors);
