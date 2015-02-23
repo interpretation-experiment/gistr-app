@@ -6,6 +6,9 @@ export default Ember.Mixin.create({
     if (!this.get('session.isAuthenticated')) {
       this.controllerFor('login').set('attemptedTransition', transition);
       this.transitionTo('login');
+      return false;
+    } else {
+      return true;
     }
   }
 });
