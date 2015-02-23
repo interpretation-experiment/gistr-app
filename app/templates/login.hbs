@@ -6,13 +6,12 @@
     {{active-button class="btn btn-primary" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}
   {{else}}
 
-    {{#if attemptedTransition}}
-      <div class="row">
-        <div class="col-sm-10 col-sm-offset-2">
-          {{bs-alert message="You must sign in first!" type="warning" dismissAfter=5 fade=true}}
-        </div>
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-2">
+        {{#if attemptedTransition}}{{bs-alert message="You must sign in first!" type="warning" dismissAfter=5 fade=true}}{{/if}}
+        {{#bs-alert type="info" dismiss=false}}No account yet? {{link-to 'Sign up' 'register'}}!{{/bs-alert}}
       </div>
-    {{/if}}
+    </div>
 
     <form class="form-horizontal" {{action "login" on="submit"}}>
 
