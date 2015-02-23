@@ -15,7 +15,7 @@
 
     {{#if session.isAuthenticated}}
       <p>Signed in as <strong>{{currentUser.username}}</strong>.</p>
-      <button class="btn btn-primary" {{bind-attr disabled=session.isWorking}} {{action "logout"}}>{{#if session.isWorking}}Signing you out{{else}}Sign out{{/if}}</button>
+      {{active-button class="btn btn-primary" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}
     {{else}}
 
       <form class="form-horizontal" {{action "login" on="submit"}}>
@@ -39,7 +39,7 @@
         <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
           <div class="col-sm-offset-2 col-sm-10">
             <span class="help-block">{{errors.non_field_errors}}</span>
-            {{input type='submit' class="btn btn-default" disabled=session.isWorking value=loginText}}
+            {{active-input type='submit' class="btn btn-default" active=session.isWorking activeValue='Signing you in...' inactiveValue='Sign in'}}
           </div>
         </div>
 
