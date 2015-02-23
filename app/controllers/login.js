@@ -10,20 +10,27 @@ export default Ember.ObjectController.extend(SessionMixin, {
   username: null,
   password: null,
   errors: null,
+  attemptedTransition: null,
   reset: function() {
     this.setProperties({
       username: null,
       password: null,
       errors: null,
+      attemptedTransition: null,
     });
   },
   login: function() {
-    var self = this, data = this.getProperties('username', 'password');
+    var self = this, data = this.getProperties('username', 'password'),
+        attemptedTransition = this.get('attemptedTransition');
 
     this.get('session').open('spreadr', data).then(function() {
       self.send('loggedIn', self.get('session'));
       self.reset();
-      self.transitionToRoute('index');
+      if (!!attemptedTransition) {
+        attemptedTransition.retry();
+      } else {
+        self.transitionToRoute('index');
+      }
     }, function(errors) {
       self.set('errors', errors);
     });
