@@ -1,62 +1,50 @@
-<div class="row">
+{{#page-header}}
+  Suggest new sentence <small>credits {{#if currentUser.isStaff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestionCredit}}{{/if}}</small>
+{{/page-header}}
 
-  <div class="col-xs-2 col-sm-1">
-    <div class="pull-right icon-big">{{#link-to 'index'}}<span class="glyphicon glyphicon-menu-left"></span>{{/link-to}}</div>
-  </div>
+{{#page-body}}
+  {{#if isInSuggesting}}
+    {{#if canSuggest}}
 
-  <div class="col-xs-9 col-sm-10">
-    <h2 class="page-title">Suggest new sentence <small>credits {{#if currentUser.isStaff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestionCredit}}{{/if}}</small></h2>
-  </div>
+      <form {{action "uploadSentence" on="submit"}}>
 
-</div>
+        <div {{bind-attr class=':form-group errors.text:has-error'}}>
+          <label for="inputText" class="control-label">Type in your new sentence:</label>
+          {{view focused-textarea id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
+          <span class="help-block">{{errors.text}}</span>
+        </div>
 
-<div class="row">
-  <div class="col-xs-10 col-xs-offset-1">
+        <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
+          <span class="help-block">{{errors.non_field_errors}}</span>
+          {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
+        </div>
 
-    {{#if isInSuggesting}}
+      </form>
+
+    {{else}}
+
+      <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>
+
+    {{/if}}
+  {{/if}}
+
+  {{#if isInVerified}}
+
+    <p>That's recorded.</p>
+
+    {{#if currentUser.isStaff}}
+      <button class="btn btn-default" {{action 'suggest'}}>Suggest again</button>
+    {{else}}
+
       {{#if canSuggest}}
-
-        <form {{action "uploadSentence" on="submit"}}>
-
-          <div {{bind-attr class=':form-group errors.text:has-error'}}>
-            <label for="inputText" class="control-label">Type in your new sentence:</label>
-            {{view focused-textarea id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
-            <span class="help-block">{{errors.text}}</span>
-          </div>
-
-          <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
-            <span class="help-block">{{errors.non_field_errors}}</span>
-            {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
-          </div>
-
-        </form>
-
+        <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{bs-badge content=currentProfile.suggestionCredit}}</button>
       {{else}}
-
-        <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>
-
+        <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
       {{/if}}
-    {{/if}}
-
-    {{#if isInVerified}}
-
-      <p>That's recorded.</p>
-
-      {{#if currentUser.isStaff}}
-        <button class="btn btn-default" {{action 'suggest'}}>Suggest again</button>
-      {{else}}
-
-        {{#if canSuggest}}
-          <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{bs-badge content=currentProfile.suggestionCredit}}</button>
-        {{else}}
-          <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
-        {{/if}}
-
-      {{/if}}
-
-      {{link-to 'Play' 'play' class="btn btn-primary"}}
 
     {{/if}}
 
-  </div>
-</div>
+    {{link-to 'Play' 'play' class="btn btn-primary"}}
+
+  {{/if}}
+{{/page-body}}

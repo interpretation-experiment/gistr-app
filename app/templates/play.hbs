@@ -1,87 +1,76 @@
-<div class="row">
+{{#page-header}}
+  Play <small>streak {{bs-badge content=count}} | free trees {{bs-badge content=currentProfile.untouchedTreesCount}}</small>
+{{/page-header}}
 
-  <div class="col-xs-2 col-sm-1">
-    <div class="pull-right icon-big">{{#link-to 'index'}}<span class="glyphicon glyphicon-menu-left"></span>{{/link-to}}</div>
-  </div>
+{{#page-body}}
+  {{#if isInInstructions}}
+    <h3>Your mission</h3>
+    <p>Task instructions: blablabla. {{task.instructions}}</p>
+    <button class="btn btn-primary" {{action "read"}}>Continue</button>
+  {{/if}}
 
-  <div class="col-xs-9 col-sm-10">
-    <h2 class="page-title">Play <small>streak {{bs-badge content=count}} | free trees {{bs-badge content=currentProfile.untouchedTreesCount}}</small></h2>
-  </div>
+  {{#if isInReading}}
+    <h3>Some reading instructions</h3>
+    <p>Sentence instructions: blablabla. {{currentSentence.instructions}}</p>
+    <blockquote>{{currentSentence.text}}</blockquote>
+    {{bs-progress progress=readProgress stripped=true animated=true}}
+    <button class="btn btn-primary" {{action "hold"}}>Continue</button>
+  {{/if}}
 
-</div>
+  {{#if isInHolding}}
+    <h3>Some holding instructions</h3>
+    <p>A hold task we need to code.</p>
+    <button class="btn btn-primary" {{action "write"}}>Continue</button>
+  {{/if}}
 
-<div class="row">
-  <div class="col-xs-10 col-xs-offset-1">
+  {{#if isInWriting}}
+    <h3>Some writing instructions</h3>
 
-    {{#if isInInstructions}}
-      <h3>Your mission</h3>
-      <p>Task instructions: blablabla. {{task.instructions}}</p>
-      <button class="btn btn-primary" {{action "read"}}>Continue</button>
-    {{/if}}
+    <form {{action "uploadSentence" on="submit"}}>
 
-    {{#if isInReading}}
-      <h3>Some reading instructions</h3>
-      <p>Sentence instructions: blablabla. {{currentSentence.instructions}}</p>
-      <blockquote>{{currentSentence.text}}</blockquote>
-      {{bs-progress progress=readProgress stripped=true animated=true}}
-      <button class="btn btn-primary" {{action "hold"}}>Continue</button>
-    {{/if}}
+      <div {{bind-attr class=':form-group errors.text:has-error'}}>
+        {{view focused-textarea id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
+        <span class="help-block">{{errors.text}}</span>
+      </div>
 
-    {{#if isInHolding}}
-      <h3>Some holding instructions</h3>
-      <p>A hold task we need to code.</p>
-      <button class="btn btn-primary" {{action "write"}}>Continue</button>
-    {{/if}}
+      <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
+        <span class="help-block">{{errors.non_field_errors}}</span>
+        {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
+      </div>
 
-    {{#if isInWriting}}
-      <h3>Some writing instructions</h3>
+    </form>
 
-      <form {{action "uploadSentence" on="submit"}}>
+    {{bs-progress progress=writeProgress stripped=true animated=true}}
+  {{/if}}
 
-        <div {{bind-attr class=':form-group errors.text:has-error'}}>
-          {{view focused-textarea id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
-          <span class="help-block">{{errors.text}}</span>
-        </div>
+  {{#if isInTimedout}}
+    <h3>Time's up!</h3>
+    <p>You need to be quicker next time, check the progress bar!</p>
+    <button class="btn btn-primary" {{action "read"}}>Continue</button>
+  {{/if}}
 
-        <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
-          <span class="help-block">{{errors.non_field_errors}}</span>
-          {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
-        </div>
+  {{#if isInVerified}}
+    <h3>That's recorded</h3>
+    <p>Keep going!</p>
+    <button class="btn btn-primary" {{action "read"}}>Continue</button>
+  {{/if}}
 
-      </form>
-
-      {{bs-progress progress=writeProgress stripped=true animated=true}}
-    {{/if}}
-
-    {{#if isInTimedout}}
-      <h3>Time's up!</h3>
-      <p>You need to be quicker next time, check the progress bar!</p>
-      <button class="btn btn-primary" {{action "read"}}>Continue</button>
-    {{/if}}
-
-    {{#if isInVerified}}
-      <h3>That's recorded</h3>
-      <p>Keep going!</p>
-      <button class="btn btn-primary" {{action "read"}}>Continue</button>
-    {{/if}}
-
-    {{#if isInEmpty}}
-      <h3>No more sentences!</h3>
-      <p>You've participated in all the available trees.</p>
-      {{#if currentUser.isStaff}}
-        <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
+  {{#if isInEmpty}}
+    <h3>No more sentences!</h3>
+    <p>You've participated in all the available trees.</p>
+    {{#if currentUser.isStaff}}
+      <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
+    {{else}}
+      {{#if canSuggest}}
+        <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{currentProfile.suggestionCredit}} left)</p>
       {{else}}
-        {{#if canSuggest}}
-          <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{currentProfile.suggestionCredit}} left)</p>
-        {{else}}
-          <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
-        {{/if}}
+        <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
       {{/if}}
     {{/if}}
+  {{/if}}
 
-    {{#if isInFinished}}
-      <h3>Nice streak!</h3>
-      <p>You interpreted a lot of sentences, take a break.</p>
-    {{/if}}
-  </div>
-</div>
+  {{#if isInFinished}}
+    <h3>Nice streak!</h3>
+    <p>You interpreted a lot of sentences, take a break.</p>
+  {{/if}}
+{{/page-body}}
