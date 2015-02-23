@@ -49,14 +49,6 @@ export default Ember.ObjectController.extend(SessionMixin, {
       self.set('errors', xhr.responseJSON || { __all__: errorThrown });
     });
   },
-  // FIXME: move to view
-  registerText: function() {
-    if (this.get('isRegistering')) {
-      return 'Signing you up...';
-    } else {
-      return 'Sign up';
-    }
-  }.property('isRegistering'),
 
   /*
    * Registration actions

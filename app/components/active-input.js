@@ -3,7 +3,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   tagName: 'input',
-  attributeBindings: ['type', 'awareValue:value'],
+  attributeBindings: ['type', 'awareValue:value', 'active:disabled'],
   awareValue: function() {
     if (this.get('active')) {
       return this.get('activeValue');

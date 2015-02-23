@@ -26,7 +26,7 @@
 
           <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
             <span class="help-block">{{errors.non_field_errors}}</span>
-            {{input type='submit' class="btn btn-primary" value=uploadText disabled=isUploading}}
+            {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
           </div>
 
         </form>

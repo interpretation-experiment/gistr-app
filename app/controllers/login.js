@@ -28,14 +28,6 @@ export default Ember.ObjectController.extend(SessionMixin, {
       self.set('errors', errors);
     });
   },
-  // FIXME: move to view
-  loginText: function() {
-    if (this.get('session').get('isWorking')) {
-      return 'Signing you in...';
-    } else {
-      return 'Sign in';
-    }
-  }.property('session.isWorking'),
 
   /*
    * Login actions

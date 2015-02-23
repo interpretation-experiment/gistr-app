@@ -42,14 +42,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('errors', error.errors);
     });
   },
-  // FIXME: move to view
-  uploadText: function() {
-    if (this.get('isUploading') === true) {
-      return 'Uploading...';
-    } else {
-      return 'Continue';
-    }
-  }.property('isUploading'),
 
   /*
    * Suggestion control
