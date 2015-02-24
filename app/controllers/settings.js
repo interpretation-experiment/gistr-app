@@ -5,16 +5,64 @@ import SessionMixin from 'gistr/mixins/session';
 
 export default Ember.Controller.extend(SessionMixin, {
   /*
-   * Profile form fields
+   * Global state and reset
+   */
+  justSaved: null,
+  watchSaved: function() {
+    if (this.get('justSaved')) {
+      Ember.run.later(this, function() {
+        this.set('justSaved', null);
+      }, 2000);
+    }
+  }.observes('justSaved'),
+  reset: function() {
+    this.resetInput();
+    this.setProperties({
+      justSaved: null,
+    });
+  },
+
+  /*
+   * Profile form fields, state, and upload
    */
   mothertongue: null,
   errors: null,
+  isUploading: null,
   attemptedTransition: null,
-  reset: function() {
+  resetInput: function() {
     this.setProperties({
-      mothertongue: null,
+      mothertongue: this.get('currentProfile.mothertongue'),
       errors: null,
+      isUploading: null,
       attemptedTransition: null,
+    });
+  },
+  uploadProfile: function() {
+    var self = this, data = this.getProperties('mothertongue'),
+        attemptedTransition = this.get('attemptedTransition'),
+        profile = this.get('currentProfile');
+
+    this.set('isUploading', true);
+    this.set('justSaved', false);
+
+    if (!profile) {
+      // Create a profile
+      profile = this.get('store').createRecord('profile', data);
+    } else {
+      // Update our existing profile
+      profile.setProperties(data);
+    }
+
+    profile.save().then(function() {
+      self.set('justSaved', true);
+      self.resetInput();
+
+      if (!!attemptedTransition) {
+        attemptedTransition.retry();
+      }
+    }, function(error) {
+      self.set('isUploading', false);
+      self.set('errors', error.errors);
     });
   },
 
@@ -22,10 +70,10 @@ export default Ember.Controller.extend(SessionMixin, {
    * Profile completeness
    */
   isProfileIncomplete: function() {
-    return (this.get('profileErrors.length') > 0) && !this.get('session.isWorking');
+    return this.get('profileErrors.length') > 0;
   }.property('profileErrors.length', 'session.isWorking'),
   profileErrors: function() {
-    if (!this.get('currentProfile')) {
+    if (!this.get('session.isWorking') && !this.get('currentProfile')) {
       return ['Set your mothertongue'];
     } else {
       return [];
@@ -38,6 +86,9 @@ export default Ember.Controller.extend(SessionMixin, {
   actions: {
     reset: function() {
       this.reset();
+    },
+    uploadProfile: function() {
+      this.uploadProfile();
     }
   }
 });

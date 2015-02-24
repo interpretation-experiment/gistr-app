@@ -15,7 +15,7 @@
 
   <form class="form-horizontal" {{action "uploadProfile" on="submit"}}>
 
-    <div {{bind-attr class=':form-group errors.mothertongue:has-error'}}>
+    <div {{bind-attr class=':form-group errors.mothertongue:has-error justSaved:has-success'}}>
       <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
       <div class="col-sm-10">
         {{view "select-combobox" id="inputMothertongue" class="form-control" content=availableLanguages value=mothertongue optionValuePath="content.name" optionLabelPath="content.label" prompt="Select your Mothertongue"}}
@@ -26,7 +26,12 @@
     <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
       <div class="col-sm-offset-2 col-sm-10">
         <span class="help-block">{{errors.non_field_errors}}</span>
-        {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue='Saving...' inactiveValue='Save'}}
+        {{#if attemptedTransition}}
+          {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue='Saving...' inactiveValue='Save and Play'}}
+        {{else}}
+          {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue='Saving...' inactiveValue='Save'}}
+          {{#if justSaved}}{{bs-label type="success" content="Saved!"}}{{/if}}
+        {{/if}}
       </div>
     </div>
 
