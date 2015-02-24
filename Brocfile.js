@@ -33,5 +33,7 @@ var sinon = pickFiles('bower_components/sinonjs-built/lib', {
 
 app.import('bower_components/jquery-cookie/jquery.cookie.js');
 app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
+app.import('bower_components/bootstrap-combobox/js/bootstrap-combobox.js');
+app.import('bower_components/bootstrap-combobox/css/bootstrap-combobox.css');
 
 module.exports = app.toTree(sinon);
