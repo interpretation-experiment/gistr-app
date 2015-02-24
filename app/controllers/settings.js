@@ -4,14 +4,6 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
-  languages: [
-    { name: 'english', label: 'English' },
-    { name: 'french', label: 'Français' },
-    { name: 'german', label: 'Deutsch' },
-    { name: 'spanish', label: 'Español' },
-    { name: 'italian', label: 'Italiano' },
-  ],
-
   /*
    * Profile form fields
    */
@@ -25,9 +17,6 @@ export default Ember.Controller.extend(SessionMixin, {
       attemptedTransition: null,
     });
   },
-  mothertongueChanged: function() {
-    console.log(this.get('mothertongue'));
-  }.observes('mothertongue'),
 
   /*
    * Profile completeness
@@ -41,5 +30,14 @@ export default Ember.Controller.extend(SessionMixin, {
     } else {
       return [];
     }
-  }.property('currentProfile')
+  }.property('currentProfile'),
+
+  /*
+   * Profile actions
+   */
+  actions: {
+    reset: function() {
+      this.reset();
+    }
+  }
 });

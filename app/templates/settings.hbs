@@ -17,7 +17,7 @@
       <div {{bind-attr class=':form-group errors.mothertongue:has-error'}}>
         <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
         <div class="col-sm-10">
-          {{view "select-combobox" id="inputMothertongue" class="form-control" content=languages value=mothertongue optionValuePath="content.name" optionLabelPath="content.label" prompt="Select your Mothertongue"}}
+          {{view "select-combobox" id="inputMothertongue" class="form-control" content=availableLanguages value=mothertongue optionValuePath="content.name" optionLabelPath="content.label" prompt="Select your Mothertongue"}}
           <span class="help-block">{{errors.mothertongue}}</span>
         </div>
       </div>
