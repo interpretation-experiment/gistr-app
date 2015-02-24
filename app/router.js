@@ -9,7 +9,7 @@ Router.map(function() {
   this.route('login');
   this.route('register');
   this.route('about');
-  this.route('settings');
+  this.route('profile');
   this.route('play');
   this.route('suggest');
   // Why there needs to be the "wildcard" text after the "*"
