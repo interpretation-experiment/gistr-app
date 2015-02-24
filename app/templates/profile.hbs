@@ -17,9 +17,25 @@
 
     <div {{bind-attr class=':form-group errors.mothertongue:has-error justSaved:has-success'}}>
       <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
-      <div class="col-sm-10">
+      <div class="col-sm-6">
         {{view "select-combobox" id="inputMothertongue" class="form-control" content=availableLanguages value=mothertongue optionValuePath="content.name" optionLabelPath="content.label" prompt="Select your Mothertongue"}}
         <span class="help-block">{{errors.mothertongue}}</span>
+      </div>
+      <div class="col-sm-4">
+        <span {{bs-bind-popover
+                  placement="left" html="true"
+                  title="Support for mothertongues"
+                  content="<p>As researchers, there are only so many languages we can analyse. If you can't find your mothertongue in the list, choose <mark>Other</mark> and the game will be in English for you.</p> <p>If you want to add support for a new language, please <a href='https://github.com/interpretation-experiment/gistr-app/issues/new'>let us know</a>!</p>"}}
+                  >
+          {{#link-to 'profile'}}Can't find your language?{{/link-to}}
+        </span>
+        <span {{bs-bind-popover
+                  placement="left" html="true"
+                  title="Bilingual (or more!)"
+                  content="<p>If you have more than one mothertongue, just choose the one you're the most comfortable with (if they're all the same, pick any!)</p>"}}
+                  >
+          {{#link-to 'profile'}}Bilingual?{{/link-to}}
+        </span>
       </div>
     </div>
 
