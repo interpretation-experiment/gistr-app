@@ -1,42 +1,34 @@
-{{page-header title="Settings"}}
+{{#page-header}}
+  Settings <small>signed in as <strong>{{currentUser.username}}</strong> &mdash; {{active-button class="btn btn-default" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}</small>
+{{/page-header}}
 
 {{#page-body}}
-  {{#if session.isAuthenticated}}
-    <h3>About you</h3>
-    {{#if isProfileIncomplete}}
-      {{#bs-alert type="warning" dismiss=false}}
-        Please complete your profile!
-        <ul>
-          {{#each error in profileErrors}}<li>{{error}}</li>{{/each}}
-        </ul>
-      {{/bs-alert}}
-    {{/if}}
-
-    <form class="form-horizontal" {{action "sendProfile" on="submit"}}>
-
-      <div {{bind-attr class=':form-group errors.mothertongue:has-error'}}>
-        <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
-        <div class="col-sm-10">
-          {{view "select-combobox" id="inputMothertongue" class="form-control" content=availableLanguages value=mothertongue optionValuePath="content.name" optionLabelPath="content.label" prompt="Select your Mothertongue"}}
-          <span class="help-block">{{errors.mothertongue}}</span>
-        </div>
-      </div>
-
-      <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
-        <div class="col-sm-offset-2 col-sm-10">
-          <span class="help-block">{{errors.non_field_errors}}</span>
-          {{active-input type='submit' class="btn btn-primary" active=session.isWorking activeValue='Saving...' inactiveValue='Save'}}
-        </div>
-      </div>
-
-    </form>
-
-    <h3>Credentials</h3>
-    <p>Signed in as <strong>{{currentUser.username}}</strong>.</p>
-    {{active-button class="btn btn-default" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}
-  {{else}}
-    <p>No settings, sign in first.</p>
-    {{link-to 'Sign in' 'login' class="btn btn-default"}}
-    {{link-to 'Sign up' 'register' class="btn btn-primary"}}
+  <h3>About you</h3>
+  {{#if isProfileIncomplete}}
+    {{#bs-alert type="warning" dismiss=false}}
+      Please complete your profile!
+      <ul>
+        {{#each error in profileErrors}}<li>{{error}}</li>{{/each}}
+      </ul>
+    {{/bs-alert}}
   {{/if}}
+
+  <form class="form-horizontal" {{action "uploadProfile" on="submit"}}>
+
+    <div {{bind-attr class=':form-group errors.mothertongue:has-error'}}>
+      <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
+      <div class="col-sm-10">
+        {{view "select-combobox" id="inputMothertongue" class="form-control" content=availableLanguages value=mothertongue optionValuePath="content.name" optionLabelPath="content.label" prompt="Select your Mothertongue"}}
+        <span class="help-block">{{errors.mothertongue}}</span>
+      </div>
+    </div>
+
+    <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
+      <div class="col-sm-offset-2 col-sm-10">
+        <span class="help-block">{{errors.non_field_errors}}</span>
+        {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue='Saving...' inactiveValue='Save'}}
+      </div>
+    </div>
+
+  </form>
 {{/page-body}}

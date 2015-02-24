@@ -22,8 +22,8 @@ export default Ember.Controller.extend(SessionMixin, {
    * Profile completeness
    */
   isProfileIncomplete: function() {
-    return this.get('profileErrors.length') > 0;
-  }.property('profileErrors.length'),
+    return (this.get('profileErrors.length') > 0) && !this.get('session.isWorking');
+  }.property('profileErrors.length', 'session.isWorking'),
   profileErrors: function() {
     if (!this.get('currentProfile')) {
       return ['Set your mothertongue'];
