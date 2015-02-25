@@ -42,6 +42,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('errors', error.errors);
     });
   },
+  guessedLanguage: null,
+  watchLanguage: function() {
+    var text = this.get('text');
+
+    if (!text || text.length < 10) {
+      this.set('guessedLanguage', null);
+    } else {
+      this.set('guessedLanguage', detectLanguage(text));
+    }
+  }.observes('text'),
 
   /*
    * Suggestion control

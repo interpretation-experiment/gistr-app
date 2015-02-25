@@ -21,6 +21,8 @@
 
       </form>
 
+      {{#if guessedLanguage}}<p>Guessed language: {{guessedLanguage}}</p>{{/if}}
+
     {{else}}
 
       <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>

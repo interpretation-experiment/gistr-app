@@ -17,7 +17,8 @@
     "ember-fsm": "~0.4.1",
     "bootstrap": "~3.3",
     "ember-addons.bs_for_ember": "~0.7.0",
-    "bootstrap-combobox": "~1.1.6"
+    "bootstrap-combobox": "~1.1.6",
+    "language-detector-wehlutyk": "~1.0.1"
   },
   "devDependencies": {
     "sinonjs-built": "~1.9.1"

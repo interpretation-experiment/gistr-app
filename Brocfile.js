@@ -35,5 +35,6 @@ app.import('bower_components/jquery-cookie/jquery.cookie.js');
 app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
 app.import('bower_components/bootstrap-combobox/js/bootstrap-combobox.js');
 app.import('bower_components/bootstrap-combobox/css/bootstrap-combobox.css');
+app.import('bower_components/language-detector-wehlutyk/languageDetector.min.js');
 
 module.exports = app.toTree(sinon);
