@@ -1,7 +1,8 @@
-import config from 'gistr/config/environment';
 import DS from 'ember-data';
 
 import DRFAdapter from './drf';
+
+import config from 'gistr/config/environment';
 
 
 var Adapter;
