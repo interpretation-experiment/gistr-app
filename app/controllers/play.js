@@ -35,6 +35,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Current tree and sentence state and selection
    */
+  otherLanguage: null,
+  defaultLanguage: null,
   currentSentence: null,
   resetModels: function() {
     this.setProperties({
@@ -44,23 +46,28 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   selectModels: function() {
     // FIXME: load X trees in one go in route's model hook
     var self = this, profile = this.get('currentProfile'),
-        untouchedTreesCount = profile.get('untouchedTreesCount');
+        availableTreesCount = profile.get('availableMothertongueOtherawareTreesCount'),
+        mothertongue = profile.get('mothertongue'),
+        isOthertongue = mothertongue === this.get('otherLanguage');
 
     return this.store.find('tree', {
-      untouched_by_profile: profile.get('id'),
       page_size: 1,
-      page: randint(untouchedTreesCount) + 1
+      page: randint(availableTreesCount) + 1,
+      untouched_by_profile: profile.get('id'),
+      root_language: isOthertongue ? this.get('defaultLanguage') : mothertongue,
+      with_other_mothertongue: isOthertongue,
+      without_other_mothertongue: !isOthertongue
     }).then(function(trees) {
       return trees.objectAt(0).get('sentences');
     }).then(function(sentences) {
       self.set('currentSentence', draw(sentences));
     });
   },
-  watchUntouchedTreesCount: function() {
-    if (this.get('currentProfile.untouchedTreesCount') === 0) {
+  watchAvailableTreesCount: function() {
+    if (this.get('currentProfile.availableMothertongueOtherawareTreesCount') === 0) {
       this.sendStateEvent('bail');
     }
-  }.observes('currentProfile.untouchedTreesCount'),
+  }.observes('currentProfile.availableMothertongueOtherawareTreesCount'),
 
   /*
    * Input form fields, state, and upload
@@ -262,7 +269,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     },
     bail: {
       transition: {
-        from: ['instructions', 'verified'],
+        from: ['instructions', 'verified', 'empty'],
         to: 'empty'
       }
     },
