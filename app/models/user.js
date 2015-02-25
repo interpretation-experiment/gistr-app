@@ -6,5 +6,10 @@ export default DS.Model.extend({
   isActive: DS.attr('boolean'),
   email: DS.attr('string'),
   username: DS.attr('string'),
-  profile: DS.belongsTo('profile')  // not async since it's nested
+  profile: DS.belongsTo('profile'),  // not async since it's nested
+
+  /*
+   * Unused properties
+   */
+  url: DS.attr('string'),
 });

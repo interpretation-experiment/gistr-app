@@ -9,6 +9,13 @@ export default DS.Model.extend({
   suggestionCredit: DS.attr('number'),
   mothertongue: DS.attr('string'),
   untouchedTreesCount: DS.attr('number'),
+  availableMothertongueOtherawareTreesCount: DS.attr('number'),
+
+  /*
+   * Unused properties
+   */
   untouchedDefaultlanguageTreesCount: DS.attr('number'),
-  availableMothertongueOtherawareTreesCount: DS.attr('number')
+  url: DS.attr('string'),
+  user_url: DS.attr('string'),
+  user_username: DS.attr('string'),
 });
