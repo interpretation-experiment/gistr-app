@@ -1,11 +1,16 @@
 import Ember from 'ember';
 
-//import franc from 'franc';
+import franc from 'npm:franc';
 
 import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
+  /*
+   * Parameters
+   */
+  minTokens: 10,
+
   /*
    * Global progress and reset
    */
@@ -44,15 +49,39 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('errors', error.errors);
     });
   },
-  //guessedLanguage: function() {
-    //var text = this.get('text');
 
-    //if (!text) {
-      //return null;
-    //} else {
-      //return franc(text);
-    //}
-  //}.property('text'),
+  /*
+   * Token counting
+   */
+  tokensLeft: function() {
+    var text = this.get('text'), minTokens = this.get('minTokens'),
+        tokenCount;
+
+    if (!text) {
+      return minTokens;
+    } else {
+      tokenCount = text.split(/[ |-]+/).filter(function(item) {
+        return item !== "";
+      }).length;
+      return Math.max(0, minTokens - tokenCount);
+    }
+  }.property('text'),
+  hasMissingTokens: function() {
+    return this.get('tokensLeft') > 0;
+  }.property('tokensLeft'),
+
+  /*
+   * Language guessing
+   */
+  guessedLanguage: function() {
+    var text = this.get('text');
+
+    if (!text) {
+      return null;
+    } else {
+      return franc(text);
+    }
+  }.property('text'),
 
   /*
    * Suggestion control

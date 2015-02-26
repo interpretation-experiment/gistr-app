@@ -16,7 +16,11 @@
 
         <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
           <span class="help-block">{{errors.non_field_errors}}</span>
-          {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
+          {{#if hasMissingTokens}}
+          {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
+          {{else}}
+            {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
+          {{/if}}
         </div>
 
       </form>
