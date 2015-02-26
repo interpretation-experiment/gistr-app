@@ -14,6 +14,16 @@
           <span class="help-block">{{errors.text}}</span>
         </div>
 
+        {{#if isLanguageManual}}
+          <div {{bind-attr class=':form-group errors.language:has-error'}}>
+            <label for="inputLanguage" class="control-label">Language of the sentence</label>
+            {{view "select-combobox" id="inputLanguage" class="form-control" content=availableLanguages value=userLanguage optionValuePath="content.name" optionLabelPath="content.label" prompt="Select the sentence's language"}}
+            <span class="help-block">{{errors.language}}</span>
+          </div>
+        {{else}}
+          <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}
+        {{/if}}
+
         <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
           <span class="help-block">{{errors.non_field_errors}}</span>
           {{#if hasMissingTokens}}
@@ -24,8 +34,6 @@
         </div>
 
       </form>
-
-      <p>Guessed language: {{guessedLanguage}}</p>
 
     {{else}}
 
