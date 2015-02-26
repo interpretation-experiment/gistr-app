@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+//import franc from 'franc';
+
 import SessionMixin from 'gistr/mixins/session';
 
 
@@ -42,16 +44,15 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('errors', error.errors);
     });
   },
-  guessedLanguage: null,
-  watchLanguage: function() {
-    var text = this.get('text');
+  //guessedLanguage: function() {
+    //var text = this.get('text');
 
-    if (!text || text.length < 10) {
-      this.set('guessedLanguage', null);
-    } else {
-      this.set('guessedLanguage', detectLanguage(text));
-    }
-  }.observes('text'),
+    //if (!text) {
+      //return null;
+    //} else {
+      //return franc(text);
+    //}
+  //}.property('text'),
 
   /*
    * Suggestion control
