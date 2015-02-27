@@ -76,19 +76,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   availableLanguages: null,
   otherLanguage: null,
-  languageCodeMap: function() {
-    var otherLanguage = this.get('otherLanguage'), languages = {};
-
-    this.get('availableLanguages').map(function(language) {
-      if (language.name === otherLanguage) {
-        languages[otherLanguage] = otherLanguage;
-      } else {
-        languages[language.label.toLowerCase().slice(0, 3)] = language.name;
-      }
-    });
-
-    return languages;
-  }.property(),
+  languageCodeMap: {
+    eng: 'english',
+    fra: 'french',
+    deu: 'german',
+    spa: 'spanish',
+    ita: 'italian',
+  },
   languageLabelMap: function() {
     var languages = {};
 
@@ -105,7 +99,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
 
     languageCode = franc(text);
     console.log('guess: ' + languageCode);
-    return languageCodeMap[languageCode in languageCodeMap ? languageCode : otherLanguage];
+    return languageCode in languageCodeMap ? languageCodeMap[languageCode] : otherLanguage;
   }.property('text'),
   guessedLanguageLabel: function() {
     return this.get('languageLabelMap')[this.get('guessedLanguage')];
