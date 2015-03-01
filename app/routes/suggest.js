@@ -10,11 +10,15 @@ export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
     return Ember.$.ajax({
       url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/meta/',
       dataType: 'json'
+    }).then(function(data) {
+      return {
+        otherLanguage: data.other_language,
+        availableLanguages: data.supported_languages
+      };
     });
   },
 
   setupController: function(controller, model) {
-    controller.set('availableLanguages', model.supported_languages);
-    controller.set('otherLanguage', model.other_language);
+    controller.setProperties(model);
   }
 });

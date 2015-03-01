@@ -98,7 +98,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         languageCode;
 
     languageCode = franc(text);
-    console.log('guess: ' + languageCode);
     return languageCode in languageCodeMap ? languageCodeMap[languageCode] : otherLanguage;
   }.property('text'),
   guessedLanguageLabel: function() {
