@@ -1,11 +1,18 @@
 import Ember from 'ember';
 
+import franc from 'npm:franc';
+
 import SessionMixin from 'gistr/mixins/session';
 import draw from 'gistr/utils/draw';
 import randint from 'gistr/utils/randint';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
+  /*
+   * Writing parameters
+   */
+  minTokens: 10,
+
   /*
    * Timing parameters
    */
@@ -70,15 +77,84 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('currentProfile.availableMothertongueOtherawareTreesCount'),
 
   /*
+   * Token counting
+   */
+  tokensLeft: function() {
+    var text = this.get('text'), minTokens = this.get('minTokens'),
+        tokenCount;
+
+    if (!text) {
+      return minTokens;
+    } else {
+      tokenCount = text.split(/[ |-]+/).filter(function(item) {
+        return item !== "";
+      }).length;
+      return Math.max(0, minTokens - tokenCount);
+    }
+  }.property('text'),
+  hasMissingTokens: function() {
+    return this.get('tokensLeft') > 0;
+  }.property('tokensLeft'),
+
+  /*
+   * Language guessing
+   */
+  availableLanguages: null,
+  languageCodeMap: {
+    eng: 'english',
+    fra: 'french',
+    deu: 'german',
+    spa: 'spanish',
+    ita: 'italian',
+  },
+  languageLabelMap: function() {
+    var languages = {};
+
+    this.get('availableLanguages').map(function(language) {
+      languages[language.name] = language.label;
+    });
+
+    return languages;
+  }.property(),
+  guessedLanguage: function() {
+    var text = this.get('text'), otherLanguage = this.get('otherLanguage'),
+        languageCodeMap = this.get('languageCodeMap'),
+        languageCode;
+
+    languageCode = franc(text);
+    return languageCode in languageCodeMap ? languageCodeMap[languageCode] : otherLanguage;
+  }.property('text'),
+  guessedLanguageLabel: function() {
+    return this.get('languageLabelMap')[this.get('guessedLanguage')];
+  }.property('guessedLanguage'),
+  parentLanguageLabel: function() {
+    return this.get('languageLabelMap')[this.get('currentSentence.language')];
+  }.property('currentSentence.language'),
+  language: function() {
+    if (this.get('isLanguageManual')) {
+      return this.get('userLanguage');
+    } else {
+      return this.get('guessedLanguage');
+    }
+  }.property('userLanguage', 'guessedLanguage'),
+  isLanguageMismatch: function() {
+    return this.get('language') !== this.get('currentSentence.language');
+  }.property('language', 'currentSentence.language'),
+
+  /*
    * Input form fields, state, and upload
    */
   errors: null,
   text: null,
+  userLanguage: null,
+  isLanguageManual: false,
   isUploading: null,
   resetInput: function() {
     this.setProperties({
       errors: null,
       text: null,
+      userLanguage: null,
+      isLanguageManual: false,
       isUploading: null
     });
   },
@@ -89,7 +165,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     return this.get('store').createRecord('sentence', {
       text: self.get('text'),
       parent: self.get('currentSentence'),
-      language: 'english'  // FIXME: language
+      language: self.get('language')
     }).save().then(function() {
       self.resetInput();
       self.sendStateEvent('upload');
@@ -222,6 +298,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     },
     uploadSentence: function() {
       this.uploadSentence();
+    },
+    manuallySetLanguage: function() {
+      this.set('isLanguageManual', true);
+      this.set('userLanguage', this.get('currentSentence.language'));
     }
   },
 

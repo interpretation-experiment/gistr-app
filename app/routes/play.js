@@ -15,7 +15,8 @@ export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
     }).then(function(data) {
       return {
         otherLanguage: data.other_language,
-        defaultLanguage: data.default_language
+        defaultLanguage: data.default_language,
+        availableLanguages: data.supported_languages
       };
     });
   },
