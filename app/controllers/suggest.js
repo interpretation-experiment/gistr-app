@@ -24,17 +24,17 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Suggestion form fields, state, and upload
    */
+  errors: null,
   text: null,
   userLanguage: null,
   isLanguageManual: false,
-  errors: null,
   isUploading: null,
   resetInput: function() {
     this.setProperties({
+      errors: null,
       text: null,
       userLanguage: null,
       isLanguageManual: false,
-      errors: null,
       isUploading: null
     });
   },
