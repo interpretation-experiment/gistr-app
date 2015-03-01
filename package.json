@@ -35,6 +35,7 @@
     "ember-cli-qunit": "0.1.2",
     "ember-data": "1.0.0-beta.12",
     "ember-django-adapter": "^0.5.1",
+    "ember-document-title": "1.1.7",
     "ember-export-application-global": "^1.0.0",
     "ember-fsm": "0.4.1",
     "express": "^4.8.5",
