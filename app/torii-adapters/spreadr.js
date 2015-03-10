@@ -3,6 +3,9 @@ import Ember from 'ember';
 import config from 'gistr/config/environment';
 
 
+var localStorage = window.localStorage;
+
+
 export default Ember.Object.extend({
   /*
    * Token variable and validation
