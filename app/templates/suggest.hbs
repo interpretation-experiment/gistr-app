@@ -22,7 +22,7 @@
             <span class="help-block">{{errors.language}}</span>
           </div>
         {{else}}
-          <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}
+        <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}</p>
         {{/if}}
 
         <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
