@@ -3,14 +3,7 @@
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var pickFiles = require('broccoli-static-compiler');
 
-var app = new EmberApp({
-  vendorFiles: {
-    // FIXME: torii needs full Handlebars for now. See https://github.com/ember-cli/ember-cli/pull/675
-    'handlebars.js': {
-      production: 'bower_components/handlebars/handlebars.js'
-    }
-  }
-});
+var app = new EmberApp();
 
 // Use `app.import` to add additional libraries to the generated
 // output files.
