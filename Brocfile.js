@@ -3,14 +3,7 @@
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var pickFiles = require('broccoli-static-compiler');
 
-var app = new EmberApp({
-  vendorFiles: {
-    // FIXME: torii needs full Handlebars for now. See https://github.com/ember-cli/ember-cli/pull/675
-    'handlebars.js': {
-      production: 'bower_components/handlebars/handlebars.js'
-    }
-  }
-});
+var app = new EmberApp();
 
 // Use `app.import` to add additional libraries to the generated
 // output files.
@@ -31,9 +24,13 @@ var sinon = pickFiles('bower_components/sinonjs-built/lib', {
   destDir: '/assets'
 });
 
+var glyphicons = pickFiles('bower_components/bootstrap/dist/fonts', {
+  srcDir: '/',
+  destDir: '/fonts'
+});
+
 app.import('bower_components/jquery-cookie/jquery.cookie.js');
 app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
-app.import('bower_components/bootstrap-combobox/js/bootstrap-combobox.js');
-app.import('bower_components/bootstrap-combobox/css/bootstrap-combobox.css');
+app.import('bower_components/bootstrap/dist/css/bootstrap.css');
 
-module.exports = app.toTree(sinon);
+module.exports = app.toTree([sinon, glyphicons]);

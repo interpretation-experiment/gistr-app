@@ -29,12 +29,16 @@ export default Ember.Controller.extend(SessionMixin, {
   errors: null,
   isUploading: null,
   attemptedTransition: null,
+  showOtherInfo: false,
+  showBilingualInfo: false,
   resetInput: function() {
     this.setProperties({
       mothertongue: this.get('currentProfile.mothertongue'),
       errors: null,
       isUploading: null,
       attemptedTransition: null,
+      showOtherInfo: false,
+      showBilingualInfo: false,
     });
   },
   uploadProfile: function() {
@@ -89,6 +93,12 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     uploadProfile: function() {
       this.uploadProfile();
+    },
+    toggleOtherInfo: function() {
+      this.set('showOtherInfo', !this.get('showOtherInfo'));
+    },
+    toggleBilingualInfo: function() {
+      this.set('showBilingualInfo', !this.get('showBilingualInfo'));
     }
   }
 });

@@ -4,18 +4,6 @@ import config from 'gistr/config/environment';
 
 
 export default Ember.Route.extend({
-  renderTemplate: function() {
-    // Render default outlet
-    this.render();
-    // Render extra outlets for bootstrap tooltips
-    var controller = this.controllerFor('tooltip-box');
-    this.render("bs-tooltip-box", {
-      outlet: "bs-tooltip-box",
-      controller: controller,
-      into: "application" // important when using at root level
-    });
-  },
-
   beforeModel: function(transition) {
     // Starting the infinite loop in tests will make the tests fail
     if (config.environment !== 'test'){
