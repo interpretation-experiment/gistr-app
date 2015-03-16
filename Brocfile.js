@@ -24,7 +24,13 @@ var sinon = pickFiles('bower_components/sinonjs-built/lib', {
   destDir: '/assets'
 });
 
+var glyphicons = pickFiles('bower_components/bootstrap/dist/fonts', {
+  srcDir: '/',
+  destDir: '/fonts'
+});
+
 app.import('bower_components/jquery-cookie/jquery.cookie.js');
 app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
+app.import('bower_components/bootstrap/dist/css/bootstrap.css');
 
-module.exports = app.toTree(sinon);
+module.exports = app.toTree([sinon, glyphicons]);
