@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import { request } from 'ic-ajax';
+
 import config from 'gistr/config/environment';
 
 
@@ -18,8 +20,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, {
     }, 1000 * this.get('pingPeriod'));
   },
   ping: function() {
-    return Ember.$.ajax({
-      url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/',
+    return request(config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/', {
       type: 'HEAD',
       timeout: this.get('pingPeriod') * 1000 / 3
     });
