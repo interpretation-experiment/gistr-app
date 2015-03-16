@@ -1,11 +1,11 @@
 <div class="row">
 
   <div class="col-xs-2 col-sm-1">
-    <div class="pull-right icon-big">{{#link-to 'index'}}<span class="glyphicon glyphicon-menu-left"></span>{{/link-to}}</div>
+    {{#link-to 'index' class="icon icon-big pull-right"}}<span class="glyphicon glyphicon-menu-left"></span>{{/link-to}}
   </div>
 
   <div class="col-xs-9 col-sm-10">
-    <h2 class="page-title">{{title}}{{yield}}</h2>
+    <h1 class="page-title">{{title}}{{yield}}</h1>
   </div>
 
 </div>
