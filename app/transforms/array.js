@@ -8,6 +8,6 @@ export default DS.Transform.extend({
   },
 
   deserialize: function(serialized) {
-    return Ember.none(serialized) ? [] : serialized;
+    return Ember.isNone(serialized) ? [] : serialized;
   }
 });
