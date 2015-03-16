@@ -32,18 +32,20 @@
 {{#page-body class="center"}}
   <div class="row">
 
-    <div class="col-xs-6 col-sm-3">
+    <div class="col-sm-2 col-sm-offset-2">
       {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
     </div>
-    <div class="col-xs-6 col-sm-3">
+    <div class="col-sm-4">
       {{#link-to 'suggest' class="btn-home btn btn-lg btn-success"}}New <span class="badge">{{#if currentUser.isStaff}}staff{{else}}{{currentProfile.suggestionCredit}}{{/if}}</span>{{/link-to}}
     </div>
-    <div class="col-xs-6 col-sm-3">
-      {{#sl-tooltip title="Nothing for now!"}}<a href="#" class="btn-home btn btn-lg btn-info">Like</a>{{/sl-tooltip}}
-    </div>
-    <div class="col-xs-6 col-sm-3">
+    <div class="col-sm-2">
       {{link-to 'About' 'about' class="btn-home btn btn-lg btn-info"}}
     </div>
 
+  </div>
+
+  <div class="row">
+    <div class="footer-ruler"></div>
+    <a href="https://twitter.com/gistrexp">Twitter</a> &mdash; <a href="https://github.com/interpretation-experiment/gistr-app">GitHub</a>
   </div>
 {{/page-body}}
