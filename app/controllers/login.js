@@ -3,7 +3,7 @@ import Ember from 'ember';
 import SessionMixin from 'gistr/mixins/session';
 
 
-export default Ember.ObjectController.extend(SessionMixin, {
+export default Ember.Controller.extend(SessionMixin, {
   needs: ['profile'],
 
   /*

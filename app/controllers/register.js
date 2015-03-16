@@ -4,7 +4,7 @@ import SessionMixin from 'gistr/mixins/session';
 import config from 'gistr/config/environment';
 
 
-export default Ember.ObjectController.extend(SessionMixin, {
+export default Ember.Controller.extend(SessionMixin, {
   /*
    * Registration form fields, state, and upload
    */
