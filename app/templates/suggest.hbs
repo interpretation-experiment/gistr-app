@@ -1,6 +1,6 @@
 {{document-title title="New"}}
 {{#page-header}}
-  Suggest new sentence <small>credits {{#if currentUser.isStaff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestionCredit}}{{/if}}</small>
+  Suggest new sentence <small>credits <span class="badge">{{#if currentUser.isStaff}}staff{{else}}{{currentProfile.suggestionCredit}}{{/if}}</span></small>
 {{/page-header}}
 
 {{#page-body}}
@@ -11,18 +11,18 @@
 
         <div {{bind-attr class=':form-group errors.text:has-error'}}>
           <label for="inputText" class="control-label">Type in your new sentence:</label>
-          {{view focused-textarea id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
+          {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
           <span class="help-block">{{errors.text}}</span>
         </div>
 
         {{#if isLanguageManual}}
           <div {{bind-attr class=':form-group errors.language:has-error'}}>
             <label for="inputLanguage" class="control-label">Language of the sentence</label>
-            {{view "select-combobox" id="inputLanguage" class="form-control" content=availableLanguages value=userLanguage optionValuePath="content.name" optionLabelPath="content.label" prompt="Select the sentence's language"}}
+            {{sl-select id="inputLanguage" content=availableLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
             <span class="help-block">{{errors.language}}</span>
           </div>
         {{else}}
-        <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}</p>
+          <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}</p>
         {{/if}}
 
         <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
@@ -52,7 +52,7 @@
     {{else}}
 
       {{#if canSuggest}}
-        <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{bs-badge content=currentProfile.suggestionCredit}}</button>
+        <button class="btn btn-default" {{action 'suggest'}}>Suggest again <span class="badge">{{currentProfile.suggestionCredit}}</span></button>
       {{else}}
         <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
       {{/if}}
