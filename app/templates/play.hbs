@@ -1,6 +1,6 @@
 {{document-title title="Play"}}
 {{#page-header}}
-  Play <small>streak {{bs-badge content=count}} | free trees {{bs-badge content=currentProfile.availableMothertongueOtherawareTreesCount}}</small>
+  Play <small>streak <span class="badge">{{count}}</span> | free trees <span class="badge">{{currentProfile.availableMothertongueOtherawareTreesCount}}</span></small>
 {{/page-header}}
 
 {{#page-body}}
@@ -14,7 +14,7 @@
     <h3>Some reading instructions</h3>
     <p>Sentence instructions: blablabla. {{currentSentence.instructions}}</p>
     <blockquote>{{currentSentence.text}}</blockquote>
-    {{bs-progress progress=readProgress stripped=true animated=true}}
+    <p>{{sl-progress-bar value=readProgress}}</p>
     <button class="btn btn-primary" {{action "hold"}}>Continue</button>
   {{/if}}
 
@@ -30,7 +30,7 @@
     <form {{action "uploadSentence" on="submit"}}>
 
       <div {{bind-attr class=':form-group errors.text:has-error'}}>
-        {{view focused-textarea id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
+        {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
         <span class="help-block">{{errors.text}}</span>
       </div>
 
@@ -56,7 +56,7 @@
 
     </form>
 
-    {{bs-progress progress=writeProgress stripped=true animated=true}}
+    <p>{{sl-progress-bar value=writeProgress}}</p>
   {{/if}}
 
   {{#if isInTimedout}}
