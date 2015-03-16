@@ -13,7 +13,7 @@
 
 {{#page-body class="center"}}
   <h1>Gistr</h1>
-  <h3><small>A <strong {{bs-bind-tooltip content="Game With A Purpose"}}>GWAP</strong> on Interpretation</small></h3>
+  <p>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation</p>
 
   <div class="greeting">
     {{#if session.isWorking}}
@@ -36,10 +36,10 @@
       {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
     </div>
     <div class="col-xs-6 col-sm-3">
-      {{#link-to 'suggest' class="btn-home btn btn-lg btn-success"}}New {{#if currentUser.isStaff}}{{bs-badge content="staff"}}{{else}}{{bs-badge content=currentProfile.suggestionCredit}}{{/if}}{{/link-to}}
+      {{#link-to 'suggest' class="btn-home btn btn-lg btn-success"}}New <span class="badge">{{#if currentUser.isStaff}}staff{{else}}{{currentProfile.suggestionCredit}}{{/if}}</span>{{/link-to}}
     </div>
     <div class="col-xs-6 col-sm-3">
-      <a href="#" class="btn-home btn btn-lg btn-info" {{bs-bind-tooltip content="Nothing for now!"}}>Like</a>
+      {{#sl-tooltip title="Nothing for now!"}}<a href="#" class="btn-home btn btn-lg btn-info">Like</a>{{/sl-tooltip}}
     </div>
     <div class="col-xs-6 col-sm-3">
       {{link-to 'About' 'about' class="btn-home btn btn-lg btn-info"}}
