@@ -26,9 +26,6 @@ export default Ember.Route.extend({
       this.get('session').close('spreadr').then(function() {
         self.transitionTo('index');
       });
-    },
-    loggedIn: function(/*session*/) {
-      // Do nothing
     }
   }
 });

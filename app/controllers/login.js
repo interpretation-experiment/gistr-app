@@ -26,7 +26,6 @@ export default Ember.Controller.extend(SessionMixin, {
         attemptedTransition = this.get('attemptedTransition');
 
     this.get('session').open('spreadr', data).then(function() {
-      self.send('loggedIn', self.get('session'));
       self.reset();
       if (!!self.get('currentProfile')) {
         if (!!attemptedTransition) {
