@@ -1,6 +1,6 @@
 {{document-title title="New"}}
 {{#page-header}}
-  Suggest new sentence <small>credits <span class="badge">{{#if currentUser.isStaff}}staff{{else}}{{currentProfile.suggestionCredit}}{{/if}}</span></small>
+  Suggest new sentence <small>credits {{credit-badge session=session}}</small>
 {{/page-header}}
 
 {{#page-body}}
@@ -51,7 +51,7 @@
     {{else}}
 
       {{#if canSuggest}}
-        <button class="btn btn-default" {{action 'suggest'}}>Suggest again <span class="badge">{{currentProfile.suggestionCredit}}</span></button>
+        <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{credit-badge session=session}}</button>
       {{else}}
         <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
       {{/if}}
