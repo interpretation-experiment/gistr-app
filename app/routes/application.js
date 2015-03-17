@@ -6,7 +6,7 @@ import config from 'gistr/config/environment';
 export default Ember.Route.extend({
   lang: Ember.inject.service(),
 
-  beforeModel: function(transition) {
+  beforeModel: function(/*transition*/) {
     // Starting the infinite loop in tests will make the tests fail
     if (config.environment !== 'test'){
       this.controllerFor('application').sendStateEvent('check');
@@ -15,7 +15,7 @@ export default Ember.Route.extend({
     // See if we're logged in, populate language support
     var self = this;
     return Ember.RSVP.hash({
-      session: self.get('session').fetch('spreadr'),
+      session: self.get('session').fetch('spreadr').then(null, function() {}),
       lang: self.get('lang').populate()
     });
   },
