@@ -38,6 +38,20 @@ export default Ember.Service.extend({
       self.set('defaultLanguage', data.default_language);
       self.set('otherLanguage', data.other_language);
       self.set('supportedLanguages', data.supported_languages);
+
+      // Check we know all the received supportedLanguages
+      var otherLanguage = self.get('otherLanguage'),
+          languageCodeMap = self.get('languageCodeMap'),
+          knownLanguages = Object.keys(languageCodeMap).map(function(code) {
+        return languageCodeMap[code];
+      });
+      self.get('supportedLanguages').map(function(language) {
+        Ember.assert(
+          `Got language '${language.name}' from server, but we have no franc language code for it`,
+          knownLanguages.contains(language.name) || language.name === otherLanguage
+        );
+      });
+
       return self;
     });
 
