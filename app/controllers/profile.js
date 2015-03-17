@@ -95,10 +95,10 @@ export default Ember.Controller.extend(SessionMixin, {
       this.uploadProfile();
     },
     toggleOtherInfo: function() {
-      this.set('showOtherInfo', !this.get('showOtherInfo'));
+      this.toggleProperty('showOtherInfo');
     },
     toggleBilingualInfo: function() {
-      this.set('showBilingualInfo', !this.get('showBilingualInfo'));
+      this.toggleProperty('showBilingualInfo');
     }
   }
 });
