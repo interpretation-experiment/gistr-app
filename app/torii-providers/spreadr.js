@@ -10,7 +10,7 @@ export default Ember.Object.extend({
       type: 'POST',
       data: { username: credentials.username, password: credentials.password }
     }).then(null, function(errors) {
-      return errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
+      throw errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
     });
   }
 });
