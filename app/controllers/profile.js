@@ -87,7 +87,7 @@ export default Ember.Controller.extend(SessionMixin, {
 
     return errors;
   }.property('currentProfile'),
-  isProfileIncomplete: Ember.computed.gt('profileErrors.length', 0),
+  isProfileIncomplete: Ember.computed.notEmpty('profileErrors'),
 
   /*
    * Profile actions

@@ -92,9 +92,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       return Math.max(0, minTokens - tokenCount);
     }
   }.property('text'),
-  hasMissingTokens: function() {
-    return this.get('tokensLeft') > 0;
-  }.property('tokensLeft'),
+  hasMissingTokens: Ember.computed.gt('tokensLeft', 0),
 
   /*
    * Language guessing
@@ -119,7 +117,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     } else {
       return this.get('guessedLanguage');
     }
-  }.property('userLanguage', 'guessedLanguage'),
+  }.property('isLanguageManual', 'userLanguage', 'guessedLanguage'),
   isLanguageMismatch: function() {
     return this.get('language') !== this.get('currentSentence.language');
   }.property('language', 'currentSentence.language'),
@@ -162,14 +160,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Suggestion control
    */
-  canSuggest: function() {
-    // Staff can always suggest
-    if (this.get('currentUser.isStaff')) {
-      return true;
-    }
-
-    return this.get('currentProfile.suggestionCredit') > 0;
-  }.property('currentProfile.suggestionCredit', 'currentUser.isStaff'),
+  hasSuggestionCredit: Ember.computed.gt('currentProfile.suggestionCredit', 0),
+  canSuggest: Ember.computed.or('currentUser.isStaff', 'hasSuggestionCredit'),
 
   /*
    * Timing variables
