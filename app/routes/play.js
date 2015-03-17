@@ -25,7 +25,7 @@ export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
     controller.setProperties(model);
   },
 
-  activate: function() {
+  watchAvailableTreesCount: function() {
     this.controllerFor('play').watchAvailableTreesCount();
-  }
+  }.on('activate')
 });

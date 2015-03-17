@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 
 export default Ember.Mixin.create({
-  deactivate: function() {
+  resetController: function() {
     this.get('controller').send('reset');
-  }
+  }.on('deactivate')
 });
