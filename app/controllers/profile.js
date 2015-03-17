@@ -59,7 +59,7 @@ export default Ember.Controller.extend(SessionMixin, {
       profile.setProperties(data);
     }
 
-    profile.save().then(function() {
+    return profile.save().then(function() {
       self.set('justSaved', true);
       self.resetInput();
 
@@ -67,8 +67,9 @@ export default Ember.Controller.extend(SessionMixin, {
         attemptedTransition.retry();
       }
     }, function(error) {
-      self.set('isUploading', false);
       self.set('errors', error.errors);
+    }).finally(function() {
+      self.set('isUploading', false);
     });
   },
 
@@ -96,8 +97,8 @@ export default Ember.Controller.extend(SessionMixin, {
     reset: function() {
       this.reset();
     },
-    uploadProfile: function() {
-      this.uploadProfile();
+    uploadProfile: function(callback) {
+      callback(this.uploadProfile());
     },
     toggleOtherInfo: function() {
       this.toggleProperty('showOtherInfo');

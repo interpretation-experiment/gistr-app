@@ -33,7 +33,7 @@ export default Ember.Component.extend(SessionMixin, {
     var self = this, data = this.getProperties('text', 'language');
 
     this.set('isUploading', true);
-    this.get('store').createRecord('sentence', data).save().then(function() {
+    return this.get('store').createRecord('sentence', data).save().then(function() {
       self.resetInput();
       self.sendAction('next');
     }, function(error) {
@@ -87,8 +87,8 @@ export default Ember.Component.extend(SessionMixin, {
    * Suggestion actions
    */
   actions: {
-    uploadSentence: function() {
-      this.uploadSentence();
+    uploadSentence: function(callback) {
+      callback(this.uploadSentence());
     },
     manuallySetLanguage: function() {
       this.set('isLanguageManual', true);

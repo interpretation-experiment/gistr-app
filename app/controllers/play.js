@@ -266,8 +266,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     reset: function() {
       this.sendStateEvent('reset');
     },
-    uploadSentence: function() {
-      this.uploadSentence();
+    uploadSentence: function(callback) {
+      callback(this.uploadSentence());
     },
     manuallySetLanguage: function() {
       this.set('isLanguageManual', true);

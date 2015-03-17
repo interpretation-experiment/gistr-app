@@ -27,7 +27,7 @@ export default Ember.Controller.extend(SessionMixin, {
     var self = this, data = this.getProperties('username', 'password1', 'password2');
     this.set('isRegistering', true);
 
-    request(api('/rest-auth/registration/'), {
+    return request(api('/rest-auth/registration/'), {
       type: 'POST',
       data: data
     }).then(function() {
@@ -52,8 +52,8 @@ export default Ember.Controller.extend(SessionMixin, {
     reset: function() {
       this.reset();
     },
-    register: function() {
-      this.register();
+    register: function(callback) {
+      callback(this.register());
     }
   }
 });

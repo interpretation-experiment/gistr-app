@@ -25,7 +25,7 @@ export default Ember.Controller.extend(SessionMixin, {
     var self = this, data = this.getProperties('username', 'password'),
         attemptedTransition = this.get('attemptedTransition');
 
-    this.get('session').open('spreadr', data).then(function() {
+    return this.get('session').open('spreadr', data).then(function() {
       self.reset();
       if (!!self.get('currentProfile')) {
         if (!!attemptedTransition) {
@@ -52,8 +52,10 @@ export default Ember.Controller.extend(SessionMixin, {
     reset: function() {
       this.reset();
     },
-    login: function() {
-      this.login();
+    login: function(callback) {
+      var promise = this.login();
+      console.log(promise);
+      callback(promise);
     }
   }
 });

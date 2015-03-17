@@ -14,11 +14,12 @@ export default Ember.Route.extend({
   },
 
   actions: {
-    logout: function() {
-      var self = this;
-      this.get('session').close('spreadr').then(function() {
+    logout: function(callback) {
+      var self = this, promise;
+      promise = this.get('session').close('spreadr').then(function() {
         self.transitionTo('index');
       });
+      callback(promise);
     }
   }
 });

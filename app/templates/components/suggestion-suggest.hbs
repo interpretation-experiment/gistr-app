@@ -1,6 +1,6 @@
 {{#if (can 'create sentence')}}
 
-  <form {{action "uploadSentence" on="submit"}}>
+  <form>
 
     <div {{bind-attr class=':form-group errors.text:has-error'}}>
       <label for="inputText" class="control-label">Type in your new sentence:</label>
@@ -23,7 +23,7 @@
       {{#if hasMissingTokens}}
         {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
       {{else}}
-        {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
+        {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
       {{/if}}
     </div>
 

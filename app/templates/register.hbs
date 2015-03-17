@@ -3,11 +3,11 @@
 
 {{#page-body}}
   {{#if session.isAuthenticated}}
-    <p>Signed in as <strong>{{currentUser.username}}</strong>. Sign out first!</p>
-    {{active-button class="btn btn-primary" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}
+    <p>You're signed in as <strong>{{currentUser.username}}</strong>. Sign out first!</p>
+    {{async-button action="logout" class="btn btn-primary" default="Sign out" pending="Signing you out..."}}
   {{else}}
 
-    <form class="form-horizontal" {{action "register" on="submit"}}>
+    <form class="form-horizontal">
 
       <div {{bind-attr class=':form-group errors.username:has-error'}}>
         <label for="inputUsername" class="col-sm-2 control-label">Username</label>
@@ -37,7 +37,7 @@
         <div class="col-sm-offset-2 col-sm-10">
           <span class="help-block">{{errors.__all__}}</span>
           <span class="help-block">{{errors.non_field_errors}}</span>
-          {{active-input type='submit' class="btn btn-default" active=isRegistering activeValue="Signing you up..." inactiveValue="Sign up"}}
+          {{async-button action="register" class="btn btn-default" default="Sign up" pending="Signing you up..."}}
         </div>
       </div>
 

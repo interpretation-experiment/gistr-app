@@ -24,7 +24,7 @@
   {{else if isInWriting}}
     <h3>Some writing instructions</h3>
 
-    <form {{action "uploadSentence" on="submit"}}>
+    <form>
 
       <div {{bind-attr class=':form-group errors.text:has-error'}}>
         {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
@@ -45,7 +45,7 @@
           {{#if isLanguageMismatch}}
             {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}
           {{else}}
-            {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
+            {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
           {{/if}}
         {{/if}}
       </div>

@@ -3,8 +3,8 @@
 
 {{#page-body}}
   {{#if session.isAuthenticated}}
-    <p>Signed in as <strong>{{currentUser.username}}</strong>.</p>
-    {{active-button class="btn btn-primary" action="logout" active=session.isWorking activeText="Signing you out..." inactiveText="Sign out"}}
+    <p>You're signed in as <strong>{{currentUser.username}}</strong>.</p>
+    {{async-button action="logout" class="btn btn-primary" default="Sign out" pending="Signing you out..."}}
   {{else}}
 
     <div class="row">
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <form class="form-horizontal" {{action "login" on="submit"}}>
+    <form class="form-horizontal">
 
       <div {{bind-attr class=':form-group errors.username:has-error'}}>
         <label for="inputUsername" class="col-sm-2 control-label">Username</label>
@@ -35,9 +35,9 @@
         <div class="col-sm-offset-2 col-sm-10">
           <span class="help-block">{{errors.non_field_errors}}</span>
           {{#if attemptedTransition}}
-            {{active-input type='submit' class="btn btn-default" active=session.isWorking activeValue='Signing you in...' inactiveValue='Sign in and Play'}}
+            {{async-button action="login" class="btn btn-default" default="Sign in and Play" pending="Signing you in..."}}
           {{else}}
-            {{active-input type='submit' class="btn btn-default" active=session.isWorking activeValue='Signing you in...' inactiveValue='Sign in'}}
+            {{async-button action="login" class="btn btn-default" default="Sign in" pending="Signing you in..."}}
           {{/if}}
         </div>
       </div>
