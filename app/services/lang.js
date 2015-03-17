@@ -57,5 +57,5 @@ export default Ember.Service.extend({
 
     this.set('_populationPromise', _populationPromise);
     return _populationPromise;
-  }.on('init'),
+  }
 });
