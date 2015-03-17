@@ -1,6 +1,7 @@
 import Ember from 'ember';
+import { request } from 'ic-ajax';
 
-import config from 'gistr/config/environment';
+import api from 'gistr/utils/api';
 
 
 export default Ember.Object.extend({
@@ -36,20 +37,13 @@ export default Ember.Object.extend({
   fetchSession: function() {
     var self = this, store = this.get('store');
 
-    return new Ember.RSVP.Promise(function(resolve, reject) {
-      Ember.$.ajax({
-        dataType: 'json',
-        url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/user/',
-        success: Ember.run.bind(null, resolve),
-        error: Ember.run.bind(null, reject)
-      });
-    }).then(function(shallowUser) {
+    return request(api('/rest-auth/user/')).then(function(shallowUser) {
       return store.find('user', shallowUser.id);
     }).then(function(user) {
       return { currentUser: user };
-    }, function(xhr, error, errorThrown) {
+    }, function(errors) {
       self.set('token', null);
-      throw xhr.responseJSON || { non_field_errors: errorThrown };
+      throw errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
     });
   },
 
@@ -67,18 +61,10 @@ export default Ember.Object.extend({
   close: function() {
     var self = this;
 
-    return new Ember.RSVP.Promise(function(resolve, reject) {
-      Ember.$.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/logout/',
-        success: Ember.run.bind(null, resolve),
-        error: Ember.run.bind(null, reject)
-      });
-    }).then(function() {
+    return request(api('/rest-auth/logout/'), { type: 'POST' }).then(function() {
       self.set('token', null);
-    }, function(xhr, error, errorThrown) {
-      throw xhr.responseJSON || { non_field_errors: errorThrown };
+    }, function(errors) {
+      throw errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
     });
   }
 });

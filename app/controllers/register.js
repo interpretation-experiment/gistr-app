@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import { request } from 'ic-ajax';
 
 import SessionMixin from 'gistr/mixins/session';
-import config from 'gistr/config/environment';
+import api from 'gistr/utils/api';
 
 
 export default Ember.Controller.extend(SessionMixin, {
@@ -26,27 +27,20 @@ export default Ember.Controller.extend(SessionMixin, {
     var self = this, data = this.getProperties('username', 'password1', 'password2');
     this.set('isRegistering', true);
 
-    new Ember.RSVP.Promise(function(resolve, reject) {
-      Ember.$.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/registration/',
-        data: data,
-        success: Ember.run.bind(null, resolve),
-        error: Ember.run.bind(null, reject)
-      });
+    request(api('/rest-auth/registration/'), {
+      type: 'POST',
+      data: data
     }).then(function() {
       return self.get('session').open('spreadr', {
         username: data.username,
         password: data.password1
       });
     }).then(function() {
-      self.send('loggedIn', self.get('session'));
       self.reset();
       self.transitionToRoute('profile');
-    }, function(xhr, error, errorThrown) {
+    }, function(errors) {
       self.set('isRegistering', false);
-      self.set('errors', xhr.responseJSON || { __all__: errorThrown });
+      self.set('errors', errors.jqXHR.responseJSON || { __all__: errors.errorThrown });
     });
   },
 

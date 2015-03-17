@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import { request } from 'ic-ajax';
 
-import config from 'gistr/config/environment';
+import api from 'gistr/utils/api';
 
 
 export default Ember.Service.extend({
@@ -34,9 +34,7 @@ export default Ember.Service.extend({
       return _populationPromise;
     }
 
-    _populationPromise = request(
-      config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/meta/'
-    ).then(function(data) {
+    _populationPromise = request(api('/meta/')).then(function(data) {
       self.set('defaultLanguage', data.default_language);
       self.set('otherLanguage', data.other_language);
       self.set('supportedLanguages', data.supported_languages);

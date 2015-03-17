@@ -1,20 +1,16 @@
 import Ember from 'ember';
+import { request } from 'ic-ajax';
 
-import config from 'gistr/config/environment';
+import api from 'gistr/utils/api';
 
 
 export default Ember.Object.extend({
   open: function(credentials) {
-    return Ember.$.ajax({
+    return request(api('/rest-auth/login/'), {
       type: 'POST',
-      dataType: 'json',
-      url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/rest-auth/login/',
-      data: {
-        username: credentials.username,
-        password: credentials.password
-      }
-    }).then(null, function(xhr, error, errorThrown) {
-      return xhr.responseJSON || { non_field_errors: errorThrown };
+      data: { username: credentials.username, password: credentials.password }
+    }).then(null, function(errors) {
+      return errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
     });
   }
 });
