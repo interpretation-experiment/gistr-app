@@ -1,7 +1,5 @@
 import Ember from 'ember';
 
-import config from 'gistr/config/environment';
-
 
 export default Ember.Route.extend({
   lang: Ember.inject.service(),
