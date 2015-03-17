@@ -14,10 +14,10 @@ export default Ember.Route.extend({
 
     // See if we're logged in, populate language support
     var self = this;
-    return Ember.RSVP.hash({
-      session: self.get('session').fetch('spreadr').then(null, function() {}),
-      lang: self.get('lang').populate()
-    });
+    return Ember.RSVP.all([
+      self.get('session').fetch('spreadr').then(null, function() {}),
+      self.get('lang').populate()
+    ]);
   },
 
   actions: {
