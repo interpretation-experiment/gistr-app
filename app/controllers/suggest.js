@@ -6,6 +6,8 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
+  lang: Ember.inject.service(),
+
   /*
    * Parameters
    */
@@ -74,34 +76,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Language guessing
    */
-  availableLanguages: null,
-  otherLanguage: null,
-  languageCodeMap: {
-    eng: 'english',
-    fra: 'french',
-    deu: 'german',
-    spa: 'spanish',
-    ita: 'italian',
-  },
-  languageLabelMap: function() {
-    var languages = {};
-
-    this.get('availableLanguages').map(function(language) {
-      languages[language.name] = language.label;
-    });
-
-    return languages;
-  }.property(),
   guessedLanguage: function() {
-    var text = this.get('text'), otherLanguage = this.get('otherLanguage'),
-        languageCodeMap = this.get('languageCodeMap'),
+    var text = this.get('text'), otherLanguage = this.get('lang.otherLanguage'),
+        languageCodeMap = this.get('lang.languageCodeMap'),
         languageCode;
 
     languageCode = franc(text);
     return languageCode in languageCodeMap ? languageCodeMap[languageCode] : otherLanguage;
   }.property('text'),
   guessedLanguageLabel: function() {
-    return this.get('languageLabelMap')[this.get('guessedLanguage')];
+    return this.get('lang.languageLabelMap')[this.get('guessedLanguage')];
   }.property('guessedLanguage'),
   language: function() {
     if (this.get('isLanguageManual')) {

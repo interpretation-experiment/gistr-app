@@ -4,6 +4,8 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
+  lang: Ember.inject.service(),
+
   /*
    * Global state and reset
    */

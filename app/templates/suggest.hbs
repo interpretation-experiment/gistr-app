@@ -18,7 +18,7 @@
         {{#if isLanguageManual}}
           <div {{bind-attr class=':form-group errors.language:has-error'}}>
             <label for="inputLanguage" class="control-label">Language of the sentence</label>
-            {{sl-select id="inputLanguage" content=availableLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
+            {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
             <span class="help-block">{{errors.language}}</span>
           </div>
         {{else}}

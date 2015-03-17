@@ -6,25 +6,6 @@ import config from 'gistr/config/environment';
 
 
 export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
-  model: function() {
-    // FIXME: load X trees in one go
-
-    return Ember.$.ajax({
-      url: config.APP.API_HOST + '/' + config.APP.API_NAMESPACE + '/meta/',
-      dataType: 'json'
-    }).then(function(data) {
-      return {
-        otherLanguage: data.other_language,
-        defaultLanguage: data.default_language,
-        availableLanguages: data.supported_languages
-      };
-    });
-  },
-
-  setupController: function(controller, model) {
-    controller.setProperties(model);
-  },
-
   watchAvailableTreesCount: function() {
     this.controllerFor('play').watchAvailableTreesCount();
   }.on('activate')

@@ -4,17 +4,20 @@ import config from 'gistr/config/environment';
 
 
 export default Ember.Route.extend({
+  lang: Ember.inject.service(),
+
   beforeModel: function(transition) {
     // Starting the infinite loop in tests will make the tests fail
     if (config.environment !== 'test'){
       this.controllerFor('application').sendStateEvent('check');
     }
 
-    // See if we're logged in, and wait for the answer
+    // See if we're logged in, populate language support
     var self = this;
-    return this.get('session').fetch('spreadr').then(function() {
-      transition.send('loggedIn', self.get('session'));
-    }, function() {});
+    return Ember.RSVP.hash({
+      session: self.get('session').fetch('spreadr'),
+      lang: self.get('lang').populate()
+    });
   },
 
   actions: {

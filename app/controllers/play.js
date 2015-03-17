@@ -8,6 +8,8 @@ import randint from 'gistr/utils/randint';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
+  lang: Ember.inject.service(),
+
   /*
    * Writing parameters
    */
@@ -42,8 +44,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Current tree and sentence state and selection
    */
-  otherLanguage: null,
-  defaultLanguage: null,
   currentSentence: null,
   resetModels: function() {
     this.setProperties({
@@ -55,13 +55,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     var self = this, profile = this.get('currentProfile'),
         availableTreesCount = profile.get('availableMothertongueOtherawareTreesCount'),
         mothertongue = profile.get('mothertongue'),
-        isOthertongue = mothertongue === this.get('otherLanguage');
+        isOthertongue = mothertongue === this.get('lang.otherLanguage');
 
     return this.store.find('tree', {
       page_size: 1,
       page: randint(availableTreesCount) + 1,
       untouched_by_profile: profile.get('id'),
-      root_language: isOthertongue ? this.get('defaultLanguage') : mothertongue,
+      root_language: isOthertongue ? this.get('lang.defaultLanguage') : mothertongue,
       with_other_mothertongue: isOthertongue,
       without_other_mothertongue: !isOthertongue
     }).then(function(trees) {
@@ -99,36 +99,19 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Language guessing
    */
-  availableLanguages: null,
-  languageCodeMap: {
-    eng: 'english',
-    fra: 'french',
-    deu: 'german',
-    spa: 'spanish',
-    ita: 'italian',
-  },
-  languageLabelMap: function() {
-    var languages = {};
-
-    this.get('availableLanguages').map(function(language) {
-      languages[language.name] = language.label;
-    });
-
-    return languages;
-  }.property(),
   guessedLanguage: function() {
-    var text = this.get('text'), otherLanguage = this.get('otherLanguage'),
-        languageCodeMap = this.get('languageCodeMap'),
+    var text = this.get('text'), otherLanguage = this.get('lang.otherLanguage'),
+        languageCodeMap = this.get('lang.languageCodeMap'),
         languageCode;
 
     languageCode = franc(text);
     return languageCode in languageCodeMap ? languageCodeMap[languageCode] : otherLanguage;
   }.property('text'),
   guessedLanguageLabel: function() {
-    return this.get('languageLabelMap')[this.get('guessedLanguage')];
+    return this.get('lang.languageLabelMap')[this.get('guessedLanguage')];
   }.property('guessedLanguage'),
   parentLanguageLabel: function() {
-    return this.get('languageLabelMap')[this.get('currentSentence.language')];
+    return this.get('lang.languageLabelMap')[this.get('currentSentence.language')];
   }.property('currentSentence.language'),
   language: function() {
     if (this.get('isLanguageManual')) {
