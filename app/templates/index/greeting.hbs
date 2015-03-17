@@ -1,0 +1,15 @@
+<h1>Gistr</h1>
+<h2><small>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation</small></h2>
+
+<div class="greeting">
+  {{#if session.isWorking}}
+    <p>Loading...</p>
+  {{else}}
+    {{#if session.isAuthenticated}}
+      <p>Howdy, <strong>{{currentUser.username}}</strong></p>
+    {{else}}
+      {{link-to 'Sign in' 'login' class="btn btn-default"}}
+      {{link-to 'Sign up' 'register' class="btn btn-primary"}}
+    {{/if}}
+  {{/if}}
+</div>

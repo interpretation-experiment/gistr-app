@@ -1,0 +1,13 @@
+<div class="row">
+
+  <div class="col-sm-2 col-sm-offset-2">
+    {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
+  </div>
+  <div class="col-sm-4">
+    {{#link-to 'suggest' class="btn-home btn btn-lg btn-success"}}New {{credit-badge session=session}}{{/link-to}}
+  </div>
+  <div class="col-sm-2">
+    {{link-to 'About' 'about' class="btn-home btn btn-lg btn-info"}}
+  </div>
+
+</div>

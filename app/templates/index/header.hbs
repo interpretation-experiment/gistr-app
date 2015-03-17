@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">
+
+    {{#if session.isAuthenticated}}
+      {{#link-to 'profile' class="icon icon-big pull-right"}}<span class="glyphicon glyphicon-user"></span>{{/link-to}}
+    {{/if}}
+
+  </div>
+</div>
