@@ -8,23 +8,20 @@
     <h3>Your mission</h3>
     <p>Task instructions: blablabla. {{task.instructions}}</p>
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
-  {{/if}}
 
-  {{#if isInReading}}
+  {{else if isInReading}}
     <h3>Some reading instructions</h3>
     <p>Sentence instructions: blablabla. {{currentSentence.instructions}}</p>
     <blockquote>{{currentSentence.text}}</blockquote>
     <p>{{sl-progress-bar value=readProgress}}</p>
     <button class="btn btn-primary" {{action "hold"}}>Continue</button>
-  {{/if}}
 
-  {{#if isInHolding}}
+  {{else if isInHolding}}
     <h3>Some holding instructions</h3>
     <p>A hold task we need to code.</p>
     <button class="btn btn-primary" {{action "write"}}>Continue</button>
-  {{/if}}
 
-  {{#if isInWriting}}
+  {{else if isInWriting}}
     <h3>Some writing instructions</h3>
 
     <form {{action "uploadSentence" on="submit"}}>
@@ -34,12 +31,11 @@
         <span class="help-block">{{errors.text}}</span>
       </div>
 
-      {{#if hasMissingTokens}}
-      {{else}}
+      {{#unless hasMissingTokens}}
         {{#if isLanguageMismatch}}
-        <p>This looks like <strong>{{guessedLanguageLabel}}</strong>, but you should be writing in <strong>{{parentLanguageLabel}}</strong>! &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>No, it's <strong>{{parentLanguageLabel}}</strong></button></p>
+          <p>This looks like <strong>{{guessedLanguageLabel}}</strong>, but you should be writing in <strong>{{parentLanguageLabel}}</strong>! &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>No, it's <strong>{{parentLanguageLabel}}</strong></button></p>
         {{/if}}
-      {{/if}}
+      {{/unless}}
 
       <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
         <span class="help-block">{{errors.non_field_errors}}</span>
@@ -57,21 +53,18 @@
     </form>
 
     <p>{{sl-progress-bar value=writeProgress}}</p>
-  {{/if}}
 
-  {{#if isInTimedout}}
+  {{else if isInTimedout}}
     <h3>Time's up!</h3>
     <p>You need to be quicker next time, check the progress bar!</p>
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
-  {{/if}}
 
-  {{#if isInVerified}}
+  {{else if isInVerified}}
     <h3>That's recorded</h3>
     <p>Keep going!</p>
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
-  {{/if}}
 
-  {{#if isInEmpty}}
+  {{else if isInEmpty}}
     <h3>No more sentences!</h3>
     <p>You've participated in all the available trees.</p>
     {{#if currentUser.isStaff}}
@@ -83,9 +76,8 @@
         <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
       {{/if}}
     {{/if}}
-  {{/if}}
 
-  {{#if isInFinished}}
+  {{else if isInFinished}}
     <h3>Nice streak!</h3>
     <p>You interpreted a lot of sentences, take a break.</p>
   {{/if}}

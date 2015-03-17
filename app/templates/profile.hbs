@@ -9,7 +9,7 @@
     {{#sl-alert theme="warning"}}
       Please complete your profile!
       <ul>
-        {{#each error in profileErrors}}<li>{{error}}</li>{{/each}}
+        {{#each profileErrors as |error|}}<li>{{error}}</li>{{/each}}
       </ul>
     {{/sl-alert}}
   {{/if}}
