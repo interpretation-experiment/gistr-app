@@ -15,7 +15,7 @@ export default Ember.Route.extend({
     // See if we're logged in, populate language support
     var self = this;
     return Ember.RSVP.all([
-      self.get('session').fetch('spreadr').then(null, function() {}),
+      self.get('session').fetch('spreadr').catch(function() {}),
       self.get('lang').populate()
     ]);
   },

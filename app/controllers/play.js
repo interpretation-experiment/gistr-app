@@ -131,14 +131,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   text: null,
   userLanguage: null,
   isLanguageManual: false,
-  isUploading: null,
+  isUploading: false,
   resetInput: function() {
     this.setProperties({
       errors: null,
       text: null,
       userLanguage: null,
       isLanguageManual: false,
-      isUploading: null
+      isUploading: false
     });
   },
   uploadSentence: function() {
@@ -153,8 +153,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.resetInput();
       self.sendStateEvent('upload');
     }, function(error) {
-      self.set('isUploading', false);
       self.set('errors', error.errors);
+    }).finally(function() {
+      self.set('isUploading', false);
     });
   },
 

@@ -13,14 +13,14 @@ export default Ember.Controller.extend(SessionMixin, {
   password1: null,
   password2: null,
   errors: null,
-  isRegistering: null,
+  isRegistering: false,
   reset: function() {
     this.setProperties({
       username: null,
       password1: null,
       password2: null,
       errors: null,
-      isRegistering: null
+      isRegistering: false
     });
   },
   register: function() {
@@ -39,8 +39,9 @@ export default Ember.Controller.extend(SessionMixin, {
       self.reset();
       self.transitionToRoute('profile');
     }, function(errors) {
-      self.set('isRegistering', false);
       self.set('errors', errors.jqXHR.responseJSON || { __all__: errors.errorThrown });
+    }).finally(function() {
+      self.set('isRegistering', false);
     });
   },
 

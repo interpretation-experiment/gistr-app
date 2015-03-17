@@ -61,10 +61,8 @@ export default Ember.Object.extend({
   close: function() {
     var self = this;
 
-    return request(api('/rest-auth/logout/'), { type: 'POST' }).then(function() {
+    return request(api('/rest-auth/logout/'), { type: 'POST' }).finally(function() {
       self.set('token', null);
-    }, function(errors) {
-      throw errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
     });
   }
 });
