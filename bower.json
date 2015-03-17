@@ -21,7 +21,8 @@
     "moment-timezone": "~0.3.0",
     "select2": "~3.5.2",
     "typeahead.js": "~0.10.5",
-    "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0"
+    "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
+    "pnotify": "~2.0.1"
   },
   "devDependencies": {
     "sinonjs-built": "~1.9.1"
