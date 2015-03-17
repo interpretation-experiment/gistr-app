@@ -24,6 +24,12 @@ module.exports = function(environment) {
       providers: {
         'spreadr': {}
       }
+    },
+
+    'ember-can': {
+      inject: {
+        session: 'torii:session'
+      }
     }
   };
 

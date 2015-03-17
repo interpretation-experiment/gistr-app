@@ -5,7 +5,7 @@
 
 {{#page-body}}
   {{#if isInSuggesting}}
-    {{#if canSuggest}}
+    {{#if (can 'create sentence')}}
 
       <form {{action "uploadSentence" on="submit"}}>
 
@@ -50,7 +50,7 @@
       <button class="btn btn-default" {{action 'suggest'}}>Suggest again</button>
     {{else}}
 
-      {{#if canSuggest}}
+      {{#if (can 'create sentence')}}
         <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{credit-badge session=session}}</button>
       {{else}}
         <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>

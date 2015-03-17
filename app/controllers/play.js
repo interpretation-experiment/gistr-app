@@ -158,12 +158,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   },
 
   /*
-   * Suggestion control
-   */
-  hasSuggestionCredit: Ember.computed.gt('currentProfile.suggestionCredit', 0),
-  canSuggest: Ember.computed.or('currentUser.isStaff', 'hasSuggestionCredit'),
-
-  /*
    * Timing variables
    */
   lastNow: null,

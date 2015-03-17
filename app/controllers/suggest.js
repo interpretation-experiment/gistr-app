@@ -95,12 +95,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.property('isLanguageManual', 'userLanguage', 'guessedLanguage'),
 
   /*
-   * Suggestion control
-   */
-  hasSuggestionCredit: Ember.computed.gt('currentProfile.suggestionCredit', 0),
-  canSuggest: Ember.computed.or('currentUser.isStaff', 'hasSuggestionCredit'),
-
-  /*
    * Suggestion actions
    */
   actions: {
