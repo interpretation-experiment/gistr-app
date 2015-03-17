@@ -9,11 +9,11 @@ export default Ember.Controller.extend(SessionMixin, {
   /*
    * Global state and reset
    */
-  justSaved: null,
+  justSaved: false,
   watchSaved: function() {
     if (this.get('justSaved')) {
       Ember.run.later(this, function() {
-        this.set('justSaved', null);
+        this.set('justSaved', false);
       }, 2000);
     }
   }.observes('justSaved'),
@@ -75,16 +75,19 @@ export default Ember.Controller.extend(SessionMixin, {
   /*
    * Profile completeness
    */
-  isProfileIncomplete: function() {
-    return this.get('profileErrors.length') > 0;
-  }.property('profileErrors.length', 'session.isWorking'),
   profileErrors: function() {
-    if (!this.get('session.isWorking') && !this.get('currentProfile')) {
-      return ['Set your mothertongue'];
-    } else {
+    if (this.get('session.isWorking')) {
       return [];
     }
+
+    var errors = [];
+    if (!this.get('currentProfile')) {
+      errors.push('Set your mothertongue');
+    }
+
+    return errors;
   }.property('currentProfile'),
+  isProfileIncomplete: Ember.computed.gt('profileErrors.length', 0),
 
   /*
    * Profile actions
