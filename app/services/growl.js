@@ -6,23 +6,23 @@ export default Ember.Service.extend({
     new PNotify({
       title: title,
       text: text,
-      opacity: .8,
+      opacity: 0.8,
       delay: 5000,
       type: type,
       buttons: { sticker: false },
       animate_speed: 'fast'
     });
   },
-  notice: function(title, text, type) {
+  notice: function(title, text) {
     this._growl(title, text, "notice");
   },
-  info: function(title, text, type) {
+  info: function(title, text) {
     this._growl(title, text, "info");
   },
-  success: function(title, text, type) {
+  success: function(title, text) {
     this._growl(title, text, "success");
   },
-  error: function(title, text, type) {
+  error: function(title, text) {
     this._growl(title, text, "error");
   }
 });
