@@ -1,64 +1,12 @@
 {{document-title title="New"}}
 {{#page-header}}
-  Suggest new sentence <small>credits {{credit-badge session=session}}</small>
+  Suggest new sentence <small>credits {{credit-badge}}</small>
 {{/page-header}}
 
 {{#page-body}}
   {{#if isInSuggesting}}
-    {{#if (can 'create sentence')}}
-
-      <form {{action "uploadSentence" on="submit"}}>
-
-        <div {{bind-attr class=':form-group errors.text:has-error'}}>
-          <label for="inputText" class="control-label">Type in your new sentence:</label>
-          {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
-          <span class="help-block">{{errors.text}}</span>
-        </div>
-
-        {{#if isLanguageManual}}
-          <div {{bind-attr class=':form-group errors.language:has-error'}}>
-            <label for="inputLanguage" class="control-label">Language of the sentence</label>
-            {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
-            <span class="help-block">{{errors.language}}</span>
-          </div>
-        {{else}}
-          <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}</p>
-        {{/if}}
-
-        <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
-          <span class="help-block">{{errors.non_field_errors}}</span>
-          {{#if hasMissingTokens}}
-            {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
-          {{else}}
-            {{active-input type='submit' class="btn btn-primary" active=isUploading activeValue="Uploading..." inactiveValue="Continue"}}
-          {{/if}}
-        </div>
-
-      </form>
-
-    {{else}}
-
-      <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>
-
-    {{/if}}
-
+    {{suggestion-suggest next="verify"}}
   {{else if isInVerified}}
-
-    <p>That's recorded.</p>
-
-    {{#if currentUser.isStaff}}
-      <button class="btn btn-default" {{action 'suggest'}}>Suggest again</button>
-    {{else}}
-
-      {{#if (can 'create sentence')}}
-        <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{credit-badge session=session}}</button>
-      {{else}}
-        <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
-      {{/if}}
-
-    {{/if}}
-
-    {{link-to 'Play' 'play' class="btn btn-primary"}}
-
+    {{suggestion-verified next="suggest"}}
   {{/if}}
 {{/page-body}}

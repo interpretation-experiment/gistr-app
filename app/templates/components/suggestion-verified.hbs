@@ -1,0 +1,15 @@
+<p>That's recorded.</p>
+
+{{#if currentUser.isStaff}}
+  <button class="btn btn-default" {{action 'next'}}>Suggest again</button>
+{{else}}
+
+  {{#if (can 'create sentence')}}
+    <button class="btn btn-default" {{action 'next'}}>Suggest again {{credit-badge}}</button>
+  {{else}}
+    <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
+  {{/if}}
+
+{{/if}}
+
+{{link-to 'Play' 'play' class="btn btn-primary"}}
