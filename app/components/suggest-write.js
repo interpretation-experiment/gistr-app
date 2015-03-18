@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import franc from 'npm:franc';
 
 import SessionMixin from 'gistr/mixins/session';
 
@@ -47,34 +46,15 @@ export default Ember.Component.extend(SessionMixin, {
    * Token counting
    */
   tokensLeft: function() {
-    var text = this.get('text'), minTokens = this.get('minTokens'),
-        tokenCount;
-
-    if (!text) {
-      return minTokens;
-    } else {
-      tokenCount = text.split(/[ |-]+/).filter(function(item) {
-        return item !== "";
-      }).length;
-      return Math.max(0, minTokens - tokenCount);
-    }
-  }.property('text'),
-  hasMissingTokens: Ember.computed.gt('tokensLeft', 0),
+    return Math.max(0, this.get('minTokens') - this.get('tokenCount'));
+  }.property('tokenCount'),
+  enoughTokens: function() {
+    return this.get('tokenCount') >= this.get('minTokens');
+  }.property('tokenCount'),
 
   /*
    * Language guessing
    */
-  guessedLanguage: function() {
-    var text = this.get('text'), otherLanguage = this.get('lang.otherLanguage'),
-        languageCodeMap = this.get('lang.languageCodeMap'),
-        languageCode;
-
-    languageCode = franc(text);
-    return languageCode in languageCodeMap ? languageCodeMap[languageCode] : otherLanguage;
-  }.property('text'),
-  guessedLanguageLabel: function() {
-    return this.get('lang.languageLabelMap')[this.get('guessedLanguage')];
-  }.property('guessedLanguage'),
   language: function() {
     if (this.get('isLanguageManual')) {
       return this.get('userLanguage');
@@ -92,6 +72,13 @@ export default Ember.Component.extend(SessionMixin, {
     },
     manuallySetLanguage: function() {
       this.set('isLanguageManual', true);
+    },
+    updateMetaText: function(data) {
+      this.setProperties({
+        tokenCount: data.tokenCount,
+        guessedLanguage: data.language.name,
+        guessedLanguageLabel: data.language.label
+      });
     }
   }
 });

@@ -2,14 +2,15 @@
 
   <form>
 
-    {{#async-textarea
+    {{#nlp-textarea
         value=text
         error=errors.text
         inputId="inputText"
         disabled=isUploading
+        info="updateMetaText"
         }}
       Type in your new sentence:
-    {{/async-textarea}}
+    {{/nlp-textarea}}
 
     {{#if isLanguageManual}}
       <div {{bind-attr class=':form-group errors.language:has-error'}}>
@@ -18,15 +19,15 @@
         <span class="help-block">{{errors.language}}</span>
       </div>
     {{else}}
-      <p>Detected language: {{#if hasMissingTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/if}}</p>
+      <p>Detected language: {{#unless enoughTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/unless}}</p>
     {{/if}}
 
     <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
       <span class="help-block">{{errors.non_field_errors}}</span>
-      {{#if hasMissingTokens}}
-        {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
-      {{else}}
+      {{#if enoughTokens}}
         {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
+      {{else}}
+        {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
       {{/if}}
     </div>
 
