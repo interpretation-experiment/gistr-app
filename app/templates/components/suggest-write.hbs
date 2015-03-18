@@ -12,18 +12,22 @@
       Type in your new sentence:
     {{/nlp-textarea}}
 
-    <div {{bind-attr class=':form-group errors.language:has-error'}}>
-      <label for="inputLanguage" class="control-label">
-        Language of the sentence
-        {{#if isLanguageManual}}
-          (manually set)
-        {{else}}
-          {{#if enoughTokens}}(detected){{else}}(type more words for auto-detection){{/if}}
-        {{/if}}
-      </label>
-      {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language" disabled=isUploading}}
-      <span class="help-block">{{errors.language}}</span>
-    </div>
+    {{#select-language
+        error=errors.language
+        inputId="inputLanguage"
+        guess=guessedLanguage
+        disabled=isUploading
+        placeholder="Select the sentence's language"
+        languageSelected="updateLanguage"
+        as |manual|
+        }}
+      Language of the sentence
+      {{#if manual}}
+        (manually set):
+      {{else}}
+        {{#if enoughTokens}}(detected){{else}}(type more words for auto-detection){{/if}}:
+      {{/if}}
+    {{/select-language}}
 
     <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
       <span class="help-block">{{errors.non_field_errors}}</span>

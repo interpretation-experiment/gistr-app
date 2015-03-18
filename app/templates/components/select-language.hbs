@@ -1,0 +1,5 @@
+<div {{bind-attr class=':form-group error:has-error'}}>
+  <label {{bind-attr for="inputId"}} class="control-label">{{yield isManual}}</label>
+  {{sl-select id=inputId content=lang.supportedLanguages value=language optionValuePath="name" optionLabelPath="label" placeholder=placeholder disabled=disabled}}
+  <span class="help-block">{{error}}</span>
+</div>

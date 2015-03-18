@@ -16,17 +16,13 @@ export default Ember.Component.extend(SessionMixin, {
    */
   errors: null,
   text: null,
-  userLanguage: null,
-  isSettingDetectedLanguage: false,
-  isLanguageManual: false,
+  language: null,
   isUploading: false,
   resetInput: function() {
     this.setProperties({
       errors: null,
       text: null,
-      userLanguage: null,
-      isSettingDetectedLanguage: false,
-      isLanguageManual: false,
+      language: null,
       isUploading: false
     });
   },
@@ -53,44 +49,19 @@ export default Ember.Component.extend(SessionMixin, {
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
 
   /*
-   * Language guessing
-   */
-  language: function() {
-    if (this.get('isLanguageManual')) {
-      return this.get('userLanguage');
-    } else {
-      return this.get('guessedLanguage');
-    }
-  }.property('isLanguageManual', 'userLanguage', 'guessedLanguage'),
-  setLanguageManually: function() {
-    if(!this.get('isSettingDetectedLanguage')) {
-      this.set('isLanguageManual', true);
-    }
-  }.observes('userLanguage'),
-
-  /*
-   * Suggestion actions
+   * Suggestion actions and updates from components
    */
   actions: {
     uploadSentence: function(callback) {
       callback(this.uploadSentence());
     },
-    manuallySetLanguage: function() {
-      this.set('isLanguageManual', true);
-    },
     updateMetaText: function(data) {
-      this.setProperties({
-        tokenCount: data.tokenCount,
-        guessedLanguage: data.language.name,
-        guessedLanguageLabel: data.language.label
-      });
-
-      if (!this.get('isLanguageManual')) {
-        this.set('isSettingDetectedLanguage', true);
-        this.set('userLanguage',
-                 this.get('enoughTokens') ? data.language.name : null);
-        this.set('isSettingDetectedLanguage', false);
-      }
+      this.set('tokenCount', data.tokenCount);
+      this.set('guessedLanguage',
+               this.get('enoughTokens') ? data.language.name : null);
+    },
+    updateLanguage: function(language) {
+      this.set('language', language);
     }
   }
 });

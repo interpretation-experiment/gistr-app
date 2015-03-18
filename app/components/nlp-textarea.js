@@ -5,7 +5,7 @@ import franc from 'npm:franc';
 export default Ember.Component.extend({
   lang: Ember.inject.service(),
 
-  watchValue: function() {
+  inform: function() {
     var value = this.get('value'),
         otherLanguage = this.get('lang.otherLanguage'),
         languageCodeMap = this.get('lang.languageCodeMap'),
