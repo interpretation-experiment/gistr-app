@@ -17,6 +17,7 @@ export default Ember.Component.extend(SessionMixin, {
   errors: null,
   text: null,
   userLanguage: null,
+  isSettingDetectedLanguage: false,
   isLanguageManual: false,
   isUploading: false,
   resetInput: function() {
@@ -24,6 +25,7 @@ export default Ember.Component.extend(SessionMixin, {
       errors: null,
       text: null,
       userLanguage: null,
+      isSettingDetectedLanguage: false,
       isLanguageManual: false,
       isUploading: false
     });
@@ -60,6 +62,11 @@ export default Ember.Component.extend(SessionMixin, {
       return this.get('guessedLanguage');
     }
   }.property('isLanguageManual', 'userLanguage', 'guessedLanguage'),
+  setLanguageManually: function() {
+    if(!this.get('isSettingDetectedLanguage')) {
+      this.set('isLanguageManual', true);
+    }
+  }.observes('userLanguage'),
 
   /*
    * Suggestion actions
@@ -77,6 +84,13 @@ export default Ember.Component.extend(SessionMixin, {
         guessedLanguage: data.language.name,
         guessedLanguageLabel: data.language.label
       });
+
+      if (!this.get('isLanguageManual')) {
+        this.set('isSettingDetectedLanguage', true);
+        this.set('userLanguage',
+                 this.get('enoughTokens') ? data.language.name : null);
+        this.set('isSettingDetectedLanguage', false);
+      }
     }
   }
 });

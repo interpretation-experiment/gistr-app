@@ -12,15 +12,18 @@
       Type in your new sentence:
     {{/nlp-textarea}}
 
-    {{#if isLanguageManual}}
-      <div {{bind-attr class=':form-group errors.language:has-error'}}>
-        <label for="inputLanguage" class="control-label">Language of the sentence</label>
-        {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
-        <span class="help-block">{{errors.language}}</span>
-      </div>
-    {{else}}
-      <p>Detected language: {{#unless enoughTokens}}(waiting for more words) &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Set manually</button>{{else}}<strong>{{guessedLanguageLabel}}</strong> &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>Change</button>{{/unless}}</p>
-    {{/if}}
+    <div {{bind-attr class=':form-group errors.language:has-error'}}>
+      <label for="inputLanguage" class="control-label">
+        Language of the sentence
+        {{#if isLanguageManual}}
+          (manually set)
+        {{else}}
+          {{#if enoughTokens}}(detected){{else}}(type more words for auto-detection){{/if}}
+        {{/if}}
+      </label>
+      {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
+      <span class="help-block">{{errors.language}}</span>
+    </div>
 
     <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
       <span class="help-block">{{errors.non_field_errors}}</span>
