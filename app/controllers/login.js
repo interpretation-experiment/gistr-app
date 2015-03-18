@@ -5,6 +5,7 @@ import SessionMixin from 'gistr/mixins/session';
 
 export default Ember.Controller.extend(SessionMixin, {
   needs: ['profile'],
+  growl: Ember.inject.service(),
 
   /*
    * Login form fields
@@ -38,6 +39,7 @@ export default Ember.Controller.extend(SessionMixin, {
           // Forward attempted transition
           self.get('controllers.profile').set('attemptedTransition', attemptedTransition);
         }
+        self.get('growl').notice('Tell us about you!', 'We need you to fill in your profile');
         self.transitionToRoute('profile');
       }
     }, function(errors) {
@@ -54,7 +56,6 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     login: function(callback) {
       var promise = this.login();
-      console.log(promise);
       callback(promise);
     }
   }
