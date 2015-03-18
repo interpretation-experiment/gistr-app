@@ -2,11 +2,14 @@
 
   <form>
 
-    <div {{bind-attr class=':form-group errors.text:has-error'}}>
-      <label for="inputText" class="control-label">Type in your new sentence:</label>
-      {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
-      <span class="help-block">{{errors.text}}</span>
-    </div>
+    {{#async-textarea
+        value=text
+        error=errors.text
+        inputId="inputText"
+        disabled=isUploading
+        }}
+      Type in your new sentence:
+    {{/async-textarea}}
 
     {{#if isLanguageManual}}
       <div {{bind-attr class=':form-group errors.language:has-error'}}>

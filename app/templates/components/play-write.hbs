@@ -2,10 +2,11 @@
 
 <form>
 
-  <div {{bind-attr class=':form-group errors.text:has-error'}}>
-    {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
-    <span class="help-block">{{errors.text}}</span>
-  </div>
+  {{async-textarea
+      value=text
+      error=errors.text
+      inputId="inputText"
+      disabled=isUploading}}
 
   {{#unless hasMissingTokens}}
     {{#if isLanguageMismatch}}
