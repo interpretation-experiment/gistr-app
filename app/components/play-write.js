@@ -50,7 +50,7 @@ export default Ember.Component.extend(TimefulMixin, {
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
 
   /*
-   * Language guessing
+   * Language control
    */
   parentLanguageLabel: function() {
     return this.get('lang.languageLabelMap')[this.get('parentSentence.language')];
@@ -66,9 +66,16 @@ export default Ember.Component.extend(TimefulMixin, {
     return this.get('language') !== this.get('parentSentence.language');
   }.property('language', 'parentSentence.language'),
 
+  /*
+   * When time is up
+   */
   timerDone: function() {
     this.sendAction('timeout');
   },
+
+  /*
+   * Form actions and updates from components
+   */
   actions: {
     uploadSentence: function(callback) {
       callback(this.uploadSentence());
