@@ -47,9 +47,7 @@ export default Ember.Component.extend(TimefulMixin, {
   tokensLeft: function() {
     return Math.max(0, this.get('minTokens') - this.get('tokenCount'));
   }.property('tokenCount'),
-  enoughTokens: function() {
-    return this.get('tokenCount') >= this.get('minTokens');
-  }.property('tokenCount'),
+  enoughTokens: Ember.computed.lte('tokensLeft', 0),
 
   /*
    * Language guessing
