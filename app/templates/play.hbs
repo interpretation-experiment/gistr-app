@@ -10,11 +10,7 @@
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
 
   {{else if isInReading}}
-    <h3>Some reading instructions</h3>
-    <p>Sentence instructions: blablabla. {{currentSentence.instructions}}</p>
-    <blockquote>{{currentSentence.text}}</blockquote>
-    <p>{{sl-progress-bar value=readProgress}}</p>
-    <button class="btn btn-primary" {{action "hold"}}>Continue</button>
+    {{play-read sentence=currentSentence duration=readDuration precision=precision next="hold" timeout="hold"}}
 
   {{else if isInHolding}}
     <h3>Some holding instructions</h3>
@@ -22,37 +18,7 @@
     <button class="btn btn-primary" {{action "write"}}>Continue</button>
 
   {{else if isInWriting}}
-    <h3>Some writing instructions</h3>
-
-    <form>
-
-      <div {{bind-attr class=':form-group errors.text:has-error'}}>
-        {{view "focused-textarea" id="inputText" class="form-control" value=text rows="3" cols="50" disabled=isUploading}}
-        <span class="help-block">{{errors.text}}</span>
-      </div>
-
-      {{#unless hasMissingTokens}}
-        {{#if isLanguageMismatch}}
-          <p>This looks like <strong>{{guessedLanguageLabel}}</strong>, but you should be writing in <strong>{{parentLanguageLabel}}</strong>! &mdash; <button class="btn btn-default" {{action "manuallySetLanguage"}}>No, it's <strong>{{parentLanguageLabel}}</strong></button></p>
-        {{/if}}
-      {{/unless}}
-
-      <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
-        <span class="help-block">{{errors.non_field_errors}}</span>
-        {{#if hasMissingTokens}}
-          {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
-        {{else}}
-          {{#if isLanguageMismatch}}
-            {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}
-          {{else}}
-            {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
-          {{/if}}
-        {{/if}}
-      </div>
-
-    </form>
-
-    <p>{{sl-progress-bar value=writeProgress}}</p>
+    {{play-write minTokens=minTokens parentSentence=currentSentence duration=writeDuration precision=precision next="verify" timeout="timeout"}}
 
   {{else if isInTimedout}}
     <h3>Time's up!</h3>
@@ -76,9 +42,5 @@
         <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
       {{/if}}
     {{/if}}
-
-  {{else if isInFinished}}
-    <h3>Nice streak!</h3>
-    <p>You interpreted a lot of sentences, take a break.</p>
   {{/if}}
 {{/page-body}}
