@@ -21,7 +21,7 @@
           {{#if enoughTokens}}(detected){{else}}(type more words for auto-detection){{/if}}
         {{/if}}
       </label>
-      {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language"}}
+      {{sl-select id="inputLanguage" content=lang.supportedLanguages value=userLanguage optionValuePath="name" optionLabelPath="label" placeholder="Select the sentence's language" disabled=isUploading}}
       <span class="help-block">{{errors.language}}</span>
     </div>
 

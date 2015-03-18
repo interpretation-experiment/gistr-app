@@ -13,6 +13,10 @@ export default Ember.Component.extend({
         tokenCount,
         language = {};
 
+    if (Ember.isNone(value)) {
+      return;
+    }
+
     /*
      * Token counting
      */
