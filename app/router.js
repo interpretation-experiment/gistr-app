@@ -12,6 +12,7 @@ Router.map(function() {
   this.route('profile');
   this.route('play');
   this.route('suggest');
+  this.route('explore');
   // Why there needs to be the "wildcard" text after the "*"
   // (it can be any other text in fact), beats me.
   this.route('catchall', {path: '/*wildcard'});
