@@ -36,5 +36,6 @@ app.import('bower_components/pnotify/pnotify.core.js');
 app.import('bower_components/pnotify/pnotify.core.css');
 app.import('bower_components/pnotify/pnotify.buttons.js');
 app.import('bower_components/pnotify/pnotify.buttons.css');
+app.import('bower_components/d3/d3.js');
 
 module.exports = app.toTree([sinon, glyphicons]);
