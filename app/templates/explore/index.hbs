@@ -1,0 +1,12 @@
+{{page-header title="Explore Trees"}}
+{{#page-body}}
+  {{#each model as |tree|}}<div class="row">
+    <div class="col-sm-6">
+      <p>{{#link-to 'explore.tree' tree}}Tree {{tree.id}}{{/link-to}}</p>
+      <blockquote>{{tree.root.text}}</blockquote>
+    </div>
+    <div class="col-sm-6">
+      {{d3-graph tree=tree list=true}}
+    </div>
+  </div>{{/each}}
+{{/page-body}}

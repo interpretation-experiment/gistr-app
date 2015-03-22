@@ -4,20 +4,44 @@ var d3 = window.d3;
 
 export default Ember.Component.extend({
   tagName: 'div',
-  classNames: ['graph-large'],
+  classNames: ['graph'],
+  classNameBindings: ['list:graph-list:graph-detail'],
 
-  draw: function() {
+  /*
+   * Drawing
+   */
+  resizeT0: null,
+  initDrawing: function() {
+    var self = this,
+        element = this.get('element'),
+        $element = Ember.$(element);
+
+    var width = $element.width(),
+        height = $element.height(),
+        svg = d3.select(element).append("svg");
+
+    Ember.$(window).resize(function() {
+      if(self.get('resizeT0')) {
+        Ember.run.cancel(self.get('resizeT0'));
+      }
+      self.set('resizeT0', Ember.run.later(null, function() {
+        var width = $element.width(),
+            height = $element.height();
+        self.draw(svg, width, height);
+      }, 200));
+    });
+
+    this.draw(svg, width, height);
+  }.on('didInsertElement'),
+  draw: function(svg, width, height) {
     var graph = this.get('tree.graph');
-
-    var width = 400, height = 200;
 
     var force = d3.layout.force()
         .charge(-120)
         .linkDistance(30)
         .size([width, height]);
 
-    var svg = d3.select(this.get('element')).append("svg")
-        .attr("width", width)
+    svg.attr("width", width)
         .attr("height", height);
 
     force
@@ -51,5 +75,5 @@ export default Ember.Component.extend({
       node.attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; });
     });
-  }.on('didInsertElement')
+  }
 });
