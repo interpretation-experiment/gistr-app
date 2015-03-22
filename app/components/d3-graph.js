@@ -10,6 +10,12 @@ export default Ember.Component.extend({
   /*
    * Drawing
    */
+  resizeEvent: function() {
+    var name = 'resize.d3-graph-', tree = this.get('tree');
+    name += this.get('list') ? 'list-' : 'detail-';
+    name += `tree-${tree.id}`;
+    return name;
+  }.property('list', 'tree'),
   resizeT0: null,
   initDrawing: function() {
     var self = this,
@@ -20,7 +26,7 @@ export default Ember.Component.extend({
         height = $element.height(),
         svg = d3.select(element).append("svg");
 
-    Ember.$(window).resize(function() {
+    Ember.$(window).on(this.get('resizeEvent'), function() {
       if(self.get('resizeT0')) {
         Ember.run.cancel(self.get('resizeT0'));
       }
@@ -33,6 +39,9 @@ export default Ember.Component.extend({
 
     this.draw(svg, width, height);
   }.on('didInsertElement'),
+  closeDrawing: function() {
+    Ember.$(window).off(this.get('resizeEvent'));
+  }.on('willDestroyElement'),
   draw: function(svg, width, height) {
     var graph = this.get('tree.graph');
 
