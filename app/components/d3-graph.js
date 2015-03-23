@@ -1,8 +1,10 @@
 import Ember from 'ember';
 var d3 = window.d3;
 
+import SessionMixin from 'gistr/mixins/session';
 
-export default Ember.Component.extend({
+
+export default Ember.Component.extend(SessionMixin, {
   tagName: 'div',
   classNames: ['graph'],
   classNameBindings: ['list:graph-list:graph-detail'],
@@ -75,14 +77,33 @@ export default Ember.Component.extend({
     node.append("title")
         .text(function(d) { return `${d.sentenceId}`; });
 
-    force.on("tick", function() {
-      link.attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
+    var x = function(d) { return d.isRoot ? width/5 : d.x; },
+        y = function(d) { return d.isRoot ? height/2 : d.y; };
 
-      node.attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; });
+    force.on("tick", function() {
+      link.attr("x1", function(d) { return x(d.source); })
+          .attr("y1", function(d) { return y(d.source); })
+          .attr("x2", function(d) { return x(d.target); })
+          .attr("y2", function(d) { return y(d.target); });
+
+      node.attr("cx", function(d) { return x(d); })
+          .attr("cy", function(d) { return y(d); });
+    });
+
+    // Find own sentence
+    var profile = this.get('currentProfile');
+    this.get('tree.sentences').then(function(sentences) {
+      var sentenceProfileMap = {};
+      sentences.forEach(function(sentence) {
+        sentenceProfileMap[sentence.get('id')] = sentence.get('profile');
+      });
+      return Ember.RSVP.hash(sentenceProfileMap);
+    }).then(function(sentenceProfileMap) {
+      console.dir(sentenceProfileMap);
+      console.dir(profile);
+      node.style("stroke", function(d) {
+        return sentenceProfileMap[d.sentenceId] === profile ? "#f60" : "#fff";
+      });
     });
   }
 });
