@@ -1,5 +1,6 @@
 {{#page-header back="explore"}}Tree {{model.id}}{{/page-header}}
 {{#page-body}}
-  <blockquote>{{model.root.text}}</blockquote>
-  {{d3-graph tree=model}}
+  <p>Mouse over nodes to read the text, click to compare.</p>
+  {{d3-graph tree=model hover="hoverSentence"}}
+  {{#if hovered}}<blockquote>{{hovered.text}}</blockquote>{{/if}}
 {{/page-body}}
