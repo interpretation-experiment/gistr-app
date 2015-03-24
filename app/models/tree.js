@@ -16,31 +16,41 @@ export default DS.Model.extend({
    * Computed properties
    */
   graph: function() {
-    var dNodes = {}, links = [], networkEdges = this.get('networkEdges');
+    var dNodes = {},
+        links = [],
+        networkEdges = this.get('networkEdges');
+
     if (networkEdges.length === 0) {
-      dNodes[this.get('root.id')] = {
-        isRoot: true,
-        sentenceId: this.get('root.id')
-      };
+      dNodes[this.get('root.id')] = { sentenceId: this.get('root.id') };
     } else {
-      this.get('networkEdges').map(function(edge) {
+      networkEdges.map(function(edge) {
         if (!(edge.source in dNodes)) {
           dNodes[edge.source] = { sentenceId: edge.source };
         }
         if (!(edge.target in dNodes)) {
           dNodes[edge.target] = { sentenceId: edge.target };
         }
+
+        var parent = dNodes[edge.source],
+            child = dNodes[edge.target];
+
+        if (parent.children) {
+          parent.children.push(child);
+        } else {
+          parent.children = [child];
+        }
+
         links.push({
-          source: dNodes[edge.source],
-          target: dNodes[edge.target]
+          source: parent,
+          target: child
         });
       });
-      dNodes[this.get('root.id')].isRoot = true;
     }
 
     return {
       nodes: Object.keys(dNodes).map(function(k) { return dNodes[k]; }),
-      links: links
+      links: links,
+      root: dNodes[this.get('root.id')]
     };
   }.property('networkEdges')
 });
