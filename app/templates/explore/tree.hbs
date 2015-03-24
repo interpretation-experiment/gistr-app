@@ -1,6 +1,9 @@
-{{#page-header back="explore"}}Tree {{model.id}}{{/page-header}}
+{{#page-header back="explore"}}Detailed tree #{{model.id}}{{/page-header}}
 {{#page-body}}
-  <p>Mouse over nodes to read the text, click to compare.</p>
+  <h2>Starting point</h2>
+  <blockquote>{{model.root.text}}</blockquote>
+
+  <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
   <div class="row">
     <div class="col-sm-6">
       {{d3-graph tree=model hover="hoverSentence"}}

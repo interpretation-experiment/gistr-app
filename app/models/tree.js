@@ -53,5 +53,23 @@ export default DS.Model.extend({
       links: links,
       root: dNodes[this.get('root.id')]
     };
-  }.property('networkEdges')
+  }.property('networkEdges'),
+  depth: function() {
+    var self = this,
+        graph = this.get('graph'),
+        depths = [];
+
+    var _recordDepths = function(node, depth, depths) {
+      depths.push(depth);
+      if (node.children) {
+        node.children.map(function(child) {
+          _recordDepths(child, depth + 1, depths);
+        });
+      }
+    }
+
+    _recordDepths(graph.root, 0, depths);
+
+    return Math.max.apply(null, depths);
+  }.property('graph')
 });
