@@ -88,19 +88,21 @@ export default Ember.Component.extend(SessionMixin, {
         .attr("dy", "-.8em")
         .text(function(d) { return `${d.sentenceId}`; });
 
-    // Find own sentence
-    var profile = this.get('currentProfile');
-    this.get('tree.sentences').then(function(sentences) {
-      var sentenceProfileMap = {};
-      sentences.forEach(function(sentence) {
-        sentenceProfileMap[sentence.get('id')] = sentence.get('profile');
+    if (!this.get('list')) {
+      // Find own sentences
+      var profile = this.get('currentProfile');
+      this.get('tree.sentences').then(function(sentences) {
+        var sentenceProfileMap = {};
+        sentences.forEach(function(sentence) {
+          sentenceProfileMap[sentence.get('id')] = sentence.get('profile');
+        });
+        return Ember.RSVP.hash(sentenceProfileMap);
+      }).then(function(sentenceProfileMap) {
+        node.selectAll("circle")
+            .style("stroke", function(d) {
+          return sentenceProfileMap[d.sentenceId] === profile ? "#f60" : "#fff";
+        });
       });
-      return Ember.RSVP.hash(sentenceProfileMap);
-    }).then(function(sentenceProfileMap) {
-      node.selectAll("circle")
-          .style("stroke", function(d) {
-        return sentenceProfileMap[d.sentenceId] === profile ? "#f60" : "#fff";
-      });
-    });
+    }
   }
 });
