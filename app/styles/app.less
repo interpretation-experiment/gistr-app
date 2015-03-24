@@ -1,56 +1,23 @@
 @import 'sl-ember-components';
 
-textarea {
-  resize: vertical;
-}
+/*
+ * Misc stuff
+ */
+textarea { resize: vertical; }
+small, h1 small, h2 small, h3 small, h4 small, h5 small, h6 small { color: grey; }
+.badge { background-color: hsl(214, 9%, 75%); }
 
-small, h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
-  color: grey;
-}
+/*
+ * Home page
+ */
+.center { text-align: center; }
+.btn-home { margin-top: 20px; }
+.greeting { margin-top: 30px; margin-bottom: 50px; }
+.page-title { margin-bottom: 50px; }
 
-.badge {
-  background-color: hsl(214, 9%, 75%);
-}
-
-.center {
-  text-align: center;
-}
-
-.btn-home {
-  margin-top: 20px;
-}
-
-.greeting {
-  margin-top: 30px;
-  margin-bottom: 50px;
-}
-
-.page-title {
-  margin-bottom: 50px;
-}
-
-a.icon {
-  color: grey;
-}
-
-a.icon:hover {
-  color: black;
-}
-
-.icon-med {
-  margin-top: 20px;
-  font-size: 20px;
-  font-weight: lighter;
-  line-height: 1.1;
-}
-
-.icon-big {
-  margin-top: 20px;
-  font-size: 30px;
-  font-weight: normal;
-  line-height: 1.1;
-}
-
+/*
+ * Home page footer
+ */
 .footer {
   border-top: 1px solid #ddd;
   width: 70%;
@@ -59,43 +26,30 @@ a.icon:hover {
   padding: 20px 0 20px;
 }
 
-.footer .icon {
-  font-size: 20px;
-  margin: 0 10px;
-}
+.footer .icon { font-size: 20px; margin: 0 10px; }
+.footer a { color: grey; }
+.footer a:hover { color: black; }
 
-.footer a {
-  color: grey;
-}
+/*
+ * Icons, for everywhere
+ */
+a.icon { color: grey; }
+a.icon:hover { color: black; }
+.icon-med { margin-top: 20px; font-size: 20px; font-weight: lighter; line-height: 1.1; }
+.icon-big { margin-top: 20px; font-size: 30px; font-weight: normal; line-height: 1.1; }
 
-.footer a:hover {
-  color: black;
-}
+/*
+ * Tree cards
+ */
+a.tree-card { display: block; padding: 5px; margin-bottom: 10px; color: hsl(217, 4%, 40%); }
+a.tree-card:hover { box-shadow: 0 0 2px 0 grey; }
+.tree-card p { color: #bbb; }
 
-.graph-list {
-  height: 100px;
-}
-
-.graph-detail {
-  height: 400px;
-}
-
-.graph {
-  max-width: 400px;
-}
-
-.node circle {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-.node text {
-  fill: #555;
-  text-anchor: middle;
-}
-
-.link {
-  stroke: #999;
-  stroke-opacity: .6;
-  fill: transparent;
-}
+/*
+ * Tree graphs
+ */
+.graph-overview { height: 100px; }
+.graph-detail { height: 400px; }
+.node circle { stroke: #fff; stroke-width: 1.5px; }
+.node text { fill: #555; text-anchor: middle; }
+.link { stroke: #999; stroke-opacity: .6; fill: transparent; }

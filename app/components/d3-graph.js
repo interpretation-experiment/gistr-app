@@ -5,30 +5,42 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Component.extend(SessionMixin, {
+  /*
+   * Component options
+   */
   tagName: 'div',
-  classNames: ['graph'],
-  classNameBindings: ['list:graph-list:graph-detail'],
-  detail: Ember.computed.not('list'),
+  classNameBindings: ['overview:graph-overview:graph-detail'],
 
   /*
-   * Drawing
+   * Utility properties
+   */
+  detail: Ember.computed.not('overview'),
+
+  /*
+   * Resizing
    */
   resizeEvent: function() {
     var name = 'resize.d3-graph-', tree = this.get('tree');
-    name += this.get('list') ? 'list-' : 'detail-';
+    name += this.get('overview') ? 'overview-' : 'detail-';
     name += `tree-${tree.id}`;
     return name;
-  }.property('list', 'tree'),
+  }.property('overview', 'tree'),
   resizeT0: null,
+
+  /*
+   * Initialize and close drawing
+   */
   initDrawing: function() {
     var self = this,
         element = this.get('element'),
-        $element = Ember.$(this.get('element')),
-        scale = this.get("list") ? 0.5 : 1,
+        $parent = Ember.$(this.get('element')).parent(),
+        scale = this.get("overview") ? 0.5 : 1,
         margin = { top: 20 * scale, right: 20 * scale, bottom: 20 * scale, left: 20 * scale },
-        width = $element.width() - margin.left - margin.right,
-        height = $element.height() - margin.top - margin.bottom,
+        width = $parent.width() - margin.left - margin.right,
+        height = $parent.height() - margin.top - margin.bottom,
         svg = d3.select(element).append("svg");
+
+    console.log(width, height);
 
     var g = svg.attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -40,8 +52,8 @@ export default Ember.Component.extend(SessionMixin, {
         Ember.run.cancel(self.get('resizeT0'));
       }
       self.set('resizeT0', Ember.run.later(null, function() {
-        var width = $element.width() - margin.left - margin.right,
-            height = $element.height() - margin.top - margin.bottom;
+        var width = $parent.width() - margin.left - margin.right,
+            height = $parent.height() - margin.top - margin.bottom;
 
         svg.attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
@@ -55,9 +67,12 @@ export default Ember.Component.extend(SessionMixin, {
   closeDrawing: function() {
     Ember.$(window).off(this.get('resizeEvent'));
   }.on('willDestroyElement'),
+
+  /*
+   * Actual drawing core
+   */
   draw: function(g, width, height) {
-    var self = this,
-        graph = this.get('tree.graph');
+    var graph = this.get('tree.graph');
 
     var layout = d3.layout.tree()
         .size([height, width]);  // inverted height/width to have a horizontal tree
@@ -68,7 +83,7 @@ export default Ember.Component.extend(SessionMixin, {
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, d.x]; });
 
-    var link = g.selectAll(".link")
+    g.selectAll(".link")
         .data(layoutLinks)
         .attr("d", diagonal)
       .enter().append("path")
@@ -92,31 +107,37 @@ export default Ember.Component.extend(SessionMixin, {
         .text(function(d) { return `${d.sentenceId}`; });
 
     if (this.get('detail')) {
-      // Find own sentences
-      var profile = this.get('currentProfile');
-      this.get('tree.sentences').then(function(sentences) {
-        var sentenceProfileMap = {};
-        sentences.forEach(function(sentence) {
-          sentenceProfileMap[sentence.get('id')] = sentence.get('profile');
-        });
-        return Ember.RSVP.hash(sentenceProfileMap);
-      }).then(function(sentenceProfileMap) {
-        node.selectAll("circle")
-            .style("stroke", function(d) {
-          return sentenceProfileMap[d.sentenceId] === profile ? "#f60" : "#fff";
-        });
-      });
-
-      // Set event listeners
-      node.selectAll("circle")
-          .on("mouseover", function(d) {
-            d3.select(this).attr("r", 10);
-            self.sendAction("hover", self.store.find('sentence', d.sentenceId));
-          })
-          .on("mouseout", function(d) {
-            d3.select(this).attr("r", 8);
-            self.sendAction("hover", null);
-          });
+      this.markOwnSentences(node);
+      this.setMouseListeners(node);
     }
+  },
+  markOwnSentences: function(node) {
+    // Find own sentences
+    var profile = this.get('currentProfile');
+    return this.get('tree.sentences').then(function(sentences) {
+      var sentenceProfileMap = {};
+      sentences.forEach(function(sentence) {
+        sentenceProfileMap[sentence.get('id')] = sentence.get('profile');
+      });
+      return Ember.RSVP.hash(sentenceProfileMap);
+    }).then(function(sentenceProfileMap) {
+      node.selectAll("circle")
+          .style("stroke", function(d) {
+        return sentenceProfileMap[d.sentenceId] === profile ? "#f60" : "#fff";
+      });
+    });
+  },
+  setMouseListeners: function(node) {
+    var self = this;
+    // Set event listeners
+    node.selectAll("circle")
+        .on("mouseover", function(d) {
+      d3.select(this).attr("r", 10);
+      self.sendAction("hover", self.store.find('sentence', d.sentenceId));
+    })
+        .on("mouseout", function(/*d*/) {
+      d3.select(this).attr("r", 8);
+      self.sendAction("hover", null);
+    });
   }
 });

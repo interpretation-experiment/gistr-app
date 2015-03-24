@@ -1,12 +1,18 @@
-{{page-header title="Explore Trees"}}
+{{page-header title="Explore your trees"}}
 {{#page-body}}
-  {{#each model as |tree|}}<div class="row">
-    <div class="col-sm-6">
-      <p>{{#link-to 'explore.tree' tree}}Tree {{tree.id}}{{/link-to}}</p>
-      <blockquote>{{tree.root.text}}</blockquote>
+{{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
+    <div class="row">
+      <div class="col-sm-6">
+        <p>#{{tree.id}} <span class="pull-right">{{tree.sentencesCount}} sentences</span></p>
+      </div>
     </div>
-    <div class="col-sm-6">
-      {{d3-graph tree=tree list=true}}
+    <div class="row">
+      <div class="col-sm-6">
+        <blockquote>{{tree.root.text}}</blockquote>
+      </div>
+      <div class="col-sm-6">
+        {{d3-graph tree=tree overview=true}}
+      </div>
     </div>
-  </div>{{/each}}
+    {{/link-to}}{{/each}}
 {{/page-body}}
