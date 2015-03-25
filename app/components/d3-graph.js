@@ -95,7 +95,11 @@ export default Ember.Component.extend(SessionMixin, {
     var graph = this.get('tree.graph');
 
     var layout = d3.layout.tree()
-        .size([height, width]);  // inverted height/width to have a horizontal tree
+        .size([height, width])  // inverted height/width to have a horizontal tree
+        .sort(function(a, b) {
+      // Proxy creation order by sentenceId
+      return a.sentenceId - b.sentenceId;
+    });
 
     var layoutNodes = layout.nodes(graph.root),
         layoutLinks = layout.links(layoutNodes);
@@ -121,15 +125,17 @@ export default Ember.Component.extend(SessionMixin, {
         .attr("r", 8)
         .style("fill", function(d) { return Ember.isNone(d.parent) ? "#900" : "#999"; });
 
-    node.append("text")
-        .attr("dx", 0)
-        .attr("dy", "-1em")
-        .text(function(d) { return `${d.sentenceId}`; });
-
     if (this.get('detail')) {
+      this.numberSentences(node);
       this.markOwnSentences(node);
       this.setMouseListeners(node);
     }
+  },
+  numberSentences: function(node) {
+    node.append("text")
+        .attr("dx", 0)
+        .attr("dy", "-1em")
+        .text(function(d, i) { return `${d.sentenceId}`; });
   },
   markOwnSentences: function(node) {
     // Find own sentences
