@@ -55,8 +55,7 @@ export default DS.Model.extend({
     };
   }.property('networkEdges'),
   depth: function() {
-    var self = this,
-        graph = this.get('graph');
+    var graph = this.get('graph');
 
     var maxDepth = function(node) {
       if (node.children) {
@@ -67,13 +66,12 @@ export default DS.Model.extend({
       } else {
         return 0;
       }
-    }
+    };
 
     return maxDepth(graph.root);
   }.property('graph'),
   breadth: function() {
-    var self = this,
-        graph = this.get('graph');
+    var graph = this.get('graph');
 
     var maxBreadth = function(node) {
       if (node.children) {
@@ -83,7 +81,7 @@ export default DS.Model.extend({
       } else {
         return 0;
       }
-    }
+    };
 
     return maxBreadth(graph.root);
   }.property('graph')

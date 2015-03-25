@@ -135,7 +135,7 @@ export default Ember.Component.extend(SessionMixin, {
     node.append("text")
         .attr("dx", 0)
         .attr("dy", "-1em")
-        .text(function(d, i) { return `${d.sentenceId}`; });
+        .text(function(d) { return `${d.sentenceId}`; });
   },
   markOwnSentences: function(node) {
     // Find own sentences
