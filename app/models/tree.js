@@ -56,20 +56,35 @@ export default DS.Model.extend({
   }.property('networkEdges'),
   depth: function() {
     var self = this,
-        graph = this.get('graph'),
-        depths = [];
+        graph = this.get('graph');
 
-    var _recordDepths = function(node, depth, depths) {
-      depths.push(depth);
+    var maxDepth = function(node) {
       if (node.children) {
-        node.children.map(function(child) {
-          _recordDepths(child, depth + 1, depths);
+        var depths = node.children.map(function(child) {
+          return 1 + maxDepth(child);
         });
+        return Math.max.apply(null, depths);
+      } else {
+        return 0;
       }
     }
 
-    _recordDepths(graph.root, 0, depths);
+    return maxDepth(graph.root);
+  }.property('graph'),
+  breadth: function() {
+    var self = this,
+        graph = this.get('graph');
 
-    return Math.max.apply(null, depths);
+    var maxBreadth = function(node) {
+      if (node.children) {
+        return node.children.reduce(function(currentBreadth, child) {
+          return currentBreadth + maxBreadth(child);
+        }, 0) + node.children.length - 1;
+      } else {
+        return 0;
+      }
+    }
+
+    return maxBreadth(graph.root);
   }.property('graph')
 });
