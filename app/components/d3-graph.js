@@ -14,7 +14,8 @@ export default Ember.Component.extend(SessionMixin, {
   /*
    * Utility properties
    */
-  maxTreeDepth: 10,  // FIXME: move this to server meta
+  maxTreeDepth: 10,   // FIXME: move this to server meta
+  maxTreeBreadth: 5,  // FIXME: move this to server meta
   detail: Ember.computed.not('overview'),
 
   /*
@@ -34,7 +35,9 @@ export default Ember.Component.extend(SessionMixin, {
   initDrawing: function() {
     var self = this,
         depth = this.get('tree.depth'),
+        breadth = this.get('tree.breadth'),
         element = this.get('element'),
+        $element = Ember.$(element),
         $parent = Ember.$(this.get('element')).parent();
 
     var pwidth = $parent.width(),
@@ -42,20 +45,24 @@ export default Ember.Component.extend(SessionMixin, {
 
     var scale = this.get("overview") ? 0.5 : 1,
         wScale = (depth + 1) / (this.get('maxTreeDepth') + 1),
-        margin = {
-      top: 20 * scale,
+        hScale = (breadth + 1) / (this.get('maxTreeBreadth') + 1);
+
+    $element.css("height", pheight * hScale);
+
+    var margin = {
+      top: pheight / ((this.get('maxTreeBreadth') + 1) * 2),
       right: pwidth / ((this.get('maxTreeDepth') + 1) * 2),
-      bottom: 20 * scale,
+      bottom: pheight / ((this.get('maxTreeBreadth') + 1) * 2),
       left: pwidth / ((this.get('maxTreeDepth') + 1) * 2)
     };
 
     var width = pwidth * wScale - margin.left - margin.right,
-        height = pheight - margin.top - margin.bottom;
+        height = pheight * hScale - margin.top - margin.bottom;
 
     var svg = d3.select(element).append("svg");
 
     var g = svg.attr("width", pwidth)
-        .attr("height", pheight)
+        .attr("height", pheight * hScale)
       .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + "), scale(" + scale + ")");
 
@@ -64,11 +71,12 @@ export default Ember.Component.extend(SessionMixin, {
         Ember.run.cancel(self.get('resizeT0'));
       }
       self.set('resizeT0', Ember.run.later(null, function() {
+        pwidth = $parent.width();
         var width = pwidth * wScale - margin.left - margin.right,
-            height = pheight - margin.top - margin.bottom;
+            height = pheight * hScale - margin.top - margin.bottom;
 
         svg.attr("width", pwidth)
-            .attr("height", pheight);
+            .attr("height", pheight * hScale);
 
         self.draw(g, width / scale, height / scale);
       }, 200));
