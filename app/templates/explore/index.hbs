@@ -1,4 +1,4 @@
-{{page-header title="Explore your trees"}}
+{{#page-header}}Explore trees{{#if currentUser.isStaff}} <span class="badge">staff</span>{{/if}}{{/page-header}}
 {{#page-body}}
 {{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
     <div class="row">

@@ -6,6 +6,10 @@ import ProfileRouteMixin from 'gistr/mixins/profile-route';
 
 export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, {
   model: function() {
-    return this.get('currentProfile.trees');
+    if (this.get('currentUser.isStaff')) {
+      return this.store.find('tree', { page_size: 100 });
+    } else {
+      return this.get('currentProfile.trees');
+    }
   }
 });
