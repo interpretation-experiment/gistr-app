@@ -34,7 +34,7 @@
       {{#if enoughTokens}}
         {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
       {{else}}
-      {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} {{#unless enoughTokens}}Type at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words{{/unless}}
+        {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words
       {{/if}}
     </div>
 

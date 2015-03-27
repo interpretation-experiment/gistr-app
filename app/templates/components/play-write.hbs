@@ -1,4 +1,4 @@
-<h3>Some writing instructions</h3>
+<h3>Write down the sentence as you remember it</h3>
 
 <form>
 
@@ -9,6 +9,8 @@
       disabled=isUploading
       info="updateMetaText"
       }}
+
+  <p>{{sl-progress-bar value=progress}}</p>
 
   {{#if enoughTokens}}
     {{#if isLanguageMismatch}}
@@ -25,10 +27,8 @@
         {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
       {{/if}}
     {{else}}
-      {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
+      {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words
     {{/if}}
   </div>
 
 </form>
-
-<p>{{sl-progress-bar value=progress}}</p>

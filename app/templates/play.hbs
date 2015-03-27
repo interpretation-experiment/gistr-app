@@ -1,21 +1,31 @@
 {{document-title title="Play"}}
 {{#page-header}}
-  Play <small>streak <span class="badge">{{count}}</span> | free trees <span class="badge">{{currentProfile.availableMothertongueOtherawareTreesCount}}</span></small>
+  Play <small>streak <span class="badge">{{count}}</span> | available sentences <span class="badge">{{currentProfile.availableMothertongueOtherawareTreesCount}}</span></small>
 {{/page-header}}
 
 {{#page-body}}
   {{#if isInInstructions}}
-    <h3>Your mission</h3>
-    <p>Task instructions: blablabla. {{task.instructions}}</p>
+    <h1>Your mission</h1>
+    <p>In this task you'll be presented with a sentence that you have to remember. Your mission is to rewrite this sentence as accurately as possible.</p>
+    <p>You'll go through a series of screens:</p>
+    <ul>
+      <li>Click <em>Continue</em> and you'll see a sentence with <strong>limited time to read and memorize it</strong> (a progress bar tells you how much time is left).</li>
+      <li>The next screen shows up once the time is up, just click <em>Ok</em> and you're brought to the writing screen.</li>
+      <li>Write down the sentence you were shown, but don't take too long! A progress bar tells you how much time you have left.</li>
+    </ul>
+    <p>This sequence restarts once you're done. <strong>You can stop whenever you want</strong> by clicking <em>Back</em> at the top of the screen.</p>
+
+    <h2><em>Available sentences</em> and <em>Sentences to credit</em></h2>
+    <p>At the top of the screen you can see the number of <em>available sentences</em> for you to go through. This gets to zero when you've seen all possible sentences.</p>
+    <p><em>Sentences to credit</em> tells you how many sentences you have to rewrite to get a new suggestion credit.</p>
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
 
   {{else if isInReading}}
     {{play-read sentence=currentSentence duration=readDuration precision=precision next="hold" timeout="hold"}}
 
   {{else if isInHolding}}
-    <h3>Some holding instructions</h3>
-    <p>A hold task we need to code.</p>
-    <button class="btn btn-primary" {{action "write"}}>Continue</button>
+    <h3>Ready to write?</h3>
+    <button class="btn btn-primary" {{action "write"}}>Ok</button>
 
   {{else if isInWriting}}
     {{play-write minTokens=minTokens parentSentence=currentSentence duration=writeDuration precision=precision next="verify" timeout="timeout"}}
@@ -23,7 +33,7 @@
   {{else if isInTimedout}}
     <h3>Time's up!</h3>
     <p>You need to be quicker next time, check the progress bar!</p>
-    <button class="btn btn-primary" {{action "read"}}>Continue</button>
+    <button class="btn btn-primary" {{action "read"}}>Start again</button>
 
   {{else if isInVerified}}
     <h3>That's recorded</h3>
@@ -32,7 +42,7 @@
 
   {{else if isInEmpty}}
     <h3>No more sentences!</h3>
-    <p>You've participated in all the available trees.</p>
+    <p>You've seen all the available sentences.</p>
     {{#if currentUser.isStaff}}
       <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
     {{else}}
