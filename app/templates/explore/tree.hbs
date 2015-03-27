@@ -10,7 +10,7 @@
     </div>
     <div class="col-sm-6">
       {{#if hovered}}
-        <p class="sentence-details">#{{hovered.id}} <span class="pull-right">Created {{sl-date-time value=hovered.created timezone="Europe/Paris" format="relative"}}</span></p>
+        <p class="sentence-details">#{{hovered.id}} <span class="pull-right">Created {{sl-date-time value=hovered.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{hovered.profile.user_username}}</span></p>
         <blockquote>{{hovered.text}}</blockquote>
       {{/if}}
     </div>
