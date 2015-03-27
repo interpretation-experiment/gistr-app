@@ -9,7 +9,7 @@
         disabled=isUploading
         info="updateMetaText"
         }}
-      Type in your new sentence:
+        Type in a new sentence{{#unless enoughTokens}}, with at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words{{/unless}}:
     {{/nlp-textarea}}
 
     {{#select-language
@@ -25,7 +25,7 @@
       {{#if manual}}
         (manually set):
       {{else}}
-        {{#if enoughTokens}}(detected){{else}}(type more words for auto-detection){{/if}}:
+        {{#if enoughTokens}}(detected){{else}}(type at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words for auto-detection){{/if}}:
       {{/if}}
     {{/select-language}}
 
@@ -34,7 +34,7 @@
       {{#if enoughTokens}}
         {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
       {{else}}
-        {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} Type at least {{minTokens}} words{{#if text}} &mdash; <strong>{{tokensLeft}} left</strong>{{/if}}
+      {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}} {{#unless enoughTokens}}Type at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words{{/unless}}
       {{/if}}
     </div>
 

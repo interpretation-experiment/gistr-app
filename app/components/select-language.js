@@ -9,11 +9,14 @@ export default Ember.Component.extend({
   isSettingGuess: false,
   isManual: false,
 
+  setGuess: function() {
+    this.set('isSettingGuess', true);
+    this.set('language', this.get('guess'));
+    this.set('isSettingGuess', false);
+  },
   watchGuess: function() {
     if (!this.get('isManual')) {
-      this.set('isSettingGuess', true);
-      this.set('language', this.get('guess'));
-      this.set('isSettingGuess', false);
+      this.setGuess();
     }
   }.observes('guess'),
   setManual: function() {
@@ -24,5 +27,12 @@ export default Ember.Component.extend({
 
   inform: function() {
     this.sendAction('languageSelected', this.get('language'));
-  }.observes('language')
+  }.observes('language'),
+
+  actions: {
+    setAutomatic: function() {
+      this.set('isManual', false);
+      this.setGuess();
+    }
+  }
 });
