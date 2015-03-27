@@ -1,6 +1,10 @@
 {{#page-header}}Explore trees{{#if currentUser.isStaff}} <span class="badge">staff</span>{{/if}}{{/page-header}}
 {{#page-body}}
-{{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
+{{#unless model}}
+  <h3>Nothing here yet!</h3>
+  You can only see trees from sentences you rewrote! Go {{link-to 'play' 'play'}} a little and this screen with fill up.
+{{else}}
+  {{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
     <div class="row">
       <div class="col-sm-6">
         <p>#{{tree.id}} <span class="pull-right">{{tree.sentencesCount}} sentences</span></p>
@@ -14,5 +18,6 @@
         {{d3-graph tree=tree overview=true}}
       </div>
     </div>
-    {{/link-to}}{{/each}}
+  {{/link-to}}{{/each}}
+{{/unless}}
 {{/page-body}}
