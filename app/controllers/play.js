@@ -3,6 +3,7 @@ import Ember from 'ember';
 import SessionMixin from 'gistr/mixins/session';
 import draw from 'gistr/utils/draw';
 import randint from 'gistr/utils/randint';
+import countTokens from 'gistr/utils/count-tokens';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
@@ -17,8 +18,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Timing parameters
    */
   precision: 1,      // updates per second
-  readDuration: 5,   // in seconds
-  writeDuration: 30, // in seconds
+  readFactor: 1,     // multiplied by the number of tokens, gives seconds
+  writeFactor: 5,    // multiplied by the number of tokens, gives seconds
+  readDuration: function() {
+    return this.get('readFactor') * this.get('sentenceTokensCount');
+  }.property('readFactor', 'sentenceTokensCount'),
+  writeDuration: function() {
+    return this.get('writeFactor') * this.get('sentenceTokensCount');
+  }.property('readFactor', 'sentenceTokensCount'),
 
   /*
    * Global progress and reset
@@ -42,6 +49,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Current tree and sentence state and selection
    */
   currentSentence: null,
+  sentenceTokensCount: function() {
+    return countTokens(this.get('currentSentence.text'));
+  }.property('currentSentence.text'),
   resetModels: function() {
     this.setProperties({
       currentSentence: null

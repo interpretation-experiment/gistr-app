@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import franc from 'npm:franc';
 
+import countTokens from 'gistr/utils/count-tokens';
+
 
 export default Ember.Component.extend({
   lang: Ember.inject.service(),
@@ -20,9 +22,7 @@ export default Ember.Component.extend({
     /*
      * Token counting
      */
-    tokenCount = value.split(/[ |-]+/).filter(function(item) {
-      return item !== "";
-    }).length;
+    tokenCount = countTokens(value);
 
     /*
      * Language guessing
