@@ -43,7 +43,6 @@
     "ember-export-application-global": "^1.0.2",
     "franc": "^0.7.1",
     "jquery.cookie": "1.4.1",
-    "jsnetworkx": "git+https://github.com/fkling/JSNetworkX.git#v0.2.0",
     "sl-ember-components": "0.8.0",
     "torii": "^0.2.3"
   }
