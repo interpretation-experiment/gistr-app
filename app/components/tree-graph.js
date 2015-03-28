@@ -24,7 +24,7 @@ export default Ember.Component.extend(SessionMixin, {
    * Resizing
    */
   resizeEvent: function() {
-    var name = 'resize.d3-graph-', tree = this.get('tree');
+    var name = 'resize.tree-graph-', tree = this.get('tree');
     name += this.get('overview') ? 'overview-' : 'detail-';
     name += `tree-${tree.id}`;
     return name;
