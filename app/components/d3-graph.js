@@ -107,7 +107,7 @@ export default Ember.Component.extend(SessionMixin, {
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, d.x]; });
 
-    g.selectAll(".link")
+    var link = g.selectAll(".link")
         .data(layoutLinks)
         .attr("d", diagonal)
       .enter().append("path")
@@ -127,9 +127,23 @@ export default Ember.Component.extend(SessionMixin, {
 
     if (this.get('detail')) {
       this.numberSentences(node);
+      this.styleLinks(link);
       this.markOwnSentences(node);
       this.setMouseListeners(node);
     }
+  },
+  styleLinks: function(link) {
+    return this.get('tree.sentences').then(function(sentences) {
+      var sentenceMap = {};
+      sentences.forEach(function(sentence) {
+        sentenceMap[sentence.get('id')] = sentence;
+      });
+      link.attr("stroke-dasharray", function(d) {
+        var source = sentenceMap[d.source.sentenceId],
+            target = sentenceMap[d.target.sentenceId];
+        return source.get('text').localeCompare(target.get('text')) == 0 ? "3px" : "0";
+      });
+    });
   },
   numberSentences: function(node) {
     node.append("text")
