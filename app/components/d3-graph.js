@@ -2,6 +2,7 @@ import Ember from 'ember';
 var d3 = window.d3;
 
 import SessionMixin from 'gistr/mixins/session';
+import distance from 'gistr/utils/levenshtein';
 
 
 export default Ember.Component.extend(SessionMixin, {
@@ -141,7 +142,12 @@ export default Ember.Component.extend(SessionMixin, {
       link.attr("stroke-dasharray", function(d) {
         var source = sentenceMap[d.source.sentenceId],
             target = sentenceMap[d.target.sentenceId];
-        return source.get('text').localeCompare(target.get('text')) == 0 ? "3px" : "0";
+        return source.get('text').localeCompare(target.get('text')) === 0 ? "3px" : "0";
+      }).attr("stroke-width", function(d) {
+        var source = sentenceMap[d.source.sentenceId],
+            target = sentenceMap[d.target.sentenceId],
+            diff = distance(source.get('text'), target.get('text'));
+        return String(Math.sqrt(1 + diff)) + "px";
       });
     });
   },
