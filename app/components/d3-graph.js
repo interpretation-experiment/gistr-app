@@ -3,6 +3,7 @@ var d3 = window.d3;
 
 import SessionMixin from 'gistr/mixins/session';
 import distance from 'gistr/utils/levenshtein';
+import graphPath from 'gistr/utils/graph-path';
 
 
 export default Ember.Component.extend(SessionMixin, {
@@ -130,7 +131,7 @@ export default Ember.Component.extend(SessionMixin, {
       this.numberSentences(node);
       this.styleLinks(link);
       this.markOwnSentences(node);
-      this.setMouseListeners(node);
+      this.setMouseListeners(node, link);
     }
   },
   styleLinks: function(link) {
@@ -155,12 +156,12 @@ export default Ember.Component.extend(SessionMixin, {
                 target = sentenceMap[d.target.sentenceId],
                 diff = distance(source.get('text'), target.get('text'));
             return String(1 + 4 * scale01(diff)) + "px";
-          })
-          .style("stroke", function(d) {
-            var source = sentenceMap[d.source.sentenceId],
-                target = sentenceMap[d.target.sentenceId],
-                diff = distance(source.get('text'), target.get('text'));
-            return color(scale01(diff));
+          //})
+          //.style("stroke", function(d) {
+            //var source = sentenceMap[d.source.sentenceId],
+                //target = sentenceMap[d.target.sentenceId],
+                //diff = distance(source.get('text'), target.get('text'));
+            //return color(scale01(diff));
           });
     });
   },
@@ -186,7 +187,7 @@ export default Ember.Component.extend(SessionMixin, {
           });
     });
   },
-  setMouseListeners: function(node) {
+  setMouseListeners: function(node, link) {
     var self = this;
     // Set event listeners
     node.selectAll("circle")
@@ -208,11 +209,35 @@ export default Ember.Component.extend(SessionMixin, {
             el.classed("selected", false);
           }
 
-          var selectedData = d3.selectAll(".selected").data();
-          Ember.RSVP.all(selectedData.map(function(d) {
-            return self.store.find('sentence', d.sentenceId);
-          })).then(function(sentences) {
-            self.sendAction("select", sentences);
+          // Update selection
+          selection = node.selectAll(".selected");
+          var selectedData = [], path;
+          selection.each(function(d) {
+            selectedData.push(d);
+          });
+          selectedData = selectedData.sortBy('sentenceId');
+
+          if (selectedData.length == 2) {
+            path = graphPath(selectedData.objectAt(0), selectedData.objectAt(1));
+            link.classed("through", function(d) {
+              return path.contains(d.source) && path.contains(d.target);
+            });
+          } else {
+            link.classed("through", false);
+          }
+
+          // Send selection to upper powers
+          var start, end;
+          if (selectedData.length > 0) { start = self.store.find('sentence', selectedData.objectAt(0).sentenceId); }
+          if (selectedData.length > 1) { end = self.store.find('sentence', selectedData.objectAt(1).sentenceId); }
+          Ember.RSVP.hash({
+            start: start,
+            end: end,
+            path: Ember.isNone(path) ? null : Ember.RSVP.all(path.map(function(d) {
+              return self.store.find('sentence', d.sentenceId);
+            }))
+          }).then(function(hash) {
+            self.sendAction("select", hash);
           });
         });
   }
