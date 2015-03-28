@@ -135,7 +135,7 @@ export default Ember.Component.extend(SessionMixin, {
     }
   },
   styleLinks: function(link) {
-    var scale01 = function(a) { return Math.atan(a / 50) * 2 / Math.PI; },
+    var scale01 = function(a) { return Math.atan(a / 30) * 2 / Math.PI; },
         color = d3.scale.linear()
         .domain([0, 1])
         .range(["grey", "red"]);
