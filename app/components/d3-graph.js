@@ -113,6 +113,7 @@ export default Ember.Component.extend(SessionMixin, {
         .attr("d", diagonal)
       .enter().append("path")
         .attr("class", "link")
+        .attr("stroke", "#999")
         .attr("d", diagonal);
 
     var node = g.selectAll(".node")
@@ -134,21 +135,35 @@ export default Ember.Component.extend(SessionMixin, {
     }
   },
   styleLinks: function(link) {
+    var scale01 = function(a) { return Math.atan(a / 50) * 2 / Math.PI; },
+        color = d3.scale.linear()
+        .domain([0, 1])
+        .range(["grey", "red"]);
+
     return this.get('tree.sentences').then(function(sentences) {
       var sentenceMap = {};
       sentences.forEach(function(sentence) {
         sentenceMap[sentence.get('id')] = sentence;
       });
+
       link.attr("stroke-dasharray", function(d) {
-        var source = sentenceMap[d.source.sentenceId],
-            target = sentenceMap[d.target.sentenceId];
-        return source.get('text').localeCompare(target.get('text')) === 0 ? "3px" : "0";
-      }).attr("stroke-width", function(d) {
-        var source = sentenceMap[d.source.sentenceId],
-            target = sentenceMap[d.target.sentenceId],
-            diff = distance(source.get('text'), target.get('text'));
-        return String(Math.sqrt(1 + diff)) + "px";
-      });
+            var source = sentenceMap[d.source.sentenceId],
+                target = sentenceMap[d.target.sentenceId];
+            return source.get('text').localeCompare(target.get('text')) === 0 ? "3px" : "0";
+          })
+          .attr("stroke-width", function(d) {
+            var source = sentenceMap[d.source.sentenceId],
+                target = sentenceMap[d.target.sentenceId],
+                diff = distance(source.get('text'), target.get('text'));
+            return String(1 + 4 * scale01(diff)) + "px";
+          })
+          .attr("stroke", function(d) {
+            var source = sentenceMap[d.source.sentenceId],
+                target = sentenceMap[d.target.sentenceId],
+                diff = distance(source.get('text'), target.get('text'));
+            console.log(scale01(diff));
+            return color(scale01(diff));
+          });
     });
   },
   numberSentences: function(node) {
