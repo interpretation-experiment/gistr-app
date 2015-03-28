@@ -98,9 +98,9 @@ export default Ember.Component.extend(SessionMixin, {
     var layout = d3.layout.tree()
         .size([height, width])  // inverted height/width to have a horizontal tree
         .sort(function(a, b) {
-      // Proxy creation order by sentenceId
-      return a.sentenceId - b.sentenceId;
-    });
+          // Proxy creation order by sentenceId
+          return a.sentenceId - b.sentenceId;
+        });
 
     var layoutNodes = layout.nodes(graph.root),
         layoutLinks = layout.links(layoutNodes);
@@ -193,12 +193,12 @@ export default Ember.Component.extend(SessionMixin, {
     // Set event listeners
     node.selectAll("circle")
         .on("mouseover", function(d) {
-      d3.select(this).attr("r", 10);
-      self.sendAction("hover", self.store.find('sentence', d.sentenceId));
-    })
+          d3.select(this).attr("r", 10);
+          self.sendAction("hover", self.store.find('sentence', d.sentenceId));
+        })
         .on("mouseout", function(/*d*/) {
-      d3.select(this).attr("r", 8);
-      self.sendAction("hover", null);
-    });
+          d3.select(this).attr("r", 8);
+          self.sendAction("hover", null);
+        });
   }
 });
