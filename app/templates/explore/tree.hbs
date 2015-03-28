@@ -10,19 +10,18 @@
     </div>
     <div class="col-sm-6">
       {{#if hasSelection}}
-        {{#if selectionStart}}
-          <p class="sentence-details">Selection start: #{{selectionStart.id}} <span class="pull-right">Created {{sl-date-time value=selectionStart.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{selectionStart.profile.user_username}}</span></p>
-          <blockquote>{{selectionStart.text}}</blockquote>
+        {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:"}}{{/if}}
+        {{#if hasPath}}
+          {{#if showPath}}
+            <p><button class="btn btn-default" {{action "togglePath"}}>Collapse</button></p>
+            {{#each selectionPath as |sentence|}}{{sentence-card sentence=sentence}}{{/each}}
+          {{else}}
+            <p><button class="btn btn-default" {{action "togglePath"}}>Expand</button></p>
+          {{/if}}
         {{/if}}
-        {{#if selectionEnd}}
-          <p class="sentence-details">Selection end: #{{selectionEnd.id}} <span class="pull-right">Created {{sl-date-time value=selectionEnd.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{selectionEnd.profile.user_username}}</span></p>
-          <blockquote>{{selectionEnd.text}}</blockquote>
-        {{/if}}
+        {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:"}}{{/if}}
       {{/if}}
-      {{#if hovered}}
-        <p class="sentence-details">Hover: #{{hovered.id}} <span class="pull-right">Created {{sl-date-time value=hovered.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{hovered.profile.user_username}}</span></p>
-        <blockquote>{{hovered.text}}</blockquote>
-      {{/if}}
+      {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
     </div>
   </div>
 {{/page-body}}
