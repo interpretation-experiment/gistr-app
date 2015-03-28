@@ -1,5 +1,6 @@
-// From https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#JavaScript
-export default function levenshtein(a, b) {
+var cache = {},
+    levenshtein = function(a, b) {
+  // From https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#JavaScript
   if(a.length === 0) { return b.length; }
   if(b.length === 0) { return a.length; }
 
@@ -31,4 +32,17 @@ export default function levenshtein(a, b) {
   }
 
   return matrix[b.length][a.length];
+};
+
+export default function(a, b) {
+  if (!((a in cache) && (b in cache[a]))) {
+    // Distance not in cache, compute it
+    if (!(a in cache)) { cache[a] = {}; }
+    if (!(b in cache)) { cache[b] = {}; }
+    var d = levenshtein(a, b);
+    cache[a][b] = d;
+    cache[b][a] = d;
+  }
+
+  return cache[a][b];
 }
