@@ -113,7 +113,6 @@ export default Ember.Component.extend(SessionMixin, {
         .attr("d", diagonal)
       .enter().append("path")
         .attr("class", "link")
-        .attr("stroke", "#999")
         .attr("d", diagonal);
 
     var node = g.selectAll(".node")
@@ -125,7 +124,7 @@ export default Ember.Component.extend(SessionMixin, {
 
     node.append("circle")
         .attr("r", 8)
-        .style("fill", function(d) { return Ember.isNone(d.parent) ? "#900" : "#999"; });
+        .classed("root", function(d) { return Ember.isNone(d.parent); });
 
     if (this.get('detail')) {
       this.numberSentences(node);
@@ -146,22 +145,21 @@ export default Ember.Component.extend(SessionMixin, {
         sentenceMap[sentence.get('id')] = sentence;
       });
 
-      link.attr("stroke-dasharray", function(d) {
+      link.style("stroke-dasharray", function(d) {
             var source = sentenceMap[d.source.sentenceId],
                 target = sentenceMap[d.target.sentenceId];
             return source.get('text').localeCompare(target.get('text')) === 0 ? "3px" : "0";
           })
-          .attr("stroke-width", function(d) {
+          .style("stroke-width", function(d) {
             var source = sentenceMap[d.source.sentenceId],
                 target = sentenceMap[d.target.sentenceId],
                 diff = distance(source.get('text'), target.get('text'));
             return String(1 + 4 * scale01(diff)) + "px";
           })
-          .attr("stroke", function(d) {
+          .style("stroke", function(d) {
             var source = sentenceMap[d.source.sentenceId],
                 target = sentenceMap[d.target.sentenceId],
                 diff = distance(source.get('text'), target.get('text'));
-            console.log(scale01(diff));
             return color(scale01(diff));
           });
     });
@@ -183,9 +181,9 @@ export default Ember.Component.extend(SessionMixin, {
       return Ember.RSVP.hash(sentenceProfileMap);
     }).then(function(sentenceProfileMap) {
       node.selectAll("circle")
-          .style("stroke", function(d) {
-        return sentenceProfileMap[d.sentenceId] === profile ? "#f60" : "#fff";
-      });
+          .classed("own", function(d) {
+            return sentenceProfileMap[d.sentenceId] === profile;
+          });
     });
   },
   setMouseListeners: function(node) {
@@ -199,6 +197,16 @@ export default Ember.Component.extend(SessionMixin, {
         .on("mouseout", function(/*d*/) {
           d3.select(this).attr("r", 8);
           self.sendAction("hover", null);
+        })
+        .on("click", function(d) {
+          var selection = node.selectAll(".selected"),
+              el = d3.select(this);
+
+          if (selection.size() < 2) {
+            el.classed("selected", !el.classed("selected"));
+          } else {
+            el.classed("selected", false);
+          }
         });
   }
 });
