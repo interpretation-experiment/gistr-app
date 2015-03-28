@@ -207,6 +207,13 @@ export default Ember.Component.extend(SessionMixin, {
           } else {
             el.classed("selected", false);
           }
+
+          var selectedData = d3.selectAll(".selected").data();
+          Ember.RSVP.all(selectedData.map(function(d) {
+            return self.store.find('sentence', d.sentenceId);
+          })).then(function(sentences) {
+            self.sendAction("select", sentences);
+          });
         });
   }
 });

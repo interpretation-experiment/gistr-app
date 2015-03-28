@@ -6,11 +6,21 @@
   <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
   <div class="row">
     <div class="col-sm-6">
-      {{d3-graph tree=model hover="hoverSentence"}}
+      {{d3-graph tree=model hover="hoverSentence" select="setSelection"}}
     </div>
     <div class="col-sm-6">
+      {{#if hasSelection}}
+        {{#if selectionStart}}
+          <p class="sentence-details">Selection start: #{{selectionStart.id}} <span class="pull-right">Created {{sl-date-time value=selectionStart.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{selectionStart.profile.user_username}}</span></p>
+          <blockquote>{{selectionStart.text}}</blockquote>
+        {{/if}}
+        {{#if selectionEnd}}
+          <p class="sentence-details">Selection end: #{{selectionEnd.id}} <span class="pull-right">Created {{sl-date-time value=selectionEnd.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{selectionEnd.profile.user_username}}</span></p>
+          <blockquote>{{selectionEnd.text}}</blockquote>
+        {{/if}}
+      {{/if}}
       {{#if hovered}}
-        <p class="sentence-details">#{{hovered.id}} <span class="pull-right">Created {{sl-date-time value=hovered.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{hovered.profile.user_username}}</span></p>
+        <p class="sentence-details">Hover: #{{hovered.id}} <span class="pull-right">Created {{sl-date-time value=hovered.created timezone="Europe/Paris" format="relative"}} <em>by</em> {{hovered.profile.user_username}}</span></p>
         <blockquote>{{hovered.text}}</blockquote>
       {{/if}}
     </div>
