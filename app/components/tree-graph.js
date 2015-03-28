@@ -135,10 +135,10 @@ export default Ember.Component.extend(SessionMixin, {
     }
   },
   styleLinks: function(link) {
-    var scale01 = function(a) { return Math.atan(a / 30) * 2 / Math.PI; },
-        color = d3.scale.linear()
-        .domain([0, 1])
-        .range(["grey", "red"]);
+    var scale01 = function(a) { return Math.atan(a / 30) * 2 / Math.PI; };
+    //var color = d3.scale.linear()
+        //.domain([0, 1])
+        //.range(["grey", "red"]);
 
     return this.get('tree.sentences').then(function(sentences) {
       var sentenceMap = {};
@@ -199,7 +199,7 @@ export default Ember.Component.extend(SessionMixin, {
           d3.select(this).attr("r", 8);
           self.sendAction("hover", null);
         })
-        .on("click", function(d) {
+        .on("click", function(/*d*/) {
           var selection = node.selectAll(".selected"),
               el = d3.select(this);
 
@@ -217,7 +217,7 @@ export default Ember.Component.extend(SessionMixin, {
           });
           selectedData = selectedData.sortBy('sentenceId');
 
-          if (selectedData.length == 2) {
+          if (selectedData.length === 2) {
             path = graphPath(selectedData.objectAt(0), selectedData.objectAt(1));
             link.classed("through", function(d) {
               return path.contains(d.source) && path.contains(d.target);
