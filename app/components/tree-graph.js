@@ -38,7 +38,9 @@ export default Ember.Component.extend(SessionMixin, {
   initDrawing: function() {
     var self = this,
         depth = this.get('tree.depth'),
+        widthFactor = 1 + Math.max(depth, this.get('targetBranchDepth')),
         breadth = this.get('tree.breadth'),
+        heightFactor = Math.max(1 + breadth, this.get('targetBranchCount')),
         element = this.get('element'),
         $element = Ember.$(element),
         $parent = Ember.$(this.get('element')).parent();
@@ -47,16 +49,16 @@ export default Ember.Component.extend(SessionMixin, {
         pheight = $parent.height();
 
     var scale = this.get("overview") ? 0.5 : 1,
-        wScale = (depth + 1) / (this.get('targetBranchDepth') + 1),
-        hScale = (breadth + 1) / this.get('targetBranchCount');
+        wScale = (depth + 1) / widthFactor,
+        hScale = (breadth + 1) / heightFactor;
 
     $element.css("height", pheight * hScale);
 
     var margin = {
-      top: pheight / (this.get('targetBranchCount') * 2),
-      right: pwidth / ((this.get('targetBranchDepth') + 1) * 2),
-      bottom: pheight / (this.get('targetBranchCount') * 2),
-      left: pwidth / ((this.get('targetBranchDepth') + 1) * 2)
+      top: pheight / (widthFactor * 2),
+      right: pwidth / (heightFactor * 2),
+      bottom: pheight / (widthFactor * 2),
+      left: pwidth / (heightFactor * 2)
     };
 
     var width = pwidth * wScale - margin.left - margin.right,
