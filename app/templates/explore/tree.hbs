@@ -1,27 +1,34 @@
 {{#page-header back="explore"}}Detailed tree #{{model.id}}{{/page-header}}
 {{#page-body}}
-  <h2>Starting point</h2>
-  <blockquote>{{model.root.text}}</blockquote>
+  {{#if (can "read tree" model)}}
+    <h2>Starting point</h2>
+    <blockquote>{{model.root.text}}</blockquote>
 
-  <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
-  <div class="row">
-    <div class="col-sm-6">
-      {{tree-graph tree=model hover="hoverSentence" select="setSelection"}}
-    </div>
-    <div class="col-sm-6">
-      {{#if hasSelection}}
-        {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:"}}{{/if}}
-        {{#if hasPath}}
-          {{#if showPath}}
-            <p><button class="btn btn-default" {{action "togglePath"}}>Collapse</button></p>
-            {{#each selectionPath as |sentence|}}{{sentence-card sentence=sentence}}{{/each}}
-          {{else}}
-            <p><button class="btn btn-default" {{action "togglePath"}}>Expand</button></p>
+    <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
+    <div class="row">
+      <div class="col-sm-6">
+        {{tree-graph tree=model hover="hoverSentence" select="setSelection"}}
+      </div>
+      <div class="col-sm-6">
+        {{#if hasSelection}}
+          {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:"}}{{/if}}
+          {{#if hasPath}}
+            {{#if showPath}}
+              <p><button class="btn btn-default" {{action "togglePath"}}>Collapse</button></p>
+              {{#each selectionPath as |sentence|}}{{sentence-card sentence=sentence}}{{/each}}
+            {{else}}
+              <p><button class="btn btn-default" {{action "togglePath"}}>Expand</button></p>
+            {{/if}}
           {{/if}}
+          {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:"}}{{/if}}
         {{/if}}
-        {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:"}}{{/if}}
-      {{/if}}
-      {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
+        {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
+      </div>
     </div>
-  </div>
+
+  {{else}}
+    <h2>Oops!</h2>
+    <p>You don't have access to this tree. Maybe you forgot to {{link-to 'sign in' 'login'}}?</p>
+    <p>You can only see trees you've participated in or created, so you could try {{link-to 'playing' 'play'}} a bit more and maybe you'll participate in this tree.</p>
+  {{/if}}
 {{/page-body}}

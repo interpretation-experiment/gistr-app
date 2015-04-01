@@ -41,6 +41,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       }
     });
   },
+  reloadTree: function() {
+    return this.get('currentSentence.tree').then(function(tree) {
+      return tree.reload();
+    });
+  },
   enoughSentencesForNextCredit: function() {
     return this.get('currentProfile.availableMothertongueOtherawareTreesCount') >= this.get('currentProfile.nextCreditIn');
   }.property('currentProfile.availableMothertongueOtherawareTreesCount', 'currentProfile.nextCreditIn'),
@@ -134,6 +139,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       transition: {
         from: 'writing',
         to: 'verified',
+        didEnter: 'reloadTree',
         afterEvent: 'bailCheck'
       }
     },
