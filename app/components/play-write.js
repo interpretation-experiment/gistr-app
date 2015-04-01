@@ -5,6 +5,22 @@ import TimefulMixin from 'gistr/mixins/timeful';
 
 export default Ember.Component.extend(TimefulMixin, {
   lang: Ember.inject.service(),
+  growl: Ember.inject.service(),
+
+  /*
+   * Copy-paste prevention
+   */
+  pasteEvent: 'paste.play-write',
+  initPastePrevention: function() {
+    var growl = this.get('growl');
+    Ember.$(window).on(this.get('pasteEvent'), function(event) {
+      event.preventDefault();
+      growl.error("No copy-pasting", "Don't copy-paste the text, it won't work!");
+    });
+  }.on('didInsertElement'),
+  closePastePrevention: function() {
+    Ember.$(window).off(this.get('pasteEvent'));
+  }.on('willDestroyElement'),
 
   /*
    * Input form fields, state, and upload
