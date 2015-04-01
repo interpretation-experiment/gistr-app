@@ -28,7 +28,7 @@
     <div {{bind-attr class=':form-group errors.mothertongue:has-error justSaved:has-success'}}>
       <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
       <div class="col-sm-4">
-        {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue"}}
+        {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue" disabled=isUploading}}
         <span class="help-block">{{errors.mothertongue}}</span>
       </div>
       <div class="col-sm-6">
