@@ -5,7 +5,7 @@ import ProfileRouteMixin from 'gistr/mixins/profile-route';
 
 
 export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
-  watchAvailableTreesCount: function() {
-    this.controllerFor('play').watchAvailableTreesCount();
+  initPlayState: function() {
+    this.controllerFor('play').send('init');
   }.on('activate')
 });

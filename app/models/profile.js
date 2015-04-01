@@ -7,6 +7,7 @@ export default DS.Model.extend({
   trees: DS.hasMany('tree', { async: true }),
   sentences: DS.hasMany('sentence', { async: true }),
   suggestionCredit: DS.attr('number'),
+  nextCreditIn: DS.attr('number'),
   mothertongue: DS.attr('string'),
   untouchedTreesCount: DS.attr('number'),
   availableMothertongueOtherawareTreesCount: DS.attr('number'),

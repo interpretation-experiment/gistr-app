@@ -31,19 +31,19 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Global progress and reset
    */
   reset: function() {
-    this.resetProgress();
     this.resetModels();
   },
-  count: 0,
-  resetProgress: function() {
-    this.setProperties({
-      'count': 0
+  bailCheck: function() {
+    var self = this;
+    return this.get('currentProfile').reload().then(function(profile) {
+      if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
+        self.sendStateEvent('bail');
+      }
     });
   },
-  updateCounts: function() {
-    this.incrementProperty('count');
-    return this.get('currentProfile').reload();
-  },
+  enoughSentencesForNextCredit: function() {
+    return this.get('currentProfile.availableMothertongueOtherawareTreesCount') >= this.get('currentProfile.nextCreditIn');
+  }.property('currentProfile.availableMothertongueOtherawareTreesCount', 'currentProfile.nextCreditIn'),
 
   /*
    * Current tree and sentence state and selection
@@ -77,16 +77,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       self.set('currentSentence', draw(sentences));
     });
   },
-  watchAvailableTreesCount: function() {
-    if (this.get('currentProfile.availableMothertongueOtherawareTreesCount') === 0) {
-      this.sendStateEvent('bail');
-    }
-  }.observes('currentProfile.availableMothertongueOtherawareTreesCount'),
 
   /*
    * Trial progress actions
    */
   actions: {
+    init: function() {
+      this.bailCheck();
+    },
     read: function() {
       this.sendStateEvent('read');
     },
@@ -136,12 +134,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       transition: {
         from: 'writing',
         to: 'verified',
-        afterEvent: 'updateCounts'
+        afterEvent: 'bailCheck'
       }
     },
     bail: {
       transition: {
-        from: ['instructions', 'verified', 'empty'],
+        from: ['instructions', 'verified'],
         to: 'empty'
       }
     },
