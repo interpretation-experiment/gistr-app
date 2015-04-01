@@ -17,7 +17,7 @@ export default Ember.Component.extend(SessionMixin, {
    * Utility properties
    */
   shaping: Ember.inject.service(),
-  targetBranchLength: Ember.computed.alias('shaping.targetBranchLength'),
+  targetBranchDepth: Ember.computed.alias('shaping.targetBranchDepth'),
   targetBranchCount: Ember.computed.alias('shaping.targetBranchCount'),
   detail: Ember.computed.not('overview'),
 
@@ -47,16 +47,16 @@ export default Ember.Component.extend(SessionMixin, {
         pheight = $parent.height();
 
     var scale = this.get("overview") ? 0.5 : 1,
-        wScale = (depth + 1) / this.get('targetBranchLength'),
+        wScale = (depth + 1) / (this.get('targetBranchDepth') + 1),
         hScale = (breadth + 1) / this.get('targetBranchCount');
 
     $element.css("height", pheight * hScale);
 
     var margin = {
       top: pheight / (this.get('targetBranchCount') * 2),
-      right: pwidth / (this.get('targetBranchLength') * 2),
+      right: pwidth / ((this.get('targetBranchDepth') + 1) * 2),
       bottom: pheight / (this.get('targetBranchCount') * 2),
-      left: pwidth / (this.get('targetBranchLength') * 2)
+      left: pwidth / ((this.get('targetBranchDepth') + 1) * 2)
     };
 
     var width = pwidth * wScale - margin.left - margin.right,

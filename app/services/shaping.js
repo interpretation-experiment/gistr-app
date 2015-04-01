@@ -5,7 +5,7 @@ export default Ember.Service.extend({
   serverMeta: Ember.inject.service(),
 
   targetBranchCount: null,
-  targetBranchLength: null,
+  targetBranchDepth: null,
 
   _populationPromise: null,
   populate: function() {
@@ -19,7 +19,7 @@ export default Ember.Service.extend({
     _populationPromise = this.get('serverMeta').populate().then(function(serverMeta) {
       var data = serverMeta.get('data');
       self.set('targetBranchCount', data.target_branch_count);
-      self.set('targetBranchLength', data.target_branch_length);
+      self.set('targetBranchDepth', data.target_branch_depth);
       return self;
     });
 
