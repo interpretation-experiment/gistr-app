@@ -33,11 +33,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   reset: function() {
     this.resetModels();
   },
-  bailCheck: function() {
-    var self = this;
+  reloadProfile: function() {
+    var self = this,
+        previousCredit = this.get('currentProfile.suggestionCredit');
     return this.get('currentProfile').reload().then(function(profile) {
       if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
         self.sendStateEvent('bail');
+      } else if (profile.get('suggestionCredit') > previousCredit) {
+        self.sendStateEvent('credit');
       }
     });
   },
@@ -88,7 +91,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   actions: {
     init: function() {
-      this.bailCheck();
+      this.reloadProfile();
     },
     read: function() {
       this.sendStateEvent('read');
@@ -122,7 +125,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   fsmEvents: {
     read: {
       transitions: {
-        from: ['instructions', 'verified', 'timedout'],
+        from: ['instructions', 'verified', 'timedout', 'credited'],
         to: 'reading'
       }
     },
@@ -140,7 +143,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         from: 'writing',
         to: 'verified',
         didEnter: 'reloadTree',
-        afterEvent: 'bailCheck'
+        afterEvent: 'reloadProfile'
       }
     },
     bail: {
@@ -148,6 +151,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         from: ['instructions', 'verified'],
         to: 'empty'
       }
+    },
+    credit: {
+      transition: { verified: 'credited' }
     },
     reset: {
       transition: {

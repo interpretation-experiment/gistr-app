@@ -40,6 +40,12 @@
     <p>Keep going!</p>
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
 
+  {{else if isInCredited}}
+    <h3>You just earned yourself a new sugestion credit!</h3>
+    <p>You can go suggest a new sentence if you want to.</p>
+    {{link-to "Suggest" "suggest" class="btn btn-default"}}
+    <button class="btn btn-primary" {{action "read"}}>No, continue</button>
+
   {{else if isInEmpty}}
     <h3>No more sentences!</h3>
     <p>You've seen all the available sentences.</p>
