@@ -16,8 +16,9 @@ export default Ember.Component.extend(SessionMixin, {
   /*
    * Utility properties
    */
-  maxTreeDepth: 10,   // FIXME: move this to server meta
-  maxTreeBreadth: 5,  // FIXME: move this to server meta
+  shaping: Ember.inject.service(),
+  targetBranchLength: Ember.computed.alias('shaping.targetBranchLength'),
+  targetBranchCount: Ember.computed.alias('shaping.targetBranchCount'),
   detail: Ember.computed.not('overview'),
 
   /*
@@ -46,16 +47,16 @@ export default Ember.Component.extend(SessionMixin, {
         pheight = $parent.height();
 
     var scale = this.get("overview") ? 0.5 : 1,
-        wScale = (depth + 1) / (this.get('maxTreeDepth') + 1),
-        hScale = (breadth + 1) / (this.get('maxTreeBreadth') + 1);
+        wScale = (depth + 1) / this.get('targetBranchLength'),
+        hScale = (breadth + 1) / this.get('targetBranchCount');
 
     $element.css("height", pheight * hScale);
 
     var margin = {
-      top: pheight / ((this.get('maxTreeBreadth') + 1) * 2),
-      right: pwidth / ((this.get('maxTreeDepth') + 1) * 2),
-      bottom: pheight / ((this.get('maxTreeBreadth') + 1) * 2),
-      left: pwidth / ((this.get('maxTreeDepth') + 1) * 2)
+      top: pheight / (this.get('targetBranchCount') * 2),
+      right: pwidth / (this.get('targetBranchLength') * 2),
+      bottom: pheight / (this.get('targetBranchCount') * 2),
+      left: pwidth / (this.get('targetBranchLength') * 2)
     };
 
     var width = pwidth * wScale - margin.left - margin.right,
