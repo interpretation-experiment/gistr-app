@@ -105,7 +105,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   selectModels: function() {
     // FIXME: load X trees in one go in route's model hook
     var self = this, profile = this.get('currentProfile'),
-        availableTreesCount = profile.get('availableMothertongueOtherawareTreesCount'),
         mothertongue = profile.get('mothertongue'),
         isOthertongue = mothertongue === this.get('lang.otherLanguage');
 
@@ -119,8 +118,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       without_other_mothertongue: !isOthertongue,
 
       // One random tree from the filtered list
-      page_size: 1,
-      page: randint(availableTreesCount) + 1,
+      sample: 1,
     };
 
     var shapedFilter = Ember.setProperties(Ember.copy(unshapedFilter), {
