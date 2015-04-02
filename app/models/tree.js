@@ -1,4 +1,5 @@
 import DS from 'ember-data';
+import nx from 'npm:jsnetworkx';
 
 
 export default DS.Model.extend({
@@ -7,6 +8,8 @@ export default DS.Model.extend({
   sentencesCount: DS.attr('number'),
   profiles: DS.hasMany('profile', { async: true }),
   networkEdges: DS.attr('array'),
+  branchesCount: DS.attr('number'),
+  shortestBranchDepth: DS.attr('number'),
 
   /*
    * Unused properties
@@ -16,6 +19,7 @@ export default DS.Model.extend({
   /*
    * Computed properties
    */
+  shaping: Ember.inject.service(),
   graph: function() {
     var dNodes = {},
         links = [],
@@ -84,5 +88,52 @@ export default DS.Model.extend({
     };
 
     return maxBreadth(graph.root);
-  }.property('graph')
+  }.property('graph'),
+  tips: function() {
+    var networkEdges = this.get('networkEdges'),
+        graph = this.get('graph'),
+        targetBranchDepth = this.get('shaping.targetBranchDepth');
+
+    // No children under the root? Return fast
+    if (networkEdges.length === 0) { return []; }
+
+    var nxGraph = nx.DiGraph(networkEdges.map(function(edge) {
+      return [edge.source, edge.target];
+    }));
+    var allTipsDepths = graph.root.children
+        .map(function(child) { return child.sentenceId; })
+        .map(function(head) {
+          return nx.single_source_shortest_path_length(nxGraph, head).w;
+        })
+        .map(function(nodeToDepth) {
+          var nodes = Object.keys(nodeToDepth),
+              depthToNodes = {},
+              node, depth;
+
+          // Get all nodes at a given depth, for each depth
+          for (var i = 0; i < nodes.length; i++) {
+            node = nodes[i];
+            depth = nodeToDepth[node];
+            if (!(depth in depthToNodes)) { depthToNodes[depth] = []; }
+            depthToNodes[depth].push(node);
+          }
+
+          var maxDepth = Math.max.apply(null, Object.keys(depthToNodes));
+          return { depth: maxDepth + 1, nodes: depthToNodes[maxDepth] };
+        });
+
+    var allTips = [],
+        underTips = [],
+        overflownTips = [];
+    allTipsDepths.forEach(function(tips) {
+      allTips.push(tips.nodes);
+      if (tips.depth < targetBranchDepth) {
+        underTips.push(tips.nodes);
+      } else {
+        overflownTips.push(tips.nodes);
+      }
+    });
+
+    return { allTips: allTips, underTips: underTips, overflownTips: overflownTips };
+  }.property('networkEdges', 'graph')
 });

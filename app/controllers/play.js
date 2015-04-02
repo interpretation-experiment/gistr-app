@@ -7,7 +7,16 @@ import countTokens from 'gistr/utils/count-tokens';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
+  /*
+   * Language utilities
+   */
   lang: Ember.inject.service(),
+
+  /*
+   * Tree shaping parameters
+   */
+  shaping: Ember.inject.service(),
+  pBranch: 0.8,
 
   /*
    * Writing parameters
@@ -65,6 +74,34 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       currentSentence: null
     });
   },
+  drawInTree: function(tree) {
+    var branchesCount = tree.get('branchesCount'),
+        targetBranchCount = this.get('shaping.targetBranchCount'),
+        pBranch = this.get('pBranch'),
+        root = tree.get('root'),
+        tips = tree.get('tips'),
+        effectiveTips = tips.underTips.length === 0 ?
+            tips.overflownTips : tips.underTips;
+
+    // If we only have a root, return fast
+    if (tips.allTips.length === 0) { return root; }
+
+    // Could we branch?
+    if (branchesCount < targetBranchCount) {
+      // Yes. Should we branch?
+      if (Math.random() < pBranch) {
+        // Yes, so return root
+        return root;
+      } else {
+        // No. So draw an existing branch and a tip inside it
+        // (hence the double `draw`), and return
+        return this.store.find('sentence', draw(draw(effectiveTips)));
+      }
+    } else {
+      // No. Draw from an existing branch.
+      return this.store.find('sentence', draw(draw(effectiveTips)));
+    }
+  },
   selectModels: function() {
     // FIXME: load X trees in one go in route's model hook
     var self = this, profile = this.get('currentProfile'),
@@ -72,17 +109,41 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         mothertongue = profile.get('mothertongue'),
         isOthertongue = mothertongue === this.get('lang.otherLanguage');
 
-    return this.store.find('tree', {
-      page_size: 1,
-      page: randint(availableTreesCount) + 1,
+    var unshapedFilter = {
+      // The tree is yet unseen
       untouched_by_profile: profile.get('id'),
+
+      // In the proper language (this also assures the tree is not empty)
       root_language: isOthertongue ? this.get('lang.defaultLanguage') : mothertongue,
       with_other_mothertongue: isOthertongue,
-      without_other_mothertongue: !isOthertongue
+      without_other_mothertongue: !isOthertongue,
+
+      // One random tree from the filtered list
+      page_size: 1,
+      page: randint(availableTreesCount) + 1,
+    };
+
+    var shapedFilter = Ember.setProperties(Ember.copy(unshapedFilter), {
+      // Filter with proper shape (we want either branches_count or shortest_branch_depth
+      // to be one less than these limits, but if unlucky enough to get a tree
+      // that was just completed, we'll lengthen one of its branches)
+      branches_count_lte: this.get('shaping.targetBranchCount'),
+      shortest_branch_depth_lte: this.get('shaping.targetBranchDepth'),
+    });
+
+    return this.store.find('tree', shapedFilter).then(function(trees) {
+      if (trees.length === 0) {
+        // We're out of luck, all the available trees are already full! Still, get one of those
+        return self.store.find('tree', unshapedFilter);
+      } else {
+        return trees;
+      }
     }).then(function(trees) {
-      return trees.objectAt(0).get('sentences');
-    }).then(function(sentences) {
-      self.set('currentSentence', draw(sentences));
+      // We got a tree! Draw from it
+      return self.drawInTree(trees.objectAt(0));
+    }).then(function(sentence) {
+      // Finally, set the drawn sentence
+      self.set('currentSentence', sentence);
     });
   },
 
