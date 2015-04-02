@@ -23,7 +23,7 @@
     "broccoli-static-compiler": "^0.2.1",
     "ember-browserify": "^0.6.2",
     "ember-can": "^0.3.0",
-    "ember-cli": "^0.2.0",
+    "ember-cli": "^0.2.2",
     "ember-cli-app-version": "0.3.2",
     "ember-cli-async-button": "^0.5.0",
     "ember-cli-babel": "^4.0.0",
