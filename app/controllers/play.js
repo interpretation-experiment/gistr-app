@@ -2,7 +2,6 @@ import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
 import draw from 'gistr/utils/draw';
-import randint from 'gistr/utils/randint';
 import countTokens from 'gistr/utils/count-tokens';
 
 

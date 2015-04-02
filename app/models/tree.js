@@ -96,7 +96,9 @@ export default DS.Model.extend({
         targetBranchDepth = this.get('shaping.targetBranchDepth');
 
     // No children under the root? Return fast
-    if (networkEdges.length === 0) { return []; }
+    if (networkEdges.length === 0) {
+      return { allTips: [], underTips: [], overflownTips: [] };
+    }
 
     var nxGraph = nx.DiGraph(networkEdges.map(function(edge) {
       return [edge.source, edge.target];
