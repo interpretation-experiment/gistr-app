@@ -55,10 +55,10 @@ export default Ember.Component.extend(SessionMixin, {
     $element.css("height", pheight * hScale);
 
     var margin = {
-      top: pheight / (widthFactor * 2),
-      right: pwidth / (heightFactor * 2),
-      bottom: pheight / (widthFactor * 2),
-      left: pwidth / (heightFactor * 2)
+      top: pheight / (heightFactor * 2),
+      right: pwidth / (widthFactor * 2),
+      bottom: pheight / (heightFactor * 2),
+      left: pwidth / (widthFactor * 2)
     };
 
     var width = pwidth * wScale - margin.left - margin.right,
