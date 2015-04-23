@@ -1,6 +1,6 @@
 {{#page-header back="explore"}}Detailed tree #{{model.id}}{{/page-header}}
 {{#page-body}}
-  {{#if (can "read tree" model)}}
+  {{#if (can 'read trees' model)}}
     <h2>Starting point</h2>
     <blockquote>{{model.root.text}}</blockquote>
 
