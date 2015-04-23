@@ -52,7 +52,7 @@
     {{#if currentUser.isStaff}}
       <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
     {{else}}
-      {{#if (can 'create sentence')}}
+      {{#if (can 'create sentences')}}
         <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{currentProfile.suggestionCredit}} left)</p>
       {{else}}
         <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
