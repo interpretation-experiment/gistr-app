@@ -100,13 +100,13 @@ export default DS.Model.extend({
       return { allTips: [], underTips: [], overflownTips: [] };
     }
 
-    var nxGraph = new nx.DiGraph(networkEdges.map(function(edge) {
+    var nxGraph = nx.DiGraph(networkEdges.map(function(edge) {
       return [edge.source, edge.target];
     }));
     var allTipsDepths = graph.root.children
         .map(function(child) { return child.sentenceId; })
         .map(function(head) {
-          return nx.singleSourceShortestPathLength(nxGraph, head).w;
+          return nx.single_source_shortest_path_length(nxGraph, head).w;
         })
         .map(function(nodeToDepth) {
           var nodes = Object.keys(nodeToDepth),
