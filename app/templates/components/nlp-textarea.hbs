@@ -1,5 +1,5 @@
-<div {{bind-attr class=':form-group error:has-error'}}>
-  <label {{bind-attr for='inputId'}} class="control-label">{{yield}}</label>
+<div class="form-group {{if error 'has-error'}}">
+  <label for="{{inputId}}" class="control-label">{{yield}}</label>
   {{view "focused-textarea"
       id=inputId
       class="form-control"

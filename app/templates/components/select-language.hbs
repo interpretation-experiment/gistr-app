@@ -1,7 +1,7 @@
-<div {{bind-attr class=':form-group error:has-error'}}>
-  <label {{bind-attr for="inputId"}} class="control-label">{{yield isManual}}</label>
+<div class="form-group {{if error 'has-error'}}">
+  <label for="{{inputId}}" class="control-label">{{yield isManual}}</label>
   <div class="row">
-    <div {{bind-attr class="isManual:col-sm-10:col-sm-12"}}>
+    <div class="{{if isManual 'col-sm-10' 'col-sm-12'}}">
       <p>{{sl-select id=inputId content=lang.supportedLanguages value=language optionValuePath="name" optionLabelPath="label" placeholder=placeholder disabled=disabled}}</p>
     </div>
     {{#if isManual}}

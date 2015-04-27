@@ -15,7 +15,7 @@
 
     <form class="form-horizontal">
 
-      <div {{bind-attr class=':form-group errors.username:has-error'}}>
+      <div class="form-group {{if errors.username 'has-error'}}">
         <label for="inputUsername" class="col-sm-2 control-label">Username</label>
         <div class="col-sm-10">
           {{view "focused-textfield" id="inputUsername" class="form-control" value=username disabled=session.isWorking placeholder='e.g. joey'}}
@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <div {{bind-attr class=':form-group errors.password:has-error'}}>
+      <div class="form-group {{if errors.password 'has-error'}}">
         <label for="inputPassword" class="col-sm-2 control-label">Password</label>
         <div class="col-sm-10">
           {{input id="inputPassword" class="form-control" type='password' value=password disabled=session.isWorking placeholder='Elaborate password'}}
@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
+      <div class="form-group {{if errors.non_field_errors 'has-error'}}">
         <div class="col-sm-offset-2 col-sm-10">
           <span class="help-block">{{errors.non_field_errors}}</span>
           {{#if attemptedTransition}}

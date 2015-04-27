@@ -18,7 +18,7 @@
     {{/if}}
   {{/if}}
 
-  <div {{bind-attr class=':form-group errors.non_field_errors:has-error'}}>
+  <div class="form-group {{if errors.non_field_errors 'has-error'}}">
     <span class="help-block">{{errors.non_field_errors}}</span>
     {{#if enoughTokens}}
       {{#if isLanguageMismatch}}
