@@ -4,6 +4,8 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   chart: null,
 
+  classNames: ['progress-clock'],
+
   // This is only useful for initialization, so that the first progress
   // value (when initializing in `chartify()`) is correct. Updates to this
   // attribute are not used by easyPieChart, instead we do the update
@@ -15,6 +17,8 @@ export default Ember.Component.extend({
 
     $el.easyPieChart({
       barColor: d3.scale.linear().domain([0, 80, 100]).range(["green", "orange", "red"]),
+      lineWidth: 5,
+      size: $el.width(),
       scaleColor: '#e0e3e7',
       animate: false
     });

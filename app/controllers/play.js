@@ -25,7 +25,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Timing parameters
    */
-  precision: 1,      // updates per second
   readFactor: 1,     // multiplied by the number of tokens, gives seconds
   writeFactor: 5,    // multiplied by the number of tokens, gives seconds
   readDuration: function() {

@@ -5,7 +5,7 @@ export default Ember.Mixin.create({
    * Parameters
    */
   duration: Ember.required(),
-  precision: Ember.required(),
+  precision: 100,  // updates per second
 
   /*
    * Callback

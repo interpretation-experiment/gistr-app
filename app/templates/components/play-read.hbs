@@ -1,4 +1,5 @@
 <h3>Read and memorize!</h3>
 <blockquote>{{sentence.text}}</blockquote>
-<p>{{sl-progress-bar value=progress}}</p>
-<button class="btn btn-primary" {{action "next"}}>Continue</button>
+{{#progress-clock value=progress}}
+  <button class="btn btn-primary" {{action "next"}}>Continue</button>
+{{/progress-clock}}

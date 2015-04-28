@@ -62,3 +62,10 @@ p.sentence-details { color: #aaa; }
 .node text { font-size: .8em; fill: #555; text-anchor: middle; }
 .link { stroke: #999; stroke-opacity: .6; fill: transparent; }
 .link.through { stroke: blue; }
+
+/*
+ * Progress clock
+ */
+@progress-clock-size: 12em;
+.progress-clock { display: inline-block; position: relative; text-align: center; width: @progress-clock-size; height: @progress-clock-size; line-height: @progress-clock-size; }
+.progress-clock canvas { pointer-events: none; position: absolute; top: 0; left: 0; }
