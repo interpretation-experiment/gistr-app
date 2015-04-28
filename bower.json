@@ -23,7 +23,8 @@
     "typeahead.js": "~0.10.5",
     "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
     "pnotify": "~2.0.1",
-    "d3": "~3.5.5"
+    "d3": "~3.5.5",
+    "jquery.easy-pie-chart": "~2.1.6"
   },
   "devDependencies": {
     "sinonjs-built": "~1.9.1"
