@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+var d3 = window.d3;
+
 
 export default Ember.Component.extend({
   chart: null,
