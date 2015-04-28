@@ -1,8 +1,6 @@
 import Ember from 'ember';
 
+import FocusedElementMixin from 'gistr/mixins/focused-element'
 
-export default Ember.TextField.extend({
-  didInsertElement: function() {
-    this.get('element').focus();
-  }
-});
+
+export default Ember.TextField.extend(FocusedElementMixin);
