@@ -112,13 +112,25 @@ export default Ember.Component.extend(SessionMixin, {
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, d.x]; });
 
-    var link = g.selectAll(".link")
+    var link = this.drawLinks(g, diagonal, layoutLinks);
+    var node = this.drawNodes(g, layoutNodes);
+
+    if (this.get('detail')) {
+      this.numberSentences(node);
+      this.styleLinks(link);
+      this.markOwnSentences(node);
+      this.setMouseListeners(node, link);
+    }
+  },
+  drawLinks: function(g, diagonal, layoutLinks) {
+    return g.selectAll(".link")
         .data(layoutLinks)
         .attr("d", diagonal)
       .enter().append("path")
         .attr("class", "link")
         .attr("d", diagonal);
-
+  },
+  drawNodes: function(g, layoutNodes) {
     var node = g.selectAll(".node")
         .data(layoutNodes)
         .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
@@ -130,12 +142,7 @@ export default Ember.Component.extend(SessionMixin, {
         .attr("r", 8)
         .classed("root", function(d) { return Ember.isNone(d.parent); });
 
-    if (this.get('detail')) {
-      this.numberSentences(node);
-      this.styleLinks(link);
-      this.markOwnSentences(node);
-      this.setMouseListeners(node, link);
-    }
+    return node;
   },
   styleLinks: function(link) {
     var scale01 = function(a) { return Math.atan(a / 30) * 2 / Math.PI; };
@@ -152,7 +159,7 @@ export default Ember.Component.extend(SessionMixin, {
       link.style("stroke-dasharray", function(d) {
             var source = sentenceMap[d.source.sentenceId],
                 target = sentenceMap[d.target.sentenceId];
-            return source.get('text').localeCompare(target.get('text')) === 0 ? "3px" : "0";
+            return source.get('text').localeCompare(target.get('text')) === 0 ? "3px" : "";
           })
           .style("stroke-width", function(d) {
             var source = sentenceMap[d.source.sentenceId],
