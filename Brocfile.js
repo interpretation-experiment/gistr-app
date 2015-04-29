@@ -1,7 +1,7 @@
 /* global require, module */
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
-var pickFiles = require('broccoli-static-compiler');
+var Funnel = require('broccoli-funnel');
 
 var app = new EmberApp();
 
@@ -18,13 +18,7 @@ var app = new EmberApp();
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
 
-var sinon = pickFiles('bower_components/sinonjs-built/lib', {
-  srcDir: '/',
-  files: ['**/*.js'],
-  destDir: '/assets'
-});
-
-var glyphicons = pickFiles('bower_components/bootstrap/dist/fonts', {
+var glyphicons = new Funnel('bower_components/bootstrap/dist/fonts', {
   srcDir: '/',
   destDir: '/fonts'
 });
@@ -39,4 +33,4 @@ app.import('bower_components/pnotify/pnotify.buttons.js');
 app.import('bower_components/pnotify/pnotify.buttons.css');
 app.import('bower_components/d3/d3.js');
 
-module.exports = app.toTree([sinon, glyphicons]);
+module.exports = app.toTree(glyphicons);

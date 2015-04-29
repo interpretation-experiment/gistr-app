@@ -25,8 +25,5 @@
     "pnotify": "~2.0.1",
     "d3": "~3.5.5",
     "jquery.easy-pie-chart": "~2.1.6"
-  },
-  "devDependencies": {
-    "sinonjs-built": "~1.9.1"
   }
 }
