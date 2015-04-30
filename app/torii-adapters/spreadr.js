@@ -5,7 +5,7 @@ import api from 'gistr/utils/api';
 
 
 export default Ember.Object.extend({
-  state: Ember.inject.service(),
+  lifecycle: Ember.inject.service(),
 
   /*
    * Token variable and validation
@@ -38,12 +38,12 @@ export default Ember.Object.extend({
    */
   fetchSession: function() {
     var self = this, store = this.get('store'),
-        state = this.get('state');
+        lifecycle = this.get('lifecycle');
 
     return request(api('/rest-auth/user/')).then(function(shallowUser) {
       return store.find('user', shallowUser.id);
     }).then(function(user) {
-      state.initialize(user.get('profile'));
+      lifecycle.initialize(user.get('profile'));
       return { currentUser: user };
     }, function(errors) {
       self.set('token', null);

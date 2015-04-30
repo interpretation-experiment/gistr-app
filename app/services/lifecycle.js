@@ -7,7 +7,6 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   initialize: function(profile) {
     // check this.get('currentProfile') here to set proper state
 
-    console.log('init state');
     this.sendStateEvent('initRegistering');
   },
   fsmStates: {
