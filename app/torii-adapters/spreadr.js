@@ -5,6 +5,8 @@ import api from 'gistr/utils/api';
 
 
 export default Ember.Object.extend({
+  state: Ember.inject.service(),
+
   /*
    * Token variable and validation
    */
@@ -35,11 +37,13 @@ export default Ember.Object.extend({
    * Fetch a session using the current token
    */
   fetchSession: function() {
-    var self = this, store = this.get('store');
+    var self = this, store = this.get('store'),
+        state = this.get('state');
 
     return request(api('/rest-auth/user/')).then(function(shallowUser) {
       return store.find('user', shallowUser.id);
     }).then(function(user) {
+      state.initialize(user.get('profile'));
       return { currentUser: user };
     }, function(errors) {
       self.set('token', null);
