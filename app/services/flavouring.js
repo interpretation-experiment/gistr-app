@@ -16,15 +16,15 @@ export default Ember.Service.extend({
     // Setter
     if (arguments.length > 1) {
       if (!Ember.isNone(previousValue)) {
-        throw new Error("flavour already set to '" + previousValue
-                        + "'. Can't set it twice (attempted to change it"
-                        + " to '" + value + "').");
+        throw new Error("flavour already set to '" + previousValue +
+                        "'. Can't set it twice (attempted to change it" +
+                        " to '" + value + "').");
       }
 
       var flavours = this.get('availableFlavours');
       if (flavours.indexOf(value) < 0) {
-        throw new Error("flavour '" + value + "' not found in list "
-                        + "of available flavours [" + flavours + "]");
+        throw new Error("flavour '" + value + "' not found in list " +
+                        "of available flavours [" + flavours + "]");
       }
 
       this.set('_flavour', value);
