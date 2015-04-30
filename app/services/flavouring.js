@@ -7,13 +7,11 @@ export default Ember.Service.extend({
    */
   availableFlavours: ['game', 'prolific'],
   defaultFlavour: 'game',
-  defaultProlificId: null,
 
   /*
-   * Flavour and prolificId variables and get/setters
+   * Flavour get/setters
    */
   _flavour: Ember.computed.alias('defaultFlavour'),
-  prolificId: Ember.computed.alias('defaultProlificId'),
   flavour: function(key, value, previousValue) {
     // Setter
     if (arguments.length > 1) {
