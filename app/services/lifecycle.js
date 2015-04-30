@@ -4,7 +4,7 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
-  initialize: function(profile) {
+  initialize: function(/*profile*/) {
     // check this.get('currentProfile') here to set proper state
 
     this.sendStateEvent('initRegistering');
