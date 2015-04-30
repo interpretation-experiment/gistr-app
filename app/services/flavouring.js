@@ -5,8 +5,8 @@ export default Ember.Service.extend({
   /*
    * Available and default flavours
    */
-  availableFlavours: ['game', 'prolific'],
-  defaultFlavour: 'game',
+  availableFlavours: ['exp'],
+  defaultFlavour: 'exp',
 
   /*
    * Flavour get/setters
