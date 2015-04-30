@@ -1,6 +1,6 @@
 {
   "name": "gistr",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "A GWAP on Interpretation",
   "private": true,
   "directories": {
@@ -41,7 +41,7 @@
     "ember-cli-uglify": "1.0.1",
     "ember-data": "1.0.0-beta.16.1",
     "ember-django-adapter": "^0.5.4",
-    "ember-document-title": "^1.1.7",
+    "ember-document-title": "^1.1.11",
     "ember-export-application-global": "^1.0.2",
     "franc": "^1.0.1",
     "jquery.cookie": "1.4.1",
