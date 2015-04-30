@@ -9,6 +9,9 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
 
     this.sendStateEvent('initRegistering');
   },
+  reset: function() {
+    this.sendStateEvent('reset');
+  },
   fsmStates: {
     initialState: 'ground',
   },
@@ -36,6 +39,9 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     },
     play: {
       transition: { 'exp.doing': 'playing' }
+    },
+    reset: {
+      transition: { '$all': '$initial' }
     }
   }
 });

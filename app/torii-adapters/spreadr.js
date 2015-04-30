@@ -63,10 +63,11 @@ export default Ember.Object.extend({
     return this.fetchSession();
   },
   close: function() {
-    var self = this;
+    var self = this, lifecycle = this.get('lifecycle');
 
     return request(api('/rest-auth/logout/'), { type: 'POST' }).finally(function() {
       self.set('token', null);
+      lifecycle.reset();
     });
   }
 });
