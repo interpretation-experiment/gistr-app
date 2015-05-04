@@ -6,6 +6,7 @@ export default Ember.Service.extend({
 
   targetBranchCount: null,
   targetBranchDepth: null,
+  experimentWork: null,
 
   _populationPromise: null,
   populate: function() {
@@ -20,6 +21,7 @@ export default Ember.Service.extend({
       var data = serverMeta.get('data');
       self.set('targetBranchCount', data.target_branch_count);
       self.set('targetBranchDepth', data.target_branch_depth);
+      self.set('experimentWork', data.experiment_work);
       return self;
     });
 

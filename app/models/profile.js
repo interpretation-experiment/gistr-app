@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 export default DS.Model.extend({
   created: DS.attr('date'),
+  trainedReformulations: DS.attr('boolean'),
   user: DS.belongsTo('user', { async: true }),
   trees: DS.hasMany('tree', { async: true }),
   trees_count: DS.attr('number'),
