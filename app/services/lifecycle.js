@@ -9,16 +9,16 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   requisites: {
     ground: {
-      'is-logged-in': function(self) {
-        return self.get('session.isAuthenticated') || !Ember.isNone(self.get('initializationProfile'));
+      'is-logged-in': function(profile) {
+        return !Ember.isNone(profile);
       }
     },
     registering: {
-      'has-username': function(self) {
-        return !Ember.isNone(self.get('currentUser.username'));
+      'has-username': function(profile) {
+        return !Ember.isNone(profile.get('user_username'));
       },
-      'has-mothertongue': function(self) {
-        return !Ember.isNone(self.get('currentProfile.mothertongue'));
+      'has-mothertongue': function(profile) {
+        return !Ember.isNone(profile.get('mothertongue'));
       }
     },
     'exp.training': {
@@ -34,9 +34,8 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
         // TODO: Check the questionnaire is done
         return true;
       },
-      'completed-training': function(/*self*/) {
-        // TODO: Check the training phase is completed
-        return true;
+      'completed-training': function(profile) {
+        return profile.get('trainedReformulations');
       }
     },
     'exp.doing': {
@@ -48,12 +47,15 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     playing: {}
   },
   validateState: function() {
-    var current = this.get('currentState');
+    // During initialization, torii has not yet had the time to publish the authentication
+    // credentials system-wide, so we use the initializationProfile instead.
+    var current = this.get('currentState'),
+        profile = this.get('currentProfile') || this.get('initializationProfile');
 
     var checks = this.get('requisites')[current],
         errors = [];
     for (var name in checks) {
-      if (!checks[name](this)) {
+      if (!checks[name](profile)) {
         errors.push(name);
       }
     }
