@@ -73,8 +73,22 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
                       "items: " + validation.errors);
     }
   },
+  isAtOrAfter: function(ref) {
+    var chain = this.get('fsmStates.knownStates').slice(0, -1);
+    return chain.indexOf(this.get('currentState')) >= chain.indexOf(ref);
+  },
+  bucket: function() {
+    if (this.isAtOrAfter('playing')) {
+      return 'game';
+    } else if (this.isAtOrAfter('exp.training')) {
+      return 'experiment';
+    } else {
+      return null;
+    }
+  }.property('currentState'),
   logState: function() {
-    console.log(this.get('currentState'));
+    console.log("Current state: " + this.get('currentState'));
+    console.log("Current bucket: " + this.get('bucket'));
   },
 
   /*
@@ -113,6 +127,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   fsmStates: {
     initialState: 'ground',
     knownStates: ['ground', 'registering', 'exp.training', 'exp.doing', 'playing', 'failed'],
+
     ground: { didEnter: 'logState' },
     registering: { didEnter: 'logState' },
     'exp.training': { didEnter: 'logState' },
@@ -121,6 +136,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   },
   fsmEvents: {
     transitionsChain: ['register', 'train', 'doexp', 'play'],
+
     register: { transition: { ground: 'registering', before: 'guardTransitionUp' } },
     train: { transition: { registering: 'exp.training', before: 'guardTransitionUp' } },
     doexp: { transition: { 'exp.training': 'exp.doing', before: 'guardTransitionUp' } },

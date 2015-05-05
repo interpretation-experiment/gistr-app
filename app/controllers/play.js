@@ -7,9 +7,10 @@ import countTokens from 'gistr/utils/count-tokens';
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
-   * Language utilities
+   * Language and lifecycle utilities
    */
   lang: Ember.inject.service(),
+  lifecycle: Ember.inject.service(),
 
   /*
    * Tree shaping parameters
@@ -44,6 +45,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     var self = this,
         previousCredit = this.get('currentProfile.suggestionCredit');
     return this.get('currentProfile').reload().then(function(profile) {
+      // FIXME: fix this check, it doesn't count well
       if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
         self.sendStateEvent('bail');
       } else if (profile.get('suggestionCredit') > previousCredit) {
@@ -57,6 +59,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     });
   },
   enoughSentencesForNextCredit: function() {
+    // FIXME: remove all this, we can't really prevoir it
     return this.get('currentProfile.availableMothertongueOtherawareTreesCount') >= this.get('currentProfile.nextCreditIn');
   }.property('currentProfile.availableMothertongueOtherawareTreesCount', 'currentProfile.nextCreditIn'),
 
@@ -114,6 +117,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       root_language: isOthertongue ? this.get('lang.defaultLanguage') : mothertongue,
       with_other_mothertongue: isOthertongue,
       without_other_mothertongue: !isOthertongue,
+
+      // Gistr bucket: experiment or game
+      root_bucket: this.get('lifecycle.bucket'),
 
       // One random tree from the filtered list
       sample: 1,

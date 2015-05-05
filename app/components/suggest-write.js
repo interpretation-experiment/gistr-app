@@ -17,17 +17,20 @@ export default Ember.Component.extend(SessionMixin, {
   errors: null,
   text: null,
   language: null,
+  bucket: null,
   isUploading: false,
   resetInput: function() {
     this.setProperties({
       errors: null,
       text: null,
       language: null,
+      bucket: null,
       isUploading: false
     });
   },
   uploadSentence: function() {
-    var self = this, data = this.getProperties('text', 'language');
+    // FIXME: set bucket automatically for non staff, and get from UI for staff
+    var self = this, data = this.getProperties('text', 'language', 'bucket');
 
     this.set('isUploading', true);
     return this.get('store').createRecord('sentence', data).save().then(function() {
