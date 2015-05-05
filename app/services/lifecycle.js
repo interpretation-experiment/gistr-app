@@ -4,44 +4,45 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
+  shaping: Ember.inject.service(),
+
   /*
    * State pre-requisites definition and validation
    */
   requisites: {
     ground: {
-      'is-logged-in': function(profile) {
+      'is-logged-in': function(self, profile) {
         return !Ember.isNone(profile);
       }
     },
     registering: {
-      'has-username': function(profile) {
+      'has-username': function(self, profile) {
         return !Ember.isNone(profile.get('user_username'));
       },
-      'has-mothertongue': function(profile) {
+      'has-mothertongue': function(self, profile) {
         return !Ember.isNone(profile.get('mothertongue'));
       }
     },
     'exp.training': {
-      'tested-read-write-speed': function(/*self*/) {
+      'tested-read-write-speed': function(/*self, profile*/) {
         // TODO: Check the read-write test is done
         return true;
       },
-      'tested-memory-span': function(/*self*/) {
+      'tested-memory-span': function(/*self, profile*/) {
         // TODO: Check the memory-span test is done
         return true;
       },
-      'answered-questionnaire': function(/*self*/) {
+      'answered-questionnaire': function(/*self, profile*/) {
         // TODO: Check the questionnaire is done
         return true;
       },
-      'completed-training': function(profile) {
+      'completed-training': function(self, profile) {
         return profile.get('trainedReformulations');
       }
     },
     'exp.doing': {
-      'completed-trials': function(/*self*/) {
-        // TODO: Check the trials are completed
-        return true;
+      'completed-trials': function(self, profile) {
+        return profile.get('reformulationsCount') >= self.get('shaping.experimentWork');
       }
     },
     playing: {}
@@ -55,7 +56,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     var checks = this.get('requisites')[current],
         errors = [];
     for (var name in checks) {
-      if (!checks[name](profile)) {
+      if (!checks[name](this, profile)) {
         errors.push(name);
       }
     }
@@ -72,9 +73,9 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
                       "items: " + validation.errors);
     }
   },
-  //logState: function() {
-    //console.log(this.get('currentState'));
-  //},
+  logState: function() {
+    console.log(this.get('currentState'));
+  },
 
   /*
    * Initialize and reset
@@ -112,11 +113,11 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   fsmStates: {
     initialState: 'ground',
     knownStates: ['ground', 'registering', 'exp.training', 'exp.doing', 'playing', 'failed'],
-    //ground: { didEnter: 'logState' },
-    //registering: { didEnter: 'logState' },
-    //'exp.training': { didEnter: 'logState' },
-    //'exp.doing': { didEnter: 'logState' },
-    //playing: { didEnter: 'logState' }
+    ground: { didEnter: 'logState' },
+    registering: { didEnter: 'logState' },
+    'exp.training': { didEnter: 'logState' },
+    'exp.doing': { didEnter: 'logState' },
+    playing: { didEnter: 'logState' }
   },
   fsmEvents: {
     transitionsChain: ['register', 'train', 'doexp', 'play'],
