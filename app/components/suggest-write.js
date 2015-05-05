@@ -5,6 +5,7 @@ import SessionMixin from 'gistr/mixins/session';
 
 export default Ember.Component.extend(SessionMixin, {
   lang: Ember.inject.service(),
+  lifecycle: Ember.inject.service(),
 
   /*
    * Parameters
@@ -29,8 +30,12 @@ export default Ember.Component.extend(SessionMixin, {
     });
   },
   uploadSentence: function() {
-    // FIXME: set bucket automatically for non staff, and get from UI for staff
     var self = this, data = this.getProperties('text', 'language', 'bucket');
+
+    // Automatically set bucket if we're not staff
+    if (!this.get('currentUser.isStaff')) {
+      data['bucket'] = this.get('lifecycle.bucket');
+    }
 
     this.set('isUploading', true);
     return this.get('store').createRecord('sentence', data).save().then(function() {

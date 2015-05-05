@@ -77,6 +77,10 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     var chain = this.get('fsmStates.knownStates').slice(0, -1);
     return chain.indexOf(this.get('currentState')) >= chain.indexOf(ref);
   },
+  buckets: [
+    { label: 'Experiment', name: 'experiment' },
+    { label: 'Game', name: 'game' }
+  ],
   bucket: function() {
     if (this.isAtOrAfter('playing')) {
       return 'game';

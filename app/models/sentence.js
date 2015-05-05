@@ -19,6 +19,7 @@ export default DS.Model.extend({
   childrenCount: DS.attr('number'),
   text: DS.attr('string'),
   language: DS.attr('string'),
+  bucket: DS.attr('string'),
 
   /*
    * Unused properties
