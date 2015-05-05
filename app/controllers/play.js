@@ -45,12 +45,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     var self = this,
         previousCredit = this.get('currentProfile.suggestionCredit');
     return this.get('currentProfile').reload().then(function(profile) {
-      // FIXME: fix this check, it doesn't count well
-      if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
-        self.sendStateEvent('bail');
-      } else if (profile.get('suggestionCredit') > previousCredit) {
-        self.sendStateEvent('credit');
-      }
+      // FIXME: fix this check after reworking the FSM for #23, #24, #25
+      // (here is triggered the end of the experiment, and we know it only once the profile has reloaded)
+      //if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
+        //self.sendStateEvent('bail');
+      //} else if (profile.get('suggestionCredit') > previousCredit) {
+        //self.sendStateEvent('credit');
+      //}
     });
   },
   reloadTree: function() {
@@ -58,10 +59,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       return tree.reload();
     });
   },
-  enoughSentencesForNextCredit: function() {
-    // FIXME: remove all this, we can't really prevoir it
-    return this.get('currentProfile.availableMothertongueOtherawareTreesCount') >= this.get('currentProfile.nextCreditIn');
-  }.property('currentProfile.availableMothertongueOtherawareTreesCount', 'currentProfile.nextCreditIn'),
 
   /*
    * Current tree and sentence state and selection

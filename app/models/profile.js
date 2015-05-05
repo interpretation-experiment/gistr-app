@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 
@@ -13,14 +14,21 @@ export default DS.Model.extend({
   suggestionCredit: DS.attr('number'),
   nextCreditIn: DS.attr('number'),
   mothertongue: DS.attr('string'),
-  untouchedTreesCount: DS.attr('number'),
-  availableMothertongueOtherawareTreesCount: DS.attr('number'),
+  availableTreesCounts: DS.attr('object'),
 
   /*
    * Unused properties
    */
-  untouchedDefaultlanguageTreesCount: DS.attr('number'),
   url: DS.attr('string'),
   user_url: DS.attr('string'),
   user_username: DS.attr('string'),
+
+  /*
+   * Computed properties
+   */
+  lifecycle: Ember.inject.service(),
+  availableTreesBucket: function() {
+    var bucket = this.get('lifecycle.bucket');
+    return this.get('availableTreesCounts')[bucket];
+  }.property('lifecycle.bucket', 'availableTreesCounts')
 });
