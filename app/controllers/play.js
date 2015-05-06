@@ -156,8 +156,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     read: function() {
       this.sendStateEvent('read');
     },
-    hold: function() {
-      this.sendStateEvent('hold');
+    distract: function() {
+      this.sendStateEvent('distract');
     },
     write: function() {
       this.sendStateEvent('write');
@@ -189,11 +189,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         to: 'reading'
       }
     },
-    hold: {
-      transition: { reading: 'holding' }
+    distract: {
+      transition: { reading: 'distracting' }
     },
     write: {
-      transition: { holding: 'writing' }
+      transition: { distracting: 'writing' }
     },
     timeout: {
       transition: { writing: 'timedout' }

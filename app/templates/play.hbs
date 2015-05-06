@@ -21,9 +21,9 @@
     <button class="btn btn-primary" {{action "read"}}>Continue</button>
 
   {{else if isInReading}}
-    {{play-read sentence=currentSentence duration=readDuration next="hold" timeout="hold"}}
+    {{play-read sentence=currentSentence duration=readDuration next="distract" timeout="distract"}}
 
-  {{else if isInHolding}}
+  {{else if isInDistracting}}
     <h3>Ready to write?</h3>
     <button class="btn btn-primary" {{action "write"}}>Ok</button>
 
