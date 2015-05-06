@@ -43,6 +43,7 @@
     "ember-django-adapter": "^0.5.3",
     "ember-document-title": "^1.1.7",
     "ember-export-application-global": "^1.0.2",
+    "ember-radio-buttons": "^3.0.1",
     "franc": "^1.0.1",
     "jquery.cookie": "1.4.1",
     "jsnetworkx": "git+https://github.com/fkling/JSNetworkX.git#v0.2.0",
