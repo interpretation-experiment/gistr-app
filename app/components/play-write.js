@@ -47,7 +47,7 @@ export default Ember.Component.extend(TimefulMixin, {
       text: self.get('text'),
       parent: self.get('parentSentence'),
       language: self.get('language'), // FIXME #18: use parentSentence.language
-      bucket: self.get('parentSentece.bucket')
+      bucket: self.get('parentSentence.bucket')
     }).save().then(function() {
       self.resetInput();
       self.sendAction('next');
