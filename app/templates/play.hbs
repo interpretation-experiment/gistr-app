@@ -18,28 +18,30 @@
     <h2><em>Available sentences</em> and <em>Sentences to credit</em></h2>
     <p>At the top of the screen you can see the number of <em>available sentences</em> for you to go through. This gets to zero when you've seen all possible sentences.</p>
     <p><em>Sentences to credit</em> tells you how many sentences you have to rewrite to get a new suggestion credit.</p>
-    <button class="btn btn-primary" {{action "read"}}>Continue</button>
+    <button class="btn btn-primary" {{action "task.read"}}>Continue</button>
 
-  {{else if isInReading}}
-    {{play-read sentence=currentSentence duration=readDuration next="distract" timeout="distract"}}
+  {{else if isInTaskReading}}
+    {{play-read sentence=currentSentence duration=readDuration next="task.distract" timeout="task.distract"}}
 
-  {{else if isInDistracting}}
+  {{else if isInTaskDistracting}}
     <h3>Ready to write?</h3>
-    <button class="btn btn-primary" {{action "write"}}>Ok</button>
+    <button class="btn btn-primary" {{action "task.write.user"}}>Ok</button>
 
-  {{else if isInWriting}}
-    {{play-write minTokens=minTokens parentSentence=currentSentence duration=writeDuration next="verify" timeout="timeout"}}
+  {{else if isInTaskWritingUser}}
+    {{play-write minTokens=minTokens parentSentence=currentSentence duration=writeDuration next="task.write.process" timeout="task.timeout"}}
 
-  {{else if isInTimedout}}
+  {{else if isInTaskWritingProcessing}}
+    <h3>Loading...</h3>
+
+  {{else if isInTaskTimedout}}
     <h3>Time's up!</h3>
     <p>You need to be quicker next time, check the progress bar!</p>
-    <button class="btn btn-primary" {{action "read"}}>Start again</button>
+    <button class="btn btn-primary" {{action "task.read"}}>Start again</button>
 
-  {{else if isInVerified}}
-    <h3>That's recorded</h3>
-    <p>Keep going!</p>
-    <button class="btn btn-primary" {{action "read"}}>Continue</button>
+  {{else if isInInfo}}
+    <!-- TODO: do info component -->
 
+  <!-- Not used any more -->
   {{else if isInCredited}}
     <h3>You just earned yourself a new sugestion credit!</h3>
     <p>You can go suggest a new sentence if you want to.</p>
@@ -58,5 +60,6 @@
         <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
       {{/if}}
     {{/if}}
+    <!-- to here -->
   {{/if}}
 {{/page-body}}

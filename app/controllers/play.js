@@ -45,8 +45,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     var self = this,
         previousCredit = this.get('currentProfile.suggestionCredit');
     return this.get('currentProfile').reload().then(function(profile) {
-      // FIXME: fix this check after reworking the FSM for #23, #24, #25
-      // (here is triggered the end of the experiment, and we know it only once the profile has reloaded)
+      // TODO: Check if we need to inform for:
+      //  - exp: end of training
+      //  - exp: end of experiment, switch to game (and all the access you have with that)
+      //  - exp: break every 10 sentences
+      //  - no more sentences: exp: contact devs, game: go suggest or wait
+      //  - game: new credit
+      //  - game: every 3 sentences, show diff
+      //  - game: every 5 sentences, suggest exploration of your trees
+      // Then set info, set next screen, and go.
+
       //if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
         //self.sendStateEvent('bail');
       //} else if (profile.get('suggestionCredit') > previousCredit) {
@@ -153,20 +161,20 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     init: function() {
       this.reloadProfile();
     },
-    read: function() {
-      this.sendStateEvent('read');
+    'task.read': function() {
+      this.sendStateEvent('task.read');
     },
-    distract: function() {
-      this.sendStateEvent('distract');
+    'task.distract': function() {
+      this.sendStateEvent('task.distract');
     },
-    write: function() {
-      this.sendStateEvent('write');
+    'task.write.user': function() {
+      this.sendStateEvent('task.write.user');
     },
-    timeout: function() {
-      this.sendStateEvent('timeout');
+    'task.timeout': function() {
+      this.sendStateEvent('task.timeout');
     },
-    verify: function() {
-      this.sendStateEvent('verify');
+    'task.write.process': function() {
+      this.sendStateEvent('task.write.process');
     },
     reset: function() {
       this.sendStateEvent('reset');
@@ -178,42 +186,41 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   fsmStates: {
     initialState: 'instructions',
-    reading: {
+    knownStates: ['instructions', 'task.reading', 'task.distracting', 'task.writing.user',
+                  'task.writing.processing', 'task.timedout', 'info', 'failed'],
+    'task.reading': {
       willEnter: 'selectModels'
     }
   },
   fsmEvents: {
-    read: {
+    'task.read': {
       transitions: {
-        from: ['instructions', 'verified', 'timedout', 'credited'],
-        to: 'reading'
+        from: ['instructions', 'task.writing.processing', 'task.timedout', 'info'],
+        to: 'task.reading'
       }
     },
-    distract: {
-      transition: { reading: 'distracting' }
+    'task.distract': {
+      transition: { 'task.reading': 'task.distracting' }
     },
-    write: {
-      transition: { distracting: 'writing' }
+    'task.write.user': {
+      transition: { 'task.distracting': 'task.writing.user' }
     },
-    timeout: {
-      transition: { writing: 'timedout' }
+    'task.timeout': {
+      transition: { 'task.writing.user': 'task.timedout' }
     },
-    verify: {
+    'task.write.process': {
       transition: {
-        from: 'writing',
-        to: 'verified',
-        didEnter: 'reloadTree',
-        afterEvent: 'reloadProfile'
+        from: 'task.writing.user',
+        to: 'task.writing.processing',
+        enter: 'reloadTree',
+        after: 'reloadProfile'
       }
     },
-    bail: {
+    inform: {
       transition: {
-        from: ['instructions', 'verified'],
-        to: 'empty'
+        from: ['instructions', 'task.writing.processing'],
+        to: 'info'
       }
-    },
-    credit: {
-      transition: { verified: 'credited' }
     },
     reset: {
       transition: {
