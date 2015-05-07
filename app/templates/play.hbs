@@ -40,6 +40,8 @@
 
   {{else if isInInfo}}
     <!-- TODO: do info component -->
+    {{infos}}
+    <button class="btn btn-primary" {{action "task.read"}}>Continue</button>
 
   <!-- Not used any more -->
   {{else if isInCredited}}

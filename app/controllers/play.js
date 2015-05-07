@@ -39,32 +39,55 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Global progress and reset
    */
   reset: function() {
+    this.resetInfos();
     this.resetModels();
-  },
-  reloadProfile: function() {
-    var self = this,
-        previousCredit = this.get('currentProfile.suggestionCredit');
-    return this.get('currentProfile').reload().then(function(profile) {
-      // TODO: Check if we need to inform for:
-      //  - exp: end of training
-      //  - exp: end of experiment, switch to game (and all the access you have with that)
-      //  - exp: break every 10 sentences
-      //  - no more sentences: exp: contact devs, game: go suggest or wait
-      //  - game: new credit
-      //  - game: every 3 sentences, show diff
-      //  - game: every 5 sentences, suggest exploration of your trees
-      // Then set info, set next screen, and go.
-
-      //if (profile.get('availableMothertongueOtherawareTreesCount') === 0) {
-        //self.sendStateEvent('bail');
-      //} else if (profile.get('suggestionCredit') > previousCredit) {
-        //self.sendStateEvent('credit');
-      //}
-    });
   },
   reloadTree: function() {
     return this.get('currentSentence.tree').then(function(tree) {
       return tree.reload();
+    });
+  },
+
+  /*
+   * Info management
+   */
+  infos: [],
+  resetInfos: function() {
+    this.setProperties({
+      'infos': []
+    });
+  },
+  trainingEnded: function() {
+    this.get('infos').push('trainedReformulations');
+  }.observes('currentProfile.trainedReformulations'),
+  experimentEnded: function() {
+    // TODO: exp: end of training
+    // only set something here if passed the exp work threshold
+  }.observes('currentProfile.sentencesCount'),
+  experimentBreak: function() {
+    // TODO: exp: check if we passed 10 sentences. Don't set flag if we're ending the experiment
+  }.observes('currentProfile.sentencesCount'),
+  sentencesEmpty: function() {
+    //  TODO: no more sentences: exp: contact devs, game: go suggest or wait
+  }.observes('currentProfile.availableTreesBucket'),
+  newCredit: function() {
+    // TODO: game: new credit
+  }.observes('currentProfile.suggestionCredit'),
+  gameDiffBreak: function() {
+    // TODO: game: every 3 sentences, show diff
+  }.observes('currentProfile.sentencesCount'),
+  gameExploreBreak: function() {
+    // TODO: game: every 5 sentences, suggest exploration of your trees
+  }.observes('currentProfile.sentencesCount'),
+  loadInfo: function() {
+    var self = this,
+        infos = this.get('infos');
+    return this.get('currentProfile').reload().then(function() {
+      if (infos.length > 0) {
+        self.sendStateEvent('inform');
+      } else if (self.get('currentState') !== 'instructions') {
+        self.sendStateEvent('task.read');
+      }
     });
   },
 
@@ -159,7 +182,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   actions: {
     init: function() {
-      this.reloadProfile();
+      this.loadInfo();
     },
     'task.read': function() {
       this.sendStateEvent('task.read');
@@ -190,6 +213,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
                   'task.writing.processing', 'task.timedout', 'info', 'failed'],
     'task.reading': {
       willEnter: 'selectModels'
+    },
+    'info': {
+      didExit: 'resetInfos'
     }
   },
   fsmEvents: {
@@ -213,7 +239,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         from: 'task.writing.user',
         to: 'task.writing.processing',
         enter: 'reloadTree',
-        after: 'reloadProfile'
+        after: 'loadInfo'
       }
     },
     inform: {
