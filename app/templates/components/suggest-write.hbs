@@ -33,9 +33,9 @@
       <div class="form-group {{if errors.bucket 'has-error'}}">
         <span class="help-block">{{errors.bucket}}</span>
         {{#each lifecycle.buckets as |bucketDetails|}}
-          <div class="radio-inline">
-            <label>{{radio-button value=bucketDetails.name checked=bucket}}{{bucketDetails.label}} bucket</label>
-          </div>
+          <label class="radio-inline {{if isUploading 'disabled'}}">
+            {{radio-button value=bucketDetails.name checked=bucket disabled=isUploading}} {{bucketDetails.label}} bucket
+          </label>
         {{/each}}
       </div>
     {{/if}}
