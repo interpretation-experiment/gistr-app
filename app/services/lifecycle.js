@@ -36,7 +36,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
         // TODO: Check the questionnaire is done
         return true;
       },
-      'completed-training': function(self, profile) {
+      'completed-trials': function(self, profile) {
         return profile.get('trainedReformulations');
       }
     },

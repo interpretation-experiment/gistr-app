@@ -75,60 +75,102 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     });
   },
 
+  /*
+   * Lifecycle-related infos
+   */
+  expTrainingCompleted: function() {
+    if (this.get('lifecycle.currentState') === 'exp.training') {
+      if (this.get('currentProfile.trainedReformulations')) {
+        this.pushInfo('exp.training:completed-training');
+      }
+    }
+  }.observes('currentProfile.trainedReformulations'),
+
+  expDoingCompleted: function() {
+    if (this.get('lifecycle.currentState') === 'exp.doing') {
+      // Only if we're *on* the threshold (i.e. a change just made us pass it)
+      if (this.get('currentProfile.sentencesCount') === this.get('shaping.experimentWork')) {
+        this.pushInfo('exp.training:completed-trials');
+      }
+    }
+  }.observes('currentProfile.sentencesCount'),
+
+  /*
+   * Streak-related infos
+   */
   sentencesEmpty: function() {
     var state = this.get('lifecycle.currentState');
-    // Only out of training
-    if (state === 'exp.doing' || state === 'playing') {
+    // FIXME: once training is implemented, do this only out of training
+    //if (state === 'exp.doing' || state === 'playing') {
       if (this.get('currentProfile.availableTreesBucket') === 0) {
         this.pushInfo('sentences-empty');
       }
-    }
+    //}
   }.observes('currentProfile.availableTreesBucket'),
 
-  experimentBreak: function() {
+  expDoingBreak: function() {
     if (this.get('lifecycle.currentState') === 'exp.doing') {
       var streak = this.get('streak');
       if (streak !== 0 && streak % 10 === 0) {
-        this.pushInfo('experiment:break');
+        this.pushInfo('exp.doing:break');
       }
     }
   }.observes('streak'),
 
-  gameDiffBreak: function() {
+  playingDiffBreak: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
       var streak = this.get('streak');
       if (streak !== 0 && streak % 3 === 0) {
-        this.pushInfo('game:diff-break');
+        this.pushInfo('playing:diff-break');
       }
     }
   }.observes('streak'),
 
-  gameExplorationBreak: function() {
+  playingExplorationBreak: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
       var streak = this.get('streak');
       if (streak !== 0 && streak % 5 === 0) {
-        this.pushInfo('game:exploration-break');
+        this.pushInfo('playing:exploration-break');
       }
     }
   }.observes('streak'),
 
-  gameNewCredit: function() {
+  playingNewCredit: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
-      this.pushInfo('game:new-credit');
+      this.pushInfo('playing:new-credit');
     }
   }.observes('currentProfile.suggestionCredit'),
 
   loadInfos: function() {
+    // FIXME : find a way to do this during route loading, and hang the loading until the promise is resolved
     var self = this,
+        lifecycle = this.get('lifecycle'),
         infos = this.get('infos');
     return this.get('currentProfile').reload().then(function() {
-      if (infos.length > 0) {
-        self.sendStateEvent('inform');
-      } else if (self.get('currentState') !== 'instructions') {
-        self.sendStateEvent('task.read');
+      var cycle = lifecycle.validateState();
+      if (self.get('currentState') === 'instructions') {
+        if ((infos.length > 0)) {
+          self.sendStateEvent('inform');
+        } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
+          // We have no infos but our cycle is incomplete
+          // and nothing in the play route can help advance it
+          self.sendStateEvent('inform');
+        }
+      } else {
+        if ((infos.length > 0)) {
+          self.sendStateEvent('inform');
+        } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
+          // We have no infos but our cycle is incomplete,
+          // and nothing in the play route can help advance it.
+          // This should never happen since if we're not in instructions
+          // we're in the task, so this situation arose from the completion
+          // of a trial, and should have been recorded in infos
+          throw new Error("Out of instructions, got an incomplete cycle that was not " +
+                          "signalled through infos. Something's wrong.");
+        } else {
+          self.sendStateEvent('task.read');
+        }
       }
-      // TODO: if you're in instructions, and no play work is available
-      // according to lifecycle.validateState, move to info
     });
   },
 
