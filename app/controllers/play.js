@@ -38,8 +38,19 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Global progress and reset
    */
+  streak: 0,
+  bumpStreak: function() {
+    this.set('streak', this.get('streak') + 1);
+  }.observes('currentProfile.sentencesCount'),
+  resetStreak: function() {
+    this.setProperties({
+      streak: 0
+    });
+  }.observes('lifecycle.bucket'),
+
   reset: function() {
     this.resetInfos();
+    this.resetStreak();
     this.resetModels();
   },
   reloadTree: function() {
@@ -52,34 +63,78 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Info management
    */
   infos: [],
+  pushInfo: function(info) {
+    console.log('[push info] ' + info);
+    this.get('infos').push(info);
+    console.log('[infos=] ' + this.get('infos'));
+  },
   resetInfos: function() {
+    console.log('[reset infos]');
     this.setProperties({
       'infos': []
     });
   },
-  trainingEnded: function() {
-    this.get('infos').push('trainedReformulations');
+
+  experimentTrainingEnded: function() {
+    if (this.get('lifecycle.bucket') === 'experiment') {
+      if (this.get('currentProfile.trainedReformulations')) {
+        this.pushInfo('experiment:training-ended');
+      }
+    }
   }.observes('currentProfile.trainedReformulations'),
+
   experimentEnded: function() {
-    // TODO: exp: end of training
-    // only set something here if passed the exp work threshold
+    if (this.get('lifecycle.bucket') === 'experiment') {
+      // Only if we're *on* the threshold (i.e. a change just made us pass it)
+      if (this.get('currentProfile.sentencesCount') === this.get('shaping.experimentWork')) {
+        this.pushInfo('experiment:ended');
+      }
+    }
   }.observes('currentProfile.sentencesCount'),
+
   experimentBreak: function() {
-    // TODO: exp: check if we passed 10 sentences. Don't set flag if we're ending the experiment
-  }.observes('currentProfile.sentencesCount'),
+    if (this.get('lifecycle.bucket') === 'experiment') {
+      var streak = this.get('streak'),
+          profileCount = this.get('currentProfile.sentencesCount'),
+          experimentWork = this.get('shaping.experimentWork');
+      // Make sure we didn't just finish the experiment
+      if (profileCount !== experimentWork && streak !== 0 && streak % 10 === 0) {
+        this.pushInfo('experiment:break');
+      }
+    }
+  }.observes('streak'),
+
   sentencesEmpty: function() {
-    //  TODO: no more sentences: exp: contact devs, game: go suggest or wait
+    if (this.get('currentProfile.availableTreesBucket') === 0) {
+      this.pushInfo('sentences-empty');
+    }
   }.observes('currentProfile.availableTreesBucket'),
-  newCredit: function() {
-    // TODO: game: new credit
+
+  gameNewCredit: function() {
+    if (this.get('lifecycle.bucket') === 'game') {
+      this.pushInfo('game:new-credit');
+    }
   }.observes('currentProfile.suggestionCredit'),
+
   gameDiffBreak: function() {
-    // TODO: game: every 3 sentences, show diff
-  }.observes('currentProfile.sentencesCount'),
-  gameExploreBreak: function() {
-    // TODO: game: every 5 sentences, suggest exploration of your trees
-  }.observes('currentProfile.sentencesCount'),
-  loadInfo: function() {
+    if (this.get('lifecycle.bucket') === 'game') {
+      var streak = this.get('streak');
+      if (streak !== 0 && streak % 3 === 0) {
+        this.pushInfo('game:diff-break');
+      }
+    }
+  }.observes('streak'),
+
+  gameExplorationBreak: function() {
+    if (this.get('lifecycle.bucket') === 'game') {
+      var streak = this.get('streak');
+      if (streak !== 0 && streak % 5 === 0) {
+        this.pushInfo('game:exploration-break');
+      }
+    }
+  }.observes('streak'),
+
+  loadInfos: function() {
     var self = this,
         infos = this.get('infos');
     return this.get('currentProfile').reload().then(function() {
@@ -182,7 +237,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   actions: {
     init: function() {
-      this.loadInfo();
+      this.loadInfos();
     },
     'task.read': function() {
       this.sendStateEvent('task.read');
@@ -239,7 +294,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         from: 'task.writing.user',
         to: 'task.writing.processing',
         enter: 'reloadTree',
-        after: 'loadInfo'
+        after: 'loadInfos'
       }
     },
     inform: {
