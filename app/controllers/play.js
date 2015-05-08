@@ -46,7 +46,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     this.setProperties({
       streak: 0
     });
-  }.observes('lifecycle.bucket'),
+  }.observes('lifecycle.currentState'),
 
   reset: function() {
     this.resetInfos();
@@ -84,7 +84,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('currentProfile.trainedReformulations'),
 
   experimentEnded: function() {
-    if (this.get('lifecycle.bucket') === 'experiment') {
+    if (this.get('lifecycle.currentState') === 'exp.doing') {
       // Only if we're *on* the threshold (i.e. a change just made us pass it)
       if (this.get('currentProfile.sentencesCount') === this.get('shaping.experimentWork')) {
         this.pushInfo('experiment:ended');
@@ -93,7 +93,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('currentProfile.sentencesCount'),
 
   experimentBreak: function() {
-    if (this.get('lifecycle.bucket') === 'experiment') {
+    if (this.get('lifecycle.currentState') === 'exp.doing') {
       var streak = this.get('streak'),
           profileCount = this.get('currentProfile.sentencesCount'),
           experimentWork = this.get('shaping.experimentWork');
@@ -105,19 +105,23 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('streak'),
 
   sentencesEmpty: function() {
-    if (this.get('currentProfile.availableTreesBucket') === 0) {
-      this.pushInfo('sentences-empty');
+    var state = this.get('lifecycle.currentState');
+    // Only out of training
+    if (state === 'exp.doing' || state === 'playing') {
+      if (this.get('currentProfile.availableTreesBucket') === 0) {
+        this.pushInfo('sentences-empty');
+      }
     }
   }.observes('currentProfile.availableTreesBucket'),
 
   gameNewCredit: function() {
-    if (this.get('lifecycle.bucket') === 'game') {
+    if (this.get('lifecycle.currentState') === 'playing') {
       this.pushInfo('game:new-credit');
     }
   }.observes('currentProfile.suggestionCredit'),
 
   gameDiffBreak: function() {
-    if (this.get('lifecycle.bucket') === 'game') {
+    if (this.get('lifecycle.currentState') === 'playing') {
       var streak = this.get('streak');
       if (streak !== 0 && streak % 3 === 0) {
         this.pushInfo('game:diff-break');
@@ -126,7 +130,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('streak'),
 
   gameExplorationBreak: function() {
-    if (this.get('lifecycle.bucket') === 'game') {
+    if (this.get('lifecycle.currentState') === 'playing') {
       var streak = this.get('streak');
       if (streak !== 0 && streak % 5 === 0) {
         this.pushInfo('game:exploration-break');
