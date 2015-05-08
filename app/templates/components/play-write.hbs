@@ -23,7 +23,7 @@
         {{#if isLanguageMismatch}}
           {{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}
         {{else}}
-          {{async-button action="uploadSentence" class="btn btn-primary" default="Continue" pending="Uploading..."}}
+          {{async-button action="upload" class="btn btn-primary" default="Continue" pending="Uploading..."}}
         {{/if}}
       {{/progress-clock}}
     {{else}}

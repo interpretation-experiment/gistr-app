@@ -1,11 +1,14 @@
 import Ember from 'ember';
 
+import SessionMixin from 'gistr/mixins/session';
 import TimefulMixin from 'gistr/mixins/timeful';
 
 
-export default Ember.Component.extend(TimefulMixin, {
+export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   lang: Ember.inject.service(),
   growl: Ember.inject.service(),
+  lifecycle: Ember.inject.service(),
+  shaping: Ember.inject.service(),
 
   /*
    * Copy-paste prevention
@@ -25,6 +28,7 @@ export default Ember.Component.extend(TimefulMixin, {
   /*
    * Input form fields, state, and upload
    */
+  trainingStreak: 0,
   errors: null,
   text: null,
   userLanguage: null,
@@ -32,6 +36,7 @@ export default Ember.Component.extend(TimefulMixin, {
   isUploading: false,
   resetInput: function() {
     this.setProperties({
+      trainingStreak: 0,
       errors: null,
       text: null,
       userLanguage: null,
@@ -39,18 +44,33 @@ export default Ember.Component.extend(TimefulMixin, {
       isUploading: false
     });
   },
-  uploadSentence: function() {
-    // TODO: don't send if lifecycle.currentState === 'exp.training'
-    // TODO: instead, if we're training and streak number is good, set trainedReformulations on the profile
-    var self = this;
+  upload: function() {
+    var self = this,
+        profile = this.get('currentProfile'),
+        promise;
 
     this.set('isUploading', true);
-    return this.get('store').createRecord('sentence', {
-      text: self.get('text'),
-      parent: self.get('parentSentence'),
-      language: self.get('language'), // FIXME #18: use parentSentence.language
-      bucket: self.get('parentSentence.bucket')
-    }).save().then(function() {
+    if (this.get('lifecycle.currentState') === 'exp.training') {
+      if (this.get('trainingStreak') === this.get('shaping.trainingWork') - 1) {
+        // This was the last training trial, we're done with training
+        profile.set('trainedReformulations', true);
+        promise = profile.save();
+      } else {
+        // Nothing to do but to bump the trainingStreak, pass on an empty promise
+        this.sendAction('bumpTrainingStreak');
+        promise = new Ember.RSVP.Promise(function(resolve) { resolve(); });
+      }
+    } else {
+      // We're in `exp.doing` or `playing`, save the work
+      promise = this.get('store').createRecord('sentence', {
+        text: self.get('text'),
+        parent: self.get('parentSentence'),
+        language: self.get('language'), // FIXME #18: use parentSentence.language
+        bucket: self.get('parentSentence.bucket')
+      }).save();
+    }
+
+    return promise.then(function() {
       self.resetInput();
       self.sendAction('next');
     }, function(error) {
@@ -96,8 +116,8 @@ export default Ember.Component.extend(TimefulMixin, {
    * Form actions and updates from components
    */
   actions: {
-    uploadSentence: function(callback) {
-      callback(this.uploadSentence());
+    upload: function(callback) {
+      callback(this.upload());
     },
     manuallySetLanguage: function() {
       this.set('isLanguageManual', true);

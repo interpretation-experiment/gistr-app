@@ -65,7 +65,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   infos: [],
   pushInfo: function(info) {
     console.log('[push info] ' + info);
-    this.get('infos').push(info);
+    var infos = this.get('infos');
+    if (infos.indexOf(info) === -1) {
+      this.get('infos').push(info);
+    }
     console.log('[infos=] ' + this.get('infos'));
   },
   resetInfos: function() {
@@ -99,13 +102,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Streak-related infos
    */
   sentencesEmpty: function() {
-    var state = this.get('lifecycle.currentState');
-    // FIXME: once training is implemented, do this only out of training
-    //if (state === 'exp.doing' || state === 'playing') {
-      if (this.get('currentProfile.availableTreesBucket') === 0) {
-        this.pushInfo('sentences-empty');
-      }
-    //}
+    if (this.get('currentProfile.availableTreesBucket') === 0) {
+      this.pushInfo('sentences-empty');
+    }
   }.observes('currentProfile.availableTreesBucket'),
 
   expDoingBreak: function() {
@@ -142,7 +141,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   }.observes('currentProfile.suggestionCredit'),
 
   loadInfos: function() {
-    // FIXME : find a way to do this during route loading, and hang the loading until the promise is resolved
+    // FIXME: find a way to do this during route loading, and hang the loading until the promise is resolved
     var self = this,
         lifecycle = this.get('lifecycle'),
         infos = this.get('infos');
@@ -281,6 +280,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     },
     'task.write.process': function() {
       this.sendStateEvent('task.write.process');
+    },
+    bumpStreak: function() {
+      this.bumpStreak();
     },
     reset: function() {
       this.sendStateEvent('reset');

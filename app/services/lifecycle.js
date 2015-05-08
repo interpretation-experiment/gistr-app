@@ -79,17 +79,17 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     return chain.indexOf(this.get('currentState')) >= chain.indexOf(ref);
   },
   buckets: [
+    { label: 'Training', name: 'training' },
     { label: 'Experiment', name: 'experiment' },
     { label: 'Game', name: 'game' }
   ],
+  bucketMap: {
+    'exp.training': 'training',
+    'exp.doing': 'experiment',
+    'playing': 'game'
+  },
   bucket: function() {
-    if (this.isAtOrAfter('playing')) {
-      return 'game';
-    } else if (this.isAtOrAfter('exp.training')) {
-      return 'experiment';
-    } else {
-      return null;
-    }
+    return this.get('bucketMap')[this.get('currentState')];
   }.property('currentState'),
   logState: function() {
     console.log("Current state: " + this.get('currentState'));
