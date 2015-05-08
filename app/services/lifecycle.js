@@ -105,7 +105,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     // has had time to set it system-wide)
     this.set('initializationProfile', profile);
 
-    // Chain to the right state
+    // Chain down to the right state
     var transitions = this.get('fsmEvents.transitionsChain').copy().reverse(),
         self = this;
     var recurse = function() {
