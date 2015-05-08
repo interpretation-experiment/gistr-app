@@ -43,8 +43,9 @@ export default Ember.Object.extend({
     return request(api('/rest-auth/user/')).then(function(shallowUser) {
       return store.find('user', shallowUser.id);
     }).then(function(user) {
-      lifecycle.initialize(user.get('profile'));
-      return { currentUser: user };
+      return lifecycle.initialize(user.get('profile')).then(function() {
+        return { currentUser: user };
+      });
     }, function(errors) {
       self.set('token', null);
       throw errors.jqXHR.responseJSON || { non_field_errors: errors.errorThrown };
