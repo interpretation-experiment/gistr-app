@@ -76,7 +76,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   },
 
   experimentTrainingEnded: function() {
-    if (this.get('lifecycle.bucket') === 'experiment') {
+    if (this.get('lifecycle.currentState') === 'exp.training') {
       if (this.get('currentProfile.trainedReformulations')) {
         this.pushInfo('experiment:training-ended');
       }
