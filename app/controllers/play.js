@@ -75,35 +75,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     });
   },
 
-  experimentTrainingEnded: function() {
-    if (this.get('lifecycle.currentState') === 'exp.training') {
-      if (this.get('currentProfile.trainedReformulations')) {
-        this.pushInfo('experiment:training-ended');
-      }
-    }
-  }.observes('currentProfile.trainedReformulations'),
-
-  experimentEnded: function() {
-    if (this.get('lifecycle.currentState') === 'exp.doing') {
-      // Only if we're *on* the threshold (i.e. a change just made us pass it)
-      if (this.get('currentProfile.sentencesCount') === this.get('shaping.experimentWork')) {
-        this.pushInfo('experiment:ended');
-      }
-    }
-  }.observes('currentProfile.sentencesCount'),
-
-  experimentBreak: function() {
-    if (this.get('lifecycle.currentState') === 'exp.doing') {
-      var streak = this.get('streak'),
-          profileCount = this.get('currentProfile.sentencesCount'),
-          experimentWork = this.get('shaping.experimentWork');
-      // Make sure we didn't just finish the experiment
-      if (profileCount !== experimentWork && streak !== 0 && streak % 10 === 0) {
-        this.pushInfo('experiment:break');
-      }
-    }
-  }.observes('streak'),
-
   sentencesEmpty: function() {
     var state = this.get('lifecycle.currentState');
     // Only out of training
@@ -114,11 +85,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     }
   }.observes('currentProfile.availableTreesBucket'),
 
-  gameNewCredit: function() {
-    if (this.get('lifecycle.currentState') === 'playing') {
-      this.pushInfo('game:new-credit');
+  experimentBreak: function() {
+    if (this.get('lifecycle.currentState') === 'exp.doing') {
+      var streak = this.get('streak');
+      if (streak !== 0 && streak % 10 === 0) {
+        this.pushInfo('experiment:break');
+      }
     }
-  }.observes('currentProfile.suggestionCredit'),
+  }.observes('streak'),
 
   gameDiffBreak: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
@@ -138,6 +112,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     }
   }.observes('streak'),
 
+  gameNewCredit: function() {
+    if (this.get('lifecycle.currentState') === 'playing') {
+      this.pushInfo('game:new-credit');
+    }
+  }.observes('currentProfile.suggestionCredit'),
+
   loadInfos: function() {
     var self = this,
         infos = this.get('infos');
@@ -147,6 +127,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       } else if (self.get('currentState') !== 'instructions') {
         self.sendStateEvent('task.read');
       }
+      // TODO: if you're in instructions, and no play work is available
+      // according to lifecycle.validateState, move to info
     });
   },
 

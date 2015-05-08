@@ -40,6 +40,8 @@ export default Ember.Component.extend(TimefulMixin, {
     });
   },
   uploadSentence: function() {
+    // TODO: don't send if lifecycle.currentState === 'exp.training'
+    // TODO: instead, if we're training and streak number is good, set trainedReformulations on the profile
     var self = this;
 
     this.set('isUploading', true);
