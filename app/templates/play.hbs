@@ -41,9 +41,8 @@
         minTokens=minTokens
         parentSentence=currentSentence
         duration=writeDuration
-        trainingStreak=streak
-        bumpTrainingStreak="bumpStreak"
-        next="task.write.process"
+        streak=streak
+        next="processWriting"
         timeout="task.timeout"}}
 
   {{else if isInTaskWritingProcessing}}

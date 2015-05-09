@@ -264,12 +264,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
     'task.timeout': function() {
       this.sendStateEvent('task.timeout');
     },
-    'task.write.process': function() {
-      this.sendStateEvent('task.write.process');
-    },
-    bumpStreak: function() {
-      // TODO: bump streak through action with play-write (in 'then')
+    processWriting: function() {
       this.incrementProperty('streak');
+      this.sendStateEvent('task.write.process');
     },
     reset: function() {
       this.sendStateEvent('reset');

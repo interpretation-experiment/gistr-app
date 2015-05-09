@@ -28,7 +28,7 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   /*
    * Input form fields, state, and upload
    */
-  trainingStreak: 0,
+  streak: 0,
   errors: null,
   text: null,
   userLanguage: null,
@@ -36,7 +36,7 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   isUploading: false,
   resetInput: function() {
     this.setProperties({
-      trainingStreak: 0,
+      streak: 0,
       errors: null,
       text: null,
       userLanguage: null,
@@ -51,13 +51,12 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
 
     this.set('isUploading', true);
     if (this.get('lifecycle.currentState') === 'exp.training') {
-      if (this.get('trainingStreak') === this.get('shaping.trainingWork') - 1) {
+      if (this.get('streak') === this.get('shaping.trainingWork') - 1) {
         // This was the last training trial, we're done with training
         profile.set('trainedReformulations', true);
         promise = profile.save();
       } else {
-        // Nothing to do but to bump the trainingStreak, pass on an empty promise
-        this.sendAction('bumpTrainingStreak');
+        // Nothing to do, pass on an empty promise
         promise = new Ember.RSVP.Promise(function(resolve) { resolve(); });
       }
     } else {
