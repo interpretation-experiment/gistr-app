@@ -10,7 +10,7 @@ export default Ember.Mixin.create({
     var infos = this.get('infos'),
         knownInfos = this.get('knownInfos');
 
-    if (knownInfos.indexOf(infos) === -1) {
+    if (knownInfos.indexOf(info) === -1) {
       console.log('[push info] ' + 'unknown info, aborting');
       return;
     }
