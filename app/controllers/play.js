@@ -6,7 +6,7 @@ import draw from 'gistr/utils/draw';
 import countTokens from 'gistr/utils/count-tokens';
 
 
-export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
+export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMixin, {
   /*
    * Language and lifecycle utilities
    */
