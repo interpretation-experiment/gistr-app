@@ -1,12 +1,14 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
-import InfoMixin from 'gistr/mixins/info';
+import InfoControllerMixin from 'gistr/mixins/info-controller';
 import draw from 'gistr/utils/draw';
 import countTokens from 'gistr/utils/count-tokens';
 
 
-export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMixin, {
+export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoControllerMixin, {
+  infoRouteName: 'play',
+
   /*
    * Language and lifecycle utilities
    */
@@ -40,13 +42,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
    * Global progress and reset
    */
   streak: 0,
-  bumpStreak: function() {
-    this.set('streak', this.get('streak') + 1);
-  }.observes('currentProfile.sentencesCount'),
   resetStreak: function() {
-    this.setProperties({
-      streak: 0
-    });
+    this.set('streak', 0);
   }.observes('lifecycle.currentState'),
 
   reset: function() {
@@ -61,21 +58,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
   },
 
   /*
-   * Info management
-   */
-  knownInfos: [
-    'exp.training:completed-trials',
-    'exp.doing:completed-trials',
-    'sentences-empty',
-    'exp.doing:break',
-    'playing:diff-break',
-    'playing:exploration-break',
-    'playing:new-credit'
-  ],
-
-  /*
    * Lifecycle-related infos
    */
+  // TODO: move this to play-write's 'then' function
   expTrainingCompleted: function() {
     if (this.get('lifecycle.currentState') === 'exp.training') {
       if (this.get('currentProfile.trainedReformulations')) {
@@ -84,6 +69,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
     }
   }.observes('currentProfile.trainedReformulations'),
 
+  // TODO: move this to play-write's 'then' function
   expDoingCompleted: function() {
     if (this.get('lifecycle.currentState') === 'exp.doing') {
       // Only if we're *on* the threshold (i.e. a change just made us pass it)
@@ -96,12 +82,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
   /*
    * Streak-related infos
    */
+  // TODO: move this inside loadInfos
   sentencesEmpty: function() {
     if (this.get('currentProfile.availableTreesBucket') === 0) {
-      this.pushInfo('sentences-empty');
+      this.pushInfo('state:all:sentences-empty');
     }
   }.observes('currentProfile.availableTreesBucket'),
 
+  // TODO: move this to play-write's 'then' function
   expDoingBreak: function() {
     if (this.get('lifecycle.currentState') === 'exp.doing') {
       var streak = this.get('streak');
@@ -111,6 +99,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
     }
   }.observes('streak'),
 
+  // TODO: move this to play-write's 'then' function
   playingDiffBreak: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
       var streak = this.get('streak');
@@ -120,6 +109,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
     }
   }.observes('streak'),
 
+  // TODO: move this to play-write's 'then' function
   playingExplorationBreak: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
       var streak = this.get('streak');
@@ -129,6 +119,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
     }
   }.observes('streak'),
 
+  // TODO: move this to play-write's 'then' function
   playingNewCredit: function() {
     if (this.get('lifecycle.currentState') === 'playing') {
       this.pushInfo('playing:new-credit');
@@ -136,10 +127,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
   }.observes('currentProfile.suggestionCredit'),
 
   loadInfos: function() {
-    // FIXME: find a way to do this during route loading, and hang the loading until the promise is resolved
+    // TODO: find a way to do this during route loading (even when the route is already loaded, but just reopening), and hang the loading until the promise is resolved
     var self = this,
         lifecycle = this.get('lifecycle'),
-        infos = this.get('infos');
+        infos = this.getInfos();
     return this.get('currentProfile').reload().then(function() {
       var cycle = lifecycle.validateState();
       if (self.get('currentState') === 'instructions') {
@@ -158,7 +149,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
           // and nothing in the play route can help advance it.
           // This should never happen since if we're not in instructions
           // we're in the task, so this situation arose from the completion
-          // of a trial, and should have been recorded in infos
+          // of a trial, and should have been recorded in infos.
           throw new Error("Out of instructions, got an incomplete cycle that was not " +
                           "signalled through infos. Something's wrong.");
         } else {
@@ -277,7 +268,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoMix
       this.sendStateEvent('task.write.process');
     },
     bumpStreak: function() {
-      this.bumpStreak();
+      // TODO: bump streak through action with play-write (in 'then')
+      this.incrementProperty('streak');
     },
     reset: function() {
       this.sendStateEvent('reset');
