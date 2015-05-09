@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
+import InfoMixin from 'gistr/mixins/info';
 import draw from 'gistr/utils/draw';
 import countTokens from 'gistr/utils/count-tokens';
 
@@ -62,21 +63,15 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Info management
    */
-  infos: [],
-  pushInfo: function(info) {
-    console.log('[push info] ' + info);
-    var infos = this.get('infos');
-    if (infos.indexOf(info) === -1) {
-      this.get('infos').push(info);
-    }
-    console.log('[infos=] ' + this.get('infos'));
-  },
-  resetInfos: function() {
-    console.log('[reset infos]');
-    this.setProperties({
-      'infos': []
-    });
-  },
+  knownInfos: [
+    'exp.training:completed-trials',
+    'exp.doing:completed-trials',
+    'sentences-empty',
+    'exp.doing:break',
+    'playing:diff-break',
+    'playing:exploration-break',
+    'playing:new-credit'
+  ],
 
   /*
    * Lifecycle-related infos
@@ -84,7 +79,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   expTrainingCompleted: function() {
     if (this.get('lifecycle.currentState') === 'exp.training') {
       if (this.get('currentProfile.trainedReformulations')) {
-        this.pushInfo('exp.training:completed-training');
+        this.pushInfo('exp.training:completed-trials');
       }
     }
   }.observes('currentProfile.trainedReformulations'),
@@ -93,7 +88,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     if (this.get('lifecycle.currentState') === 'exp.doing') {
       // Only if we're *on* the threshold (i.e. a change just made us pass it)
       if (this.get('currentProfile.sentencesCount') === this.get('shaping.experimentWork')) {
-        this.pushInfo('exp.training:completed-trials');
+        this.pushInfo('exp.doing:completed-trials');
       }
     }
   }.observes('currentProfile.sentencesCount'),
