@@ -45,7 +45,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
   }.observes('lifecycle.currentState'),
 
   reset: function() {
-    this.resetEvents();
     this.resetStreak();
     this.resetModels();
   },
@@ -60,37 +59,31 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
      * Lifecycle-related
      */
     'exp.training:lifecycle:just-completed-trials': {
-      freeze: function() {
-        // TODO: use lifecycle.validateState here instead
-        return this.get('currentProfile.trainedReformulations');
+      freeze: function(cycleValidation) {
+        return (cycleValidation.state === 'exp.training' &&
+                cycleValidation.completed.indexOf('completed-trials') !== -1);
       },
-      check: function(frozen) {
-        // TODO: use lifecycle.validateState here instead
-        return !frozen && this.get('currentProfile.trainedReformulations');
+      check: function(frozen, cycleValidation) {
+        return (!frozen &&
+                cycleValidation.state === 'exp.training' &&
+                cycleValidation.completed.indexOf('completed-trials') !== -1);
       }
     },
     'exp.doing:lifecycle:just-completed-trials': {
-      freeze: function() {
-        // TODO: use lifecycle.validateState here instead
-        return this.get('currentProfile.reformulationsCount');
+      freeze: function(cycleValidation) {
+        return (cycleValidation.state === 'exp.doing' &&
+                cycleValidation.completed.indexOf('completed-trials') !== -1);
       },
-      check: function(frozen) {
-        // TODO: use lifecycle.validateState here instead
-        var count = this.get('currentProfile.reformulationsCount'),
-            work = this.get('shaping.experimentWork');
-        return count === frozen + 1 && count === work;
+      check: function(frozen, cycleValidation) {
+        return (!frozen &&
+                cycleValidation.state === 'exp.doing' &&
+                cycleValidation.completed.indexOf('completed-trials') !== -1);
       }
     },
 
     /*
      * Streak-related events
      */
-    'all:state:sentences-empty': {
-      freeze: function() {},
-      check: function(/*frozen*/) {
-        return this.get('currentProfile.availableTreesBucket') === 0;
-      }
-    },
     'playing:gain:new-credit': {
       freeze: function() {
         return this.get('currentProfile.suggestionCredit');
@@ -131,34 +124,35 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
   loadInfos: function() {
     var self = this,
         lifecycle = this.get('lifecycle'),
-        freezer = this.freezeEventChecks();
+        freezer = this.freezeEventChecks(lifecycle.validateState());
+
     return this.get('currentProfile').reload().then(function() {
-      self.updateEvents(freezer);
+      // Check events before attempting to transition to the cycle
+      // since the freezer depends on the currentState
+      var cycle = lifecycle.validateState();
+      self.checkEvents(freezer, cycle);
+
+      // Then transition state if possible
+      if (cycle.isComplete) {
+        lifecycle.transitionUp();
+      }
     }).then(function() {
       var cycle = lifecycle.validateState(),
           events = self.get('events');
-      if (self.get('currentState') === 'instructions') {
-        if (events.length > 0) {
-          self.sendStateEvent('inform');
-        } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
-          // TODO: create dedicated checks for this
-          // We have no events but our cycle is incomplete
-          // and nothing in the play route can help advance it
-          self.sendStateEvent('inform');
-        }
+
+      // Should we inform?
+      if (events.length > 0) {
+        self.sendStateEvent('inform');
+      } else if (!cycle.isComplete && cycle.actionRoutes.indexOf('play') === -1) {
+        // We have no events but our cycle is incomplete,
+        // and nothing in the play route can help advance it.
+        self.sendStateEvent('inform');
+      } else if (self.get('currentProfile.availableTreesBucket') === 0) {
+        // No more sentences, even after our possible transition to the new state
+        self.sendStateEvent('inform');
       } else {
-        if (events.length > 0) {
-          self.sendStateEvent('inform');
-        } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
-          // TODO: create dedicated checks for this
-          // We have no events but our cycle is incomplete,
-          // and nothing in the play route can help advance it.
-          // This should never happen since if we're not in instructions
-          // we're in the task, so this situation arose from the completion
-          // of a trial, and should have been recorded in events.
-          throw new Error("Out of instructions, got an incomplete cycle that was not " +
-                          "signalled through events. Something's wrong.");
-        } else {
+        // Let the user read the instructions if we're there
+        if (self.get('currentState') !== 'instructions') {
           self.sendStateEvent('task.read');
         }
       }
@@ -285,9 +279,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
                   'task.writing.processing', 'task.timedout', 'info', 'failed'],
     'task.reading': {
       willEnter: 'selectModels'
-    },
-    'info': {
-      didExit: 'resetEvents'
     }
   },
   fsmEvents: {

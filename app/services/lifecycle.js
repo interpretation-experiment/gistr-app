@@ -7,45 +7,77 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   shaping: Ember.inject.service(),
 
   /*
-   * State checks definition and validation
+   * State item definition and validation
    */
-  checks: {
+  items: {
     ground: {
-      'is-logged-in': function(profile) {
-        return !Ember.isNone(profile);
+      'is-logged-in': {
+        check: function(profile) {
+          return !Ember.isNone(profile);
+        },
+        route: 'login'
       }
     },
     registering: {
-      'has-username': function(profile) {
-        return !Ember.isNone(profile.get('user_username'));
+      'has-username': {
+        check: function(profile) {
+          return !Ember.isNone(profile.get('user_username'));
+        },
+        route: 'profile'
       },
-      'has-mothertongue': function(profile) {
-        return !Ember.isNone(profile.get('mothertongue'));
+      'has-mothertongue': {
+        check: function(profile) {
+          return !Ember.isNone(profile.get('mothertongue'));
+        },
+        route: 'profile'
       }
     },
     'exp.training': {
-      'tested-read-write-speed': function(/*profile*/) {
-        // TODO: Check the read-write test is done
-        return true;
+      'tested-read-write-speed': {
+        check: function(/*profile*/) {
+          // TODO: Check the read-write test is done
+          return true;
+        },
+        route: 'profile',
       },
-      'tested-memory-span': function(/*profile*/) {
-        // TODO: Check the memory-span test is done
-        return true;
+      'tested-memory-span': {
+        check: function(/*profile*/) {
+          // TODO: Check the memory-span test is done
+          return true;
+        },
+        route: 'profile'
       },
-      'answered-questionnaire': function(/*profile*/) {
-        // TODO: Check the questionnaire is done
-        return true;
+      'answered-questionnaire': {
+        check: function(/*profile*/) {
+          // TODO: Check the questionnaire is done
+          return true;
+        },
+        route: 'profile'
       },
-      'completed-trials': function(profile) {
-        return profile.get('trainedReformulations');
+      'completed-trials': {
+        check: function(profile) {
+          return profile.get('trainedReformulations');
+        },
+        route: 'play'
       }
     },
     'exp.doing': {
-      'completed-trials': function(profile) {
-        return profile.get('reformulationsCount') >= this.get('shaping.experimentWork');
+      'completed-trials': {
+        check: function(profile) {
+          return profile.get('reformulationsCount') >= this.get('shaping.experimentWork');
+        },
+        route: 'play'
       }
     },
-    playing: {}
+    playing: {
+      'completed-trials': {
+        check: function(/*profile*/) {
+          // This never ends
+          return false;
+        },
+        route: 'play'
+      }
+    }
   },
 
   validateState: function() {
@@ -54,27 +86,28 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     var current = this.get('currentState'),
         profile = this.get('currentProfile') || this.get('initializationProfile');
 
-    var checks = this.get('checks')[current],
-        errors = [];
-    for (var name in checks) {
-      if (!Ember.run.bind(this, checks[name])(profile)) {
-        errors.push(name);
+    var items = this.get('items')[current],
+        pending = [],
+        completed = [],
+        actionRoutes = [],
+        item;
+    for (var name in items) {
+      item = items[name];
+      if (!Ember.run.bind(this, item.check)(profile)) {
+        pending.push(name);
+        if (actionRoutes.indexOf(item.route) === -1) { actionRoutes.push(item.route); }
+      } else {
+        completed.push(name);
       }
     }
 
     return {
       state: current,
-      isComplete: errors.length === 0,
-      errors: errors
+      isComplete: pending.length === 0,
+      pending: pending,
+      completed: completed,
+      actionRoutes: actionRoutes
     };
-  },
-
-  guardTransitionUp: function() {
-    var validation = this.validateState();
-    if (!validation.isComplete) {
-      throw new Error("Current state is not complete. Missing " +
-                      "items: " + validation.errors);
-    }
   },
 
   isAtOrAfter: function(ref) {
@@ -82,6 +115,27 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     return chain.indexOf(this.get('currentState')) >= chain.indexOf(ref);
   },
 
+  /*
+   * Transitioning
+   */
+  transitionUp: function() {
+    var statesChain = this.get('fsmStates.knownStates'),
+        transitionsChain = this.get('fsmEvents.transitionsChain');
+
+    var stateIndex = statesChain.indexOf(this.get('currentState'));
+    this.sendStateEvent(transitionsChain[stateIndex]);
+  },
+  guardTransitionUp: function() {
+    var validation = this.validateState();
+    if (!validation.isComplete) {
+      throw new Error("Current state is not complete. Missing " +
+                      "items: " + validation.pending);
+    }
+  },
+
+  /*
+   * Sentence buckets
+   */
   buckets: [
     { label: 'Training', name: 'training' },
     { label: 'Experiment', name: 'experiment' },

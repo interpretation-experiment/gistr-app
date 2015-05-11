@@ -24,34 +24,22 @@ export default Ember.Component.extend({
 
   lifecycleEvents: function() {
     return this.filterEvents({ type: 'lifecycle' });
-    // No need to set the property to volatile since events won't
-    // change while this component exists
   }.property(),
 
   rhythmEvents: function() {
     return this.filterEvents({ type: 'rhythm' });
-    // No need to set the property to volatile since events won't
-    // change while this component exists
   }.property(),
 
   gainEvents: function() {
     return this.filterEvents({ type: 'gain' });
-    // No need to set the property to volatile since events won't
-    // change while this component exists
   }.property(),
 
-  //eventDetails: {
-    //'exp.training:lifecycle:just-completed-trials': {
-      //title: 'Training finished!',
-    //}
-    //'exp.doing:lifecycle:just-completed-trials',
-    //'all:state:sentences-empty',
-    //'playing:state:new-credit',
-    //'exp.doing:rhythm:break',
-    //'playing:rhythm:diff-break',
-    //'playing:rhythm:exploration-break'
-  //},
-  // TODO:
-  // - check lifecycle.validateState to see if additional infos
-  // - transition lifecycle if possible
+  // EVENTS
+  //    lifecycle w/ or w/o transition [always]
+  //    gain [always]
+  //    rhythm [if no lifecycle]
+  // STATE modulates event if there are events, alone otherwise
+  //    no work left == lifecycle w/o transition
+  //    empty sentences [quiet if no work left]
+
 });
