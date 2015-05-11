@@ -1,16 +1,25 @@
 import Ember from 'ember';
 
+import splitEvent from 'gistr/utils/split-event';
+
 
 export default Ember.Mixin.create({
   info: Ember.inject.service(),
 
   infoChecks: Ember.required(),
-  infoRouteName: Ember.required(),
   lifecycle: Ember.required(),
 
+  infos: [],
+
   pushInfo: function(info) {
-    this.get('info').pushInfo(this.get('infoRouteName'), info);
+    console.log('push info' + info);
+
+    var infos = this.get('infos');
+    if (infos.indexOf(info) === -1) { infos.push(info); }
+
+    console.log('infos is now [' + infos.join(", ") + ']');
   },
+
   freezeInfoChecks: function() {
     var self = this,
         checks = this.get('infoChecks'),
@@ -23,6 +32,7 @@ export default Ember.Mixin.create({
 
     return freezer;
   },
+
   updateInfos: function(freezer) {
     var self = this,
         currentState = this.get('lifecycle.currentState'),
@@ -30,7 +40,7 @@ export default Ember.Mixin.create({
         names = Object.keys(checks);
 
     var updates = names.filter(function(name) {
-      var state = self.get('info').split(name).state,
+      var state = splitEvent(name).state,
           stateOk = state === 'all' || state.includes(currentState);
       return stateOk && Ember.run.bind(self, checks[name].check)(freezer[name]);
     });
@@ -38,13 +48,10 @@ export default Ember.Mixin.create({
     for (var i = 0; i < updates.length; i++) {
       this.pushInfo(updates[i]);
     }
+  },
 
-    return this.getInfos();
-  },
-  getInfos: function(params) {
-    return this.get('info').getInfos(this.get('infoRouteName'), params);
-  },
   resetInfos: function() {
-    this.get('info').resetInfos(this.get('infoRouteName'));
+    console.log('reset infos');
+    this.set('infos', []);
   }
 });

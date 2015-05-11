@@ -1,35 +1,47 @@
 import Ember from 'ember';
 
+import splitEvent from 'gistr/utils/split-event';
+
 
 export default Ember.Component.extend({
-  info: Ember.inject.service(),
+  infos: null,
 
-  routeName: null,
+  filterInfos: function(params) {
+    var self = this,
+        infos = this.get('infos');
 
-  getInfos: function(params) {
-    return this.get('info').getInfos(this.get('routeName'), params);
+    var optIncludes = function(part, param) {
+      return part.includes(param) || Ember.isNone(param);
+    };
+
+    return infos.filter(function(info) {
+      var parts = splitEvent(info);
+      return (optIncludes(parts.state, params.state) &&
+              optIncludes(parts.type, params.type) &&
+              optIncludes(parts.name, params.name));
+    });
   },
 
   lifecycleInfos: function() {
-    return this.getInfos({ type: 'lifecycle' });
+    return this.filterInfos({ type: 'lifecycle' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),
 
   stateInfos: function() {
-    return this.getInfos({ type: 'state' });
+    return this.filterInfos({ type: 'state' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),
 
   rhythmInfos: function() {
-    return this.getInfos({ type: 'rhythm' });
+    return this.filterInfos({ type: 'rhythm' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),
 
   gainInfos: function() {
-    return this.getInfos({ type: 'gain' });
+    return this.filterInfos({ type: 'gain' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),

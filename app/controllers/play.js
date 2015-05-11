@@ -7,8 +7,6 @@ import countTokens from 'gistr/utils/count-tokens';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoControllerMixin, {
-  infoRouteName: 'play',
-
   /*
    * Language and lifecycle utilities
    */
@@ -135,9 +133,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
         lifecycle = this.get('lifecycle'),
         freezer = this.freezeInfoChecks();
     return this.get('currentProfile').reload().then(function() {
-      return self.updateInfos(freezer);
-    }).then(function(infos) {
-      var cycle = lifecycle.validateState();
+      self.updateInfos(freezer);
+    }).then(function() {
+      var cycle = lifecycle.validateState(),
+          infos = self.get('infos');
       if (self.get('currentState') === 'instructions') {
         if (infos.length > 0) {
           self.sendStateEvent('inform');
