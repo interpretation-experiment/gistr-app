@@ -41,8 +41,8 @@ export default Ember.Mixin.create({
 
     return this.getInfos();
   },
-  getInfos: function() {
-    return this.get('info').getInfos(this.get('infoRouteName'));
+  getInfos: function(params) {
+    return this.get('info').getInfos(this.get('infoRouteName'), params);
   },
   resetInfos: function() {
     this.get('info').resetInfos(this.get('infoRouteName'));

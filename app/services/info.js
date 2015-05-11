@@ -5,34 +5,15 @@ export default Ember.Service.extend({
   infos: {},
   separator: /:/,
   knownInfos: {
-    play: {
-      infos: [
-        'exp.training:lifecycle:just-completed-trials',
-        'exp.doing:lifecycle:just-completed-trials',
-        'all:state:sentences-empty',
-        'playing:state:new-credit',
-        'exp.doing:rhythm:break',
-        'playing:rhythm:diff-break',
-        'playing:rhythm:exploration-break'
-      ],
-      push: function(infos, info) {
-        var self = this;
-        var isLifecycle = function(item) { return self.split(item).type.includes("lifecycle"); };
-        var isRhythm = function(item) { return self.split(item).type.includes("rhythm"); };
-
-        var infoIsLifecycle = isLifecycle(info),
-            infoIsRhythm = isRhythm(info),
-            infosHasLifecycle = infos.any(isLifecycle),
-            infosHasRhythm = infos.any(isRhythm);
-
-        if ((infosHasLifecycle && infoIsRhythm) || (infosHasRhythm && infoIsLifecycle)) {
-          throw new Error("Tried to combine rhythm and lifecycle infos in play route, " +
-                          "that's not allowed");
-        }
-
-        infos.push(info);
-      }
-    }
+    play: [
+      'exp.training:lifecycle:just-completed-trials',
+      'exp.doing:lifecycle:just-completed-trials',
+      'all:state:sentences-empty',
+      'playing:gain:new-credit',
+      'exp.doing:rhythm:break',
+      'playing:rhythm:diff-break',
+      'playing:rhythm:exploration-break'
+    ]
   },
   split: function(info) {
     var parts = info.split(this.get('separator'));
@@ -48,38 +29,37 @@ export default Ember.Service.extend({
     var infos = this.get('infos'),
         knownInfos = this.get('knownInfos');
 
-    if (!(route in knownInfos) || knownInfos[route].infos.indexOf(info) === -1) {
+    if (!(route in knownInfos) || knownInfos[route].indexOf(info) === -1) {
       throw new Error("Asked to push unknown info [" +
                       route + "]" + info);
     }
 
-    var push = Ember.run.bind(this, knownInfos[route].push);
     if (!(route in infos)) { infos[route] = []; }
-    if (infos[route].indexOf(info) === -1) { push(infos[route], info); }
+    if (infos[route].indexOf(info) === -1) { infos[route].push(info); }
 
     console.log('infos[' + route + '] is now [' + this.get('infos')[route].join(", ") + ']');
   },
-  getInfos: function(route) {
-    return this.getWithDefault('infos.' + route, []);
+  getInfos: function(route, params) {
+    if (Ember.isNone(params)) {
+      return this.getWithDefault('infos.' + route, []);
+    } else {
+      var self = this,
+          infos = this.getWithDefault('infos.' + route, []);
+
+      var optIncludes = function(part, param) {
+        return part.includes(param) || Ember.isNone(param);
+      };
+
+      return infos.filter(function(info) {
+        var parts = self.split(info);
+        return (optIncludes(parts.state, params.state) &&
+                optIncludes(parts.type, params.type) &&
+                optIncludes(parts.name, params.name));
+      });
+    }
   },
   resetInfos: function(route) {
     console.log('reset infos[' + route + ']');
     delete this.get('infos')[route];
-  },
-  filterInfos: function(route, params) {
-    var self = this,
-        infos = this.getInfos(route);
-
-    var optIncludes = function(part, param) {
-      return part.includes(param) || Ember.isNone(param);
-    };
-
-    return infos.filter(function(info) {
-      var parts = self.split(info);
-      return (optIncludes(parts.state, params.state) &&
-              optIncludes(parts.type, params.type) &&
-              optIncludes(parts.name, params.name));
-    });
-  },
-
+  }
 });

@@ -93,7 +93,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
         return this.get('currentProfile.availableTreesBucket') === 0;
       }
     },
-    'playing:state:new-credit': {
+    'playing:gain:new-credit': {
       freeze: function() {
         return this.get('currentProfile.suggestionCredit');
       },
