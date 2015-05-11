@@ -89,7 +89,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
      */
     'all:state:sentences-empty': {
       freeze: function() {},
-      check: function(/*, frozen*/) {
+      check: function(/*frozen*/) {
         return this.get('currentProfile.availableTreesBucket') === 0;
       }
     },
