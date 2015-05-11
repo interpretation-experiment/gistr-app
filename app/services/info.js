@@ -4,6 +4,7 @@ import Ember from 'ember';
 export default Ember.Service.extend({
   infos: {},
   separator: /:/,
+
   knownInfos: {
     play: [
       'exp.training:lifecycle:just-completed-trials',
@@ -15,6 +16,7 @@ export default Ember.Service.extend({
       'playing:rhythm:exploration-break'
     ]
   },
+
   split: function(info) {
     var parts = info.split(this.get('separator'));
     return {
@@ -23,6 +25,7 @@ export default Ember.Service.extend({
       name:parts[2]
     };
   },
+
   pushInfo: function(route, info) {
     console.log('push info [' + route + ']' + info);
 
@@ -39,6 +42,7 @@ export default Ember.Service.extend({
 
     console.log('infos[' + route + '] is now [' + this.get('infos')[route].join(", ") + ']');
   },
+
   getInfos: function(route, params) {
     if (Ember.isNone(params)) {
       return this.getWithDefault('infos.' + route, []);
@@ -58,6 +62,7 @@ export default Ember.Service.extend({
       });
     }
   },
+
   resetInfos: function(route) {
     console.log('reset infos[' + route + ']');
     delete this.get('infos')[route];
