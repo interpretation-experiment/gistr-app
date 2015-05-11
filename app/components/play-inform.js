@@ -6,26 +6,24 @@ export default Ember.Component.extend({
 
   routeName: null,
 
+  filterInfos: function(params) {
+    return this.get('info').filterInfos(this.get('routeName'), params);
+  },
+
   lifecycleInfos: function() {
-    return this.get('info').filterInfos(this.get('routeName'), {
-      type: 'lifecycle'
-    });
+    return this.filterInfos({ type: 'lifecycle' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),
 
   stateInfos: function() {
-    return this.get('info').filterInfos(this.get('routeName'), {
-      type: 'state'
-    });
+    return this.filterInfos({ type: 'state' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),
 
   rhythmInfos: function() {
-    return this.get('info').filterInfos(this.get('routeName'), {
-      type: 'rhythm'
-    });
+    return this.filterInfos({ type: 'rhythm' });
     // No need to set the property to volatile since infos won't
     // change while this component exists
   }.property(),
