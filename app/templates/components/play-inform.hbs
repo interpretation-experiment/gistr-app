@@ -1,10 +1,10 @@
-{{#each lifecycleInfos as |info|}}
-  {{info}}
+{{#each lifecycleEvents as |event|}}
+  {{event}}
 {{/each}}
-{{#each stateInfos as |info|}}
-  {{info}}
+{{#each rhythmEvents as |event|}}
+  {{event}}
 {{/each}}
-{{#each rhythmInfos as |info|}}
-  {{info}}
+{{#each gainEvents as |event|}}
+  {{event}}
 {{/each}}
 <button class="btn btn-primary" {{action "next"}}>Continue</button>

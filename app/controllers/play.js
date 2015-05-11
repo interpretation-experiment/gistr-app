@@ -1,12 +1,12 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
-import InfoControllerMixin from 'gistr/mixins/info-controller';
+import EventControllerMixin from 'gistr/mixins/event-controller';
 import draw from 'gistr/utils/draw';
 import countTokens from 'gistr/utils/count-tokens';
 
 
-export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoControllerMixin, {
+export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventControllerMixin, {
   /*
    * Language and lifecycle utilities
    */
@@ -45,7 +45,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
   }.observes('lifecycle.currentState'),
 
   reset: function() {
-    this.resetInfos();
+    this.resetEvents();
     this.resetStreak();
     this.resetModels();
   },
@@ -55,7 +55,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
     });
   },
 
-  infoChecks: {
+  eventChecks: {
     /*
      * Lifecycle-related
      */
@@ -83,7 +83,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
     },
 
     /*
-     * Streak-related infos
+     * Streak-related events
      */
     'all:state:sentences-empty': {
       freeze: function() {},
@@ -131,33 +131,33 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
   loadInfos: function() {
     var self = this,
         lifecycle = this.get('lifecycle'),
-        freezer = this.freezeInfoChecks();
+        freezer = this.freezeEventChecks();
     return this.get('currentProfile').reload().then(function() {
-      self.updateInfos(freezer);
+      self.updateEvents(freezer);
     }).then(function() {
       var cycle = lifecycle.validateState(),
-          infos = self.get('infos');
+          events = self.get('events');
       if (self.get('currentState') === 'instructions') {
-        if (infos.length > 0) {
+        if (events.length > 0) {
           self.sendStateEvent('inform');
         } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
           // TODO: create dedicated checks for this
-          // We have no infos but our cycle is incomplete
+          // We have no events but our cycle is incomplete
           // and nothing in the play route can help advance it
           self.sendStateEvent('inform');
         }
       } else {
-        if (infos.length > 0) {
+        if (events.length > 0) {
           self.sendStateEvent('inform');
         } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
           // TODO: create dedicated checks for this
-          // We have no infos but our cycle is incomplete,
+          // We have no events but our cycle is incomplete,
           // and nothing in the play route can help advance it.
           // This should never happen since if we're not in instructions
           // we're in the task, so this situation arose from the completion
-          // of a trial, and should have been recorded in infos.
+          // of a trial, and should have been recorded in events.
           throw new Error("Out of instructions, got an incomplete cycle that was not " +
-                          "signalled through infos. Something's wrong.");
+                          "signalled through events. Something's wrong.");
         } else {
           self.sendStateEvent('task.read');
         }
@@ -287,7 +287,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
       willEnter: 'selectModels'
     },
     'info': {
-      didExit: 'resetInfos'
+      didExit: 'resetEvents'
     }
   },
   fsmEvents: {

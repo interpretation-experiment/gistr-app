@@ -4,23 +4,23 @@ import splitEvent from 'gistr/utils/split-event';
 
 
 export default Ember.Mixin.create({
-  infoChecks: Ember.required(),
+  eventChecks: Ember.required(),
   lifecycle: Ember.required(),
 
-  infos: [],
+  events: [],
 
-  pushInfo: function(info) {
-    console.log('push info' + info);
+  pushEvent: function(event) {
+    console.log('push event' + event);
 
-    var infos = this.get('infos');
-    if (infos.indexOf(info) === -1) { infos.push(info); }
+    var events = this.get('events');
+    if (events.indexOf(event) === -1) { events.push(event); }
 
-    console.log('infos is now [' + infos.join(", ") + ']');
+    console.log('events is now [' + events.join(", ") + ']');
   },
 
-  freezeInfoChecks: function() {
+  freezeEventChecks: function() {
     var self = this,
-        checks = this.get('infoChecks'),
+        checks = this.get('eventChecks'),
         names = Object.keys(checks),
         freezer = {};
 
@@ -31,10 +31,10 @@ export default Ember.Mixin.create({
     return freezer;
   },
 
-  updateInfos: function(freezer) {
+  updateEvents: function(freezer) {
     var self = this,
         currentState = this.get('lifecycle.currentState'),
-        checks = this.get('infoChecks'),
+        checks = this.get('eventChecks'),
         names = Object.keys(checks);
 
     var updates = names.filter(function(name) {
@@ -44,12 +44,12 @@ export default Ember.Mixin.create({
     });
 
     for (var i = 0; i < updates.length; i++) {
-      this.pushInfo(updates[i]);
+      this.pushEvent(updates[i]);
     }
   },
 
-  resetInfos: function() {
-    console.log('reset infos');
-    this.set('infos', []);
+  resetEvents: function() {
+    console.log('reset events');
+    this.set('events', []);
   }
 });
