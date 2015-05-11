@@ -11,38 +11,38 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   requisites: {
     ground: {
-      'is-logged-in': function(self, profile) {
+      'is-logged-in': function(profile) {
         return !Ember.isNone(profile);
       }
     },
     registering: {
-      'has-username': function(self, profile) {
+      'has-username': function(profile) {
         return !Ember.isNone(profile.get('user_username'));
       },
-      'has-mothertongue': function(self, profile) {
+      'has-mothertongue': function(profile) {
         return !Ember.isNone(profile.get('mothertongue'));
       }
     },
     'exp.training': {
-      'tested-read-write-speed': function(/*self, profile*/) {
+      'tested-read-write-speed': function(/*profile*/) {
         // TODO: Check the read-write test is done
         return true;
       },
-      'tested-memory-span': function(/*self, profile*/) {
+      'tested-memory-span': function(/*profile*/) {
         // TODO: Check the memory-span test is done
         return true;
       },
-      'answered-questionnaire': function(/*self, profile*/) {
+      'answered-questionnaire': function(/*profile*/) {
         // TODO: Check the questionnaire is done
         return true;
       },
-      'completed-trials': function(self, profile) {
+      'completed-trials': function(profile) {
         return profile.get('trainedReformulations');
       }
     },
     'exp.doing': {
-      'completed-trials': function(self, profile) {
-        return profile.get('reformulationsCount') >= self.get('shaping.experimentWork');
+      'completed-trials': function(profile) {
+        return profile.get('reformulationsCount') >= this.get('shaping.experimentWork');
       }
     },
     playing: {}
@@ -56,7 +56,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     var checks = this.get('requisites')[current],
         errors = [];
     for (var name in checks) {
-      if (!checks[name](this, profile)) {
+      if (!Ember.run.bind(this, checks[name])(profile)) {
         errors.push(name);
       }
     }
