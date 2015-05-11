@@ -5,7 +5,7 @@ import ProfileRouteMixin from 'gistr/mixins/profile-route';
 
 
 export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
-  initPlayState: function() {
-    this.controllerFor('play').send('init');
-  }.on('activate')
+  beforeModel: function() {
+    return this.controllerFor('play').loadInfos();
+  },
 });

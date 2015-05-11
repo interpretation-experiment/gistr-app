@@ -57,94 +57,101 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
     });
   },
 
-  /*
-   * Lifecycle-related infos
-   */
-  // TODO: move this to play-write's 'then' function
-  expTrainingCompleted: function() {
-    if (this.get('lifecycle.currentState') === 'exp.training') {
-      if (this.get('currentProfile.trainedReformulations')) {
-        this.pushInfo('exp.training:completed-trials');
+  infoChecks: {
+    /*
+     * Lifecycle-related
+     */
+    'exp.training:lifecycle:just-completed-trials': {
+      freeze: function() {
+        // TODO: use lifecycle.validateState here instead
+        return this.get('currentProfile.trainedReformulations');
+      },
+      check: function(frozen) {
+        // TODO: use lifecycle.validateState here instead
+        return !frozen && this.get('currentProfile.trainedReformulations');
+      }
+    },
+    'exp.doing:lifecycle:just-completed-trials': {
+      freeze: function() {
+        // TODO: use lifecycle.validateState here instead
+        return this.get('currentProfile.reformulationsCount');
+      },
+      check: function(frozen) {
+        // TODO: use lifecycle.validateState here instead
+        var count = this.get('currentProfile.reformulationsCount'),
+            work = this.get('shaping.experimentWork');
+        return count === frozen + 1 && count === work;
+      }
+    },
+
+    /*
+     * Streak-related infos
+     */
+    'all:state:sentences-empty': {
+      freeze: function() {},
+      check: function(/*, frozen*/) {
+        return this.get('currentProfile.availableTreesBucket') === 0;
+      }
+    },
+    'playing:state:new-credit': {
+      freeze: function() {
+        return this.get('currentProfile.suggestionCredit');
+      },
+      check: function(frozen) {
+        return this.get('currentProfile.suggestionCredit') === frozen + 1;
+      }
+    },
+    'exp.doing:rhythm:break': {
+      freeze: function() {
+        return this.get('streak');
+      },
+      check: function(frozen) {
+        var streak = this.get('streak');
+        return streak === frozen + 1 && streak !== 0 && streak % 10 === 0;
+      }
+    },
+    'playing:rhythm:diff-break': {
+      freeze: function() {
+        return this.get('streak');
+      },
+      check: function(frozen) {
+        var streak = this.get('streak');
+        return streak === frozen + 1 && streak !== 0 && streak % 3 === 0;
+      }
+    },
+    'playing:rhythm:exploration-break': {
+      freeze: function() {
+        return this.get('streak');
+      },
+      check: function(frozen) {
+        var streak = this.get('streak');
+        return streak === frozen + 1 && streak !== 0 && streak % 5 === 0;
       }
     }
-  }.observes('currentProfile.trainedReformulations'),
-
-  // TODO: move this to play-write's 'then' function
-  expDoingCompleted: function() {
-    if (this.get('lifecycle.currentState') === 'exp.doing') {
-      // Only if we're *on* the threshold (i.e. a change just made us pass it)
-      if (this.get('currentProfile.sentencesCount') === this.get('shaping.experimentWork')) {
-        this.pushInfo('exp.doing:completed-trials');
-      }
-    }
-  }.observes('currentProfile.sentencesCount'),
-
-  /*
-   * Streak-related infos
-   */
-  // TODO: move this inside loadInfos
-  sentencesEmpty: function() {
-    if (this.get('currentProfile.availableTreesBucket') === 0) {
-      this.pushInfo('state:all:sentences-empty');
-    }
-  }.observes('currentProfile.availableTreesBucket'),
-
-  // TODO: move this to play-write's 'then' function
-  expDoingBreak: function() {
-    if (this.get('lifecycle.currentState') === 'exp.doing') {
-      var streak = this.get('streak');
-      if (streak !== 0 && streak % 10 === 0) {
-        this.pushInfo('exp.doing:break');
-      }
-    }
-  }.observes('streak'),
-
-  // TODO: move this to play-write's 'then' function
-  playingDiffBreak: function() {
-    if (this.get('lifecycle.currentState') === 'playing') {
-      var streak = this.get('streak');
-      if (streak !== 0 && streak % 3 === 0) {
-        this.pushInfo('playing:diff-break');
-      }
-    }
-  }.observes('streak'),
-
-  // TODO: move this to play-write's 'then' function
-  playingExplorationBreak: function() {
-    if (this.get('lifecycle.currentState') === 'playing') {
-      var streak = this.get('streak');
-      if (streak !== 0 && streak % 5 === 0) {
-        this.pushInfo('playing:exploration-break');
-      }
-    }
-  }.observes('streak'),
-
-  // TODO: move this to play-write's 'then' function
-  playingNewCredit: function() {
-    if (this.get('lifecycle.currentState') === 'playing') {
-      this.pushInfo('playing:new-credit');
-    }
-  }.observes('currentProfile.suggestionCredit'),
+  },
 
   loadInfos: function() {
-    // TODO: find a way to do this during route loading (even when the route is already loaded, but just reopening), and hang the loading until the promise is resolved
     var self = this,
         lifecycle = this.get('lifecycle'),
-        infos = this.getInfos();
+        freezer = this.freezeInfoChecks();
     return this.get('currentProfile').reload().then(function() {
+      return self.updateInfos(freezer);
+    }).then(function(infos) {
       var cycle = lifecycle.validateState();
       if (self.get('currentState') === 'instructions') {
-        if ((infos.length > 0)) {
+        if (infos.length > 0) {
           self.sendStateEvent('inform');
         } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
+          // TODO: create dedicated checks for this
           // We have no infos but our cycle is incomplete
           // and nothing in the play route can help advance it
           self.sendStateEvent('inform');
         }
       } else {
-        if ((infos.length > 0)) {
+        if (infos.length > 0) {
           self.sendStateEvent('inform');
         } else if (!cycle.isComplete && cycle.errors.indexOf('completed-trials') === -1) {
+          // TODO: create dedicated checks for this
           // We have no infos but our cycle is incomplete,
           // and nothing in the play route can help advance it.
           // This should never happen since if we're not in instructions
@@ -200,7 +207,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
     }
   },
   selectModels: function() {
-    // FIXME: load X trees in one go in route's model hook
+    // FIXME: evaluate if this can be moved to route, and break the cycle?
     var self = this, profile = this.get('currentProfile'),
         mothertongue = profile.get('mothertongue'),
         isOthertongue = mothertongue === this.get('lang.otherLanguage');
@@ -249,9 +256,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, InfoCon
    * Trial progress actions
    */
   actions: {
-    init: function() {
-      this.loadInfos();
-    },
     'task.read': function() {
       this.sendStateEvent('task.read');
     },

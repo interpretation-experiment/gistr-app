@@ -3,20 +3,22 @@ import Ember from 'ember';
 
 export default Ember.Service.extend({
   infos: {},
+  separator: /:/,
   knownInfos: {
     play: {
       infos: [
-        'lifecycle:exp.training:completed-trials',
-        'lifecycle:exp.doing:completed-trials',
-        'state:all:sentences-empty',
-        'state:playing:new-credit',
-        'rhythm:exp.doing:break',
-        'rhythm:playing:diff-break',
-        'rhythm:playing:exploration-break'
+        'exp.training:lifecycle:just-completed-trials',
+        'exp.doing:lifecycle:just-completed-trials',
+        'all:state:sentences-empty',
+        'playing:state:new-credit',
+        'exp.doing:rhythm:break',
+        'playing:rhythm:diff-break',
+        'playing:rhythm:exploration-break'
       ],
       push: function(infos, info) {
-        var isLifecycle = function(item) { return item.includes("lifecycle"); };
-        var isRhythm = function(item) { return item.includes("rhythm"); };
+        var self = this;
+        var isLifecycle = function(item) { return self.split(item).type.includes("lifecycle"); };
+        var isRhythm = function(item) { return self.split(item).type.includes("rhythm"); };
 
         var infoIsLifecycle = isLifecycle(info),
             infoIsRhythm = isRhythm(info),
@@ -32,6 +34,14 @@ export default Ember.Service.extend({
       }
     }
   },
+  split: function(info) {
+    var parts = info.split(this.get('separator'));
+    return {
+      state: parts[0],
+      type: parts[1],
+      name:parts[2]
+    };
+  },
   pushInfo: function(route, info) {
     console.log('push info [' + route + ']' + info);
 
@@ -43,7 +53,7 @@ export default Ember.Service.extend({
                       route + "]" + info);
     }
 
-    var push = knownInfos[route].push;
+    var push = Ember.run.bind(this, knownInfos[route].push);
     if (!(route in infos)) { infos[route] = []; }
     if (infos[route].indexOf(info) === -1) { push(infos[route], info); }
 
