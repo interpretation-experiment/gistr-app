@@ -7,8 +7,7 @@ export default Ember.Component.extend({
   events: null,
 
   filterEvents: function(params) {
-    var self = this,
-        events = this.get('events');
+    var events = this.get('events');
 
     var optIncludes = function(part, param) {
       return part.includes(param) || Ember.isNone(param);
