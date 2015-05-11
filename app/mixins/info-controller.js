@@ -31,7 +31,7 @@ export default Ember.Mixin.create({
 
     var updates = names.filter(function(name) {
       var state = self.get('info').split(name).state,
-          stateOk = state === 'all' || state === currentState;
+          stateOk = state === 'all' || state.includes(currentState);
       return stateOk && Ember.run.bind(self, checks[name].check)(freezer[name]);
     });
 
