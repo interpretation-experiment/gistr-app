@@ -1,3 +1,10 @@
-<!-- TODO: do info component: show passed infos, checks lifecycle.validateState, show related info, and transitions lifecycle if possible -->
-{{infos}}
+{{#each lifecycleInfos as |info|}}
+  {{info}}
+{{/each}}
+{{#each stateInfos as |info|}}
+  {{info}}
+{{/each}}
+{{#each rhythmInfos as |info|}}
+  {{info}}
+{{/each}}
 <button class="btn btn-primary" {{action "next"}}>Continue</button>

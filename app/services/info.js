@@ -65,5 +65,21 @@ export default Ember.Service.extend({
   resetInfos: function(route) {
     console.log('reset infos[' + route + ']');
     delete this.get('infos')[route];
-  }
+  },
+  filterInfos: function(route, params) {
+    var self = this,
+        infos = this.getInfos(route);
+
+    var optIncludes = function(part, param) {
+      return part.includes(param) || Ember.isNone(param);
+    };
+
+    return infos.filter(function(info) {
+      var parts = self.split(info);
+      return (optIncludes(parts.state, params.state) &&
+              optIncludes(parts.type, params.type) &&
+              optIncludes(parts.name, params.name));
+    });
+  },
+
 });

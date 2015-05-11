@@ -3,9 +3,11 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
   info: Ember.inject.service(),
+
   infoChecks: Ember.required(),
   infoRouteName: Ember.required(),
   lifecycle: Ember.required(),
+
   pushInfo: function(info) {
     this.get('info').pushInfo(this.get('infoRouteName'), info);
   },
@@ -42,9 +44,6 @@ export default Ember.Mixin.create({
   getInfos: function() {
     return this.get('info').getInfos(this.get('infoRouteName'));
   },
-  infos: function() {
-    return this.getInfos();
-  }.property().volatile(),
   resetInfos: function() {
     this.get('info').resetInfos(this.get('infoRouteName'));
   }
