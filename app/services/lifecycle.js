@@ -7,9 +7,9 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   shaping: Ember.inject.service(),
 
   /*
-   * State pre-requisites definition and validation
+   * State checks definition and validation
    */
-  requisites: {
+  checks: {
     ground: {
       'is-logged-in': function(profile) {
         return !Ember.isNone(profile);
@@ -47,13 +47,14 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     },
     playing: {}
   },
+
   validateState: function() {
     // During initialization, torii has not yet had the time to publish the authentication
     // credentials system-wide, so we use the initializationProfile instead.
     var current = this.get('currentState'),
         profile = this.get('currentProfile') || this.get('initializationProfile');
 
-    var checks = this.get('requisites')[current],
+    var checks = this.get('checks')[current],
         errors = [];
     for (var name in checks) {
       if (!Ember.run.bind(this, checks[name])(profile)) {
@@ -67,6 +68,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
       errors: errors
     };
   },
+
   guardTransitionUp: function() {
     var validation = this.validateState();
     if (!validation.isComplete) {
@@ -74,10 +76,12 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
                       "items: " + validation.errors);
     }
   },
+
   isAtOrAfter: function(ref) {
     var chain = this.get('fsmStates.knownStates').slice(0, -1);
     return chain.indexOf(this.get('currentState')) >= chain.indexOf(ref);
   },
+
   buckets: [
     { label: 'Training', name: 'training' },
     { label: 'Experiment', name: 'experiment' },
@@ -91,6 +95,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   bucket: function() {
     return this.get('bucketMap')[this.get('currentState')];
   }.property('currentState'),
+
   logState: function() {
     console.log("Current state: " + this.get('currentState'));
     console.log("Current bucket: " + this.get('bucket'));
