@@ -3,48 +3,97 @@
   {{#if lifecycleEvent}}
 
     {{#if hasTransitioned}}
-      {{!-- great you just finished this stage, move on --}}
 
-      {{#if emptySentences}}
+      {{#if lifecycle.isInExpDoing}}{{! just transitioned from exp.training to exp.doing }}
 
-        {{!-- oops there's a problem, go suggest sentences, wait for more to appear, or contact devs --}}
+        <h2>Done with your training</h2>
+        {{#if emptySentences}}
+          <p>Unfortunately there are no experiment sentences uploaded yet.</p>
+          <p>You can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+        {{else}}{{! has sentences }}
+          <button class="btn btn-primary" {{action "next"}}>On to the epxeriment</button>
+        {{/if}}{{! empty sentences }}
 
-      {{/if}}{{!-- empty sentences --}}
+      {{else if lifecycle.isInPlaying}}{{! just transitioned from exp.doing to playing }}
 
-    {{else}}{{!-- hasn't transitioned, so no work left --}}
+        <h2>Done with the experiment!</h2>
+        TODO: if prolific flavour, add Prolific Academic link. If you keep playing, it's on the home page.
+        {{#if emptySentences}}
+          <p>Unfortunately there are no other sentences to play with.</p>
+          <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+        {{else}}{{! has sentences }}
+          <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
+        {{/if}}{{! empty sentences }}
 
-      {{!-- great you just finished this stage, but you need to do stuff in your profile to move on --}}
-      {{!-- empty sentences is quiet here --}}
+      {{/if}}{{! lifecycle state }}
 
-    {{/if}}{{!-- transitioned --}}
+    {{else}}{{! hasn't transitioned, so no work left for this state in this route }}
 
-  {{else}}{{!-- no lifecycle event --}}
+      {{! empty sentences is quiet here }}
+
+      {{#if lifecycle.isInExpTraining}}{{! finished training trials, but incomplete lifecycle state }}
+
+        <h2>Done with your training</h2>
+        <p>We need to know more about you before you can do the experiment.</p>
+        {{link-to 'Complete your Profile' 'profile' class="btn btn-primary"}}
+
+      {{! else if lifecycle.isInExpDoing: finished experiment trials, but incomplete lifecycle state. Fill this if we add conditions to exp.doing completion. }}
+      {{/if}}{{! lifecycle state }}
+
+    {{/if}}{{! transitioned }}
+
+  {{else}}{{! no lifecycle event }}
 
     {{#if hasRhythmEvents}}
 
-      {{#each rhythmEvents as |event|}}
+      <h2>Take a break!</h2>
 
-        {{!-- title, text, and button --}}
+      {{#if hasExpDoingBreak}}
+        <p>You're doing great! Take a few seconds to relax before continuing.</p>
+        <button class="btn btn-primary" {{action "next"}}>Continue</button>
+      {{/if}}{{! has exp.doing break }}
 
-      {{/each}}
+      {{#if hasPlayingDiffBreak}}
+        TODO: add diff to show how well you did
+        <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
+      {{/if}}{{! has playing diff-break }}
 
-    {{/if}}{{!-- rhythm events --}}
+      {{#if hasPlayingExplorationBreak}}
+        <p>Want to {{link-to 'have a peak' 'explore.tree' lastSentence.tree}} at the tree you just participated in?</p>
+        <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
+      {{/if}}{{! has playing exploration-break }}
 
-  {{/if}}{{!-- lifecycle event --}}
+    {{/if}}{{! rhythm events }}
 
-{{else}}{{!-- no events, only state infos --}}
+  {{/if}}{{! lifecycle event }}
 
-  {{#if hasWorkLeft}}
+{{else}}{{! no events, only state infos }}
+
+  {{#if hasStateWorkLeft}}
 
     {{#if emptySentences}}
-      {{!-- oops there's a problem, go suggest sentences, wait for more to appear, or contact devs --}}
+
+      <h2>Oops, no more sentences!</h2>
+      <p>It seems you've worked real hard and used up all our sentences!</p>
+      <p>You can wait for more sentences to appear{{#if currentProfile.suggestionCredit}} or go {{link-to 'suggest' 'suggest'}} your own{{/if}}.</p>
+      <p>If it's been like this for a long time, don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+
     {{/if}}
 
-  {{else}}{{!-- no work left --}}
+  {{else}}{{! no work left }}
 
-    {{!-- you need to do stuff in your profile to move on --}}
-    {{!-- empty sentences is quiet here --}}
+    {{! empty sentences is quiet here }}
 
-  {{/if}}{{!-- has work left --}}
+    {{#if lifecycle.isInExpTraining}}{{! finished training trials, but incomplete lifecycle state }}
 
-{{/if}}{{!-- has events --}}
+      <h2>Done with your training</h2>
+      <p>We need to know more about you before you can do the experiment.</p>
+      {{link-to 'Complete your Profile' 'profile' class="btn btn-primary"}}
+
+      {{! else if lifecycle.isInExpDoing: finished experiment trials, but incomplete lifecycle state. Fill this if we add conditions to exp.doing completion. }}
+
+    {{/if}}{{! lifecycle state }}
+
+  {{/if}}{{! has work left }}
+
+{{/if}}{{! has events }}

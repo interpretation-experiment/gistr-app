@@ -8,6 +8,7 @@ export default Ember.Component.extend(SessionMixin, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
 
+  lastSentence: null,
   events: null,
   hasEvents: Ember.computed.notEmpty('events'),
 
@@ -38,6 +39,18 @@ export default Ember.Component.extend(SessionMixin, {
     return this.filterEvents({ type: 'rhythm' });
   }.property(),
   hasRhythmEvents: Ember.computed.notEmpty('rhythmEvents'),
+  hasExpDoingBreak: function() {
+    var rhythmEvents = this.get('rhythmEvents');
+    return rhythmEvents.indexOf('exp.doing:rhythm:break') !== -1;
+  }.property('rhythmEvents'),
+  hasPlayingDiffBreak: function() {
+    var rhythmEvents = this.get('rhythmEvents');
+    return rhythmEvents.indexOf('playing:rhythm:diff-break') !== -1;
+  }.property('rhythmEvents'),
+  hasPlayingExplorationBreak: function() {
+    var rhythmEvents = this.get('rhythmEvents');
+    return rhythmEvents.indexOf('playing:rhythm:exploration-break') !== -1;
+  }.property('rhythmEvents'),
 
   gainEvents: function() {
     return this.filterEvents({ type: 'gain' });
@@ -60,11 +73,17 @@ export default Ember.Component.extend(SessionMixin, {
   }.property(),
   hasTransitioned: function() {
     var lifecycleEvent = this.get('lifecycleEvent');
-    // Note that if this is false, then hasWorkLeft will be false
+    // Note that if this is false, then hasStateWorkLeft will be false
     // i.e. with event but not transitioned => no work left
     return this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
   }.property('lifecycle.currentState', 'lifecycleEvent'),
-  hasWorkLeft: function() {
+  hasStateWorkLeft: function() {
     return this.get('stateValidation').actionRoutes.indexOf('play') !== -1;
   }.property('stateValidation'),
+
+  actions: {
+    next: function() {
+      this.sendAction("newTrial");
+    }
+  }
 });

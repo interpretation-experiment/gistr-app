@@ -56,7 +56,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
 
   eventChecks: {
     /*
-     * Lifecycle-related
+     * Lifecycle-related events
      */
     'exp.training:lifecycle:just-completed-trials': {
       freeze: function(cycleValidation) {
