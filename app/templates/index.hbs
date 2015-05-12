@@ -12,19 +12,31 @@
 
 {{#page-body class="center"}}
   <h1>Gistr</h1>
-  <h2><small>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation. {{link-to 'Learn more' 'about'}}.</small></h2>
+  <h2><small>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation{{#if lifecycle.isInPlaying}}. {{link-to 'Learn more' 'about'}}.{{/if}}</small></h2>
 
   <div class="greeting">
+
     {{#if session.isWorking}}
+
       <p>Loading...</p>
+
     {{else}}
+
       {{#if session.isAuthenticated}}
         <p>Howdy, <strong>{{currentUser.username}}</strong></p>
-      {{else}}
-        {{link-to 'Sign in' 'login' class="btn btn-default"}}
-        {{link-to 'Sign up' 'register' class="btn btn-primary"}}
-      {{/if}}
-    {{/if}}
+      {{/if}}{{! session.isAuthenticated }}
+
+      {{#unless lifecycle.isInPlaying}}
+        <h2>Want to learn what this is about?</h2>
+        {{#if session.isAuthenticated}}
+          <h2>{{link-to 'Pass the experiment' 'play' class="btn btn-primary btn-lg"}}</h2>
+        {{else}}
+          <h2>{{link-to 'Pass the experiment' 'register' class="btn btn-primary btn-lg"}}</h2>
+          <h2><small>Already started? {{link-to 'Sign in' 'login'}}</small></h2>
+        {{/if}}{{! session.isAuthenticated}}
+      {{/unless}}{{! lifecycle is playing }}
+
+    {{/if}}{{! session.isWorking }}
   </div>
 {{/page-body}}
 
@@ -44,8 +56,12 @@
   </div>
 
   <div class="row footer">
-    {{#link-to 'about' class="icon icon-med"}}{{fa-icon "question-circle"}}{{/link-to}}
-    <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
-    <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
+    {{#if lifecycle.isInPlaying}}
+      {{#link-to 'about' class="icon icon-med"}}{{fa-icon "question-circle"}}{{/link-to}}
+      <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
+      <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
+    {{else}}
+      More stuff here once you've done the experiment!
+    {{/if}}{{! lifecycle is playing}}
   </div>
 {{/page-body}}

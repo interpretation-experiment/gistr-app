@@ -2,12 +2,18 @@
 {{page-header title="About"}}
 
 {{#page-body}}
-  <h1>The game and experiment</h1>
-  <p><strong>Say something:</strong> it means one thing to your partner, another thing to your closest friend, something else to your parents, and something different again to the stranger you meet in the street. When a politician says something on television, members of his party and the opposition hear different meanings in what was said.</p>
-  <p><strong>What are the processes involved in these interpretations? How do we make sense of the world around us?</strong></p>
-  <p>Gistr is both a game and experiment on how we interpret and make sense in certain contexts, and what consequences this has at large scale. The goal is to collect high quality data on repeated interpretations of content, allowing participants to experiment with sentences and contexts of their own also.</p>
-  <p>This experiment is entirely Free Software, and the development is an <a href="https://github.com/interpretation-experiment" title="Gistr repositories">open process</a>. Learn more more on <a href="https://github.com/interpretation-experiment/gistr-app/wiki" title="Gistr Wiki">the wiki</a>!</p>
+  {{#if lifecycle.isInPlaying}}
+    <h1>The game and experiment</h1>
+    <p><strong>Say something:</strong> it means one thing to your partner, another thing to your closest friend, something else to your parents, and something different again to the stranger you meet in the street. When a politician says something on television, members of his party and the opposition hear different meanings in what was said.</p>
+    <p><strong>What are the processes involved in these interpretations? How do we make sense of the world around us?</strong></p>
+    <p>Gistr is both a game and experiment on how we interpret and make sense in certain contexts, and what consequences this has at large scale. The goal is to collect high quality data on repeated interpretations of content, allowing participants to experiment with sentences and contexts of their own also.</p>
+    <p>This experiment is entirely Free Software, and the development is an <a href="https://github.com/interpretation-experiment" title="Gistr repositories">open process</a>. Learn more more on <a href="https://github.com/interpretation-experiment/gistr-app/wiki" title="Gistr Wiki">the wiki</a>!</p>
 
-  <h1>The authors</h1>
-  <p>Created and developed by <a href="https://mehho.net/sl" title="Sébastien Lerique's Homepage">Sébastien Lerique</a> as part of his PhD, advised by and thoroughly discussed with <a href="http://camille.roth.free.fr/index.php">Camille Roth</a>.</p>
+    <h1>The authors</h1>
+    <p>Created and developed by <a href="https://mehho.net/sl" title="Sébastien Lerique's Homepage">Sébastien Lerique</a> as part of his PhD, advised by and thoroughly discussed with <a href="http://camille.roth.free.fr/index.php">Camille Roth</a>.</p>
+  {{else}}
+    <h2>Want to know what this is about?</h2>
+    <h2>{{link-to 'Pass the experiment' 'register'}} first!</h2>
+    {{! TODO: add link to prolific academic study once published, "you can even get paid for it!" }}
+  {{/if}}{{! lifecycle is playing}}
 {{/page-body}}
