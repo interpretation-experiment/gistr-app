@@ -32,7 +32,7 @@
           <h2>{{link-to 'Pass the experiment' 'play' class="btn btn-primary btn-lg"}}</h2>
         {{else}}
           <h2>{{link-to 'Pass the experiment' 'register' class="btn btn-primary btn-lg"}}</h2>
-          <h2><small>Already started? {{link-to 'Sign in' 'login'}}</small></h2>
+          <h2>Or {{link-to 'Sign in' 'login'}} if you've already started</h2>
         {{/if}}{{! session.isAuthenticated}}
       {{/unless}}{{! lifecycle is playing }}
 
