@@ -1,10 +1,50 @@
-{{#each lifecycleEvents as |event|}}
-  {{event}}
-{{/each}}
-{{#each rhythmEvents as |event|}}
-  {{event}}
-{{/each}}
-{{#each gainEvents as |event|}}
-  {{event}}
-{{/each}}
-<button class="btn btn-primary" {{action "next"}}>Continue</button>
+{{#if hasEvents}}
+
+  {{#if lifecycleEvent}}
+
+    {{#if hasTransitioned}}
+      {{!-- great you just finished this stage, move on --}}
+
+      {{#if emptySentences}}
+
+        {{!-- oops there's a problem, go suggest sentences, wait for more to appear, or contact devs --}}
+
+      {{/if}}{{!-- empty sentences --}}
+
+    {{else}}{{!-- hasn't transitioned, so no work left --}}
+
+      {{!-- great you just finished this stage, but you need to do stuff in your profile to move on --}}
+      {{!-- empty sentences is quiet here --}}
+
+    {{/if}}{{!-- transitioned --}}
+
+  {{else}}{{!-- no lifecycle event --}}
+
+    {{#if hasRhythmEvents}}
+
+      {{#each rhythmEvents as |event|}}
+
+        {{!-- title, text, and button --}}
+
+      {{/each}}
+
+    {{/if}}{{!-- rhythm events --}}
+
+  {{/if}}{{!-- lifecycle event --}}
+
+{{else}}{{!-- no events, only state infos --}}
+
+  {{#if hasWorkLeft}}
+
+    {{#if emptySentences}}
+      {{!-- oops there's a problem, go suggest sentences, wait for more to appear, or contact devs --}}
+    {{/if}}
+
+  {{else}}{{!-- no work left --}}
+
+    {{!-- you need to do stuff in your profile to move on --}}
+    {{!-- empty sentences is quiet here --}}
+
+  {{/if}}{{!-- has work left --}}
+
+{{/if}}{{!-- has events --}}
