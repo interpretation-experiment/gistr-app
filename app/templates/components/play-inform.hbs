@@ -8,7 +8,7 @@
 
         <h2>Done with your training</h2>
         {{#if emptySentences}}
-          <p>Unfortunately there are no experiment sentences uploaded yet.</p>
+          <p>Unfortunately there are no experiment sentences uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
           <p>You can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
           <button class="btn btn-primary" {{action "next"}}>On to the epxeriment</button>
@@ -19,7 +19,7 @@
         <h2>Done with the experiment!</h2>
         TODO: if prolific flavour, add Prolific Academic link. If you keep playing, it's on the home page.
         {{#if emptySentences}}
-          <p>Unfortunately there are no other sentences to play with.</p>
+          <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
           <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
           <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
@@ -75,7 +75,7 @@
 
       <h2>Oops, no more sentences!</h2>
       <p>It seems you've worked real hard and used up all our sentences!</p>
-      <p>You can wait for more sentences to appear{{#if currentProfile.suggestionCredit}} or go {{link-to 'suggest' 'suggest'}} your own{{/if}}.</p>
+      <p>You can wait for more sentences to appear{{#if hasCreditOrIsStaff}} or go {{link-to 'suggest' 'suggest'}} your own{{#if isStaff}} (you're staff){{/if}}{{/if}}.</p>
       <p>If it's been like this for a long time, don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
 
     {{/if}}

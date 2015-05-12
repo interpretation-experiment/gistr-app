@@ -8,6 +8,10 @@ export default Ember.Component.extend(SessionMixin, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
 
+  isStaff: Ember.computed.alias('currentUser.isStaff'),
+  hasCredit: Ember.computed.bool('currentProfile.suggestionCredit'),
+  hasCreditOrIsStaff: Ember.computed.or('isStaff', 'hasCredit'),
+
   lastSentence: null,
   events: null,
   hasEvents: Ember.computed.notEmpty('events'),
