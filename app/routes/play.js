@@ -5,7 +5,9 @@ import ProfileRouteMixin from 'gistr/mixins/profile-route';
 
 
 export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
-  beforeModel: function() {
-    return this.controllerFor('play').loadInfos();
+  beforeModel: function(transition) {
+    if (this._super(transition)) {
+      return this.controllerFor('play').loadInfos();
+    }
   },
 });
