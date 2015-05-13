@@ -13,7 +13,7 @@ export default Ember.Mixin.create({
     console.log('push event' + event);
 
     var events = this.get('events');
-    if (events.indexOf(event) === -1) { events.push(event); }
+    if (!events.contains(event)) { events.push(event); }
 
     console.log('events is now [' + events.join(", ") + ']');
   },

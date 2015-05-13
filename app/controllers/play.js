@@ -61,23 +61,23 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
     'exp.training:lifecycle:just-completed-trials': {
       freeze: function(cycleValidation) {
         return (cycleValidation.state === 'exp.training' &&
-                cycleValidation.completed.indexOf('completed-trials') !== -1);
+                cycleValidation.completed.contains('completed-trials'));
       },
       check: function(frozen, cycleValidation) {
         return (!frozen &&
                 cycleValidation.state === 'exp.training' &&
-                cycleValidation.completed.indexOf('completed-trials') !== -1);
+                cycleValidation.completed.contains('completed-trials'));
       }
     },
     'exp.doing:lifecycle:just-completed-trials': {
       freeze: function(cycleValidation) {
         return (cycleValidation.state === 'exp.doing' &&
-                cycleValidation.completed.indexOf('completed-trials') !== -1);
+                cycleValidation.completed.contains('completed-trials'));
       },
       check: function(frozen, cycleValidation) {
         return (!frozen &&
                 cycleValidation.state === 'exp.doing' &&
-                cycleValidation.completed.indexOf('completed-trials') !== -1);
+                cycleValidation.completed.contains('completed-trials'));
       }
     },
 
@@ -143,7 +143,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
       // Should we inform?
       if (events.length > 0) {
         self.sendStateEvent('inform');
-      } else if (!cycle.isComplete && cycle.actionRoutes.indexOf('play') === -1) {
+      } else if (!cycle.isComplete && !cycle.actionRoutes.contains('play')) {
         // We have no events but our cycle is incomplete,
         // and nothing in the play route can help advance it.
         self.sendStateEvent('inform');

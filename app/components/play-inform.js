@@ -45,15 +45,15 @@ export default Ember.Component.extend(SessionMixin, {
   hasRhythmEvents: Ember.computed.notEmpty('rhythmEvents'),
   hasExpDoingBreak: function() {
     var rhythmEvents = this.get('rhythmEvents');
-    return rhythmEvents.indexOf('exp.doing:rhythm:break') !== -1;
+    return rhythmEvents.contains('exp.doing:rhythm:break');
   }.property('rhythmEvents'),
   hasPlayingDiffBreak: function() {
     var rhythmEvents = this.get('rhythmEvents');
-    return rhythmEvents.indexOf('playing:rhythm:diff-break') !== -1;
+    return rhythmEvents.contains('playing:rhythm:diff-break');
   }.property('rhythmEvents'),
   hasPlayingExplorationBreak: function() {
     var rhythmEvents = this.get('rhythmEvents');
-    return rhythmEvents.indexOf('playing:rhythm:exploration-break') !== -1;
+    return rhythmEvents.contains('playing:rhythm:exploration-break');
   }.property('rhythmEvents'),
 
   gainEvents: function() {
@@ -82,7 +82,7 @@ export default Ember.Component.extend(SessionMixin, {
     return this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
   }.property('lifecycle.currentState', 'lifecycleEvent'),
   hasStateWorkLeft: function() {
-    return this.get('stateValidation').actionRoutes.indexOf('play') !== -1;
+    return this.get('stateValidation').actionRoutes.contains('play');
   }.property('stateValidation'),
 
   actions: {

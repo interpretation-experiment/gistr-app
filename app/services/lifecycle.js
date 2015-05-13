@@ -95,7 +95,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
       item = items[name];
       if (!Ember.run.bind(this, item.check)(profile)) {
         pending.push(name);
-        if (actionRoutes.indexOf(item.route) === -1) { actionRoutes.push(item.route); }
+        if (!actionRoutes.contains(item.route)) { actionRoutes.push(item.route); }
       } else {
         completed.push(name);
       }
