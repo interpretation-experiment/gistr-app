@@ -17,7 +17,7 @@
         {{async-button action="upload" class="btn btn-primary" default="Continue" pending="Uploading..."}}
       {{/progress-clock}}
     {{else}}
-      {{#progress-clock value=progress}}{{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}{{/progress-clock}} Type at least {{#unless text}}{{minTokens}}{{else}}{{tokensLeft}} more{{/unless}} words
+      {{#progress-clock value=progress}}{{#sl-tooltip title=tokensCountInfo}}{{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}{{/sl-tooltip}}{{/progress-clock}}
     {{/if}}
   </div>
 

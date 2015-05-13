@@ -81,6 +81,15 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
     return Math.max(0, this.get('minTokens') - this.get('tokenCount'));
   }.property('tokenCount'),
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
+  tokensCountInfo: function() {
+    if (this.get('enoughTokens')) { return; }
+
+    if (this.get('text')) {
+      return "Type at least " + this.get('tokensLeft') + " more words";
+    } else {
+      return "Type at least " + this.get('minTokens') + " words";
+    }
+  }.property('enoughTokens', 'tokensLeft'),
 
   /*
    * When time is up
