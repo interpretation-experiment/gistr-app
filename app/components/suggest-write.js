@@ -55,6 +55,15 @@ export default Ember.Component.extend(SessionMixin, {
     return Math.max(0, this.get('minTokens') - this.get('tokenCount'));
   }.property('tokenCount'),
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
+  tokensCountInfo: function() {
+    if (this.get('enoughTokens')) { return; }
+
+    var info = "Your sentence must be at least " + this.get('minTokens') + " words long";
+    if (this.get('text')) {
+      info += " (type " + this.get('tokensLeft') + " more)"
+    }
+    return info;
+  }.property('enoughTokens', 'tokensLeft'),
 
   /*
    * Suggestion actions and updates from components
