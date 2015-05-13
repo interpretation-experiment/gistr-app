@@ -114,6 +114,10 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     var chain = this.get('fsmStates.knownStates').slice(0, -1);
     return chain.indexOf(this.get('currentState')) >= chain.indexOf(ref);
   },
+  isAfter: function(ref) {
+    var chain = this.get('fsmStates.knownStates').slice(0, -1);
+    return chain.indexOf(this.get('currentState')) > chain.indexOf(ref);
+  },
 
   /*
    * Transitioning

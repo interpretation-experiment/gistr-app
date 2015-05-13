@@ -30,7 +30,6 @@ export default Ember.Controller.extend(SessionMixin, {
   mothertongue: null,
   errors: null,
   isUploading: null,
-  attemptedTransition: null,
   showOtherInfo: false,
   showBilingualInfo: false,
   resetInput: function() {
@@ -38,14 +37,12 @@ export default Ember.Controller.extend(SessionMixin, {
       mothertongue: this.get('currentProfile.mothertongue'),
       errors: null,
       isUploading: null,
-      attemptedTransition: null,
       showOtherInfo: false,
       showBilingualInfo: false,
     });
   },
   uploadProfile: function() {
     var self = this, data = this.getProperties('mothertongue'),
-        attemptedTransition = this.get('attemptedTransition'),
         lifecycle = this.get('lifecycle'),
         profile = this.get('currentProfile');
 
@@ -68,10 +65,6 @@ export default Ember.Controller.extend(SessionMixin, {
       var cycle = lifecycle.validateState();
       if (cycle.isComplete) {
         lifecycle.transitionUp();
-      }
-
-      if (!!attemptedTransition) {
-        attemptedTransition.retry();
       }
     }, function(error) {
       self.set('errors', error.errors);

@@ -28,17 +28,13 @@ export default Ember.Controller.extend(SessionMixin, {
 
     return this.get('session').open('spreadr', data).then(function() {
       self.reset();
-      if (!!self.get('currentProfile')) {
-        if (!!attemptedTransition) {
+      if (self.get('lifecycle').isAfter('registering')) {
+        if (!Ember.isNone(attemptedTransition)) {
           attemptedTransition.retry();
         } else {
           self.transitionToRoute('index');
         }
       } else {
-        if (!!attemptedTransition) {
-          // Forward attempted transition
-          self.get('controllers.profile').set('attemptedTransition', attemptedTransition);
-        }
         self.get('growl').notice('Tell us about you!', 'We need you to fill in your profile');
         self.transitionToRoute('profile');
       }
