@@ -28,7 +28,11 @@
 
   {{else}}
     <h2>Oops!</h2>
-    <p>You don't have access to this tree. Maybe you forgot to {{link-to 'sign in' 'login'}}?</p>
-    <p>You can only see trees you've participated in or created, so you could try {{link-to 'playing' 'play'}} a bit more and maybe you'll participate in this tree.</p>
+    <p>You don't have access to this tree.</p>
+    {{#if lifecycle.isInPlaying}}
+      <p>You can only see trees you've participated in or created, so you could try {{link-to 'playing' 'play'}} a bit more and maybe you'll participate in this tree.</p>
+    {{else}}{{! lifecycle not in playing }}
+      <p>You won't be able to see any trees until you finish the experiment. {{link-to 'Get back to it!' 'play'}}</p>
+    {{/if}}{{! lifecycle.isInPlaying }}
   {{/if}}
 {{/page-body}}
