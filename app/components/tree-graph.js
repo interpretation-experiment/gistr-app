@@ -116,10 +116,16 @@ export default Ember.Component.extend(SessionMixin, {
     var node = this.drawNodes(g, layoutNodes);
 
     if (this.get('detail')) {
-      this.numberSentences(node);
-      this.styleLinks(link);
-      this.markOwnSentences(node);
-      this.setMouseListeners(node, link);
+      var self = this;
+      this.sendAction('showLoading');
+      new Ember.RSVP.all([
+        this.numberSentences(node),
+        this.styleLinks(link),
+        this.markOwnSentences(node),
+        this.setMouseListeners(node, link)
+      ]).then(function() {
+        self.sendAction('finishedLoading');
+      });
     }
   },
   drawLinks: function(g, diagonal, layoutLinks) {

@@ -7,7 +7,12 @@
     <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
     <div class="row">
       <div class="col-sm-6">
-        {{tree-graph tree=model hover="hoverSentence" select="setSelection"}}
+        {{tree-graph
+            tree=model
+            hover="hoverSentence"
+            select="setSelection"
+            showLoading="loading"
+            finishedLoading="finished"}}
       </div>
       <div class="col-sm-6">
         {{#if hasSelection}}
