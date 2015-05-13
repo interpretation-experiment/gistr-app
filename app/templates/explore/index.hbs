@@ -1,6 +1,6 @@
 {{#page-header}}Explore trees{{#if currentUser.isStaff}} <span class="badge">staff</span>{{/if}}{{/page-header}}
 {{#page-body}}
-  {{#if isStaffOrInPlaying}}
+  {{#if (can 'read trees')}}
     {{#unless model}}
       <h3>Nothing here yet!</h3>
       You can only see trees from sentences you rewrote! Go {{link-to 'play' 'play'}} a little and this screen with fill up.
@@ -21,8 +21,8 @@
         </div>
       {{/link-to}}{{/each}}
     {{/unless}}
-  {{else}}{{! neither staff nor lifecycle in playing }}
+  {{else}}{{! can't read trees }}
     <h2>Oops!</h2>
     <p>You won't be able to see any trees until you finish the experiment. {{link-to 'Get back to it!' 'play'}}</p>
-  {{/if}}{{! isStaffOrInPlaying }}
+  {{/if}}{{! can read trees }}
 {{/page-body}}
