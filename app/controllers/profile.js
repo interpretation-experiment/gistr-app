@@ -46,6 +46,7 @@ export default Ember.Controller.extend(SessionMixin, {
   uploadProfile: function() {
     var self = this, data = this.getProperties('mothertongue'),
         attemptedTransition = this.get('attemptedTransition'),
+        lifecycle = this.get('lifecycle'),
         profile = this.get('currentProfile');
 
     this.set('isUploading', true);
@@ -62,6 +63,12 @@ export default Ember.Controller.extend(SessionMixin, {
     return profile.save().then(function() {
       self.set('justSaved', true);
       self.resetInput();
+
+      // Transition lifecycle state if possible
+      var cycle = lifecycle.validateState();
+      if (cycle.isComplete) {
+        lifecycle.transitionUp();
+      }
 
       if (!!attemptedTransition) {
         attemptedTransition.retry();
