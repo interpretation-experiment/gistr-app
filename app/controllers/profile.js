@@ -83,18 +83,32 @@ export default Ember.Controller.extend(SessionMixin, {
   /*
    * Profile completeness
    */
-  profileErrors: function() {
-    if (this.get('session.isWorking')) {
-      return [];
+  profileValidationMap: {
+    'registering': {
+      'has-mothertongue': "Set your mothertongue"
+    },
+    'exp.training': {
+      'tested-read-write-speed': "Test your reading and writing speeds",
+      'tested-memory-span': "Test your memory span",
+      'answered-questionnaire': "Fill in the general questionnaire"
     }
+  },
+  profileErrors: function() {
+    var lifecycle = this.get('lifecycle'),
+        validationMap = this.get('profileValidationMap'),
+        errors = [];
 
-    var errors = [];
-    if (!this.get('currentProfile')) {
-      errors.push('Set your mothertongue');
+    var validation = lifecycle.validateState(),
+        state = validation.state;
+
+    for (var error of validation.pending) {
+      if (lifecycle.get('items')[state][error].route === 'profile') {
+        errors.push(validationMap[state][error]);
+      }
     }
 
     return errors;
-  }.property('currentProfile'),
+  }.property('lifecycle.currentState'),
   isProfileIncomplete: Ember.computed.notEmpty('profileErrors'),
 
   /*

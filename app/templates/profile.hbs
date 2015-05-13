@@ -25,7 +25,7 @@
 
   <form class="form-horizontal">
 
-    <div class="form-group {{if errors.mothertongue 'has-error'}} {{if justSaved 'has-success'}}">
+    <div class="form-group {{if errors.mothertongue 'has-error'}}">
       <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
       <div class="col-sm-4">
         {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue" disabled=isUploading}}
