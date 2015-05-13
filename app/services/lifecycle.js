@@ -12,66 +12,66 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   items: {
     ground: {
       'is-logged-in': {
-        check: function(profile) {
-          return !Ember.isNone(profile);
+        check: function(user) {
+          return !Ember.isNone(user);
         },
         route: 'login'
       }
     },
     registering: {
       'has-username': {
-        check: function(profile) {
-          return !Ember.isNone(profile.get('user_username'));
+        check: function(user) {
+          return !Ember.isNone(user.get('profile.userUsername'));
         },
         route: 'profile'
       },
       'has-mothertongue': {
-        check: function(profile) {
-          return !Ember.isNone(profile.get('mothertongue'));
+        check: function(user) {
+          return !Ember.isNone(user.get('profile.mothertongue'));
         },
         route: 'profile'
       }
     },
     'exp.training': {
       'tested-read-write-speed': {
-        check: function(/*profile*/) {
+        check: function(/*user*/) {
           // TODO: Check the read-write test is done
           return true;
         },
         route: 'profile',
       },
       'tested-memory-span': {
-        check: function(/*profile*/) {
+        check: function(/*user*/) {
           // TODO: Check the memory-span test is done
           return true;
         },
         route: 'profile'
       },
       'answered-questionnaire': {
-        check: function(/*profile*/) {
+        check: function(/*user*/) {
           // TODO: Check the questionnaire is done
           return true;
         },
         route: 'profile'
       },
       'completed-trials': {
-        check: function(profile) {
-          return profile.get('trainedReformulations');
+        check: function(user) {
+          return user.get('profile.trainedReformulations');
         },
         route: 'play'
       }
     },
     'exp.doing': {
       'completed-trials': {
-        check: function(profile) {
-          return profile.get('reformulationsCount') >= this.get('shaping.experimentWork');
+        check: function(user) {
+          return user.get('profile.reformulationsCount') >= this.get('shaping.experimentWork');
         },
         route: 'play'
       }
     },
     playing: {
       'completed-trials': {
-        check: function(/*profile*/) {
+        check: function(/*user*/) {
           // This never ends
           return false;
         },
@@ -82,9 +82,9 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
 
   validateState: function() {
     // During initialization, torii has not yet had the time to publish the authentication
-    // credentials system-wide, so we use the initializationProfile instead.
+    // credentials system-wide, so we use the initUser instead.
     var current = this.get('currentState'),
-        profile = this.get('currentProfile') || this.get('initializationProfile');
+        user = this.get('currentUser') || this.get('initUser');
 
     var items = this.get('items')[current],
         pending = [],
@@ -93,7 +93,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
         item;
     for (var name in items) {
       item = items[name];
-      if (!Ember.run.bind(this, item.check)(profile)) {
+      if (!Ember.run.bind(this, item.check)(user)) {
         pending.push(name);
         if (!actionRoutes.contains(item.route)) { actionRoutes.push(item.route); }
       } else {
@@ -158,11 +158,11 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
   /*
    * Initialize and reset
    */
-  initializationProfile: null,
-  initialize: function(profile) {
-    // Set the profile we're using (usually this happens before torii
+  initUser: null,
+  initialize: function(initUser) {
+    // Set the initUser we're using (usually this happens before torii
     // has had time to set it system-wide)
-    this.set('initializationProfile', profile);
+    this.set('initUser', initUser);
 
     // Chain down to the right state
     var transitions = this.get('fsmEvents.transitionsChain').copy().reverse(),
@@ -176,7 +176,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
 
     return this.reset().then(recurse).then(function() {
       // Clear initialization profile
-      self.set('initializationProfile', null);
+      self.set('initUser', null);
     });
   },
   reset: function() {

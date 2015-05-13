@@ -43,7 +43,7 @@ export default Ember.Object.extend({
     return request(api('/rest-auth/user/')).then(function(shallowUser) {
       return store.find('user', shallowUser.id);
     }).then(function(user) {
-      return lifecycle.initialize(user.get('profile')).then(function() {
+      return lifecycle.initialize(user).then(function() {
         return { currentUser: user };
       });
     }, function(errors) {

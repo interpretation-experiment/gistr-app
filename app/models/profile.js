@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 
 export default DS.Model.extend({
+  userUsername: DS.attr('string'),
   created: DS.attr('date'),
   trainedReformulations: DS.attr('boolean'),
   user: DS.belongsTo('user', { async: true }),
@@ -20,8 +21,7 @@ export default DS.Model.extend({
    * Unused properties
    */
   url: DS.attr('string'),
-  user_url: DS.attr('string'),
-  user_username: DS.attr('string'),
+  userUrl: DS.attr('string'),
 
   /*
    * Computed properties
