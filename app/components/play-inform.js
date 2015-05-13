@@ -37,11 +37,11 @@ export default Ember.Component.extend(SessionMixin, {
       throw new Error("Got more than one lifecycle event: " + events);
     }
     return events.objectAt(0);
-  }.property(),
+  }.property('events'),
 
   rhythmEvents: function() {
     return this.filterEvents({ type: 'rhythm' });
-  }.property(),
+  }.property('events'),
   hasRhythmEvents: Ember.computed.notEmpty('rhythmEvents'),
   hasExpDoingBreak: function() {
     var rhythmEvents = this.get('rhythmEvents');
@@ -58,7 +58,7 @@ export default Ember.Component.extend(SessionMixin, {
 
   gainEvents: function() {
     return this.filterEvents({ type: 'gain' });
-  }.property(),
+  }.property('events'),
   growlGains: function() {
     for (var event of this.get('gainEvents')) {
       // No other events than 'new-credit' for now
@@ -74,7 +74,7 @@ export default Ember.Component.extend(SessionMixin, {
   emptySentences: Ember.computed.equal('currentProfile.availableTreesBucket', 0),
   stateValidation: function() {
     return this.get('lifecycle').validateState();
-  }.property(),
+  }.property(),  // FIXME: alias to lifecycle.validation if at all useful
   hasTransitioned: function() {
     var lifecycleEvent = this.get('lifecycleEvent');
     // Note that if this is false, then hasStateWorkLeft will be false
@@ -83,7 +83,7 @@ export default Ember.Component.extend(SessionMixin, {
   }.property('lifecycle.currentState', 'lifecycleEvent'),
   hasStateWorkLeft: function() {
     return this.get('stateValidation').actionRoutes.contains('play');
-  }.property('stateValidation'),
+  }.property('stateValidation'),  // FIXME: observes lifecycle.validation
 
   actions: {
     next: function() {
