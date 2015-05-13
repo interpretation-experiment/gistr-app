@@ -296,6 +296,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
     'task.timeout': {
       transition: { 'task.writing.user': 'task.timedout' }
     },
+    // TODO: use loading slider for this
     'task.write.process': {
       transition: {
         from: 'task.writing.user',
