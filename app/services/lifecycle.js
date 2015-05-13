@@ -21,7 +21,7 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
     registering: {
       'has-username': {
         check: function(user) {
-          return !Ember.isNone(user.get('profile.userUsername'));
+          return !Ember.isNone(user.get('username'));
         },
         route: 'profile'
       },
