@@ -5,7 +5,6 @@ import splitEvent from 'gistr/utils/split-event';
 
 export default Ember.Mixin.create({
   eventChecks: Ember.required(),
-  lifecycle: Ember.required(),
 
   events: [],
 

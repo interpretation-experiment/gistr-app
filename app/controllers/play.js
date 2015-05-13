@@ -8,10 +8,9 @@ import countTokens from 'gistr/utils/count-tokens';
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventControllerMixin, {
   /*
-   * Language and lifecycle utilities
+   * Language utilities
    */
   lang: Ember.inject.service(),
-  lifecycle: Ember.inject.service(),
 
   /*
    * Tree shaping parameters
