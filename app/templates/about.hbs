@@ -13,11 +13,7 @@
     <p>Created and developed by <a href="https://mehho.net/sl" title="Sébastien Lerique's Homepage">Sébastien Lerique</a> as part of his PhD, advised by and thoroughly discussed with <a href="http://camille.roth.free.fr/index.php">Camille Roth</a>.</p>
   {{else}}
     <h2>Want to know what this is about?</h2>
-    {{#if session.isAuthenticated}}
-      <h2>{{link-to 'Pass the experiment' 'play'}} first!</h2>
-    {{else}}
-      <h2>{{link-to 'Pass the experiment' 'register'}} first!</h2>
-    {{/if}}{{! can read about }}
+    <h2><a href="#" {{action 'passExperiment'}}>Pass the experiment</a> first!</h2>
     {{! TODO: add link to prolific academic study once published, "you can even get paid for it!" }}
-  {{/if}}{{! lifecycle is playing}}
+  {{/if}}{{! can read about }}
 {{/page-body}}
