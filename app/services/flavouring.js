@@ -22,7 +22,7 @@ export default Ember.Service.extend({
       }
 
       var flavours = this.get('availableFlavours');
-      if (!flavours.contains(value) < 0) {
+      if (!flavours.contains(value)) {
         throw new Error("flavour '" + value + "' not found in list " +
                         "of available flavours [" + flavours + "]");
       }
