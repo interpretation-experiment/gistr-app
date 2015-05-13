@@ -60,7 +60,7 @@ export default Ember.Component.extend(SessionMixin, {
 
     var info = "Your sentence must be at least " + this.get('minTokens') + " words long";
     if (this.get('text')) {
-      info += " (type " + this.get('tokensLeft') + " more)"
+      info += " (type " + this.get('tokensLeft') + " more)";
     }
     return info;
   }.property('enoughTokens', 'tokensLeft'),
