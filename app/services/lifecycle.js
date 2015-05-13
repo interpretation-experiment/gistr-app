@@ -174,15 +174,13 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
       return self.sendStateEvent(transitions.pop()).then(recurse);
     };
 
-    return new Ember.RSVP.Promise(function(resolve) {
-      resolve();
-    }).then(recurse).then(function() {
+    return this.reset().then(recurse).then(function() {
       // Clear initialization profile
       self.set('initializationProfile', null);
     });
   },
   reset: function() {
-    this.sendStateEvent('reset');
+    return this.sendStateEvent('reset');
   },
 
   /*
