@@ -5,7 +5,6 @@ import TimefulMixin from 'gistr/mixins/timeful';
 
 
 export default Ember.Component.extend(TimefulMixin, SessionMixin, {
-  lang: Ember.inject.service(),
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
   shaping: Ember.inject.service(),
@@ -31,16 +30,12 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   streak: 0,
   errors: null,
   text: null,
-  userLanguage: null,
-  isLanguageManual: false,
   isUploading: false,
   resetInput: function() {
     this.setProperties({
       streak: 0,
       errors: null,
       text: null,
-      userLanguage: null,
-      isLanguageManual: false,
       isUploading: false
     });
   },
@@ -64,7 +59,7 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
       promise = this.get('store').createRecord('sentence', {
         text: self.get('text'),
         parent: self.get('parentSentence'),
-        language: self.get('language'), // FIXME #18: use parentSentence.language
+        language: self.get('parentSentence.language'),
         bucket: self.get('parentSentence.bucket')
       }).save();
     }
@@ -88,23 +83,6 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
 
   /*
-   * Language control
-   */
-  parentLanguageLabel: function() {
-    return this.get('lang.languageLabelMap')[this.get('parentSentence.language')];
-  }.property('parentSentence.language'),
-  language: function() {
-    if (this.get('isLanguageManual')) {
-      return this.get('userLanguage');
-    } else {
-      return this.get('guessedLanguage');
-    }
-  }.property('isLanguageManual', 'userLanguage', 'guessedLanguage'),
-  isLanguageMismatch: function() {
-    return this.get('language') !== this.get('parentSentence.language');
-  }.property('language', 'parentSentence.language'),
-
-  /*
    * When time is up
    */
   timerDone: function() {
@@ -118,15 +96,9 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
     upload: function(callback) {
       callback(this.upload());
     },
-    manuallySetLanguage: function() {
-      this.set('isLanguageManual', true);
-      this.set('userLanguage', this.get('parentSentence.language'));
-    },
     updateMetaText: function(data) {
       this.setProperties({
         tokenCount: data.tokenCount,
-        guessedLanguage: data.language.name,
-        guessedLanguageLabel: data.language.label
       });
     }
   }
