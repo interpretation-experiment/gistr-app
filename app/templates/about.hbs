@@ -2,7 +2,7 @@
 {{page-header title="About"}}
 
 {{#page-body}}
-  {{#if lifecycle.isInPlaying}}
+  {{#if (can 'read about')}}
     <h1>The game and experiment</h1>
     <p><strong>Say something:</strong> it means one thing to your partner, another thing to your closest friend, something else to your parents, and something different again to the stranger you meet in the street. When a politician says something on television, members of his party and the opposition hear different meanings in what was said.</p>
     <p><strong>What are the processes involved in these interpretations? How do we make sense of the world around us?</strong></p>
@@ -17,7 +17,7 @@
       <h2>{{link-to 'Pass the experiment' 'play'}} first!</h2>
     {{else}}
       <h2>{{link-to 'Pass the experiment' 'register'}} first!</h2>
-    {{/if}}{{! session.isAuthenticated }}
+    {{/if}}{{! can read about }}
     {{! TODO: add link to prolific academic study once published, "you can even get paid for it!" }}
   {{/if}}{{! lifecycle is playing}}
 {{/page-body}}
