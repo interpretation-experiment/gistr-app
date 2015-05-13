@@ -126,7 +126,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
         freezer = this.freezeEventChecks(lifecycle.validateState());
 
     return this.get('currentProfile').reload().then(function() {
-      // Check events before attempting to transition to the cycle
+      // Check events before attempting to transition to the next cycle
       // since the freezer depends on the currentState
       var cycle = lifecycle.validateState();
       self.checkEvents(freezer, cycle);
