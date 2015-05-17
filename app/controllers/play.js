@@ -4,6 +4,7 @@ import SessionMixin from 'gistr/mixins/session';
 import EventControllerMixin from 'gistr/mixins/event-controller';
 import draw from 'gistr/utils/draw';
 import countTokens from 'gistr/utils/count-tokens';
+import splitEvent from 'gistr/utils/split-event';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventControllerMixin, {
@@ -44,6 +45,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
   }.observes('lifecycle.currentState'),
 
   reset: function() {
+    this.resetEvents();
     this.resetStreak();
     this.resetModels();
   },
@@ -53,96 +55,59 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
     });
   },
 
+  /*
+   * Streak-related events
+   */
   eventChecks: {
-    /*
-     * Lifecycle-related events
-     */
-    'exp.training:lifecycle:just-completed-trials': {
-      freeze: function(cycleValidation) {
-        return (cycleValidation.state === 'exp.training' &&
-                cycleValidation.completed.contains('completed-trials'));
-      },
-      check: function(frozen, cycleValidation) {
-        return (!frozen &&
-                cycleValidation.state === 'exp.training' &&
-                cycleValidation.completed.contains('completed-trials'));
-      }
-    },
-    'exp.doing:lifecycle:just-completed-trials': {
-      freeze: function(cycleValidation) {
-        return (cycleValidation.state === 'exp.doing' &&
-                cycleValidation.completed.contains('completed-trials'));
-      },
-      check: function(frozen, cycleValidation) {
-        return (!frozen &&
-                cycleValidation.state === 'exp.doing' &&
-                cycleValidation.completed.contains('completed-trials'));
-      }
-    },
-
-    /*
-     * Streak-related events
-     */
     'playing:gain:new-credit': {
-      freeze: function() {
-        return this.get('currentProfile.suggestionCredit');
+      check: function(prev) {
+        return this.get('currentProfile.suggestionCredit') === prev + 1;
       },
-      check: function(frozen) {
-        return this.get('currentProfile.suggestionCredit') === frozen + 1;
-      }
+      observes: 'currentProfile.suggestionCredit'
     },
     'exp.doing:rhythm:break': {
-      freeze: function() {
-        return this.get('streak');
-      },
-      check: function(frozen) {
+      check: function(prev) {
         var streak = this.get('streak');
-        return streak === frozen + 1 && streak !== 0 && streak % 10 === 0;
-      }
+        return streak === prev + 1 && streak !== 0 && streak % 10 === 0;
+      },
+      observes: 'streak'
     },
     'playing:rhythm:diff-break': {
-      freeze: function() {
-        return this.get('streak');
-      },
-      check: function(frozen) {
+      check: function(prev) {
         var streak = this.get('streak');
-        return streak === frozen + 1 && streak !== 0 && streak % 3 === 0;
-      }
+        return streak === prev + 1 && streak !== 0 && streak % 3 === 0;
+      },
+      observes: 'streak'
     },
     'playing:rhythm:exploration-break': {
-      freeze: function() {
-        return this.get('streak');
-      },
-      check: function(frozen) {
+      check: function(prev) {
         var streak = this.get('streak');
-        return streak === frozen + 1 && streak !== 0 && streak % 5 === 0;
-      }
+        return streak === prev + 1 && streak !== 0 && streak % 5 === 0;
+      },
+      observes: 'streak'
     }
+  },
+  eventFilter: function(event) {
+    return splitEvent(event).state === this.get('lifecycle.currentState');
   },
 
   loadInfos: function() {
     var self = this,
         lifecycle = this.get('lifecycle'),
-        freezer = this.freezeEventChecks(lifecycle.validateState());
+        validator = lifecycle.get('validator');
 
     return this.get('currentProfile').reload().then(function() {
-      // Check events before attempting to transition to the next cycle
-      // since the freezer depends on the currentState
-      var cycle = lifecycle.validateState();
-      self.checkEvents(freezer, cycle);
-
-      // Then transition state if possible
-      if (cycle.isComplete) {
-        lifecycle.transitionUp();
+      // Transition state if possible
+      if (validator.get('isComplete')) {
+        return lifecycle.transitionUp();
       }
     }).then(function() {
-      var cycle = lifecycle.validateState(),
-          events = self.get('events');
+      var events = self.get('events');
 
       // Should we inform?
       if (events.length > 0) {
         self.sendStateEvent('inform');
-      } else if (!cycle.isComplete && !cycle.actionRoutes.contains('play')) {
+      } else if (!validator.get('isComplete') && !validator.get('actionRoutes').contains('play')) {
         // We have no events but our cycle is incomplete,
         // and nothing in the play route can help advance it.
         self.sendStateEvent('inform');
@@ -266,6 +231,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
     },
     reset: function() {
       this.sendStateEvent('reset');
+    },
+
+    /*
+     * Lifecycle watching
+     */
+    'lifecycle.update': function(event) {
+      if (event.value) {
+        console.log(`[play] setting event ${event.name}`);
+        this.pushEvent(this.get('lifecycle.currentState') + ':lifecycle:' + event.name);
+      }
     }
   },
 
@@ -282,10 +257,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
   },
   fsmEvents: {
     'task.read': {
-      transitions: {
-        from: ['instructions', 'task.writing.processing', 'task.timedout', 'info'],
-        to: 'task.reading'
-      }
+      transitions: [
+        {
+          from: ['instructions', 'task.writing.processing', 'task.timedout'],
+          to: 'task.reading'
+        },
+        {
+          info: 'task.reading',
+          after: 'resetEvents'
+        }
+      ]
     },
     'task.distract': {
       transition: { 'task.reading': 'task.distracting' }
@@ -297,6 +278,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventCo
       transition: { 'task.writing.user': 'task.timedout' }
     },
     // TODO: use loading slider for this
+    // TODO: bumpStreak to here
     'task.write.process': {
       transition: {
         from: 'task.writing.user',

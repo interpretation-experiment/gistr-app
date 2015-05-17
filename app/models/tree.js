@@ -111,11 +111,10 @@ export default DS.Model.extend({
         .map(function(nodeToDepth) {
           var nodes = Object.keys(nodeToDepth),
               depthToNodes = {},
-              node, depth;
+              depth;
 
           // Get all nodes at a given depth, for each depth
-          for (var i = 0; i < nodes.length; i++) {
-            node = nodes[i];
+          for (var node of nodes) {
             depth = nodeToDepth[node];
             if (!(depth in depthToNodes)) { depthToNodes[depth] = []; }
             depthToNodes[depth].push(node);

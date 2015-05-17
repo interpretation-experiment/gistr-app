@@ -66,9 +66,9 @@ export default Ember.Object.extend({
   close: function() {
     var self = this, lifecycle = this.get('lifecycle');
 
+    lifecycle.reset();
     return request(api('/rest-auth/logout/'), { type: 'POST' }).finally(function() {
       self.set('token', null);
-      lifecycle.reset();
     });
   }
 });

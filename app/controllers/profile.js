@@ -61,9 +61,9 @@ export default Ember.Controller.extend(SessionMixin, {
       self.set('justSaved', true);
       self.resetInput();
 
-      // Transition lifecycle state if possible
-      var cycle = lifecycle.validateState();
-      if (cycle.isComplete) {
+      // Transition lifecycle state if possible, using immediate
+      // check (and not observer-based check)
+      if (lifecycle.get('validator.isComplete')) {
         lifecycle.transitionUp();
       }
     }, function(error) {
@@ -91,17 +91,19 @@ export default Ember.Controller.extend(SessionMixin, {
         validationMap = this.get('profileValidationMap'),
         errors = [];
 
-    var validation = lifecycle.validateState(),
-        state = validation.state;
+    var pendings = this.get('lifecycle.validator.pending'),
+        state = this.get('lifecycle.validator.state');
+    console.log(`[profile errors] state = ${state}`);
+    console.log(`[profile errors] pendings = ${pendings} / `);
 
-    for (var error of validation.pending) {
-      if (lifecycle.get('items')[state][error].route === 'profile') {
-        errors.push(validationMap[state][error]);
+    for (var pending of pendings) {
+      if (lifecycle.get('items')[state][pending].route === 'profile') {
+        errors.push(validationMap[state][pending]);
       }
     }
 
     return errors;
-  }.property('lifecycle.currentState'),
+  }.property('lifecycle.validator.pending', 'lifecycle.validator.state'),
   isProfileIncomplete: Ember.computed.notEmpty('profileErrors'),
 
   /*

@@ -10,4 +10,10 @@ export default Ember.Route.extend(FormRouteMixin, ProfileRouteMixin, {
       return this.controllerFor('play').loadInfos();
     }
   },
+  subscribeLifecycle: function() {
+    this.get('lifecycle').subscribe('play', this.controllerFor('play'));
+  }.on('activate'),
+  unsubscribeLifecycle: function() {
+    this.get('lifecycle').unsubscribe('play');
+  }.on('deactivate')
 });
