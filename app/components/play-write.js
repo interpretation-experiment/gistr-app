@@ -40,6 +40,7 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
     });
   },
   upload: function() {
+    // TODO: pause timer during this
     var self = this,
         profile = this.get('currentProfile'),
         promise;
