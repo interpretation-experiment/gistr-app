@@ -13,12 +13,10 @@
     "loader.js": "ember-cli/loader.js#3.2.0",
     "qunit": "~1.17.1",
     "ember-fsm": "~0.4.1",
-    "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
     "pnotify": "~2.0.1",
     "d3": "~3.5.5",
-    "jquery.easy-pie-chart": "~2.1.6"
-  },
-  "devDependencies": {
+    "jquery.easy-pie-chart": "~2.1.6",
+    "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
     "fontawesome": "~4.3.0",
     "bootstrap-datepicker": "~1.4.0",
     "highcharts": "~4.1.5",

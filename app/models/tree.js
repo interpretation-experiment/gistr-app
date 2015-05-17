@@ -100,22 +100,22 @@ export default DS.Model.extend({
       return { allTips: [], underTips: [], overflownTips: [] };
     }
 
-    var nxGraph = nx.DiGraph(networkEdges.map(function(edge) {
+    var nxGraph = new nx.DiGraph(networkEdges.map(function(edge) {
       return [edge.source, edge.target];
     }));
     var allTipsDepths = graph.root.children
         .map(function(child) { return child.sentenceId; })
         .map(function(head) {
-          return nx.single_source_shortest_path_length(nxGraph, head).w;
+          return nx.singleSourceShortestPathLength(nxGraph, head);
         })
-        .map(function(nodeToDepth) {
-          var nodes = Object.keys(nodeToDepth),
+        .map(function(nodeToDepths) {
+          var nodes = nodeToDepths.keys(),
               depthToNodes = {},
               depth;
 
           // Get all nodes at a given depth, for each depth
           for (var node of nodes) {
-            depth = nodeToDepth[node];
+            depth = nodeToDepths.get(node);
             if (!(depth in depthToNodes)) { depthToNodes[depth] = []; }
             depthToNodes[depth].push(node);
           }
