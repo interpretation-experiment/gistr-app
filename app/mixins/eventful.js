@@ -3,7 +3,7 @@ import Ember from 'ember';
 
 export default Ember.Mixin.create({
   log: function(text) {
-    Ember.Logger.log('[event-controller] ' + text);
+    Ember.Logger.log('[eventful] ' + text);
   },
 
   init: function() {
@@ -13,8 +13,8 @@ export default Ember.Mixin.create({
     this.setupObservers();
   },
 
-  eventChecks: Ember.required(),
-  eventFilter: Ember.required(),
+  eventChecks: null,  // required
+  eventFilter: null,  // required
 
   events: [],
 

@@ -12,10 +12,13 @@ export default Ember.Service.extend({
    * Flavour get/setters
    */
   _flavour: Ember.computed.alias('defaultFlavour'),
-  flavour: function(key, value, previousValue) {
-    // Setter
-    if (arguments.length > 1) {
-      if (!Ember.isNone(previousValue)) {
+  flavour: Ember.computed({
+    get: function() {
+      return this.get('_flavour');
+    },
+    set: function(key, value) {
+      var previousValue = this.get('flavour');
+      if (!Ember.isNone(previousValue) && previousValue !== value) {
         throw new Error("flavour already set to '" + previousValue +
                         "'. Can't set it twice (attempted to change it" +
                         " to '" + value + "').");
@@ -28,9 +31,7 @@ export default Ember.Service.extend({
       }
 
       this.set('_flavour', value);
+      return value;
     }
-
-    // Getter
-    return this.get('_flavour');
-  }.property()
+  })
 });

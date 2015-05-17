@@ -1,13 +1,13 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
-import EventControllerMixin from 'gistr/mixins/event-controller';
+import EventfulMixin from 'gistr/mixins/eventful';
 import draw from 'gistr/utils/draw';
 import countTokens from 'gistr/utils/count-tokens';
 import splitEvent from 'gistr/utils/split-event';
 
 
-export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventControllerMixin, {
+export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, EventfulMixin, {
   /*
    * Language utilities
    */

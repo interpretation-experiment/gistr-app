@@ -12,7 +12,7 @@ Router.map(function() {
   this.route('profile');
   this.route('play');
   this.route('suggest');
-  this.resource('explore', function() {
+  this.route('explore', function() {
     this.route('tree', { path: '/:tree_id' });
   });
 
