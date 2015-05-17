@@ -23,14 +23,18 @@ var glyphicons = new Funnel('bower_components/bootstrap/dist/fonts', {
   destDir: '/fonts'
 });
 
-app.import('bower_components/jquery-cookie/jquery.cookie.js');
 app.import('bower_components/jquery.easy-pie-chart/dist/jquery.easypiechart.js');
+
 app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
+
+app.import('bower_components/bootstrap/dist/js/bootstrap.js');
 app.import('bower_components/bootstrap/dist/css/bootstrap.css');
+
 app.import('bower_components/pnotify/pnotify.core.js');
 app.import('bower_components/pnotify/pnotify.core.css');
 app.import('bower_components/pnotify/pnotify.buttons.js');
 app.import('bower_components/pnotify/pnotify.buttons.css');
+
 app.import('bower_components/d3/d3.js');
 
 module.exports = app.toTree(glyphicons);
