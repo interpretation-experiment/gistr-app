@@ -94,7 +94,7 @@ export default Ember.Controller.extend(SessionMixin, {
     var pendings = this.get('lifecycle.validator.pending'),
         state = this.get('lifecycle.validator.state');
     console.log(`[profile errors] state = ${state}`);
-    console.log(`[profile errors] pendings = ${pendings} / `);
+    console.log(`[profile errors] pendings = ${pendings}`);
 
     for (var pending of pendings) {
       if (lifecycle.get('items')[state][pending].route === 'profile') {
