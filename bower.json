@@ -16,11 +16,13 @@
     "pnotify": "~2.0.1",
     "d3": "~3.5.5",
     "jquery.easy-pie-chart": "~2.1.6",
-    "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
+    "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0"
+  },
+  "devDependencies": {
     "fontawesome": "~4.3.0",
     "bootstrap-datepicker": "~1.4.0",
     "highcharts": "~4.1.5",
-    "moment": "~2.10.3",
+    "moment": "~2.9.0",
     "moment-timezone": "~0.3.1",
     "select2": "~3.5.2",
     "typeahead.js": "~0.11.1"
