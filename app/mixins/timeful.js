@@ -5,13 +5,13 @@ export default Ember.Mixin.create({
   /*
    * Parameters
    */
-  duration: Ember.required(),
+  duration: null,  // required
   precision: 100,  // updates per second
 
   /*
    * Callback
    */
-  timerDone: Ember.required(),
+  timerDone: null,  // required
 
   /*
    * Timing variables; progress is part of the public API

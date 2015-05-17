@@ -13,8 +13,8 @@ export default Ember.Mixin.create({
     this.setupObservers();
   },
 
-  eventChecks: Ember.required(),
-  eventFilter: Ember.required(),
+  eventChecks: null,  // required
+  eventFilter: null,  // required
 
   events: [],
 
