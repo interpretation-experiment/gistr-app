@@ -72,18 +72,15 @@ export default Ember.Component.extend(SessionMixin, {
   }.on('didInsertElement'),
 
   emptySentences: Ember.computed.equal('currentProfile.availableTreesBucket', 0),
-  stateValidation: function() {
-    return this.get('lifecycle').validateState();
-  }.property(),  // FIXME: alias to lifecycle.validation if at all useful
   hasTransitioned: function() {
     var lifecycleEvent = this.get('lifecycleEvent');
     // Note that if this is false, then hasStateWorkLeft will be false
     // i.e. with event but not transitioned => no work left
-    return this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
+    return !Ember.isNone(lifecycleEvent) && this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
   }.property('lifecycle.currentState', 'lifecycleEvent'),
   hasStateWorkLeft: function() {
-    return this.get('stateValidation').actionRoutes.contains('play');
-  }.property('stateValidation'),  // FIXME: observes lifecycle.validation
+    return this.get('lifecycle.validator.actionRoutes').contains('play');
+  }.property('lifecycle.validator.actionRoutes'),
 
   actions: {
     next: function() {
