@@ -2,9 +2,10 @@ import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
 import splitEvent from 'gistr/utils/split-event';
+import EnterNextMixin from 'gistr/mixins/enter-next';
 
 
-export default Ember.Component.extend(SessionMixin, {
+export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
 

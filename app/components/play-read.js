@@ -1,9 +1,10 @@
 import Ember from 'ember';
 
 import TimefulMixin from 'gistr/mixins/timeful';
+import EnterNextMixin from 'gistr/mixins/enter-next';
 
 
-export default Ember.Component.extend(TimefulMixin, {
+export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   growl: Ember.inject.service(),
 
   /*

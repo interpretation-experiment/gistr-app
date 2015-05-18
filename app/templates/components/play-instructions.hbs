@@ -1,0 +1,19 @@
+{{#if lifecycle.isInExpTraining}}
+  <p>TODO: We're in training, full instructions here</p>
+{{else}}
+  <p>TODO: You know the drill. Off you go! (or see instructions again)</p>
+{{/if}}
+<h1>Your mission</h1>
+<p>In this task you'll be presented with a sentence that you have to remember. Your mission is to rewrite this sentence as accurately as possible.</p>
+<p>You'll go through a series of screens:</p>
+<ul>
+  <li>Click <em>Continue</em> and you'll see a sentence with <strong>limited time to read and memorize it</strong> (a progress bar tells you how much time is left).</li>
+  <li>The next screen shows up once the time is up, just click <em>Ok</em> and you're brought to the writing screen.</li>
+  <li>Write down the sentence you were shown, but don't take too long! A progress bar tells you how much time you have left.</li>
+</ul>
+<p>This sequence restarts once you're done. <strong>You can stop whenever you want</strong> by clicking <em>Back</em> at the top of the screen.</p>
+
+<h2><em>Available sentences</em> and <em>Sentences to credit</em></h2>
+<p>At the top of the screen you can see the number of <em>available sentences</em> for you to go through. This gets to zero when you've seen all possible sentences.</p>
+<p><em>Sentences to credit</em> tells you how many sentences you have to rewrite to get a new suggestion credit.</p>
+<button class="btn btn-primary" {{action "next"}}>Continue</button>

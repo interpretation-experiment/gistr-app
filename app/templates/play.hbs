@@ -5,25 +5,8 @@
 
 {{#page-body}}
   {{#if isInInstructions}}
-    {{#if lifecycle.isInExpTraining}}
-      <p>TODO: We're in training, full instructions here</p>
-    {{else}}
-      <p>TODO: You know the drill. Off you go! (or see instructions again)</p>
-    {{/if}}
-    <h1>Your mission</h1>
-    <p>In this task you'll be presented with a sentence that you have to remember. Your mission is to rewrite this sentence as accurately as possible.</p>
-    <p>You'll go through a series of screens:</p>
-    <ul>
-      <li>Click <em>Continue</em> and you'll see a sentence with <strong>limited time to read and memorize it</strong> (a progress bar tells you how much time is left).</li>
-      <li>The next screen shows up once the time is up, just click <em>Ok</em> and you're brought to the writing screen.</li>
-      <li>Write down the sentence you were shown, but don't take too long! A progress bar tells you how much time you have left.</li>
-    </ul>
-    <p>This sequence restarts once you're done. <strong>You can stop whenever you want</strong> by clicking <em>Back</em> at the top of the screen.</p>
-
-    <h2><em>Available sentences</em> and <em>Sentences to credit</em></h2>
-    <p>At the top of the screen you can see the number of <em>available sentences</em> for you to go through. This gets to zero when you've seen all possible sentences.</p>
-    <p><em>Sentences to credit</em> tells you how many sentences you have to rewrite to get a new suggestion credit.</p>
-    <button class="btn btn-primary" {{action "task.read"}}>Continue</button>
+    {{play-instructions
+        next="task.read"}}
 
   {{else if isInTaskReading}}
     {{play-read
@@ -33,8 +16,8 @@
         timeout="task.distract"}}
 
   {{else if isInTaskDistracting}}
-    <h3>Ready to write?</h3>
-    <button class="btn btn-primary" {{action "task.write.user"}}>Ok</button>
+    {{play-distract
+        next="task.write.user"}}
 
   {{else if isInTaskWritingUser}}
     {{play-write
@@ -49,9 +32,8 @@
     <h3>Loading...</h3>
 
   {{else if isInTaskTimedout}}
-    <h3>Time's up!</h3>
-    <p>You need to be quicker next time, check the progress bar!</p>
-    <button class="btn btn-primary" {{action "task.read"}}>Start again</button>
+    {{play-timeout
+        next="task.read"}}
 
   {{else if isInInfo}}
     {{play-inform
@@ -59,25 +41,5 @@
         lastSentence=currentSentence
         newTrial="task.read"}}
 
-  <!-- Not used any more -->
-  {{else if isInCredited}}
-    <h3>You just earned yourself a new sugestion credit!</h3>
-    <p>You can go suggest a new sentence if you want to.</p>
-    {{link-to "Suggest" "suggest" class="btn btn-default"}}
-    <button class="btn btn-primary" {{action "read"}}>No, continue</button>
-
-  {{else if isInEmpty}}
-    <h3>No more sentences!</h3>
-    <p>You've seen all the available sentences.</p>
-    {{#if currentUser.isStaff}}
-      <p>You're staff, go and {{link-to 'suggest' 'suggest'}} new sentences!</p>
-    {{else}}
-      {{#if (can 'create sentences')}}
-        <p>You have credit to {{link-to 'suggest' 'suggest'}} new sentences! ({{currentProfile.suggestionCredit}} left)</p>
-      {{else}}
-        <p>You have no credit to suggest sentences. Wait for new ones to pop up, or talk to the staff!</p>
-      {{/if}}
-    {{/if}}
-    <!-- to here -->
   {{/if}}
 {{/page-body}}
