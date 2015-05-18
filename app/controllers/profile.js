@@ -44,7 +44,8 @@ export default Ember.Controller.extend(SessionMixin, {
   uploadProfile: function() {
     var self = this, data = this.getProperties('mothertongue'),
         lifecycle = this.get('lifecycle'),
-        profile = this.get('currentProfile');
+        profile = this.get('currentProfile'),
+        forward;
 
     this.set('isUploading', true);
     this.set('justSaved', false);
@@ -61,13 +62,18 @@ export default Ember.Controller.extend(SessionMixin, {
       self.set('justSaved', true);
       self.resetInput();
 
-      // Transition lifecycle state if possible, using immediate
-      // check (and not observer-based check)
+      // Transition lifecycle state if possible
       if (lifecycle.get('validator.isComplete')) {
-        lifecycle.transitionUp();
+        if (lifecycle.get('isInRegistering')) { forward = 'index'; }
+        return lifecycle.transitionUp();
       }
     }, function(error) {
       self.set('errors', error.errors);
+    }).then(function() {
+      if (!Ember.isNone(forward)) {
+        self.controllerFor(forward).set('doIntro', true);
+        self.transitionToRoute(forward);
+      }
     }).finally(function() {
       self.set('isUploading', false);
     });
