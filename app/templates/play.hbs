@@ -1,4 +1,5 @@
 {{document-title title="Play"}}
+{{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=doIntro on-complete="introComplete"}}
 {{#page-header}}
   {{#if lifecycle.isInExp}}Experiment{{#if lifecycle.isInExpTraining}} &mdash; training{{/if}}{{else}}Play{{/if}} <small>available sentences <span class="badge">{{currentProfile.availableTreesBucket}}</span> | next credit in <span class="badge">{{currentProfile.nextCreditIn}}</span> sentences</small>
 {{/page-header}}
