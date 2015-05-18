@@ -1,4 +1,5 @@
 {{document-title title="Play"}}
+{{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=doIntro on-complete="introComplete"}}
 {{#page-header}}
   {{#if lifecycle.isInExp}}Experiment{{#if lifecycle.isInExpTraining}} &mdash; training{{/if}}{{else}}Play{{/if}} <small>available sentences <span class="badge">{{currentProfile.availableTreesBucket}}</span> | next credit in <span class="badge">{{currentProfile.nextCreditIn}}</span> sentences</small>
 {{/page-header}}
@@ -6,10 +7,12 @@
 {{#page-body}}
   {{#if isInInstructions}}
     {{play-instructions
+        dontCatchEnter=doIntro
         next="task.read"}}
 
   {{else if isInTaskReading}}
     {{play-read
+        dontCatchEnter=doIntro
         sentence=currentSentence
         duration=readDuration
         next="task.distract"
@@ -17,10 +20,12 @@
 
   {{else if isInTaskDistracting}}
     {{play-distract
+        dontCatchEnter=doIntro
         next="task.write.user"}}
 
   {{else if isInTaskWritingUser}}
     {{play-write
+        dontCatchEnter=doIntro
         minTokens=minTokens
         parentSentence=currentSentence
         duration=writeDuration
@@ -33,10 +38,12 @@
 
   {{else if isInTaskTimedout}}
     {{play-timeout
+        dontCatchEnter=doIntro
         next="task.read"}}
 
   {{else if isInInfo}}
     {{play-inform
+        dontCatchEnter=doIntro
         events=events
         lastSentence=currentSentence
         newTrial="task.read"}}

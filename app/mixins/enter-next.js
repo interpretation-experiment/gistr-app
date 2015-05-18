@@ -7,7 +7,7 @@ export default Ember.Mixin.create({
     var self = this;
     Ember.$(window).on(this.get('keyupEvent'), function(event) {
       // Enter key
-      if (event.keyCode === 13) {
+      if (event.keyCode === 13 && !self.get('dontCatchEnter')) {
         self.send('next');
         // Prevent anything else from happening
         return false;
