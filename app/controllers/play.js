@@ -56,6 +56,35 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   },
 
   /*
+   * Introductions
+   */
+  doIntro: false,
+  expIntroSteps: function() {
+    return [
+      {
+        element: Ember.$('.page-title').get(0),
+        intro: 'Welcome to the Experiment page!',
+      },
+      {
+        element: Ember.$('#instructions').get(0),
+        intro: "You're going to read a sentence",
+      },
+      // TODO: mention
+      // - limited time
+      // - distraction task
+      // - limited time to write
+      // - repeats
+      {
+        element: Ember.$('#nav-back').get(0),
+        intro: "Quit whenever you want, just click here",
+        position: "right"
+      }
+    ];
+  },
+  // TODO: explain available sentences and 'next credit in'
+  playingIntroSteps: function() {},
+
+  /*
    * Streak-related events
    */
   eventChecks: {
@@ -213,6 +242,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Trial progress actions
    */
   actions: {
+    introComplete: function() {
+      this.set('doIntro', false);
+    },
     'task.read': function() {
       this.sendStateEvent('task.read');
     },
