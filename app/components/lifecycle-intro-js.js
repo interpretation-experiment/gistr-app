@@ -2,18 +2,20 @@ import Ember from 'ember';
 
 import IntroJSComponent from 'ember-introjs/components/intro-js';
 
+import SessionMixin from 'gistr/mixins/session';
 
-export default IntroJSComponent.extend({
+
+export default IntroJSComponent.extend(SessionMixin, {
   lifecycle: Ember.inject.service(),
 
   initIntroJS: function() {
     if (this.get('lifecycle.isInExp')) {
-      this.set('steps', this.get('getExpSteps')());
+      this.set('steps', this.get('getExpSteps')(this.get('currentUser')));
     } else if (this.get('lifecycle.isInPlaying')) {
-      this.set('steps', this.get('getPlayingSteps')());
+      this.set('steps', this.get('getPlayingSteps')(this.get('currentUser')));
     } else {
-      throw new Error(`Asked to do an intro for unknown ` +
-                      `lifecycle state '${this.get('lifecycle.currentState')}'`);
+      console.warn(`Asked to do an intro for unknown ` +
+                   `lifecycle state '${this.get('lifecycle.currentState')}'`);
     }
   }.on('didInsertElement')
 });

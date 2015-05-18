@@ -14,7 +14,7 @@ export default Ember.Controller.extend(SessionMixin, {
     },
   },
 
-  expIntroSteps: function() {
+  expIntroSteps: function(user) {
     return [
       {
         element: Ember.$('#title').get(0),
@@ -26,10 +26,11 @@ export default Ember.Controller.extend(SessionMixin, {
         intro: "<p>There are a few tests and a questionnaire in your profile page.</p><p>Feel free to do them when you want to!</p>"
       },
       {
-        element: Ember.$('#pass').get(0),
+        element: Ember.$(user.get('isStaff') ? '#play' : '#pass').get(0),
+        position: user.get('isStaff') ? 'right' : 'bottom',
         intro: "Get going on the experiment now! You'll get to know all about it afterwards."
       }
     ];
   },
-  playingIntroSteps: function() {}
+  playingIntroSteps: function(/*user*/) {}
 });
