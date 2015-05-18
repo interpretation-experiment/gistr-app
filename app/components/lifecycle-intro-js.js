@@ -1,3 +1,5 @@
+import Ember from 'ember';
+
 import IntroJSComponent from 'ember-introjs/components/intro-js';
 
 
