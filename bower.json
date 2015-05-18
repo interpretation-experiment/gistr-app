@@ -18,8 +18,6 @@
     "jquery.easy-pie-chart": "~2.1.6",
     "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
     "dom-ruler": "0.1.5"
-  },
-  "devDependencies": {
     "fontawesome": "~4.3.0",
     "bootstrap-datepicker": "~1.4.0",
     "highcharts": "~4.1.5",
