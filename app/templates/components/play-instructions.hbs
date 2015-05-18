@@ -1,8 +1,9 @@
 {{#if showInstructions}}
+  {{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=true on-complete="introComplete"}}
   {{! TODO: add drawing here }}
 {{else}}
   <h1>Ready to go?</h1>
-  <button class="btn btn-default" {{action "manualInstructions"}}>Read instructions again</button>
+  <button class="btn btn-default" {{action "showInstructions"}}>Read instructions again</button>
 {{/if}}{{! showInstructions }}
 
 <button class="btn btn-primary" {{action "next"}}>Start</button>

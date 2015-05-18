@@ -9,6 +9,7 @@ export default Ember.Controller.extend(SessionMixin, {
   doIntro: false,
   actions: {
     introComplete: function() {
+      // TODO: save a introducedIndex${lifecycle.currentState} flag on the profile
       this.set('doIntro', false);
       this.get('controllers.play').set('doIntro', true);
     },
