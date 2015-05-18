@@ -10,9 +10,12 @@
       </div>
     </div>
   </div>
+  <div class="center">
+    <button class="btn btn-primary" {{action "next"}}>Start</button>
+  </div>
 {{else}}
   <h1>Ready to go?</h1>
   <button class="btn btn-default" {{action "showInstructions"}}>Read instructions again</button>
+  <button class="btn btn-primary" {{action "next"}}>Start</button>
 {{/if}}{{! showInstructions }}
 
-<button class="btn btn-primary" {{action "next"}}>Start</button>
