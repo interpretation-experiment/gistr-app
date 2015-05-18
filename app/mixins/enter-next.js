@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 
 export default Ember.Mixin.create({
-  keyupEvent: 'keyup',
+  keyupEvent: 'keyup.enter-next',
   initKeyListener: function() {
     var self = this;
     Ember.$(window).on(this.get('keyupEvent'), function(event) {
