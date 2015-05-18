@@ -4,11 +4,13 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
+  needs: ['play'],
+
   doIntro: false,
   actions: {
     introComplete: function() {
       this.set('doIntro', false);
-      this.controllerFor('play').set('doIntro', true);
+      this.get('controllers.play').set('doIntro', true);
     },
   },
 
