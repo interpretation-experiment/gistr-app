@@ -44,6 +44,7 @@
     "ember-django-adapter": "^0.5.5",
     "ember-document-title": "^1.1.11",
     "ember-export-application-global": "^1.0.2",
+    "ember-introjs": "^0.2.3",
     "ember-radio-buttons": "^3.0.1",
     "franc": "^1.0.1",
     "jsnetworkx": "^0.3.3",
