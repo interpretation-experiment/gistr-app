@@ -1,6 +1,15 @@
 {{#if showInstructions}}
   {{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=true on-complete="introComplete"}}
-  {{! TODO: add drawing here }}
+  <div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+      <div class="instructions">
+        <img id="instruction-read1" src="assets/images/play/read1.png" title="Reading a sentence" />
+        <img id="instruction-read2" src="assets/images/play/read2.png" title="Time is short" />
+        <img id="instruction-distract" src="assets/images/play/distract.png" title="Remember it well" />
+        <img id="instruction-write" src="assets/images/play/write.png" title="Writing the sentence" />
+      </div>
+    </div>
+  </div>
 {{else}}
   <h1>Ready to go?</h1>
   <button class="btn btn-default" {{action "showInstructions"}}>Read instructions again</button>

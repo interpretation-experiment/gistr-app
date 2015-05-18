@@ -18,7 +18,7 @@ export default Ember.Component.extend(EnterNextMixin, {
         intro: 'Welcome to the Experiment page!',
       },
       {
-        element: Ember.$('#instructions').get(0),
+        element: Ember.$('.instructions').get(0),
         intro: "You're going to read a sentence",
       },
       // TODO: mention
