@@ -8,6 +8,7 @@ export default Ember.Controller.extend(SessionMixin, {
   actions: {
     introComplete: function() {
       this.set('doIntro', false);
+      this.controllerFor('play').set('doIntro', true);
     },
   },
 
@@ -27,5 +28,6 @@ export default Ember.Controller.extend(SessionMixin, {
         intro: "Get going on the experiment now! You'll get to know all about it afterwards."
       }
     ];
-  }
+  },
+  playingIntroSteps: function() {}
 });
