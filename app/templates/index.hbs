@@ -1,18 +1,21 @@
 {{document-title title="Home"}}
+{{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=doIntro on-complete=introComplete}}
 
 <div class="row">
   <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">
 
     {{#if session.isAuthenticated}}
-      {{#link-to 'profile' class="icon icon-big pull-right"}}<span class="glyphicon glyphicon-user"></span>{{/link-to}}
+      {{#link-to 'profile' class="icon icon-big pull-right" id="profile"}}<span class="glyphicon glyphicon-user"></span>{{/link-to}}
     {{/if}}
 
   </div>
 </div>
 
 {{#page-body class="center"}}
-  <h1>Gistr</h1>
-  <h2><small>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation{{#if (can 'read about')}}. {{link-to 'Learn more' 'about'}}.{{/if}}</small></h2>
+  <div id="title">
+    <h1>Gistr</h1>
+    <h2><small>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation{{#if (can 'read about')}}. {{link-to 'Learn more' 'about'}}.{{/if}}</small></h2>
+  </div>
 
   <div class="greeting">
 
@@ -27,41 +30,41 @@
       {{/if}}{{! session.isAuthenticated }}
 
       {{#unless (can 'read about')}}
-        <h2>Want to know what this is about?</h2>
-        {{#if session.isAuthenticated}}
-          <h2>{{link-to 'Pass the experiment' 'play' class="btn btn-primary btn-lg"}}</h2>
-        {{else}}
-          <h2>{{link-to 'Pass the experiment' 'register' class="btn btn-primary btn-lg"}}</h2>
-          <h2>Or {{link-to 'Sign in' 'login'}} if you've already started</h2>
-        {{/if}}{{! session.isAuthenticated}}
+        <div id="pass">
+          <h2>Want to know what this is about?</h2>
+          {{#if session.isAuthenticated}}
+            <h2>{{link-to 'Pass the experiment' 'play' class="btn btn-primary btn-lg"}}</h2>
+          {{else}}
+            <h2>{{link-to 'Pass the experiment' 'register' class="btn btn-primary btn-lg"}}</h2>
+            <h2>Or {{link-to 'Sign in' 'login'}} if you've already started</h2>
+          {{/if}}{{! session.isAuthenticated}}
+        </div>
       {{/unless}}{{! can read about }}
 
     {{/if}}{{! session.isWorking }}
   </div>
 {{/page-body}}
 
-{{#page-body class="center"}}
-  <div class="row">
+{{#if (can 'read about')}}
+  {{#page-body class="center"}}
+    <div class="row">
 
-    <div class="col-sm-2 col-sm-offset-2">
-      {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success"}}
-    </div>
-    <div class="col-sm-4">
-      {{link-to 'Explore' 'explore' class="btn-home btn btn-lg btn-warning"}}
-    </div>
-    <div class="col-sm-2">
-      {{#link-to 'suggest' class="btn-home btn btn-lg btn-info"}}New {{credit-badge}}{{/link-to}}
+      <div class="col-sm-2 col-sm-offset-2">
+        {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success" id="play"}}
+      </div>
+      <div class="col-sm-4">
+        {{link-to 'Explore' 'explore' class="btn-home btn btn-lg btn-warning" id="explore"}}
+      </div>
+      <div class="col-sm-2">
+        {{#link-to 'suggest' class="btn-home btn btn-lg btn-info" id="new"}}New {{credit-badge}}{{/link-to}}
+      </div>
+
     </div>
 
-  </div>
-
-  <div class="row footer">
-    {{#if (can 'read about')}}
+    <div class="row footer">
       {{#link-to 'about' class="icon icon-med"}}{{fa-icon "question-circle"}}{{/link-to}}
       <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
       <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
-    {{else}}
-      More stuff here once you've done the experiment!
-    {{/if}}{{! can read about }}
-  </div>
-{{/page-body}}
+    </div>
+  {{/page-body}}
+{{/if}}{{! can read about }}
