@@ -12,11 +12,11 @@ export default Ember.Component.extend(EnterNextMixin, {
   showInstructions: Ember.computed.or('doIntro', 'manualInstructions', 'keepInstructions'),
   dontCatchEnter: Ember.computed.or('doIntro', 'manualInstructions'),
 
-  expIntroSteps: function() {
+  expIntroSteps: function(user, shaping) {
     return [
       {
-        element: Ember.$('.page-title').get(0),
-        intro: 'Welcome to the Experiment page!',
+        element: Ember.$('#exp-title').get(0),
+        intro: "Welcome to Gistr's experiment!",
       },
       {
         element: Ember.$('#instruction-read1').get(0),
@@ -44,7 +44,12 @@ export default Ember.Component.extend(EnterNextMixin, {
       },
       {
         element: Ember.$('.instructions-drawing').get(0),
-        intro: "The whole process loops once you're done. There's a pause every 10 sentences.",
+        intro: "The whole process loops once you're done",
+      },
+      {
+        element: Ember.$('#training-subtitle').get(0),
+        intro: `Right now you're in training &mdash; the real experiment starts after ${shaping.get('trainingWork')} trials`,
+        position: "right"
       },
       {
         element: Ember.$('#nav-back').get(0),
@@ -53,12 +58,16 @@ export default Ember.Component.extend(EnterNextMixin, {
       }
     ];
   },
-  // TODO: explain available sentences and 'next credit in'
+  // TODO: explain available sentences, credit system, and 'next credit in'
   playingIntroSteps: function() {},
 
   actions: {
     showInstructions: function() {
-      this.hideAllImages();
+      if (this.get('lifecycle.isInExp')) {
+        this.hideAllImages();
+      } else if (this.get('lifecycle.isInPlaying')) {
+        this.showAllImages();
+      }
       this.set('manualInstructions', true);
     },
     introDone: function() {
@@ -69,7 +78,7 @@ export default Ember.Component.extend(EnterNextMixin, {
       // Inform upper powers, which will set doIntro to false
       this.sendAction('introComplete');
     },
-    introChange: function(step, intro) {
+    introChange: function(step) {
       this.showImage(step.image);
     },
     next: function() {
