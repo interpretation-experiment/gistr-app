@@ -8,11 +8,13 @@ import SessionMixin from 'gistr/mixins/session';
 export default Ability.extend(SessionMixin, {
   lifecycle: Ember.inject.service(),
 
-  canRead: function(tree) {
+  canRead: function() {
     // Staff can read everything
     if (this.get('currentUser.isStaff')) { return true; }
 
     // If we're asked for trees in general, check that
+    var tree = this.get('model');
+    console.log(tree);
     if (Ember.isNone(tree)) { return this.get('lifecycle.isInPlaying'); }
 
     // Else, check lifecycle and tree access
