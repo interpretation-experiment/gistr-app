@@ -12,11 +12,12 @@ export default Ember.Component.extend(EnterNextMixin, {
   showInstructions: Ember.computed.or('doIntro', 'manualInstructions', 'keepInstructions'),
   dontCatchEnter: Ember.computed.or('doIntro', 'manualInstructions'),
 
-  expIntroSteps: function(user, shaping) {
-    return [
+  expIntroSteps: function(user, shaping, lifecycle) {
+    var steps = [
       {
-        element: Ember.$('#exp-title').get(0),
+        element: Ember.$('#exp-play-title').get(0),
         intro: "Welcome to Gistr's experiment!",
+        position: "right"
       },
       {
         element: Ember.$('#instruction-read1').get(0),
@@ -45,18 +46,23 @@ export default Ember.Component.extend(EnterNextMixin, {
       {
         element: Ember.$('.instructions-drawing').get(0),
         intro: "The whole process loops once you're done",
-      },
-      {
-        element: Ember.$('#training-subtitle').get(0),
-        intro: `Right now you're in training &mdash; the real experiment starts after ${shaping.get('trainingWork')} trials`,
-        position: "right"
-      },
-      {
-        element: Ember.$('#nav-back').get(0),
-        intro: "Quit whenever you want, just click here",
-        position: "right"
       }
     ];
+    if (lifecycle.get('isInExpTraining')) {
+      steps.push({
+        element: Ember.$('#exp-play-title').get(0),
+        intro: `<p>Right now you're in <strong>training</strong>: nothing you do is recorded.</p><p>The real experiment starts after ${shaping.get('trainingWork')} trials.</p>`,
+        position: "right"
+      });
+    }
+
+    steps.push({
+      element: Ember.$('#nav-back').get(0),
+      intro: "Quit whenever you want, just click here",
+      position: "right"
+    });
+
+    return steps;
   },
   // TODO: explain available sentences, credit system, and 'next credit in'
   playingIntroSteps: function() {},
