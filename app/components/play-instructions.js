@@ -73,6 +73,8 @@ export default Ember.Component.extend(EnterNextMixin, {
         this.hideAllImages();
       } else if (this.get('lifecycle.isInPlaying')) {
         this.showAllImages();
+      } else {
+        console.warn(`Asked to show instructions when in lifecycle state '${this.get('lifecycle.currentState')}'`);
       }
       this.set('manualInstructions', true);
     },
