@@ -8,10 +8,9 @@ export default Ember.Component.extend(EnterNextMixin, {
 
   doExpIntro: null,
   doPlayIntro: null,
-  manualInstructions: false,
-  keepInstructions: false,
-  showInstructions: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualInstructions', 'keepInstructions'),
-  dontCatchEnter: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualInstructions'),
+  manualIntro: false,
+  showIntro: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualIntro'),
+  dontCatchEnter: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualIntro'),
 
   expIntroSteps: function(user, shaping, lifecycle) {
     var steps = [
@@ -40,9 +39,14 @@ export default Ember.Component.extend(EnterNextMixin, {
       },
       {
         element: Ember.$('#instruction-write').get(0),
-        intro: "<p>And you must rewrite what you remember.</p><p>Pay attention to <strong>capitalization</strong> and <strong>punctuation</strong>, even at the end of the sentence! (You can ignore ending periods though)</p>",
-        position: "left",
+        intro: "And you must rewrite what you remember",
+        position: "top",
         image: 'write'
+      },
+      {
+        element: Ember.$('#instruction-write').get(0),
+        intro: 'Pay attention to <strong>capitalization</strong> and <strong>punctuation</strong>, even at the end of the sentence! (You can ignore ending periods though)',
+        position: "left",
       },
       {
         element: Ember.$('.instructions-drawing').get(0),
@@ -87,34 +91,32 @@ export default Ember.Component.extend(EnterNextMixin, {
     ];
   },
 
-  afterIntroInstructions: function() {
+  cleanupIntro: function() {
     this.showAllImages();
-    // Keep showing the instructions
-    this.set('keepInstructions', true);
-    this.set('manualInstructions', false);
+    this.set('manualIntro', false);
   },
 
   onEnter: function() {
     this.send('next');
   },
   actions: {
-    showInstructions: function() {
+    showIntro: function() {
       if (this.get('lifecycle.isInExp')) {
         this.hideAllImages();
       } else if (this.get('lifecycle.isInPlaying')) {
-        this.showAllImages();
+        // Do nothing
       } else {
-        console.warn(`Asked to show instructions when in lifecycle state '${this.get('lifecycle.currentState')}'`);
+        console.warn(`Asked to show intro when in lifecycle state '${this.get('lifecycle.currentState')}'`);
       }
-      this.set('manualInstructions', true);
+      this.set('manualIntro', true);
     },
     expIntroDone: function() {
-      this.afterIntroInstructions();
+      this.cleanupIntro();
       // Inform upper powers, which will set doExpIntro to false
       this.sendAction('expIntroDone');
     },
     playIntroDone: function() {
-      this.afterIntroInstructions();
+      this.cleanupIntro();
       // Inform upper powers, which will set doPlayIntro to false
       this.sendAction('playIntroDone');
     },
@@ -122,7 +124,7 @@ export default Ember.Component.extend(EnterNextMixin, {
       this.showImage(step.image);
     },
     playIntroChange: function() {
-      this.showAllImages();
+      // Do nothing
     },
     next: function() {
       this.sendAction('next');
@@ -146,9 +148,9 @@ export default Ember.Component.extend(EnterNextMixin, {
   },
 
   images: [
-    Ember.Object.create({ name: 'read1', title: 'Reading a sentence', hidden: true }),
-    Ember.Object.create({ name: 'read2', title: 'Time is short', hidden: true }),
-    Ember.Object.create({ name: 'distract', title: 'Remember it well', hidden: true }),
-    Ember.Object.create({ name: 'write', title: 'Writing the sentence', hidden: true })
+    Ember.Object.create({ name: 'read1', title: 'Reading a sentence', hidden: false }),
+    Ember.Object.create({ name: 'read2', title: 'Time is short', hidden: false }),
+    Ember.Object.create({ name: 'distract', title: 'Remember it well', hidden: false }),
+    Ember.Object.create({ name: 'write', title: 'Writing the sentence', hidden: false })
   ],
 });

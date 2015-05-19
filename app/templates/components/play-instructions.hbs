@@ -1,4 +1,4 @@
-{{#if showInstructions}}
+{{#if showIntro}}
   {{#if lifecycle.isInExp}}
     {{computed-intro-js
         getSteps=expIntroSteps
@@ -14,24 +14,22 @@
         on-complete="playIntroDone"
         on-exit="playIntroDone"}}
   {{/if}}
-  <div class="row">
-    <div class="col-sm-10 col-sm-offset-1">
-      <div class="instructions-drawing">
-        {{#each images as |image|}}
-          <img
-              class="{{if image.hidden 'hidden'}}"
-              id="instruction-{{image.name}}"
-              src="assets/images/play/{{image.name}}.png"
-              title="{{image.title}}" />
-        {{/each}}
-      </div>
+{{/if}}{{! showIntro }}
+<div class="row">
+  <div class="col-sm-10 col-sm-offset-1">
+    <div class="instructions-drawing">
+      {{#each images as |image|}}
+        <img
+            class="{{if image.hidden 'hidden'}}"
+            id="instruction-{{image.name}}"
+            src="assets/images/play/{{image.name}}.png"
+            title="{{image.title}}" />
+      {{/each}}
     </div>
   </div>
-  <div class="center">
-    {{#sl-tooltip title="Press Enter!"}}<button class="btn btn-primary" {{action "next"}}>Start</button>{{/sl-tooltip}}
-  </div>
-{{else}}
+</div>
+<div class="center">
   <h1>Ready to go?</h1>
-  <button class="btn btn-default" {{action "showInstructions"}}>Read instructions again</button>
+  <button class="btn btn-default" {{action "showIntro"}}>Play instructions again</button>
   {{#sl-tooltip title="Press Enter!"}}<button class="btn btn-primary" {{action "next"}}>Start</button>{{/sl-tooltip}}
-{{/if}}{{! showInstructions }}
+</div>
