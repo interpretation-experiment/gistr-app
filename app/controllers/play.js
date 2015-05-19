@@ -58,7 +58,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   /*
    * Introductions
    */
-  doIntro: true,
+  doIntro: false,
 
   /*
    * Streak-related events
