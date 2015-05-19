@@ -71,7 +71,6 @@ export default Ember.Controller.extend(SessionMixin, {
       self.set('errors', error.errors);
     }).then(function() {
       if (!Ember.isNone(forward)) {
-        self.controllerFor(forward).set('doIntro', true);
         self.transitionToRoute(forward);
       }
     }).finally(function() {

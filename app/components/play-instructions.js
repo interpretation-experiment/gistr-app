@@ -6,11 +6,13 @@ import EnterNextMixin from 'gistr/mixins/enter-next';
 export default Ember.Component.extend(EnterNextMixin, {
   lifecycle: Ember.inject.service(),
 
-  doIntro: null,
+  doExpIntro: null,
+  doPlayIntro: null,
+  doAnIntro: Ember.computed.or('doExpIntro', 'doPlayIntro'),
   manualInstructions: false,
   keepInstructions: false,
-  showInstructions: Ember.computed.or('doIntro', 'manualInstructions', 'keepInstructions'),
-  dontCatchEnter: Ember.computed.or('doIntro', 'manualInstructions'),
+  showInstructions: Ember.computed.or('doAnIntro', 'manualInstructions', 'keepInstructions'),
+  dontCatchEnter: Ember.computed.or('doAnIntro', 'manualInstructions'),
 
   expIntroSteps: function(user, shaping, lifecycle) {
     var steps = [
@@ -64,7 +66,7 @@ export default Ember.Component.extend(EnterNextMixin, {
 
     return steps;
   },
-  playingIntroSteps: function(user, shaping) {
+  playIntroSteps: function(user, shaping) {
     var cost = shaping.get('targetBranchCount') * shaping.get('targetBranchDepth');
     return [
       {
@@ -86,6 +88,16 @@ export default Ember.Component.extend(EnterNextMixin, {
     ];
   },
 
+  afterIntroInstructions: function() {
+    this.showAllImages();
+    // Keep showing the instructions
+    this.set('keepInstructions', true);
+    this.set('manualInstructions', false);
+  },
+
+  onEnter: function() {
+    this.send('next');
+  },
   actions: {
     showInstructions: function() {
       if (this.get('lifecycle.isInExp')) {
@@ -97,22 +109,21 @@ export default Ember.Component.extend(EnterNextMixin, {
       }
       this.set('manualInstructions', true);
     },
-    introDone: function() {
-      this.showAllImages();
-      // Keep showing the instructions
-      this.set('keepInstructions', true);
-      this.set('manualInstructions', false);
-      // Inform upper powers, which will set doIntro to false
-      this.sendAction('introComplete');
+    expIntroDone: function() {
+      this.afterIntroInstructions();
+      // Inform upper powers, which will set doExpIntro to false
+      this.sendAction('expIntroDone');
     },
-    introChange: function(step) {
-      if (this.get('lifecycle.isInExp')) {
-        this.showImage(step.image);
-      } else if (this.get('lifecycle.isInPlaying')) {
-        this.showAllImages();
-      } else {
-        console.warn(`Asked to change instructions when in lifecycle state '${this.get('lifecycle.currentState')}'`);
-      }
+    playIntroDone: function() {
+      this.afterIntroInstructions();
+      // Inform upper powers, which will set doPlayIntro to false
+      this.sendAction('playIntroDone');
+    },
+    expIntroChange: function(step) {
+      this.showImage(step.image);
+    },
+    playIntroChange: function() {
+      this.showAllImages();
     },
     next: function() {
       this.sendAction('next');

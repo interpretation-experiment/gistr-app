@@ -4,14 +4,17 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
-  needs: ['play'],
+  expIntroNotDone: Ember.computed.not('currentProfile.introducedExpHome'),
+  doExpIntro: Ember.computed.and('lifecycle.isInExp', 'expIntroNotDone'),
+  playIntroNotDone: Ember.computed.not('currentProfile.introducedPlayHome'),
+  doPlayIntro: Ember.computed.and('lifecycle.isInPlaying', 'playIntroNotDone'),
 
-  doIntro: false,
   actions: {
-    introComplete: function() {
-      // TODO: save a introducedIndex${lifecycle.currentState} flag on the profile
-      this.set('doIntro', false);
-      this.get('controllers.play').set('doIntro', true);
+    expIntroComplete: function() {
+      this.get('currentProfile').set('introducedExpHome', true).save();
+    },
+    playIntroComplete: function() {
+      this.get('currentProfile').set('introducedPlayHome', true).save();
     },
   },
 
@@ -33,7 +36,7 @@ export default Ember.Controller.extend(SessionMixin, {
       }
     ];
   },
-  playingIntroSteps: function(user) {
+  playIntroSteps: function(user) {
     var have = user.get('profile.suggestionCredit') > 0 ? 'do' : "don't";
     return [
       {

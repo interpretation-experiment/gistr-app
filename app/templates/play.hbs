@@ -6,8 +6,10 @@
 {{#page-body}}
   {{#if isInInstructions}}
     {{play-instructions
-        doIntro=doIntro
-        introComplete="introComplete"
+        doExpIntro=doExpIntro
+        doPlayIntro=doPlayIntro
+        expIntroDone="expIntroDone"
+        playIntroDone="playIntroDone"
         next="task.read"}}
 
   {{else if isInTaskReading}}

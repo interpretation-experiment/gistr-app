@@ -25,6 +25,9 @@ export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   timerDone: function() {
     this.sendAction('timeout');
   },
+  onEnter: function() {
+    this.send('next');
+  },
   actions: {
     next: function() {
       this.sendAction('next');

@@ -1,5 +1,16 @@
 {{document-title title="Home"}}
-{{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=doIntro on-complete="introComplete"}}
+
+{{#if doExpIntro}}
+  {{computed-intro-js
+      getSteps=expIntroSteps
+      start-if=true
+      on-complete="expIntroComplete"}}
+{{else if doPlayIntro}}
+  {{computed-intro-js
+      getSteps=playIntroSteps
+      start-if=true
+      on-complete="playIntroComplete"}}
+{{/if}}
 
 <div class="row">
   <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">

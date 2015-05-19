@@ -58,7 +58,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   /*
    * Introductions
    */
-  doIntro: false,
+  expIntroNotDone: Ember.computed.not('currentProfile.introducedExpPlay'),
+  doExpIntro: Ember.computed.and('lifecycle.isInExp', 'expIntroNotDone'),
+  playIntroNotDone: Ember.computed.not('currentProfile.introducedPlayPlay'),
+  doPlayIntro: Ember.computed.and('lifecycle.isInPlaying', 'playIntroNotDone'),
 
   /*
    * Streak-related events
@@ -218,9 +221,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Trial progress actions
    */
   actions: {
-    introComplete: function() {
-      // TODO: save a introducedPlay${lifecycle.currentState} flag on the profile
-      this.set('doIntro', false);
+    expIntroDone: function() {
+      this.get('currentProfile').set('introducedExpPlay', true).save();
+    },
+    playIntroDone: function() {
+      this.get('currentProfile').set('introducedPlayPlay', true).save();
     },
     'task.read': function() {
       this.sendStateEvent('task.read');
@@ -239,8 +244,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
       this.sendStateEvent('task.write.process');
     },
     instruct: function() {
-      console.log('play instruct');
-      this.set('doIntro', true);
       this.sendStateEvent('instruct');
     },
     reset: function() {

@@ -83,12 +83,14 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
     return this.get('lifecycle.validator.actionRoutes').contains('play');
   }.property('lifecycle.validator.actionRoutes'),
 
+  onEnter: function() {
+    this.$('#active-button').click();
+  },
   actions: {
     next: function() {
       this.sendAction("newTrial");
     },
     instruct: function() {
-      console.log('inform instruct');
       this.sendAction('instruct');
     }
   }
