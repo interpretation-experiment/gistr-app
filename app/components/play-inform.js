@@ -86,6 +86,10 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
   actions: {
     next: function() {
       this.sendAction("newTrial");
+    },
+    instruct: function() {
+      console.log('inform instruct');
+      this.sendAction('instruct');
     }
   }
 });

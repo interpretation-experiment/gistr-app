@@ -64,8 +64,27 @@ export default Ember.Component.extend(EnterNextMixin, {
 
     return steps;
   },
-  // TODO: explain available sentences, credit system, and 'next credit in'
-  playingIntroSteps: function() {},
+  playingIntroSteps: function(user, shaping) {
+    var cost = shaping.get('targetBranchCount') * shaping.get('targetBranchDepth');
+    return [
+      {
+        element: Ember.$('#exp-play-title').get(0),
+        intro: "You're now in play mode!",
+      },
+      {
+        element: Ember.$('.instructions-drawing').get(0),
+        intro: "<p>It's the same principle.</p><p>But now you can explore how other people transformed sentences! (Go to your home page for that)</p>",
+      },
+      {
+        element: Ember.$('#available-sentences').get(0),
+        intro: "This tells you the number of sentences you haven't seen yet &mdash; it grows if other people suggest new ones",
+      },
+      {
+        element: Ember.$('#next-credit').get(0),
+        intro: `Every ${cost} sentences you win a <strong>suggestion credit</strong> &mdash; head over to your home page to suggest your sentence!`,
+      }
+    ];
+  },
 
   actions: {
     showInstructions: function() {
@@ -87,7 +106,13 @@ export default Ember.Component.extend(EnterNextMixin, {
       this.sendAction('introComplete');
     },
     introChange: function(step) {
-      this.showImage(step.image);
+      if (this.get('lifecycle.isInExp')) {
+        this.showImage(step.image);
+      } else if (this.get('lifecycle.isInPlaying')) {
+        this.showAllImages();
+      } else {
+        console.warn(`Asked to change instructions when in lifecycle state '${this.get('lifecycle.currentState')}'`);
+      }
     },
     next: function() {
       this.sendAction('next');

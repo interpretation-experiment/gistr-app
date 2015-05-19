@@ -238,6 +238,11 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
       this.incrementProperty('streak');
       this.sendStateEvent('task.write.process');
     },
+    instruct: function() {
+      console.log('play instruct');
+      this.set('doIntro', true);
+      this.sendStateEvent('instruct');
+    },
     reset: function() {
       this.sendStateEvent('reset');
     },
@@ -301,6 +306,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
         from: ['instructions', 'task.writing.processing'],
         to: 'info'
       }
+    },
+    instruct: {
+      transition: { info: 'instructions' }
     },
     reset: {
       transition: {
