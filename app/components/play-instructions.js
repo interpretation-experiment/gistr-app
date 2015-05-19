@@ -40,7 +40,7 @@ export default Ember.Component.extend(EnterNextMixin, {
       },
       {
         element: Ember.$('#instruction-write').get(0),
-        intro: "And you must rewrite what you remember",
+        intro: "<p>And you must rewrite what you remember.</p><p>Pay attention to <strong>capitalization</strong> and <strong>punctuation</strong>, even at the end of the sentence! (You can ignore ending periods though)</p>",
         position: "left",
         image: 'write'
       },
