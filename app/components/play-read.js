@@ -1,9 +1,10 @@
 import Ember from 'ember';
 
 import TimefulMixin from 'gistr/mixins/timeful';
+import EnterNextMixin from 'gistr/mixins/enter-next';
 
 
-export default Ember.Component.extend(TimefulMixin, {
+export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   growl: Ember.inject.service(),
 
   /*
@@ -23,6 +24,9 @@ export default Ember.Component.extend(TimefulMixin, {
 
   timerDone: function() {
     this.sendAction('timeout');
+  },
+  onEnter: function() {
+    this.send('next');
   },
   actions: {
     next: function() {

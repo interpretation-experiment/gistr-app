@@ -8,16 +8,17 @@
       inputId="inputText"
       disabled=isUploading
       info="updateMetaText"
+      onEnter="enterPressed"
       }}
 
   <div class="form-group {{if errors.non_field_errors 'has-error'}}">
     <span class="help-block">{{errors.non_field_errors}}</span>
     {{#if enoughTokens}}
       {{#progress-clock value=progress}}
-        {{async-button action="upload" class="btn btn-primary" default="Continue" pending="Uploading..."}}
+        {{async-button action="upload" class="btn btn-primary" default="Continue" pending="Uploading..." id="active-submit"}}
       {{/progress-clock}}
     {{else}}
-      {{#progress-clock value=progress}}{{#sl-tooltip title=tokensCountInfo}}{{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}{{/sl-tooltip}}{{/progress-clock}}
+      {{#progress-clock value=progress}}{{#sl-tooltip title=tokensCountInfo id="inactive-submit"}}{{input type='submit' class="btn btn-primary" disabled="true" value="Continue"}}{{/sl-tooltip}}{{/progress-clock}}
     {{/if}}
   </div>
 

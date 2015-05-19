@@ -56,6 +56,14 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   },
 
   /*
+   * Introductions
+   */
+  expIntroNotDone: Ember.computed.not('currentProfile.introducedExpPlay'),
+  doExpIntro: Ember.computed.and('lifecycle.isInExp', 'expIntroNotDone'),
+  playIntroNotDone: Ember.computed.not('currentProfile.introducedPlayPlay'),
+  doPlayIntro: Ember.computed.and('lifecycle.isInPlaying', 'playIntroNotDone'),
+
+  /*
    * Streak-related events
    */
   eventChecks: {
@@ -213,6 +221,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Trial progress actions
    */
   actions: {
+    expIntroDone: function() {
+      this.get('currentProfile').set('introducedExpPlay', true).save();
+    },
+    playIntroDone: function() {
+      this.get('currentProfile').set('introducedPlayPlay', true).save();
+    },
     'task.read': function() {
       this.sendStateEvent('task.read');
     },
@@ -228,6 +242,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     processWriting: function() {
       this.incrementProperty('streak');
       this.sendStateEvent('task.write.process');
+    },
+    instruct: function() {
+      this.sendStateEvent('instruct');
     },
     reset: function() {
       this.sendStateEvent('reset');
@@ -292,6 +309,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
         from: ['instructions', 'task.writing.processing'],
         to: 'info'
       }
+    },
+    instruct: {
+      transition: { info: 'instructions' }
     },
     reset: {
       transition: {

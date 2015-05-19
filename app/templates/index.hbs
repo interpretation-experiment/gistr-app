@@ -1,5 +1,20 @@
 {{document-title title="Home"}}
-{{lifecycle-intro-js getExpSteps=expIntroSteps getPlayingSteps=playingIntroSteps start-if=doIntro on-complete=introComplete}}
+
+{{#if showIntro}}
+  {{#if lifecycle.isInExp}}
+    {{computed-intro-js
+        getSteps=expIntroSteps
+        start-if=true
+        on-exit="expIntroDone"
+        on-complete="expIntroDone"}}
+  {{else if lifecycle.isInPlaying}}
+    {{computed-intro-js
+        getSteps=playIntroSteps
+        start-if=true
+        on-exit="playIntroDone"
+        on-complete="playIntroDone"}}
+  {{/if}}{{! lifecycle state }}
+{{/if}}{{! showIntro }}
 
 <div class="row">
   <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">
@@ -45,8 +60,8 @@
   </div>
 {{/page-body}}
 
-{{#if (can 'read about')}}
-  {{#page-body class="center"}}
+{{#page-body class="center"}}
+  {{#if (can 'read about')}}
     <div class="row">
 
       <div class="col-sm-2 col-sm-offset-2">
@@ -60,11 +75,18 @@
       </div>
 
     </div>
+  {{/if}}{{! can read about }}
 
+  {{#if session.isAuthenticated}}
     <div class="row footer">
-      {{#link-to 'about' class="icon icon-med"}}{{fa-icon "question-circle"}}{{/link-to}}
-      <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
-      <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
+      <div id="about-gistr">
+        {{#if (can 'read about')}}
+          {{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}
+          <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
+          <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
+        {{/if}}{{! can read about }}
+        <a href="#" class="icon icon-med" {{action "showIntro"}}>{{fa-icon "question-circle"}}</a>
+      </div>
     </div>
-  {{/page-body}}
-{{/if}}{{! can read about }}
+  {{/if}}{{! session.isAuthenticated }}
+{{/page-body}}

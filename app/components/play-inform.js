@@ -2,9 +2,10 @@ import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
 import splitEvent from 'gistr/utils/split-event';
+import EnterNextMixin from 'gistr/mixins/enter-next';
 
 
-export default Ember.Component.extend(SessionMixin, {
+export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
 
@@ -82,9 +83,15 @@ export default Ember.Component.extend(SessionMixin, {
     return this.get('lifecycle.validator.actionRoutes').contains('play');
   }.property('lifecycle.validator.actionRoutes'),
 
+  onEnter: function() {
+    this.$('#active-next').click();
+  },
   actions: {
     next: function() {
       this.sendAction("newTrial");
+    },
+    instruct: function() {
+      this.sendAction('instruct');
     }
   }
 });

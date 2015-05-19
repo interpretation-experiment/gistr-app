@@ -110,6 +110,17 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
       this.setProperties({
         tokenCount: data.tokenCount,
       });
+    },
+    enterPressed: function() {
+      if (this.get('enoughTokens')) {
+        this.$('#active-submit').click();
+      } else {
+        var submit = this.$('#inactive-submit');
+        submit.mouseenter();
+        Ember.run.later(null, function() {
+          submit.mouseleave();
+        }, 2000);
+      }
     }
   }
 });

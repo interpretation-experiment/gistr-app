@@ -71,3 +71,25 @@ p.sentence-details { color: #aaa; }
 @progress-clock-size: 12em;
 .progress-clock { display: inline-block; position: relative; text-align: center; width: @progress-clock-size; height: @progress-clock-size; line-height: @progress-clock-size; }
 .progress-clock canvas { pointer-events: none; position: absolute; top: 0; left: 0; }
+
+/*
+ * Instruction images
+ */
+div.instructions-drawing {
+  position: relative;
+  height: 230px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+div.instructions-drawing img {
+  position: absolute;
+  border: 2px solid lightgrey;
+  border-radius: 5px;
+  box-shadow: 0 0 2px lightgrey;
+}
+img#instruction-read1 { top: 0; left: 40px; width: 350px; }
+img#instruction-read2 { top: 0; left: 40px; width: 350px; }
+img#instruction-distract { top: 50px; left: 315px; width: 80px; }
+img#instruction-write { top: 70px; left: 350px; width: 350px; }

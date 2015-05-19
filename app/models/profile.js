@@ -16,6 +16,10 @@ export default DS.Model.extend({
   nextCreditIn: DS.attr('number'),
   mothertongue: DS.attr('string'),
   availableTreesCounts: DS.attr('object'),
+  introducedExpHome: DS.attr('boolean'),
+  introducedExpPlay: DS.attr('boolean'),
+  introducedPlayHome: DS.attr('boolean'),
+  introducedPlayPlay: DS.attr('boolean'),
 
   /*
    * Unused properties

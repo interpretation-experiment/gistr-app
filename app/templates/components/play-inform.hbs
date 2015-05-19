@@ -6,12 +6,12 @@
 
       {{#if lifecycle.isInExpDoing}}{{! just transitioned from exp.training to exp.doing }}
 
-        <h2>Done with your training</h2>
+        <h2>Done with your training!</h2>
         {{#if emptySentences}}
           <p>Unfortunately there are no experiment sentences uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
           <p>You can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
-          <button class="btn btn-primary" {{action "next"}}>On to the epxeriment</button>
+          <button id="active-next" class="btn btn-primary" {{action "next"}}>On to the epxeriment</button>
         {{/if}}{{! empty sentences }}
 
       {{else if lifecycle.isInPlaying}}{{! just transitioned from exp.doing to playing }}
@@ -22,7 +22,7 @@
           <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
           <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
-          <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
+          <button id="active-next" class="btn btn-primary" {{action "instruct"}}>Continue</button>
         {{/if}}{{! empty sentences }}
 
       {{/if}}{{! lifecycle state }}
@@ -33,7 +33,7 @@
 
       {{#if lifecycle.isInExpTraining}}{{! finished training trials, but incomplete lifecycle state }}
 
-        <h2>Done with your training</h2>
+        <h2>Done with your training!</h2>
         <p>We need to know more about you before you can do the experiment.</p>
         {{link-to 'Complete your Profile' 'profile' class="btn btn-primary"}}
 
@@ -50,17 +50,17 @@
 
       {{#if hasExpDoingBreak}}
         <p>You're doing great! Take a few seconds to relax before continuing.</p>
-        <button class="btn btn-primary" {{action "next"}}>Continue</button>
+        <button id="active-next" class="btn btn-primary" {{action "next"}}>Continue</button>
       {{/if}}{{! has exp.doing break }}
 
       {{#if hasPlayingDiffBreak}}
         TODO: add diff to show how well you did
-        <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
+        <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
       {{/if}}{{! has playing diff-break }}
 
       {{#if hasPlayingExplorationBreak}}
         <p>Want to {{link-to 'have a peak' 'explore.tree' lastSentence.tree}} at the tree you just participated in?</p>
-        <button class="btn btn-primary" {{action "next"}}>Keep playing</button>
+        <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
       {{/if}}{{! has playing exploration-break }}
 
     {{/if}}{{! rhythm events }}
@@ -86,7 +86,7 @@
 
     {{#if lifecycle.isInExpTraining}}{{! finished training trials, but incomplete lifecycle state }}
 
-      <h2>Done with your training</h2>
+      <h2>Done with your training!</h2>
       <p>We need to know more about you before you can do the experiment.</p>
       {{link-to 'Complete your Profile' 'profile' class="btn btn-primary"}}
 
