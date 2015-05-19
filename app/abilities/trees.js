@@ -14,7 +14,6 @@ export default Ability.extend(SessionMixin, {
 
     // If we're asked for trees in general, check that
     var tree = this.get('model');
-    console.log(tree);
     if (Ember.isNone(tree)) { return this.get('lifecycle.isInPlaying'); }
 
     // Else, check lifecycle and tree access
