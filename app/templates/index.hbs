@@ -81,11 +81,11 @@
     <div class="row footer">
       <div id="about-gistr">
         {{#if (can 'read about')}}
-          {{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}
+        {{#sl-tooltip title="About Gistr"}}{{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}{{/sl-tooltip}}
           <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
           <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
         {{/if}}{{! can read about }}
-        <a href="#" class="icon icon-med" {{action "showIntro"}}>{{fa-icon "question-circle"}}</a>
+        {{#sl-tooltip title="Play intro"}}<a href="#" class="icon icon-med" {{action "showIntro"}}>{{fa-icon "question-circle"}}</a>{{/sl-tooltip}}
       </div>
     </div>
   {{/if}}{{! session.isAuthenticated }}
