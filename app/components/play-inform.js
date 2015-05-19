@@ -84,7 +84,7 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
   }.property('lifecycle.validator.actionRoutes'),
 
   onEnter: function() {
-    this.$('#active-button').click();
+    this.$('#active-next').click();
   },
   actions: {
     next: function() {
