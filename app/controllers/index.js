@@ -33,5 +33,33 @@ export default Ember.Controller.extend(SessionMixin, {
       }
     ];
   },
-  playingIntroSteps: function(/*user*/) {}
+  playingIntroSteps: function(user) {
+    var have = user.get('profile.suggestionCredit') > 0 ? 'do' : "don't";
+    return [
+      {
+        element: Ember.$('#title').get(0),
+        intro: "Welcome back! You're in play mode now :-)"
+      },
+      {
+        element: Ember.$('#play').get(0),
+        intro: "You can continue transforming sentences",
+        position: 'right'
+      },
+      {
+        element: Ember.$('#explore').get(0),
+        intro: "Or you can also explore what transformations other people did",
+        position: 'right'
+      },
+      {
+        element: Ember.$('#new').get(0),
+        intro: `And if you have credits (you ${have}), you can suggest your own sentences!`,
+        position: 'left'
+      },
+      {
+        element: Ember.$('#about-gistr').get(0),
+        intro: `Look over here to learn all about the experiment!`,
+        position: 'top'
+      },
+    ];
+  }
 });
