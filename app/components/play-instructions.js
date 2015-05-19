@@ -8,11 +8,10 @@ export default Ember.Component.extend(EnterNextMixin, {
 
   doExpIntro: null,
   doPlayIntro: null,
-  doAnIntro: Ember.computed.or('doExpIntro', 'doPlayIntro'),
   manualInstructions: false,
   keepInstructions: false,
-  showInstructions: Ember.computed.or('doAnIntro', 'manualInstructions', 'keepInstructions'),
-  dontCatchEnter: Ember.computed.or('doAnIntro', 'manualInstructions'),
+  showInstructions: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualInstructions', 'keepInstructions'),
+  dontCatchEnter: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualInstructions'),
 
   expIntroSteps: function(user, shaping, lifecycle) {
     var steps = [

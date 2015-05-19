@@ -5,15 +5,22 @@ import SessionMixin from 'gistr/mixins/session';
 
 export default Ember.Controller.extend(SessionMixin, {
   expIntroNotDone: Ember.computed.not('currentProfile.introducedExpHome'),
-  doExpIntro: Ember.computed.and('lifecycle.isInExp', 'expIntroNotDone'),
   playIntroNotDone: Ember.computed.not('currentProfile.introducedPlayHome'),
+  doExpIntro: Ember.computed.and('lifecycle.isInExp', 'expIntroNotDone'),
   doPlayIntro: Ember.computed.and('lifecycle.isInPlaying', 'playIntroNotDone'),
+  manualIntro: false,
+  showIntro: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualIntro'),
 
   actions: {
-    expIntroComplete: function() {
+    showIntro: function() {
+      this.set('manualIntro', true);
+    },
+    expIntroDone: function() {
+      this.set('manualIntro', false);
       this.get('currentProfile').set('introducedExpHome', true).save();
     },
-    playIntroComplete: function() {
+    playIntroDone: function() {
+      this.set('manualIntro', false);
       this.get('currentProfile').set('introducedPlayHome', true).save();
     },
   },
