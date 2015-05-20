@@ -91,6 +91,17 @@ export default Ember.Component.extend(EnterNextMixin, {
     ];
   },
 
+  initIntro: function() {
+    if (this.get('showIntro')) {
+      if (this.get('lifecycle.isInExp')) {
+        this.hideAllImages();
+      } else if (this.get('lifecycle.isInPlaying')) {
+        // Do nothing
+      } else {
+        console.warn(`Asked to show intro when in lifecycle state '${this.get('lifecycle.currentState')}'`);
+      }
+    }
+  }.observes('showIntro').on('init'),
   cleanupIntro: function() {
     this.showAllImages();
     this.set('manualIntro', false);
@@ -101,13 +112,6 @@ export default Ember.Component.extend(EnterNextMixin, {
   },
   actions: {
     showIntro: function() {
-      if (this.get('lifecycle.isInExp')) {
-        this.hideAllImages();
-      } else if (this.get('lifecycle.isInPlaying')) {
-        // Do nothing
-      } else {
-        console.warn(`Asked to show intro when in lifecycle state '${this.get('lifecycle.currentState')}'`);
-      }
       this.set('manualIntro', true);
     },
     expIntroDone: function() {
