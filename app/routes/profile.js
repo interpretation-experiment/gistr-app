@@ -7,7 +7,7 @@ import FormRouteMixin from 'gistr/mixins/form-route';
 export default Ember.Route.extend(RestrictedRouteMixin, FormRouteMixin, {
   setupController: function(controller/*, model*/) {
     var profile = this.get('session.currentUser.profile');
-    if (!!profile) {
+    if (!Ember.isNone(profile)) {
       controller.set('mothertongue', profile.get('mothertongue'));
     }
   }
