@@ -5,6 +5,7 @@ var d3 = window.d3;
 
 export default Ember.Component.extend({
   chart: null,
+  colors: ["green", "orange", "red"],
 
   classNames: ['progress-clock'],
 
@@ -18,7 +19,7 @@ export default Ember.Component.extend({
     var $el = Ember.$(this.get('element'));
 
     $el.easyPieChart({
-      barColor: d3.scale.linear().domain([0, 80, 100]).range(["green", "orange", "red"]),
+      barColor: d3.scale.linear().domain([0, 80, 100]).range(this.get('colors')),
       lineWidth: 5,
       size: $el.width(),
       scaleColor: '#e0e3e7',
