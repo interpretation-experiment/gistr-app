@@ -1,2 +1,3 @@
-<h3>Ready to write?</h3>
-<button class="btn btn-primary" {{action "next"}}>Ok</button>
+{{#progress-clock value=progress colors=colors}}
+  <button class="btn btn-primary {{if wait 'disabled'}}" {{action "next"}}>{{#if wait}}{{h-pluralize timeLeft 'second'}}...{{else}}Write!{{/if}}</button>
+{{/progress-clock}}
