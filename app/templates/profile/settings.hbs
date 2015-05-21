@@ -1,0 +1,11 @@
+<form class="form-horizontal">
+
+  <div class="form-group {{if errors.username 'has-error'}}">
+    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
+    <div class="col-sm-4">
+      {{input id="inputUsername" class="form-control" value=username disabled=isUploading}}
+      <span class="help-block">{{errors.username}}</span>
+    </div>
+  </div>
+
+</form>

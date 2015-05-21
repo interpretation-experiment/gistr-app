@@ -9,7 +9,10 @@ Router.map(function() {
   this.route('login');
   this.route('register');
   this.route('about');
-  this.route('profile');
+  this.route('profile', function() {
+    this.route('profile');
+    this.route('settings');
+  });
   this.route('play');
   this.route('suggest');
   this.route('explore', function() {
