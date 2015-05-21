@@ -4,9 +4,64 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
+  /*
+   * Global state and reset
+   */
+  justSaved: false,
+  watchSaved: function() {
+    if (this.get('justSaved')) {
+      Ember.run.later(this, function() {
+        this.set('justSaved', false);
+      }, 2000);
+    }
+  }.observes('justSaved'),
+  reset: function() {
+    this.resetInput();
+    this.setProperties({
+      justSaved: null,
+    });
+  },
+
+  /*
+   * Profile form fields, state, and upload
+   */
+  username: null,
+  email: null,
+  errors: null,
+  isUploading: null,
+  resetInput: function() {
+    this.setProperties({
+      username: this.get('currentUser.username'),
+      email: this.get('currentUser.email'),
+      errors: null,
+      isUploading: null,
+    });
+  },
+  uploadUser: function() {
+    var self = this, data = this.getProperties(['username', 'email']),
+        user = this.get('currentUser');
+
+    this.set('isUploading', true);
+    this.set('justSaved', false);
+
+    return user.setProperties(data).save().then(function() {
+      self.set('justSaved', true);
+      self.resetInput();
+    }, function(error) {
+      self.set('errors', error.errors);
+    }).finally(function() {
+      self.set('isUploading', false);
+    });
+  },
   actions: {
     reset: function() {
-      // do nothing
+      this.reset();
     },
+    uploadUser: function(callback) {
+      callback(this.uploadUser());
+    },
+    clearEmail: function() {
+      this.set('email', "");
+    }
   }
 });
