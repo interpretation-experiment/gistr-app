@@ -36,9 +36,10 @@ export default Ember.Controller.extend(SessionMixin, {
       errors: null,
       isUploading: null,
     });
+    Ember.$('input').blur();
   },
   uploadUser: function() {
-    var self = this, data = this.getProperties(['username', 'email']),
+    var self = this, data = this.getProperties('username', 'email'),
         user = this.get('currentUser');
 
     this.set('isUploading', true);
