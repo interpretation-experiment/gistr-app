@@ -4,46 +4,86 @@
 {{/page-header}}
 
 {{#page-body}}
-  <h3>About you</h3>
-  {{#if isProfileIncomplete}}
-    {{#sl-alert theme="warning"}}
-      Please complete your profile!
-      <ul>
-        {{#each profileErrors as |error|}}<li>{{error}}</li>{{/each}}
-      </ul>
-    {{/sl-alert}}
-  {{/if}}
-
-  {{#if showOtherInfo}}{{#sl-alert dismissable=true dismiss="toggleOtherInfo"}}
-    <h3>Support for Mothertongues</h3>
-    <p>As researchers, there are only so many languages we can analyse. If you can't find your mothertongue in the list, choose <mark>Other</mark> and the game will be in English for you.</p> <p>If you want to add support for a new language, please <a href='https://github.com/interpretation-experiment/gistr-app/issues/new'>let us know</a>!</p>
-  {{/sl-alert}}{{/if}}
-  {{#if showBilingualInfo}}{{#sl-alert dismissable=true dismiss="toggleBilingualInfo"}}
-    <h3>Bilingual (or more!)</h3>
-    <p>If you have more than one mothertongue, just choose the one you're the most comfortable with (if they're all the same, pick any!)</p>
-  {{/sl-alert}}{{/if}}
-
-  <form class="form-horizontal">
-
-    <div class="form-group {{if errors.mothertongue 'has-error'}}">
-      <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
-      <div class="col-sm-4">
-        {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue" disabled=isUploading}}
-        <span class="help-block">{{errors.mothertongue}}</span>
-      </div>
-      <div class="col-sm-6">
-        <button class="btn btn-link" {{action "toggleOtherInfo"}}>Can't find your language?</button>
-        <button class="btn btn-link" {{action "toggleBilingualInfo"}}>Bilingual?</button>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="sidebar-nav">
+      <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <span class="visible-xs navbar-brand">{{activeTab.label}}</span>
+        </div>
+        <div class="navbar-collapse collapse sidebar-navbar-collapse">
+          <ul class="nav navbar-nav">
+            {{#each tabs as |tab|}}
+              <li class="{{if tab.active 'active'}}"><a href="#" {{action "switchTab" tab}}>{{tab.label}}</a></li>
+            {{/each}}
+          </ul>
+        </div><!--/.nav-collapse -->
       </div>
     </div>
+  </div>
+  <div class="col-sm-9">
 
-    <div class="form-group {{if errors.non_field_errors 'has-error'}}">
-      <div class="col-sm-offset-2 col-sm-10">
-        <span class="help-block">{{errors.non_field_errors}}</span>
-        {{async-button action="uploadProfile" class="btn btn-primary" default="Save" pending="Saving..."}}
-        {{#if justSaved}}<span class="label label-success">Saved!</span>{{/if}}
-      </div>
-    </div>
+    {{#if isInProfile}}
+      {{#if isProfileIncomplete}}
+        {{#sl-alert theme="warning"}}
+          Please complete your profile!
+          <ul>
+            {{#each profileErrors as |error|}}<li>{{error}}</li>{{/each}}
+          </ul>
+        {{/sl-alert}}
+      {{/if}}
 
-  </form>
+      {{#if showOtherInfo}}{{#sl-alert dismissable=true dismiss="toggleOtherInfo"}}
+        <h3>Support for Mothertongues</h3>
+        <p>As researchers, there are only so many languages we can analyse. If you can't find your mothertongue in the list, choose <mark>Other</mark> and the game will be in English for you.</p> <p>If you want to add support for a new language, please <a href='https://github.com/interpretation-experiment/gistr-app/issues/new'>let us know</a>!</p>
+      {{/sl-alert}}{{/if}}
+      {{#if showBilingualInfo}}{{#sl-alert dismissable=true dismiss="toggleBilingualInfo"}}
+        <h3>Bilingual (or more!)</h3>
+        <p>If you have more than one mothertongue, just choose the one you're the most comfortable with (if they're all the same, pick any!)</p>
+      {{/sl-alert}}{{/if}}
+
+      <form class="form-horizontal">
+
+        <div class="form-group {{if errors.mothertongue 'has-error'}}">
+          <label for="inputMothertongue" class="col-sm-2 control-label">Mothertongue</label>
+          <div class="col-sm-4">
+            {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue" disabled=isUploading}}
+            <span class="help-block">{{errors.mothertongue}}</span>
+          </div>
+          <div class="col-sm-6">
+            <button class="btn btn-link" {{action "toggleOtherInfo"}}>Can't find your language?</button>
+            <button class="btn btn-link" {{action "toggleBilingualInfo"}}>Bilingual?</button>
+          </div>
+        </div>
+
+        <div class="form-group {{if errors.non_field_errors 'has-error'}}">
+          <div class="col-sm-offset-2 col-sm-10">
+            <span class="help-block">{{errors.non_field_errors}}</span>
+            {{async-button action="uploadProfile" class="btn btn-primary" default="Save" pending="Saving..."}}
+            {{#if justSaved}}<span class="label label-success">Saved!</span>{{/if}}
+          </div>
+        </div>
+
+      </form>
+    {{else if isInUser}}
+      <form class="form-horizontal">
+
+        <div class="form-group {{if errors.username 'has-error'}}">
+          <label for="inputUsername" class="col-sm-2 control-label">Username</label>
+          <div class="col-sm-4">
+            {{input id="inputUsername" class="form-control" value=username disabled=isUploading}}
+            <span class="help-block">{{errors.username}}</span>
+          </div>
+        </div>
+
+      </form>
+    {{/if}}{{! tab }}
+  </div>
+</div>
 {{/page-body}}

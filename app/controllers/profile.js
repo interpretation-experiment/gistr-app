@@ -18,11 +18,32 @@ export default Ember.Controller.extend(SessionMixin, {
     }
   }.observes('justSaved'),
   reset: function() {
+    this.resetTabs();
     this.resetInput();
     this.setProperties({
       justSaved: null,
     });
   },
+
+  /*
+   * Tabs
+   */
+  tabs: [
+    Ember.Object.create({ name: 'profile', label: 'Profile', active: true, initial: true}),
+    Ember.Object.create({ name: 'user', label: 'Account settings', active: false, })
+  ],
+  resetTabs: function() {
+    this.get('tabs').map(function(tab) {
+      tab.set('active', tab.get('initial'));
+    });
+  },
+  watchTabs: function() {
+    var self = this;
+    this.get('tabs').map(function(tab) {
+      self.set(`isIn${tab.name.classify()}`, tab.active);
+      if (tab.active) { self.set('activeTab', tab); }
+    });
+  }.observes('tabs.@each.active').on('init'),
 
   /*
    * Profile form fields, state, and upload
@@ -126,6 +147,15 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     toggleBilingualInfo: function() {
       this.toggleProperty('showBilingualInfo');
+    },
+    switchTab: function(newTab) {
+      this.get('tabs').map(function(tab) {
+        tab.set('active', tab === newTab);
+      });
+      if (Ember.$('body').width() < 768) {
+        // Hide the dropdown menu
+        Ember.$('.collapse').collapse('hide');
+      }
     }
   }
 });
