@@ -33,6 +33,30 @@ small, h1 small, h2 small, h3 small, h4 small, h5 small, h6 small { color: grey;
 .footer a:hover { color: black; }
 
 /*
+ * Vertical sidebar nav
+ */
+@media (min-width: 768px) {
+  .sidebar-nav .navbar .navbar-collapse {
+    padding: 0;
+    max-height: none;
+  }
+  .sidebar-nav .navbar ul {
+    float: none;
+  }
+  .sidebar-nav .navbar ul:not {
+    display: block;
+  }
+  .sidebar-nav .navbar li {
+    float: none;
+    display: block;
+  }
+  .sidebar-nav .navbar li a {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+/*
  * Icons, for everywhere
  */
 a.icon { color: grey; }

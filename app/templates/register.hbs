@@ -6,9 +6,8 @@
     <p>You're signed in as <strong>{{currentUser.username}}</strong>. Sign out first!</p>
     {{async-button action="logout" class="btn btn-primary" default="Sign out" pending="Signing you out..."}}
   {{else}}
-
     <div class="row">
-      <div class="col-sm-10 col-sm-offset-2">
+      <div class="col-sm-4 col-sm-offset-2">
         {{#sl-alert theme="info"}}Already have an account? {{link-to 'Sign in here' 'login'}}{{/sl-alert}}
       </div>
     </div>
@@ -17,15 +16,18 @@
 
       <div class="form-group {{if errors.username 'has-error'}}">
         <label for="inputUsername" class="col-sm-2 control-label">Username</label>
-        <div class="col-sm-10">
-          {{focused-input id="inputUsername" class="form-control" value=username disabled=isRegistering placeholder='e.g. joey'}}
+        <div class="col-sm-4">
+          <div class="input-group">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+            {{focused-input id="inputUsername" class="form-control" value=username disabled=isRegistering placeholder='e.g. joey'}}
+          </div>
           <span class="help-block">{{errors.username}}</span>
         </div>
       </div>
 
       <div class="form-group {{if errors.password1 'has-error'}}">
         <label for="inputPassword1" class="col-sm-2 control-label">Password</label>
-        <div class="col-sm-10">
+        <div class="col-sm-4">
           {{input id="inputPassword1" class="form-control" type='password' value=password1 disabled=isRegistering placeholder='Elaborate password'}}
           <span class="help-block">{{errors.password1}}</span>
         </div>
@@ -33,7 +35,7 @@
 
       <div class="form-group {{if errors.password2 'has-error'}}">
         <label for="inputPassword2" class="col-sm-2 control-label">Confirm password</label>
-        <div class="col-sm-10">
+        <div class="col-sm-4">
           {{input id="inputPassword2" class="form-control" type='password' value=password2 disabled=isRegistering placeholder='Same old, same old'}}
           <span class="help-block">{{errors.password2}}</span>
         </div>
