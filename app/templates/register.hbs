@@ -25,17 +25,6 @@
         </div>
       </div>
 
-      <div class="form-group {{if errors.email 'has-error'}}">
-        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-        <div class="col-sm-4">
-          <div class="input-group">
-            <span class="input-group-addon">{{#sl-tooltip title="Only used to reset a lost password"}}<span class="glyphicon glyphicon-envelope"></span>{{/sl-tooltip}}</span>
-            {{input type="email" id="inputEmail" class="form-control" placeholder="Optional" value=email disabled=isRegistering}}
-          </div>
-          <span class="help-block">{{errors.email}}</span>
-        </div>
-      </div>
-
       <div class="form-group {{if errors.password1 'has-error'}}">
         <label for="inputPassword1" class="col-sm-2 control-label">Password</label>
         <div class="col-sm-4">

@@ -10,7 +10,6 @@ export default Ember.Controller.extend(SessionMixin, {
    * Registration form fields, state, and upload
    */
   username: null,
-  email: null,
   password1: null,
   password2: null,
   errors: null,
@@ -18,7 +17,6 @@ export default Ember.Controller.extend(SessionMixin, {
   reset: function() {
     this.setProperties({
       username: null,
-      email: null,
       password1: null,
       password2: null,
       errors: null,
@@ -26,7 +24,7 @@ export default Ember.Controller.extend(SessionMixin, {
     });
   },
   register: function() {
-    var self = this, data = this.getProperties('username', 'email', 'password1', 'password2');
+    var self = this, data = this.getProperties('username', 'password1', 'password2');
     this.set('isRegistering', true);
 
     return request(api('/rest-auth/registration/'), {
