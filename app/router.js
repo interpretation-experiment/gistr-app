@@ -11,7 +11,8 @@ Router.map(function() {
   this.route('about');
   this.route('profile', function() {
     this.route('profile');
-    this.route('settings');
+    this.route('admin');
+    this.route('emails');
   });
   this.route('play');
   this.route('suggest');
