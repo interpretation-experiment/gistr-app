@@ -11,7 +11,8 @@ export default Ember.Controller.extend(SessionMixin, {
    */
   subRoutes: [
     Ember.Object.create({ name: 'profile.profile', label: 'Profile' }),
-    Ember.Object.create({ name: 'profile.admin', label: 'Account settings' })
+    Ember.Object.create({ name: 'profile.admin', label: 'Account settings' }),
+    Ember.Object.create({ name: 'profile.emails', label: 'Emails' }),
   ],
   currentRouteName: Ember.computed.alias('controllers.application.currentRouteName'),
   watchSubRoutes: function() {
