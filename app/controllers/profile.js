@@ -36,7 +36,7 @@ export default Ember.Controller.extend(SessionMixin, {
         Ember.$('.collapse').collapse('hide');
       }
 
-      this.transitionTo(route.get('name'));
+      this.transitionToRoute(route.get('name'));
     }
   }
 });
