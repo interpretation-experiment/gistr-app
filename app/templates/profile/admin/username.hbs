@@ -14,7 +14,7 @@
   <div class="form-group {{if errors.non_field_errors 'has-error'}}">
     <span class="help-block">{{errors.non_field_errors}}</span>
     {{async-button action="upload" class="btn btn-primary" default="Update username" pending="Updating username..."}}
-    {{#if justSaved}}<span class="label label-success">Saved!</span>{{/if}}
+    {{#if justSaved}}<span class="label label-success">Username saved!</span>{{/if}}
   </div>
 
 </form>

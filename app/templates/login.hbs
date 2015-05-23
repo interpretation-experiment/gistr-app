@@ -7,7 +7,7 @@
     {{async-button action="logout" class="btn btn-primary" default="Sign out" pending="Signing you out..."}}
   {{else}}
     <div class="row">
-      <div class="col-sm-4 col-sm-offset-2">
+      <div class="col-sm-6 col-sm-offset-2">
         {{#sl-alert theme="warning"}}No account yet? {{link-to 'Sign up' 'register'}}!{{/sl-alert}}
       </div>
     </div>
@@ -16,7 +16,7 @@
 
       <div class="form-group {{if errors.username 'has-error'}}">
         <label for="inputUsername" class="col-sm-2 control-label">Username</label>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
           <div class="input-group">
             <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
             {{focused-input id="inputUsername" class="form-control" value=username disabled=session.isWorking placeholder='e.g. joey'}}
@@ -27,8 +27,11 @@
 
       <div class="form-group {{if errors.password 'has-error'}}">
         <label for="inputPassword" class="col-sm-2 control-label">Password</label>
-        <div class="col-sm-4">
-          {{input id="inputPassword" class="form-control" type='password' value=password disabled=session.isWorking placeholder='Elaborate password'}}
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+            {{input id="inputPassword" class="form-control" type='password' value=password disabled=session.isWorking placeholder='Elaborate password'}}
+          </div>
           <span class="help-block">{{errors.password}}</span>
         </div>
       </div>

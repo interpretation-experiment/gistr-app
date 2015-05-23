@@ -7,7 +7,7 @@
     {{async-button action="logout" class="btn btn-primary" default="Sign out" pending="Signing you out..."}}
   {{else}}
     <div class="row">
-      <div class="col-sm-4 col-sm-offset-2">
+      <div class="col-sm-6 col-sm-offset-2">
         {{#sl-alert theme="info"}}Already have an account? {{link-to 'Sign in here' 'login'}}{{/sl-alert}}
       </div>
     </div>
@@ -16,7 +16,7 @@
 
       <div class="form-group {{if errors.username 'has-error'}}">
         <label for="inputUsername" class="col-sm-2 control-label">Username</label>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
           <div class="input-group">
             <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
             {{focused-input id="inputUsername" class="form-control" value=username disabled=isRegistering placeholder='e.g. joey'}}
@@ -27,7 +27,7 @@
 
       <div class="form-group {{if errors.email 'has-error'}}">
         <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
           <div class="input-group">
             <span class="input-group-addon">{{#sl-tooltip title="Only used to reset a lost password"}}<span class="glyphicon glyphicon-envelope"></span>{{/sl-tooltip}}</span>
             {{input type="email" id="inputEmail" class="form-control" placeholder="Optional" value=email disabled=isRegistering}}
@@ -38,16 +38,22 @@
 
       <div class="form-group {{if errors.password1 'has-error'}}">
         <label for="inputPassword1" class="col-sm-2 control-label">Password</label>
-        <div class="col-sm-4">
-          {{input id="inputPassword1" class="form-control" type='password' value=password1 disabled=isRegistering placeholder='Elaborate password'}}
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+            {{input id="inputPassword1" class="form-control" type='password' value=password1 disabled=isRegistering placeholder='Elaborate password'}}
+          </div>
           <span class="help-block">{{errors.password1}}</span>
         </div>
       </div>
 
       <div class="form-group {{if errors.password2 'has-error'}}">
         <label for="inputPassword2" class="col-sm-2 control-label">Confirm password</label>
-        <div class="col-sm-4">
-          {{input id="inputPassword2" class="form-control" type='password' value=password2 disabled=isRegistering placeholder='Same old, same old'}}
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+            {{input id="inputPassword2" class="form-control" type='password' value=password2 disabled=isRegistering placeholder='Same old, same old'}}
+          </div>
           <span class="help-block">{{errors.password2}}</span>
         </div>
       </div>
