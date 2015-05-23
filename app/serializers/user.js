@@ -4,8 +4,9 @@ import DRFSerializer from './drf';
 
 
 export default DRFSerializer.extend(DS.EmbeddedRecordsMixin, {
-  // 'profile' object is embedded
+  // Embedded fields
   attrs: {
-    profile: { embedded: 'always' }
+    profile: { embedded: 'always' },
+    emailaddresses: { embedded: 'always' },
   }
 });
