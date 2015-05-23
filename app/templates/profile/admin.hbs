@@ -1,34 +1,26 @@
-<form class="form-horizontal">
+<div class="well">
+  <h2>Change password</h2>
+</div>
 
-  <div class="form-group {{if errors.username 'has-error'}}">
-    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
-    <div class="col-sm-4">
+<div class="well">
+  <h2>Change username</h2>
+
+  <form>
+
+    <div class="form-group {{if errors.username 'has-error'}} {{if justSaved.username 'has-success'}}">
+      <label for="inputUsername" class="control-label">Username</label>
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
         {{input id="inputUsername" class="form-control" value=username disabled=isUploading}}
       </div>
       <span class="help-block">{{errors.username}}</span>
     </div>
-  </div>
 
-  <div class="form-group {{if errors.email 'has-error'}}">
-    <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-    <div class="col-sm-4">
-      <div class="input-group">
-        <span class="input-group-addon">{{#sl-tooltip title="Only used to reset a lost password"}}<span class="glyphicon glyphicon-envelope"></span>{{/sl-tooltip}}</span>
-        {{input type="email" id="inputEmail" class="form-control" placeholder="Optional" value=email disabled=isUploading}}
-        <span class="input-group-addon">{{#sl-tooltip title="Clear"}}<a class="icon" href="#" {{action "clearEmail"}}><span class="glyphicon glyphicon-remove"></span></a>{{/sl-tooltip}}</span>
-      </div>
-      <span class="help-block">{{errors.email}}</span>
-    </div>
-  </div>
-
-  <div class="form-group {{if errors.non_field_errors 'has-error'}}">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="form-group {{if errors.non_field_errors 'has-error'}}">
       <span class="help-block">{{errors.non_field_errors}}</span>
-      {{async-button action="uploadUser" class="btn btn-primary" default="Save" pending="Saving..."}}
-      {{#if justSaved}}<span class="label label-success">Saved!</span>{{/if}}
+      {{async-button action="uploadUser" class="btn btn-primary" default="Update username" pending="Updating username..."}}
+      {{#if justSaved.username}}<span class="label label-success">Saved!</span>{{/if}}
     </div>
-  </div>
 
-</form>
+  </form>
+</div>

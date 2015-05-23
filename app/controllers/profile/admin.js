@@ -7,19 +7,26 @@ export default Ember.Controller.extend(SessionMixin, {
   /*
    * Global state and reset
    */
-  justSaved: false,
+  justSaved: Ember.Object.create({
+    password: false,
+    username: false,
+  }),
   watchSaved: function() {
-    if (this.get('justSaved')) {
+    if (this.get('justSaved.password')) {
       Ember.run.later(this, function() {
-        this.set('justSaved', false);
+        this.set('justSaved.password', false);
       }, 2000);
     }
-  }.observes('justSaved'),
+    if (this.get('justSaved.username')) {
+      Ember.run.later(this, function() {
+        this.set('justSaved.username', false);
+      }, 2000);
+    }
+  }.observes('justSaved.password', 'justSaved.username'),
   reset: function() {
     this.resetInput();
-    this.setProperties({
-      justSaved: null,
-    });
+    this.set('justSaved.password', false);
+    this.set('justSaved.username', false);
   },
 
   /*
@@ -41,10 +48,10 @@ export default Ember.Controller.extend(SessionMixin, {
         user = this.get('currentUser');
 
     this.set('isUploading', true);
-    this.set('justSaved', false);
+    this.set('justSaved.username', false);
 
     return user.setProperties(data).save().then(function() {
-      self.set('justSaved', true);
+      self.set('justSaved.username', true);
       self.resetInput();
     }, function(error) {
       self.set('errors', error.errors);
