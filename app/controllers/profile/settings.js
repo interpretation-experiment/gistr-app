@@ -26,18 +26,20 @@ export default Ember.Controller.extend(SessionMixin, {
    * Profile form fields, state, and upload
    */
   username: null,
+  email: null,
   errors: null,
   isUploading: null,
   resetInput: function() {
     this.setProperties({
       username: this.get('currentUser.username'),
+      email: this.get('currentUser.email'),
       errors: null,
       isUploading: null,
     });
     Ember.$('input').blur();
   },
   uploadUser: function() {
-    var self = this, data = this.getProperties('username'),
+    var self = this, data = this.getProperties('username', 'email'),
         user = this.get('currentUser');
 
     this.set('isUploading', true);
@@ -58,6 +60,9 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     uploadUser: function(callback) {
       callback(this.uploadUser());
+    },
+    clearEmail: function() {
+      this.set('email', "");
     }
   }
 });
