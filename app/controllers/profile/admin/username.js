@@ -45,6 +45,7 @@ export default Ember.Controller.extend(SessionMixin, {
       self.set('justSaved', true);
       self.resetInput();
     }, function(error) {
+      // TODO: reset username if this is the error
       self.set('errors', error.errors);
     }).finally(function() {
       self.set('isUploading', false);
