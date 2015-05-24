@@ -1,6 +1,8 @@
 <div class="well">
   <h2>Email</h2>
 
+  <p>Your <strong>primary email address</strong> is used for account-related information and password reset.</p>
+
   {{#if emails.length}}
     {{#each emails as |email|}}
       {{user-email email=email setPrimary="setPrimary" remove="remove"}}
