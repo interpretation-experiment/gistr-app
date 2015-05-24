@@ -6,7 +6,7 @@ export default DS.Model.extend({
   isActive: DS.attr('boolean'),
   username: DS.attr('string'),
   profile: DS.belongsTo('profile'),  // not async since it's nested
-  emails: DS.hasMany('emailaddress'),
+  emails: DS.hasMany('email'),       // not async since it's nested
 
   /*
    * Unused properties

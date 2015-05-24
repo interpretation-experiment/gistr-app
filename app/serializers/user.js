@@ -7,6 +7,6 @@ export default DRFSerializer.extend(DS.EmbeddedRecordsMixin, {
   // Embedded fields
   attrs: {
     profile: { embedded: 'always' },
-    emailaddresses: { embedded: 'always' },
+    emails: { embedded: 'always' },
   }
 });
