@@ -19,8 +19,11 @@ export default Ember.Component.extend(SessionMixin, {
           email = this.get('email');
       var promise = request(api(`/emails/${this.get('email.id')}/verify/`), {
         type: 'POST'
-      }).then(function(data) {
-        growl.info("Verification email", data.status);
+      }).then(function() {
+        growl.info("Verification email",
+                   `A verification email has been sent to ` +
+                   `<strong>${email.get('email')}</strong>, please ` +
+                   `follow the instructions in it`);
       });
       callback(promise);
     },

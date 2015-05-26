@@ -4,6 +4,7 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
+  growl: Ember.inject.service(),
   emails: Ember.computed.alias('currentUser.emails'),
 
   /*
@@ -37,13 +38,19 @@ export default Ember.Controller.extend(SessionMixin, {
     Ember.$('input').blur();
   },
   upload: function() {
-    var self = this, data = this.getProperties('email');
+    var self = this,
+        growl = this.get('growl'),
+        data = this.getProperties('email');
 
     this.set('isUploading', true);
     this.set('justSaved', false);
 
     return this.get('store').createRecord('email', data).save().then(function() {
       self.set('justSaved', true);
+      growl.info("Verification email",
+                 `A verification email has been sent to ` +
+                 `<strong>${data.email}</strong>, please ` +
+                 `follow the instructions in it`);
       self.resetInput();
     }, function(error) {
       self.set('errors', error.errors);
