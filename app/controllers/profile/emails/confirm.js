@@ -32,7 +32,7 @@ export default Ember.Controller.extend(SessionMixin, {
     }).then(function() {
       self.transitionToRoute('profile.emails');
     }, function() {
-      growl.error("Verification failed",
+      growl.error("Confirmation failed",
                   "There was a problem. Did you use the " +
                   "<strong>last verification email</strong> " +
                   "you received?");

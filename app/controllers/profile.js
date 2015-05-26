@@ -15,13 +15,14 @@ export default Ember.Controller.extend(SessionMixin, {
     Ember.Object.create({ name: 'profile.emails', label: 'Emails' }),
   ],
   currentRouteName: Ember.computed.alias('controllers.application.currentRouteName'),
+  activeSubRoute: null,
   watchSubRoutes: function() {
     var self = this,
         current = this.get('currentRouteName'),
         active;
 
     for (var route of this.get('subRoutes')) {
-      active = route.get('name') === current;
+      active = route.get('name') === current.slice(0, route.get('name.length'));
       route.set('active', active);
       if (active) { self.set('activeSubRoute', route); }
     }
