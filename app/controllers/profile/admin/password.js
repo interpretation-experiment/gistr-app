@@ -85,7 +85,7 @@ export default Ember.Controller.extend(SessionMixin, {
                      "We have no email address to send you a password reset link, " +
                      "configure an email address first!");
       } else {
-        var promise = request(api('/rest-auth/password/reset/'), {
+        request(api('/rest-auth/password/reset/'), {
           type: 'POST',
           data: { email: email }
         }).then(function() {
