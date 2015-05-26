@@ -1,0 +1,20 @@
+<h2>Change username</h2>
+
+<form>
+
+  <div class="form-group {{if errors.username 'has-error'}} {{if justSaved 'has-success'}}">
+    <label for="inputUsername" class="control-label">Username</label>
+    <div class="input-group">
+      <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+      {{input id="inputUsername" class="form-control" value=username disabled=isUploading}}
+    </div>
+    <span class="help-block">{{errors.username}}</span>
+  </div>
+
+  <div class="form-group {{if errors.non_field_errors 'has-error'}}">
+    <span class="help-block">{{errors.non_field_errors}}</span>
+    {{async-button action="upload" class="btn btn-primary" default="Update username" pending="Updating username..."}}
+    {{#if justSaved}}<span class="label label-success">Username saved!</span>{{/if}}
+  </div>
+
+</form>

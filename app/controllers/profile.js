@@ -11,16 +11,18 @@ export default Ember.Controller.extend(SessionMixin, {
    */
   subRoutes: [
     Ember.Object.create({ name: 'profile.profile', label: 'Profile' }),
-    Ember.Object.create({ name: 'profile.settings', label: 'Account settings' })
+    Ember.Object.create({ name: 'profile.admin', label: 'Account settings' }),
+    Ember.Object.create({ name: 'profile.emails', label: 'Emails' }),
   ],
   currentRouteName: Ember.computed.alias('controllers.application.currentRouteName'),
+  activeSubRoute: null,
   watchSubRoutes: function() {
     var self = this,
         current = this.get('currentRouteName'),
         active;
 
     for (var route of this.get('subRoutes')) {
-      active = route.get('name') === current;
+      active = route.get('name') === current.slice(0, route.get('name.length'));
       route.set('active', active);
       if (active) { self.set('activeSubRoute', route); }
     }
@@ -36,7 +38,7 @@ export default Ember.Controller.extend(SessionMixin, {
         Ember.$('.collapse').collapse('hide');
       }
 
-      this.transitionTo(route.get('name'));
+      this.transitionToRoute(route.get('name'));
     }
   }
 });

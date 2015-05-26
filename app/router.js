@@ -6,12 +6,18 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  this.route('login');
+  this.route('login', function() {
+    this.route('lost');
+    this.route('reset');
+  });
   this.route('register');
   this.route('about');
   this.route('profile', function() {
     this.route('profile');
-    this.route('settings');
+    this.route('admin');
+    this.route('emails', function() {
+      this.route('confirm');
+    });
   });
   this.route('play');
   this.route('suggest');

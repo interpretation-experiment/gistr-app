@@ -1,0 +1,43 @@
+{{document-title title="Lost password"}}
+{{page-header title="Lost password"}}
+
+{{#page-body}}
+  {{#if requesting}}
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-2">
+        <h2>Reset your password</h2>
+        <p>Type in the email address you gave for your account and we'll send you an email with instructions to reset your password.</p>
+        <p>If you didn't register an email address on your account there is no way to recover your password short of <a href="mailto:sl@mehho.net">contacting the developers</a>.</p>
+      </div>
+    </div>
+
+    <form class="form-horizontal">
+
+      <div class="form-group {{if errors.email 'has-error'}}">
+        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-6">
+          <div class="input-group">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+            {{focused-input id="inputEmail" class="form-control" value=email disabled=isWorking placeholder='e.g. joey@web.com'}}
+          </div>
+          <span class="help-block">{{errors.email}}</span>
+        </div>
+      </div>
+
+      <div class="form-group {{if errors.non_field_errors 'has-error'}}">
+        <div class="col-sm-offset-2 col-sm-6">
+          <span class="help-block">{{errors.non_field_errors}}</span>
+          {{async-button action="resetPassword" class="btn btn-default" default="Request pasword reset"}}
+        </div>
+      </div>
+
+    </form>
+  {{else}}
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-2">
+        <h2>Check your inbox</h2>
+        <p>We just sent an email to <strong>{{email}}</strong> with instructions to reset your password. Please follow its instructions.</p>
+      </div>
+    </div>
+  {{/if}}
+{{/page-body}}

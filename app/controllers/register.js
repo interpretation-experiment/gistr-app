@@ -6,10 +6,13 @@ import api from 'gistr/utils/api';
 
 
 export default Ember.Controller.extend(SessionMixin, {
+  growl: Ember.inject.service(),
+
   /*
    * Registration form fields, state, and upload
    */
   username: null,
+  email: null,
   password1: null,
   password2: null,
   errors: null,
@@ -17,6 +20,7 @@ export default Ember.Controller.extend(SessionMixin, {
   reset: function() {
     this.setProperties({
       username: null,
+      email: null,
       password1: null,
       password2: null,
       errors: null,
@@ -24,7 +28,9 @@ export default Ember.Controller.extend(SessionMixin, {
     });
   },
   register: function() {
-    var self = this, data = this.getProperties('username', 'password1', 'password2');
+    var self = this,
+        growl = this.get('growl'),
+        data = this.getProperties('username', 'email', 'password1', 'password2');
     this.set('isRegistering', true);
 
     return request(api('/rest-auth/registration/'), {
@@ -37,6 +43,12 @@ export default Ember.Controller.extend(SessionMixin, {
       });
     }).then(function() {
       self.reset();
+      if (!Ember.isNone(data.email) && data.email.length > 0) {
+        growl.info("Verification email",
+                   `A verification email has been sent to ` +
+                   `<strong>${data.email}</strong>, please ` +
+                   `follow the instructions in it`);
+      }
       self.transitionToRoute('profile');
     }, function(errors) {
       self.set('errors', errors.jqXHR.responseJSON || { __all__: errors.errorThrown });

@@ -17,13 +17,11 @@ export default Ember.Controller.extend(SessionMixin, {
   }.observes('justSaved'),
   reset: function() {
     this.resetInput();
-    this.setProperties({
-      justSaved: null,
-    });
+    this.set('justSaved', false);
   },
 
   /*
-   * Profile form fields, state, and upload
+   * Form fields, state, and upload
    */
   username: null,
   errors: null,
@@ -36,7 +34,7 @@ export default Ember.Controller.extend(SessionMixin, {
     });
     Ember.$('input').blur();
   },
-  uploadUser: function() {
+  upload: function() {
     var self = this, data = this.getProperties('username'),
         user = this.get('currentUser');
 
@@ -47,6 +45,7 @@ export default Ember.Controller.extend(SessionMixin, {
       self.set('justSaved', true);
       self.resetInput();
     }, function(error) {
+      // TODO: reset username if this is the error
       self.set('errors', error.errors);
     }).finally(function() {
       self.set('isUploading', false);
@@ -56,8 +55,8 @@ export default Ember.Controller.extend(SessionMixin, {
     reset: function() {
       this.reset();
     },
-    uploadUser: function(callback) {
-      callback(this.uploadUser());
+    upload: function(callback) {
+      callback(this.upload());
     }
   }
 });

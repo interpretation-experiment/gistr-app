@@ -1,0 +1,34 @@
+<div class="well">
+  <h2>Email</h2>
+
+  <p>Your <strong>primary email address</strong> is used for account-related information and password reset.</p>
+
+  {{#if emails.length}}
+    {{#each emails as |email|}}
+      {{user-email email=email setPrimary="setPrimary" remove="remove"}}
+    {{/each}}
+  {{else}}
+    <p>You have no emails configured.</p>
+  {{/if}} {{! emails.length }}
+
+  <h2>Add an email address</h2>
+
+  <form class="form-inline">
+
+    <div class="{{if errors.email 'has-error'}}">
+      <span class="help-block">{{errors.email}}</span>
+    </div>
+
+    <div class="form-group {{if errors.email 'has-error'}}">
+      <div class="input-group">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+        {{input id="inputEmail" class="form-control" value=email disabled=isUploading}}
+      </div>
+    </div>
+
+    {{async-button action="upload" class="btn btn-default" default="Add" pending="Adding..."}}
+    {{#if justSaved}}<span class="label label-success">Email address added!</span>{{/if}}
+
+  </form>
+
+</div>

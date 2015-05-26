@@ -123,9 +123,15 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     toggleOtherInfo: function() {
       this.toggleProperty('showOtherInfo');
+      if (this.get('showOtherInfo')) {
+        this.set('showBilingualInfo', false);
+      }
     },
     toggleBilingualInfo: function() {
       this.toggleProperty('showBilingualInfo');
+      if (this.get('showBilingualInfo')) {
+        this.set('showOtherInfo', false);
+      }
     },
   }
 });
