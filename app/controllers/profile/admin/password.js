@@ -6,6 +6,8 @@ import api from 'gistr/utils/api';
 
 
 export default Ember.Controller.extend(SessionMixin, {
+  growl: Ember.inject.service(),
+
   /*
    * Global state and reset
    */
@@ -73,6 +75,19 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     upload: function(callback) {
       callback(this.upload());
+    },
+    passwordLost: function() {
+      var email = this.get('currentUser.email'),
+          growl = this.get('growl');
+
+      var promise = request(api('/rest-auth/password/reset/'), {
+        type: 'POST',
+        data: { email: email }
+      }).then(function() {
+        growl.info("Password reset by email",
+                   "We just sent you an email to reset your password, " +
+                   "please follow the instructions in it");
+      });
     }
   }
 });
