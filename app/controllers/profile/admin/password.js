@@ -80,14 +80,20 @@ export default Ember.Controller.extend(SessionMixin, {
       var email = this.get('currentUser.email'),
           growl = this.get('growl');
 
-      var promise = request(api('/rest-auth/password/reset/'), {
-        type: 'POST',
-        data: { email: email }
-      }).then(function() {
-        growl.info("Password reset by email",
-                   "We just sent you an email to reset your password, " +
-                   "please follow the instructions in it");
-      });
+      if (Ember.isNone(email) || email.length === 0) {
+        growl.notice("Configure your emails",
+                     "We have no email address to send you a password reset link, " +
+                     "configure an email address first!");
+      } else {
+        var promise = request(api('/rest-auth/password/reset/'), {
+          type: 'POST',
+          data: { email: email }
+        }).then(function() {
+          growl.info("Password reset by email",
+                     `We just sent an email to <strong>${email}</strong> with ` +
+                     "instructions to reset your password");
+        });
+      }
     }
   }
 });

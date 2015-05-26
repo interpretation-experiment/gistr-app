@@ -39,6 +39,7 @@ export default Ember.Controller.extend(SessionMixin, {
   },
   upload: function() {
     var self = this,
+        user = this.get('currentUser'),
         growl = this.get('growl'),
         data = this.getProperties('email');
 
@@ -46,6 +47,8 @@ export default Ember.Controller.extend(SessionMixin, {
     this.set('justSaved', false);
 
     return this.get('store').createRecord('email', data).save().then(function() {
+      return user.reload();
+    }).then(function() {
       self.set('justSaved', true);
       growl.info("Verification email",
                  `A verification email has been sent to ` +
@@ -67,29 +70,38 @@ export default Ember.Controller.extend(SessionMixin, {
       callback(this.upload());
     },
     setPrimary: function(email) {
+      var user = this.get('currentUser');
       var oldPrimary = this.get('emails').filter(function(e) {
         return e.get('primary');
       }).objectAt(0);
 
       oldPrimary.set('isChanging', true);
       email.set('primary', true).save().then(function() {
-        oldPrimary.reload();
+        return user.reload();
+      }).then(function() {
         oldPrimary.set('isChanging', false);
       });
     },
     remove: function(email) {
+      var user = this.get('currentUser'),
+          promise;
+
       if (this.get('emails.length') <= 1 || !email.get('primary')) {
-        email.destroyRecord();
+        promise = email.destroyRecord();
       } else {
-        this.get('emails').filter(function(e) {
+        promise = this.get('emails').filter(function(e) {
           return e !== email;
         })
         .objectAt(0)
         .set('primary', true)
         .save().then(function() {
-          email.destroyRecord();
+          return email.destroyRecord();
         });
       }
+
+      promise.then(function() {
+        user.reload();
+      });
     }
   }
 });
