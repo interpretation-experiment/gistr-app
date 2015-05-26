@@ -1,0 +1,10 @@
+<div class="well">
+  {{#if confirming}}
+    <h2>Confirming your email address...</h2>
+  {{else if confirmed}}
+    <h2>Address confirmed, redirecting you</h2>
+  {{else}}
+    <h2>Confirmation failed</h2>
+    <p>There was a problem. Did you use the <strong>last verification email you received</strong>?</p>
+  {{/if}}
+</div>

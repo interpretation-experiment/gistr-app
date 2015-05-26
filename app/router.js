@@ -12,7 +12,9 @@ Router.map(function() {
   this.route('profile', function() {
     this.route('profile');
     this.route('admin');
-    this.route('emails');
+    this.route('emails', function() {
+      this.route('confirm');
+    });
   });
   this.route('play');
   this.route('suggest');
