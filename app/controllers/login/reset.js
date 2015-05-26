@@ -42,10 +42,10 @@ export default Ember.Controller.extend(SessionMixin, {
       errors.non_field_errors = "Passwords don't match";
     }
     if (Ember.isNone(new_password1) || new_password1.length === 0) {
-      errors.new_password1 = "Password can't be empty"
+      errors.new_password1 = "Password can't be empty";
     }
     if (!Ember.isNone(new_password1) && new_password1.length < 6) {
-      errors.new_password1 = "Password must be at least 6 characters"
+      errors.new_password1 = "Password must be at least 6 characters";
     }
 
     if (Object.keys(errors).length > 0) {
