@@ -77,16 +77,17 @@
     </div>
   {{/if}}{{! can read about }}
 
-  {{#if session.isAuthenticated}}
-    <div class="row footer">
-      <div id="about-gistr">
+  <div class="row footer">
+    <div id="about-gistr">
+      {{#sl-tooltip title="Email the developers"}}<a class="icon" href="mailto:sl@mehho.net" title="Email the developers">{{fa-icon "envelope"}}</a>{{/sl-tooltip}}
+      {{#if session.isAuthenticated}}
         {{#if (can 'read about')}}
-        {{#sl-tooltip title="About Gistr"}}{{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}{{/sl-tooltip}}
-          <a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>
-          <a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>
+          {{#sl-tooltip title="About Gistr"}}{{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}{{/sl-tooltip}}
+          {{#sl-tooltip title="Twitter"}}<a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>{{/sl-tooltip}}
+          {{#sl-tooltip title="GitHub"}}<a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>{{/sl-tooltip}}
         {{/if}}{{! can read about }}
         {{#sl-tooltip title="Play intro"}}<a href="#" class="icon icon-med" {{action "showIntro"}}>{{fa-icon "question-circle"}}</a>{{/sl-tooltip}}
-      </div>
+      {{/if}}{{! session.isAuthenticated }}
     </div>
-  {{/if}}{{! session.isAuthenticated }}
+  </div>
 {{/page-body}}
