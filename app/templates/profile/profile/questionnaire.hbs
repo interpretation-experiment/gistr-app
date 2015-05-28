@@ -1,0 +1,51 @@
+<div class="well">
+  <h2>General questionnaire</h2>
+  <p>We need to know a bit about who you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
+
+  <form>
+
+    <h3>About you</h3>
+
+    <div class="form-group {{if errors.age 'has-error'}}">
+      <label for="inputAge" class="control-label">Age</label>
+      {{input id="inputAge" class="form-control" value=age disabled=isUploading}}
+      <span class="help-block">{{errors.age}}</span>
+    </div>
+
+    <div class="form-group {{if errors.gender 'has-error'}}">
+      <label class="control-label">Gender</label>
+      <div>
+        {{#each questionnaireChoices.genders as |gender|}}
+          <label class="radio-inline {{if isUploading 'disabled'}}">
+            {{radio-button value=gender.name checked=gender disabled=isUploading}} {{gender.label}}
+          </label>
+        {{/each}}
+        <span class="help-block">{{errors.gender}}</span>
+      </div>
+    </div>
+
+    <div class="form-group {{if errors.naive 'has-error'}}">
+      <div class="checkbox {{if isUploading 'disabled'}}">
+        <label>
+          {{input type="checkbox" checked=notNaive disabled=isUploading}} I've heard about this experiment and I know what it is about.{{#unless showNaiveDetail}} <a href="#" {{action "toggleNaiveDetail"}}>Sort of. I'd like to tell you more.</a>{{/unless}}
+        </label>
+      </div>
+      <span class="help-block">{{errors.naive}}</span>
+    </div>
+
+    {{#if showNaiveDetail}}
+      <div class="form-group">
+        <label for="inputNaiveDetail" class="control-label">You know the experiment, tell us more</label>
+        {{focused-textarea id="inputNaiveDetail" class="form-control" value=naiveDetail disabled=isUploading rows="1" autoresize=true}}
+      </div>
+      <a href="#" {{action "toggleNaiveDetail"}}>No, forget about this.</a>
+    {{/if}}
+
+    <div class="form-group {{if errors.non_field_errors 'has-error'}}">
+      <span class="help-block">{{errors.non_field_errors}}</span>
+      {{async-button action="upload" class="btn btn-primary" default="Send answers" pending="Sending answers..."}}
+    </div>
+
+  </form>
+
+</div>
