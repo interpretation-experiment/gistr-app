@@ -6,6 +6,7 @@ import LoadingSliderMixin from '../mixins/loading-slider';
 export default Ember.Route.extend(LoadingSliderMixin, {
   lang: Ember.inject.service(),
   shaping: Ember.inject.service(),
+  questionnaireChoices: Ember.inject.service(),
 
   beforeModel: function(/*transition*/) {
     // See if we're logged in, populate language support
@@ -13,7 +14,8 @@ export default Ember.Route.extend(LoadingSliderMixin, {
     return Ember.RSVP.all([
       self.get('session').fetch('spreadr').catch(function() {}),
       self.get('lang').populate(),
-      self.get('shaping').populate()
+      self.get('shaping').populate(),
+      self.get('questionnaireChoices').populate()
     ]);
   },
 
