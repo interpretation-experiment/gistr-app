@@ -1,11 +1,10 @@
 import Ember from 'ember';
 import { request } from 'ic-ajax';
 
-import SessionMixin from 'gistr/mixins/session';
 import api from 'gistr/utils/api';
 
 
-export default Ember.Controller.extend(SessionMixin, {
+export default Ember.Controller.extend({
   queryParams: ['uid', 'token'],
   uid: null,
   token: null,

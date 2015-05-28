@@ -1,9 +1,7 @@
 import Ember from 'ember';
 
-import SessionMixin from 'gistr/mixins/session';
 
-
-export default Ember.Controller.extend(SessionMixin, {
+export default Ember.Controller.extend({
   actions: {
     passExperiment: function() {
       if (this.get('session.isAuthenticated')) {
