@@ -13,7 +13,9 @@ Router.map(function() {
   this.route('register');
   this.route('about');
   this.route('profile', function() {
-    this.route('profile');
+    this.route('profile', function() {
+      this.route('questionnaire');
+    });
     this.route('admin');
     this.route('emails', function() {
       this.route('confirm');
