@@ -20,7 +20,16 @@
   <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">
 
     {{#if session.isAuthenticated}}
-      {{#link-to 'profile' class="icon icon-big pull-right" id="profile"}}<span class="glyphicon glyphicon-user"></span>{{/link-to}}
+      {{#link-to 'profile' class="icon icon-big pull-right" id="profile"}}
+          {{gravatar-image
+              email=currentUser.email
+              title="Profile"
+              alt="Avatar"
+              defaultImage="retro"
+              class="img-circle"
+              secure=false
+              size=30}}
+      {{/link-to}}
     {{/if}}
 
   </div>
