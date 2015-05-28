@@ -5,7 +5,6 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   userUsername: DS.attr('string'),
   created: DS.attr('date'),
-
   user: DS.belongsTo('user', { async: true }),
 
   trees: DS.hasMany('tree', { async: true }),
@@ -19,8 +18,16 @@ export default DS.Model.extend({
   availableTreesCounts: DS.attr('object'),
 
   mothertongue: DS.attr('string'),
-
   trainedReformulations: DS.attr('boolean'),
+
+  age: DS.attr('number'),
+  gender: DS.attr('string'),
+  iscoMajor: DS.attr('string'),
+  iscoSubmajor: DS.attr('string'),
+  iscoMinor: DS.attr('string'),
+  naive: DS.attr('boolean'),
+  naiveDetail: DS.attr('string'),
+  questionnaireDone: DS.attr('boolean'),
 
   introducedExpHome: DS.attr('boolean'),
   introducedExpPlay: DS.attr('boolean'),
