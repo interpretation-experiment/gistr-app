@@ -38,3 +38,16 @@
 
   </form>
 </div>
+
+<div class="well">
+  <h2>Questionnaire
+    {{#if currentProfile.questionnaireDone}}
+      <span class="icon-big done">{{fa-icon "check"}}</span>
+    {{else}}
+      <small>Not yet done.</small>
+    {{/if}}
+  </h2>
+  {{#unless currentProfile.questionnaireDone}}
+    <p>{{link-to 'Pass the questionnaire' 'profile' class="btn btn-primary"}}</p>
+  {{/unless}}
+</div>
