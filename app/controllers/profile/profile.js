@@ -52,6 +52,7 @@ export default Ember.Controller.extend(SessionMixin, {
 
     if (!profile) {
       // Create a profile
+      data.gender = data.iscoMajor = data.iscoSubmajor = data.iscoMinor = data.naiveDetail = "";
       profile = this.get('store').createRecord('profile', data);
     } else {
       // Update our existing profile
