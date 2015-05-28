@@ -19,14 +19,7 @@ export default DS.Model.extend({
 
   mothertongue: DS.attr('string'),
   trainedReformulations: DS.attr('boolean'),
-
-  age: DS.attr('number'),
-  gender: DS.attr('string'),
-  iscoMajor: DS.attr('string'),
-  iscoSubmajor: DS.attr('string'),
-  iscoMinor: DS.attr('string'),
-  naive: DS.attr('boolean'),
-  naiveDetail: DS.attr('string'),
+  questionnaire: DS.belongsTo('questionnaire', { async: true }),
   questionnaireDone: DS.attr('boolean'),
 
   introducedExpHome: DS.attr('boolean'),
@@ -39,6 +32,7 @@ export default DS.Model.extend({
    */
   url: DS.attr('string'),
   userUrl: DS.attr('string'),
+  questionnaireUrl: DS.attr('string'),
 
   /*
    * Computed properties
