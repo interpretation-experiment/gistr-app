@@ -67,12 +67,12 @@ export default Ember.Controller.extend(SessionMixin, {
         if (lifecycle.get('isInRegistering')) { forward = 'index'; }
         return lifecycle.transitionUp();
       }
-    }, function(error) {
-      self.set('errors', error.errors);
     }).then(function() {
       if (!Ember.isNone(forward)) {
         self.transitionToRoute(forward);
       }
+    }, function(error) {
+      self.set('errors', error.errors);
     }).finally(function() {
       self.set('isUploading', false);
     });

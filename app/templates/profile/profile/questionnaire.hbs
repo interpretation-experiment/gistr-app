@@ -15,9 +15,9 @@
     <div class="form-group {{if errors.gender 'has-error'}}">
       <label class="control-label">Gender</label>
       <div>
-        {{#each questionnaireChoices.genders as |gender|}}
+        {{#each questionnaireChoices.genders as |genderDetails|}}
           <label class="radio-inline {{if isUploading 'disabled'}}">
-            {{radio-button value=gender.name checked=gender disabled=isUploading}} {{gender.label}}
+            {{radio-button value=genderDetails.name checked=gender disabled=isUploading}} {{genderDetails.label}}
           </label>
         {{/each}}
         <span class="help-block">{{errors.gender}}</span>
