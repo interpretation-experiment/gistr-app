@@ -51,6 +51,7 @@
     "ember-radio-buttons": "^3.0.1",
     "franc": "^1.0.1",
     "jsnetworkx": "^0.3.3",
+    "liquid-fire": "0.19.4",
     "sl-ember-components": "^0.8.0",
     "torii": "^0.3.5"
   }
