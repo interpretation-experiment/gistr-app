@@ -10,13 +10,15 @@ export default Ember.Mixin.create({
     this._super.apply(this, arguments);
 
     this.log('init');
+    // Make events specific to each mixin instance,
+    // see note at http://emberjs.com/api/classes/Ember.Mixin.html
+    this.set('events', Ember.A());
+
     this.setupObservers();
   },
 
   eventChecks: null,  // required
   eventFilter: null,  // required
-
-  events: [],
 
   pushEvent: function(event) {
     this.log(`pushEvent '${event}'`);
