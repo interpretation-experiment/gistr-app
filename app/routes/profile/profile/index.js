@@ -7,8 +7,8 @@ import SessionMixin from 'gistr/mixins/session';
 export default Ember.Route.extend(FormRouteMixin, SessionMixin, {
   setupController: function(controller/*, model*/) {
     var profile = this.get('currentProfile');
-    if (!Ember.isNone(profile)) {
-      controller.set('mothertongue', profile.get('mothertongue'));
+    if (Ember.isNone(profile)) {
+      controller.send('changeMothertongue');
     }
   }
 });

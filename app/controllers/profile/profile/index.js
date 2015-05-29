@@ -68,6 +68,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
   /*
    * Profile form fields, state, and upload
    */
+  changeMothertongue: false,
   mothertongue: null,
   errors: null,
   isUploading: null,
@@ -75,7 +76,8 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
   showBilingualInfo: false,
   resetInput: function() {
     this.setProperties({
-      mothertongue: this.get('currentProfile.mothertongue'),
+      changeMothertongue: false,
+      mothertongue: null,
       errors: null,
       isUploading: null,
       showOtherInfo: false,
@@ -151,6 +153,13 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
     return errors;
   }.property('lifecycle.validator.pending', 'lifecycle.validator.state'),
   isProfileIncomplete: Ember.computed.notEmpty('profileErrors'),
+  profileMothertongueLabel: function() {
+    var mothertongue = this.get('currentProfile.mothertongue');
+    if (Ember.isNone(mothertongue)) { return; }
+    return this.get('lang.supportedLanguages').filter(function(language) {
+      return language.name === mothertongue;
+    }).objectAt(0).label;
+  }.property('currentProfile.mothertongue', 'lang.supportedLanguages'),
 
   /*
    * Profile actions
@@ -184,6 +193,14 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
                       `unwanted lifecycle state ${this.get('lifecycle.currentState')}`);
         }
       }
+    },
+    changeMothertongue: function() {
+      this.set('mothertongue', this.get('currentProfile.mothertongue'));
+      this.set('changeMothertongue', true);
+    },
+    cancelChangeMothertongue: function() {
+      this.set('mothertongue', null);
+      this.set('changeMothertongue', false);
     }
   }
 });

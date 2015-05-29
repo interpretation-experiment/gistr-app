@@ -25,34 +25,46 @@
 
 <div class="well">
   <h2>Mothertongue
-    <button class="btn btn-link" {{action "toggleOtherInfo"}}>Can't find your language?</button>
-    <button class="btn btn-link" {{action "toggleBilingualInfo"}}>Bilingual?</button>
+    {{#unless changeMothertongue}}
+      &mdash;
+      {{#sl-tooltip title="Click to change"}}<span class="changeable" {{action "changeMothertongue"}}>{{profileMothertongueLabel}}</span>{{/sl-tooltip}}
+      {{#if justSaved}}<small><span class="label label-success">Saved!</span></small>{{/if}}
+    {{else}}
+      <button class="btn btn-link" {{action "toggleOtherInfo"}}>Can't find your language?</button>
+      <button class="btn btn-link" {{action "toggleBilingualInfo"}}>Bilingual?</button>
+    {{/unless}}
   </h2>
 
-  {{#if showOtherInfo}}{{#sl-alert dismissable=true dismiss="toggleOtherInfo"}}
-    <h3>Support for Mothertongues</h3>
-    <p>As researchers, there are only so many languages we can analyse. If you can't find your mothertongue in the list, choose <mark>Other</mark> and the game will be in English for you.</p> <p>If you want to add support for a new language, please <a href='https://github.com/interpretation-experiment/gistr-app/issues/new'>let us know</a>!</p>
-  {{/sl-alert}}{{/if}}
-  {{#if showBilingualInfo}}{{#sl-alert dismissable=true dismiss="toggleBilingualInfo"}}
-    <h3>Bilingual (or more!)</h3>
-    <p>If you have more than one mothertongue, just choose the one you're the most comfortable with (if they're all the same, pick any!)</p>
-  {{/sl-alert}}{{/if}}
+  {{#if changeMothertongue}}
+    {{#if showOtherInfo}}{{#sl-alert dismissable=true dismiss="toggleOtherInfo"}}
+      <h3>Support for Mothertongues</h3>
+      <p>As researchers, there are only so many languages we can analyse. If you can't find your mothertongue in the list, choose <mark>Other</mark> and the game will be in English for you.</p> <p>If you want to add support for a new language, please <a href='https://github.com/interpretation-experiment/gistr-app/issues/new'>let us know</a>!</p>
+    {{/sl-alert}}{{/if}}
+    {{#if showBilingualInfo}}{{#sl-alert dismissable=true dismiss="toggleBilingualInfo"}}
+      <h3>Bilingual (or more!)</h3>
+      <p>If you have more than one mothertongue, just choose the one you're the most comfortable with (if they're all the same, pick any!)</p>
+    {{/sl-alert}}{{/if}}
 
-  <form>
+    <form>
 
-    <div class="form-group {{if errors.mothertongue 'has-error'}} {{if justSaved 'has-success'}}">
-      <label for="inputMothertongue" class="control-label">Mothertongue</label>
-      {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue" disabled=isUploading}}
-      <span class="help-block">{{errors.mothertongue}}</span>
-    </div>
+      <div class="form-group {{if errors.mothertongue 'has-error'}} {{if justSaved 'has-success'}}">
+        <label for="inputMothertongue" class="control-label">Mothertongue</label>
+        {{sl-select id="inputMothertongue" content=lang.supportedLanguages value=mothertongue optionValuePath="name" optionLabelPath="label" placeholder="Select your Mothertongue" disabled=isUploading}}
+        <span class="help-block">{{errors.mothertongue}}</span>
+      </div>
 
-    <div class="form-group {{if errors.non_field_errors 'has-error'}}">
-      <span class="help-block">{{errors.non_field_errors}}</span>
-      {{async-button action="uploadProfile" class="btn btn-primary" default="Update mothertongue" pending="Updating mothertongue..."}}
-      {{#if justSaved}}<span class="label label-success">Mothertongue saved!</span>{{/if}}
-    </div>
+      <div class="form-group {{if errors.non_field_errors 'has-error'}}">
+        <span class="help-block">{{errors.non_field_errors}}</span>
+        {{#if currentProfile.mothertongue}}
+          <button class="btn btn-default" {{action "cancelChangeMothertongue"}}>Cancel</button>
+          {{async-button action="uploadProfile" class="btn btn-primary" default="Update mothertongue" pending="Updating mothertongue..."}}
+        {{else}}
+          {{async-button action="uploadProfile" class="btn btn-primary" default="Set mothertongue" pending="Setting mothertongue..."}}
+        {{/if}}{{! currentProfile.mothertongue }}
+      </div>
 
-  </form>
+    </form>
+  {{/if}}{{! changeMothertongue }}
 </div>
 
 <div class="well">
