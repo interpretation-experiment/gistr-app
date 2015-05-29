@@ -65,6 +65,8 @@ export default Ember.Controller.extend(SessionMixin, {
       }
     }).then(function() {
       self.transitionToRoute('profile');
+      // Scroll back up
+      window.scrollTo(0, 0);
     }, function(error) {
       self.set('errors', error.errors);
     }).finally(function() {

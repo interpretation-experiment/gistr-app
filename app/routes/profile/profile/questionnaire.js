@@ -9,5 +9,8 @@ export default Ember.Route.extend(FormRouteMixin, SessionMixin, {
     if (this.get('currentProfile.questionnaireDone')) {
       this.transitionTo('profile.profile');
     }
-  }
+  },
+  scrollUp: function() {
+    window.scrollTo(0, 0);
+  }.on('activate')
 });
