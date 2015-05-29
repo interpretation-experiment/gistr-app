@@ -39,6 +39,7 @@ export default Ember.Controller.extend(SessionMixin, {
   upload: function() {
     var self = this,
         lifecycle = this.get('lifecycle'),
+        growl = this.get('growl'),
         profile = this.get('currentProfile'),
         data = this.getProperties('age', 'gender', 'naive', 'naiveDetail');
 
@@ -58,14 +59,18 @@ export default Ember.Controller.extend(SessionMixin, {
         // We can transition, and the user should go and do the experiment
         // so inform them
         if (lifecycle.get('isInExpTraining')) {
-          // TODO: growl
+          growl.success("Profile complete!",
+                        'You can get started with the experiment ' +
+                        'right now by <a href="/play">going here</a>!')
         }
         return lifecycle.transitionUp();
       }
 
-      // If the user is done with his profile, tell him so
+      // If the user is done with his profile but not with his training, tell him so
       if (!lifecycle.get('validator.actionRoutes').contains('profile')) {
-        // TODO: growl
+        growl.success("Profile complete!",
+                      'You can get started with your training ' +
+                      'right now by <a href="/play">going here</a>!')
       }
     }, function(error) {
       self.set('errors', error.errors);
