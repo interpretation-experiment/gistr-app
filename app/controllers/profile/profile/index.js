@@ -1,9 +1,11 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
+import EventfulMixin from 'gistr/mixins/eventful';
+import splitEvent from 'gistr/utils/split-event';
 
 
-export default Ember.Controller.extend(SessionMixin, {
+export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
   lang: Ember.inject.service(),
 
   /*
@@ -22,11 +24,51 @@ export default Ember.Controller.extend(SessionMixin, {
     this.setProperties({
       justSaved: null,
     });
+    this.resetEvents();
   },
+
+  /*
+   * Events, no checks used
+   */
+  eventChecks: {},
+  eventFilter: function() { return true; },
+  hasEvents: Ember.computed.notEmpty('events'),
+  // TODO: move to mixin
+  filterEvents: function(params) {
+    var events = this.get('events');
+
+    var optIncludes = function(part, param) {
+      return part.includes(param) || Ember.isNone(param);
+    };
+
+    return events.filter(function(event) {
+      var parts = splitEvent(event);
+      return (optIncludes(parts.state, params.state) &&
+              optIncludes(parts.type, params.type) &&
+              optIncludes(parts.name, params.name));
+    });
+  },
+  lifecycleEvent: function() {
+    var events = this.filterEvents({ type: 'lifecycle' });
+    if (events.length > 1) {
+      throw new Error("Got more than one lifecycle event: " + events);
+    }
+    return events.objectAt(0);
+  }.property('events'),
+  hasTransitioned: function() {
+    var lifecycleEvent = this.get('lifecycleEvent');
+    // Note that if this is false, then hasStateWorkLeft will be false
+    // i.e. with event but not transitioned => no work left
+    return !Ember.isNone(lifecycleEvent) && this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
+  }.property('lifecycle.currentState', 'lifecycleEvent'),
+  hasStateWorkLeft: function() {
+    return this.get('lifecycle.validator.actionRoutes').contains('profile');
+  }.property('lifecycle.validator.actionRoutes'),
 
   /*
    * Profile form fields, state, and upload
    */
+  changeMothertongue: false,
   mothertongue: null,
   errors: null,
   isUploading: null,
@@ -34,7 +76,8 @@ export default Ember.Controller.extend(SessionMixin, {
   showBilingualInfo: false,
   resetInput: function() {
     this.setProperties({
-      mothertongue: this.get('currentProfile.mothertongue'),
+      changeMothertongue: false,
+      mothertongue: null,
       errors: null,
       isUploading: null,
       showOtherInfo: false,
@@ -67,12 +110,12 @@ export default Ember.Controller.extend(SessionMixin, {
         if (lifecycle.get('isInRegistering')) { forward = 'index'; }
         return lifecycle.transitionUp();
       }
-    }, function(error) {
-      self.set('errors', error.errors);
     }).then(function() {
       if (!Ember.isNone(forward)) {
         self.transitionToRoute(forward);
       }
+    }, function(error) {
+      self.set('errors', error.errors);
     }).finally(function() {
       self.set('isUploading', false);
     });
@@ -88,7 +131,7 @@ export default Ember.Controller.extend(SessionMixin, {
     'exp.training': {
       'tested-read-write-speed': "Test your reading and writing speeds",
       'tested-memory-span': "Test your memory span",
-      'answered-questionnaire': "Fill in the general questionnaire"
+      'answered-questionnaire': "Fill in the general questionnaire below"
     }
   },
   profileErrors: function() {
@@ -110,6 +153,13 @@ export default Ember.Controller.extend(SessionMixin, {
     return errors;
   }.property('lifecycle.validator.pending', 'lifecycle.validator.state'),
   isProfileIncomplete: Ember.computed.notEmpty('profileErrors'),
+  profileMothertongueLabel: function() {
+    var mothertongue = this.get('currentProfile.mothertongue');
+    if (Ember.isNone(mothertongue)) { return; }
+    return this.get('lang.supportedLanguages').filter(function(language) {
+      return language.name === mothertongue;
+    }).objectAt(0).label;
+  }.property('currentProfile.mothertongue', 'lang.supportedLanguages'),
 
   /*
    * Profile actions
@@ -133,5 +183,24 @@ export default Ember.Controller.extend(SessionMixin, {
         this.set('showOtherInfo', false);
       }
     },
+    'lifecycle.update': function(event) {
+      if (event.value) {
+        if (this.get('lifecycle').isAtOrAfter('exp.training')) {
+          console.log(`[profile] setting event ${event.name}`);
+          this.pushEvent(this.get('lifecycle.currentState') + ':lifecycle:' + event.name);
+        } else {
+          console.log(`[profile] dropping event ${event.name} because of ` +
+                      `unwanted lifecycle state ${this.get('lifecycle.currentState')}`);
+        }
+      }
+    },
+    changeMothertongue: function() {
+      this.set('mothertongue', this.get('currentProfile.mothertongue'));
+      this.set('changeMothertongue', true);
+    },
+    cancelChangeMothertongue: function() {
+      this.set('mothertongue', null);
+      this.set('changeMothertongue', false);
+    }
   }
 });

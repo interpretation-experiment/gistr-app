@@ -71,11 +71,10 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
       },
       'answered-questionnaire': {
         check: function(user) {
-          // TODO: Check the questionnaire is done
-          return !Ember.isNone(user) && true;
+          return !Ember.isNone(user) && user.get('profile.questionnaireDone');
         },
         route: 'profile',
-        observes: null
+        observes: 'currentProfile.questionnaireDone'
       },
       'completed-trials': {
         check: function(user) {

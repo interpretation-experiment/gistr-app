@@ -1,9 +1,7 @@
 import Ember from 'ember';
 
-import SessionMixin from 'gistr/mixins/session';
 
-
-export default Ember.Controller.extend(SessionMixin, {
+export default Ember.Controller.extend({
   needs: [
     'profile/admin/password',
     'profile/admin/username',

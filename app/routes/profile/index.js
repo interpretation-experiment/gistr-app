@@ -1,9 +1,7 @@
 import Ember from 'ember';
 
-import RestrictedRouteMixin from 'gistr/mixins/restricted-route';
 
-
-export default Ember.Route.extend(RestrictedRouteMixin, {
+export default Ember.Route.extend({
   redirect: function() {
     this.transitionTo('profile.profile');
   }

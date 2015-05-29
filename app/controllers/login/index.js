@@ -4,7 +4,6 @@ import SessionMixin from 'gistr/mixins/session';
 
 
 export default Ember.Controller.extend(SessionMixin, {
-  needs: ['profile'],
   growl: Ember.inject.service(),
 
   /*
