@@ -45,6 +45,10 @@
       <p>If you have more than one mothertongue, just choose the one you're the most comfortable with (if they're all the same, pick any!)</p>
     {{/sl-alert}}{{/if}}
 
+    {{#if currentProfile.mothertongue}}{{#sl-alert theme="danger"}}
+      <p>Careful! If you already started the experiment, changing your mothertongue will most likely invalidate your results!</p>
+    {{/sl-alert}}{{/if}}
+
     <form>
 
       <div class="form-group {{if errors.mothertongue 'has-error'}} {{if justSaved 'has-success'}}">
