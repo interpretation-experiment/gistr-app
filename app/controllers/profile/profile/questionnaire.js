@@ -61,7 +61,7 @@ export default Ember.Controller.extend(SessionMixin, {
         if (lifecycle.get('isInExpTraining')) {
           growl.success("Profile complete!",
                         'You can get started with the experiment ' +
-                        'right now by <a href="/play">going here</a>!')
+                        'right now by <a href="/play">going here</a>!');
         }
         return lifecycle.transitionUp();
       }
@@ -70,7 +70,7 @@ export default Ember.Controller.extend(SessionMixin, {
       if (!lifecycle.get('validator.actionRoutes').contains('profile')) {
         growl.success("Profile complete!",
                       'You can get started with your training ' +
-                      'right now by <a href="/play">going here</a>!')
+                      'right now by <a href="/play">going here</a>!');
       }
     }, function(error) {
       self.set('errors', error.errors);
