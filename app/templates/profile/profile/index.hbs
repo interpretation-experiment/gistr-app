@@ -23,6 +23,21 @@
   {{/sl-alert}}
 {{/if}}
 
+{{#if currentProfile}}
+  <div class="well">
+    <h2>Questionnaire
+      {{#if currentProfile.questionnaireDone}}
+        <span class="icon-big done">{{fa-icon "check"}}</span>
+      {{else}}
+        <small>Not yet done.</small>
+      {{/if}}
+    </h2>
+    {{#unless currentProfile.questionnaireDone}}
+      <p>{{link-to 'Pass the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}</p>
+    {{/unless}}
+  </div>
+{{/if}}
+
 <div class="well">
   <h2>Mothertongue
     {{#unless changeMothertongue}}
@@ -71,15 +86,3 @@
   {{/if}}{{! changeMothertongue }}
 </div>
 
-<div class="well">
-  <h2>Questionnaire
-    {{#if currentProfile.questionnaireDone}}
-      <span class="icon-big done">{{fa-icon "check"}}</span>
-    {{else}}
-      <small>Not yet done.</small>
-    {{/if}}
-  </h2>
-  {{#unless currentProfile.questionnaireDone}}
-    <p>{{link-to 'Pass the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}</p>
-  {{/unless}}
-</div>
