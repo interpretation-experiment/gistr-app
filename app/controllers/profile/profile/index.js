@@ -129,7 +129,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
     'exp.training': {
       'tested-read-write-speed': "Test your reading and writing speeds",
       'tested-memory-span': "Test your memory span",
-      'answered-questionnaire': "Fill in the general questionnaire"
+      'answered-questionnaire': "Fill in the general questionnaire below"
     }
   },
   profileErrors: function() {
