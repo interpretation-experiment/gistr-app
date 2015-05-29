@@ -1,3 +1,19 @@
+{{#if hasEvents}}
+  {{#if hasTransitioned}}
+    {{#sl-alert theme="success" dismissable=true}}
+      <h3>Profile complete!</h3>
+      <p>You can {{link-to 'get started on the experiment' 'play'}} right now!</p>
+    {{/sl-alert}}
+  {{else}}
+    {{#unless hasStateWorkLeft}}
+      {{#sl-alert theme="success" dismissable=true}}
+        <h3>Profile complete!</h3>
+        <p>You can {{link-to 'get started on your training' 'play'}} right now!</p>
+      {{/sl-alert}}
+    {{/unless}}{{! has state work left }}
+  {{/if}}{{! has transitioned }}
+{{/if}}{{! has events }}
+
 {{#if isProfileIncomplete}}
   {{#sl-alert theme="warning"}}
     Please complete your profile!

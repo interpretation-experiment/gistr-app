@@ -1,9 +1,11 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
+import EventfulMixin from 'gistr/mixins/eventful';
+import splitEvent from 'gistr/utils/split-event';
 
 
-export default Ember.Controller.extend(SessionMixin, {
+export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
   lang: Ember.inject.service(),
 
   /*
@@ -22,7 +24,46 @@ export default Ember.Controller.extend(SessionMixin, {
     this.setProperties({
       justSaved: null,
     });
+    this.resetEvents();
   },
+
+  /*
+   * Events, no checks used
+   */
+  eventChecks: {},
+  eventFilter: function() { return true; },
+  hasEvents: Ember.computed.notEmpty('events'),
+  // TODO: move to mixin
+  filterEvents: function(params) {
+    var events = this.get('events');
+
+    var optIncludes = function(part, param) {
+      return part.includes(param) || Ember.isNone(param);
+    };
+
+    return events.filter(function(event) {
+      var parts = splitEvent(event);
+      return (optIncludes(parts.state, params.state) &&
+              optIncludes(parts.type, params.type) &&
+              optIncludes(parts.name, params.name));
+    });
+  },
+  lifecycleEvent: function() {
+    var events = this.filterEvents({ type: 'lifecycle' });
+    if (events.length > 1) {
+      throw new Error("Got more than one lifecycle event: " + events);
+    }
+    return events.objectAt(0);
+  }.property('events'),
+  hasTransitioned: function() {
+    var lifecycleEvent = this.get('lifecycleEvent');
+    // Note that if this is false, then hasStateWorkLeft will be false
+    // i.e. with event but not transitioned => no work left
+    return !Ember.isNone(lifecycleEvent) && this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
+  }.property('lifecycle.currentState', 'lifecycleEvent'),
+  hasStateWorkLeft: function() {
+    return this.get('lifecycle.validator.actionRoutes').contains('profile');
+  }.property('lifecycle.validator.actionRoutes'),
 
   /*
    * Profile form fields, state, and upload
@@ -133,5 +174,16 @@ export default Ember.Controller.extend(SessionMixin, {
         this.set('showOtherInfo', false);
       }
     },
+    'lifecycle.update': function(event) {
+      if (event.value) {
+        if (this.get('lifecycle').isAtOrAfter('exp.training')) {
+          console.log(`[profile] setting event ${event.name}`);
+          this.pushEvent(this.get('lifecycle.currentState') + ':lifecycle:' + event.name);
+        } else {
+          console.log(`[profile] dropping event ${event.name} because of ` +
+                      `unwanted lifecycle state ${this.get('lifecycle.currentState')}`);
+        }
+      }
+    }
   }
 });
