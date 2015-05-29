@@ -62,7 +62,7 @@ export default Ember.Component.extend(EnterNextMixin, {
     }
 
     steps.push({
-      element: Ember.$('#nav-back').get(0),
+      element: Ember.$('#nav-back a').get(0),
       intro: "Quit whenever you want, just click here",
       position: "right"
     });

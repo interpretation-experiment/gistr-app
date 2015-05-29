@@ -16,10 +16,6 @@
 {{/page-header}}
 
 {{#page-body}}
-  {{#if lifecycle.isInExpDoing}}
-    {{#unless isInInstructions}}
-    {{/unless}}{{! is in instructions }}
-  {{/if}}{{! lifecycle is in exp.doing }}
   {{#if isInInstructions}}
     {{play-instructions
         doExpIntro=doExpIntro
