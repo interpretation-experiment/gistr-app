@@ -27,6 +27,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   /*
    * Timing parameters
    */
+  // TODO: move to shaping
   readFactor: 1,     // multiplied by the number of tokens, gives seconds
   writeFactor: 5,    // multiplied by the number of tokens, gives seconds
   readDuration: function() {
