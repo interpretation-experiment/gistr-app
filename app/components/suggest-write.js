@@ -6,11 +6,7 @@ import SessionMixin from 'gistr/mixins/session';
 export default Ember.Component.extend(SessionMixin, {
   lang: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
-
-  /*
-   * Parameters
-   */
-  minTokens: 10,
+  shaping: Ember.inject.service(),
 
   /*
    * Suggestion form fields, state, and upload
@@ -52,13 +48,13 @@ export default Ember.Component.extend(SessionMixin, {
    * Token counting
    */
   tokensLeft: function() {
-    return Math.max(0, this.get('minTokens') - this.get('tokenCount'));
+    return Math.max(0, this.get('shaping.minTokens') - this.get('tokenCount'));
   }.property('tokenCount'),
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
   tokensCountInfo: function() {
     if (this.get('enoughTokens')) { return; }
 
-    var info = "Your sentence must be at least " + this.get('minTokens') + " words long";
+    var info = "Your sentence must be at least " + this.get('shaping.minTokens') + " words long";
     if (this.get('text')) {
       info += " (type " + this.get('tokensLeft') + " more)";
     }

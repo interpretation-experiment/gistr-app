@@ -27,9 +27,7 @@
   {{else if isInTaskReading}}
     {{play-read
         sentence=currentSentence
-        duration=readDuration
-        next="task.distract"
-        timeout="task.distract"}}
+        next="task.distract"}}
 
   {{else if isInTaskDistracting}}
     {{play-distract
@@ -37,9 +35,7 @@
 
   {{else if isInTaskWritingUser}}
     {{play-write
-        minTokens=minTokens
         parentSentence=currentSentence
-        duration=writeDuration
         streak=streak
         next="processWriting"
         timeout="task.timeout"}}

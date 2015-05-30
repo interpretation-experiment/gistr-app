@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
 import TimefulMixin from 'gistr/mixins/timeful';
+import countTokens from 'gistr/utils/count-tokens';
 
 
 export default Ember.Component.extend(TimefulMixin, SessionMixin, {
@@ -23,6 +24,16 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   closePastePrevention: function() {
     Ember.$(window).off(this.get('pasteEvent'));
   }.on('willDestroyElement'),
+
+  /*
+   * Writing time
+   */
+  parentSentenceTokensCount: function() {
+    return countTokens(this.get('parentSentence.text'));
+  }.property('parentSentence.text'),
+  duration: function() {
+    return this.get('shaping.writeFactor') * this.get('parentSentenceTokensCount');
+  }.property('shaping.writeFactor', 'parentSentenceTokensCount'),
 
   /*
    * Input form fields, state, and upload
@@ -79,13 +90,13 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
    * Token counting
    */
   tokensLeft: function() {
-    return Math.max(0, this.get('minTokens') - this.get('tokenCount'));
+    return Math.max(0, this.get('shaping.minTokens') - this.get('tokenCount'));
   }.property('tokenCount'),
   enoughTokens: Ember.computed.lte('tokensLeft', 0),
   tokensCountInfo: function() {
     if (this.get('enoughTokens')) { return; }
 
-    var info = "Your sentence must be at least " + this.get('minTokens') + " words long";
+    var info = "Your sentence must be at least " + this.get('shaping.minTokens') + " words long";
     if (this.get('text')) {
       info += " (type " + this.get('tokensLeft') + " more)";
     }

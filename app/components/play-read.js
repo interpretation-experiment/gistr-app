@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 import TimefulMixin from 'gistr/mixins/timeful';
 import EnterNextMixin from 'gistr/mixins/enter-next';
+import countTokens from 'gistr/utils/count-tokens';
 
 
 export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
@@ -22,8 +23,18 @@ export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
     Ember.$(window).off(this.get('copyEvent'));
   }.on('willDestroyElement'),
 
+  /*
+   * Reading time
+   */
+  sentenceTokensCount: function() {
+    return countTokens(this.get('sentence.text'));
+  }.property('sentence.text'),
+  duration: function() {
+    return this.get('shaping.readFactor') * this.get('sentenceTokensCount');
+  }.property('shaping.readFactor', 'sentenceTokensCount'),
+
   timerDone: function() {
-    this.sendAction('timeout');
+    this.sendAction('next');
   },
   onEnter: function() {
     this.send('next');

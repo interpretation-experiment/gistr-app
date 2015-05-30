@@ -4,6 +4,17 @@ import Ember from 'ember';
 export default Ember.Service.extend({
   serverMeta: Ember.inject.service(),
 
+  /*
+   * Static parameters
+   */
+  readFactor: 1,              // multiplied by the number of tokens, gives seconds
+  writeFactor: 5,             // multiplied by the number of tokens, gives seconds
+  branchProbability: 0.8,     // probability of branching in a tree
+  minTokens: 10,              // app-wide minimum number of tokens for sentences
+
+  /*
+   * Variable parameters, retrieved from server
+   */
   targetBranchCount: null,
   targetBranchDepth: null,
   experimentWork: null,
