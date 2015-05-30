@@ -53,21 +53,12 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
       }
     },
     'exp.training': {
-      'tested-read-write-speed': {
+      'tested-reading-span': {
         check: function(user) {
-          // TODO: Check the read-write test is done
-          return !Ember.isNone(user) && true;
+          return !Ember.isNone(user) && user.get('profile.readingSpanDone');
         },
         route: 'profile',
-        observes: null
-      },
-      'tested-memory-span': {
-        check: function(user) {
-          // TODO: Check the memory-span test is done
-          return !Ember.isNone(user) && true;
-        },
-        route: 'profile',
-        observes: null
+        observes: 'currentProfile.readingSpanDone'
       },
       'answered-questionnaire': {
         check: function(user) {

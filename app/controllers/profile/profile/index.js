@@ -129,8 +129,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
       'has-mothertongue': "Set your mothertongue"
     },
     'exp.training': {
-      'tested-read-write-speed': "Test your reading and writing speeds",
-      'tested-memory-span': "Test your memory span",
+      'tested-reading-span': "Test your reading-span below",
       'answered-questionnaire': "Fill in the general questionnaire below"
     }
   },
