@@ -8,6 +8,8 @@ export default Ember.Service.extend({
   targetBranchDepth: null,
   experimentWork: null,
   trainingWork: null,
+  readingSpanWordsCount: null,
+  readingSpanTrialsCount: null,
 
   _populationPromise: null,
   populate: function() {
@@ -20,10 +22,14 @@ export default Ember.Service.extend({
 
     _populationPromise = this.get('serverMeta').populate().then(function(serverMeta) {
       var data = serverMeta.get('data');
-      self.set('targetBranchCount', data.target_branch_count);
-      self.set('targetBranchDepth', data.target_branch_depth);
-      self.set('experimentWork', data.experiment_work);
-      self.set('trainingWork', data.training_work);
+      self.setProperties({
+        targetBranchCount: data.target_branch_count,
+        targetBranchDepth: data.target_branch_depth,
+        experimentWork: data.experiment_work,
+        trainingWork: bata.training_work,
+        readingSpanWordsCount: data.reading_span_words_count,
+        readingSpanTrialsCount: data.reading_span_trials_count
+      });
       return self;
     });
 
