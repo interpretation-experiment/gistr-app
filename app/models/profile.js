@@ -21,6 +21,8 @@ export default DS.Model.extend({
   trainedReformulations: DS.attr('boolean'),
   questionnaire: DS.belongsTo('questionnaire', { async: true }),
   questionnaireDone: DS.attr('boolean'),
+  readingSpan: DS.belongsTo('reading-span', { async: true }),
+  readingSpanDone: DS.attr('boolean'),
 
   introducedExpHome: DS.attr('boolean'),
   introducedExpPlay: DS.attr('boolean'),
