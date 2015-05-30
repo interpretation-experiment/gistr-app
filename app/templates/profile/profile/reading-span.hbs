@@ -1,3 +1,24 @@
 <div class="well">
   <h2>Reading-span test</h2>
+
+  {{#if isInInstructions}}
+    {{reading-span-instructions
+        next="read"}}
+
+  {{else if isInReading}}
+    {{reading-span-read
+        next="distract"}}
+
+  {{else if isInDistracting}}
+    {{reading-span-distract
+        next="write"}}
+
+  {{else if isInWriting}}
+    {{reading-span-write
+        save="processWords"}}
+
+  {{else if isInFinished}}
+    {{reading-span-finished}}
+
+  {{/if}}
 </div>
