@@ -26,7 +26,7 @@ export default Ember.Service.extend({
         targetBranchCount: data.target_branch_count,
         targetBranchDepth: data.target_branch_depth,
         experimentWork: data.experiment_work,
-        trainingWork: bata.training_work,
+        trainingWork: data.training_work,
         readingSpanWordsCount: data.reading_span_words_count,
         readingSpanTrialsCount: data.reading_span_trials_count
       });
