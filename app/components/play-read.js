@@ -7,6 +7,7 @@ import countTokens from 'gistr/utils/count-tokens';
 
 export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   growl: Ember.inject.service(),
+  shaping: Ember.inject.service(),
 
   /*
    * Copy-paste prevention
