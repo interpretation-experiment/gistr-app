@@ -24,7 +24,9 @@ export default Ember.Route.extend(FormRouteMixin, SessionMixin, ProfileRouteMixi
         flatWords = sample(availableWords, trialsCount * wordsCount);
 
     for (var i = 0; i < trialsCount; i++) {
-      words.push(flatWords.slice(i * wordsCount, (i + 1) * wordsCount));
+      words.push(flatWords.slice(i * wordsCount, (i + 1) * wordsCount).map(function(word) {
+        return word.capitalize();
+      }));
     }
 
     controller.set('words', words);
