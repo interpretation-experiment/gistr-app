@@ -1,3 +1,11 @@
-TODO: sample from words, read for shaping.readFactor * wordsCount seconds (words sampled from remainingWords) then go to next
-{{words}}
-<button class="btn btn-primary" {{action "next"}}>Continue</button>
+<h3>Memorize these words!</h3>
+<div class="row well">
+  {{#each words as |word|}}
+    <div class="col-sm-4">
+      <p>{{word}}</p>
+    </div>
+  {{/each}}
+</div>
+{{#progress-clock value=progress}}
+  <button class="btn btn-primary" {{action "next"}}>Continue</button>
+{{/progress-clock}}
