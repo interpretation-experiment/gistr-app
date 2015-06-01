@@ -8,7 +8,7 @@
       <div class="col-sm-8"><small>
         Completed {{h-pluralize currentProfile.reformulationsCount 'sentence'}} out of {{shaping.experimentWork}}
         {{sl-progress-bar id="exp-progress" value=expProgress striped=true title="There's a pause every 10 sentences"}}
-        </small></div>
+      </small></div>
     {{else}}{{! lifecycle is in playing }}
       <div class="col-sm-12"><span id="exp-play-title">Play <small><span id="available-sentences">available sentences <span class="badge">{{currentProfile.availableTreesBucket}}</span></span> | <span id="next-credit">next credit in <span class="badge">{{currentProfile.nextCreditIn}}</span> sentences</span></small></span></div>
     {{/if}}{{! lifecycle }}
