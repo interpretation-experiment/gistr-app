@@ -49,7 +49,7 @@ export default Ember.Component.extend(EnterNextMixin, {
         position: "left",
       },
       {
-        element: Ember.$('.instructions-drawing').get(0),
+        element: Ember.$('.instructions').get(0),
         intro: "The whole process loops once you're done",
       }
     ];
