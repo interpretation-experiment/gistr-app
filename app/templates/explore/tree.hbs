@@ -15,6 +15,7 @@
             finishedLoading="finished"}}
       </div>
       <div class="col-sm-6">
+        {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
         {{#if hasSelection}}
           {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:"}}{{/if}}
           {{#if hasPath}}
@@ -27,7 +28,6 @@
           {{/if}}
           {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:"}}{{/if}}
         {{/if}}
-        {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
       </div>
     </div>
 
