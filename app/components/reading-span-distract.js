@@ -1,10 +1,9 @@
 import Ember from 'ember';
 
 import TimefulMixin from 'gistr/mixins/timeful';
-import EnterNextMixin from 'gistr/mixins/enter-next';
 
 
-export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
+export default Ember.Component.extend(TimefulMixin, {
   duration: 2,  // seconds
   timeLeft: function() {
     var duration = this.get('duration'),
