@@ -32,7 +32,7 @@ export default Ember.Component.extend({
   enoughTokens: Ember.computed.gte('tokens.length', 3),
   placeholder: function() {
     var wordsCount = this.get('shaping.readingSpanWordsCount');
-    return `Type up to ${wordsCount} words`;
+    return `Type a word and press space (max ${wordsCount} words)`;
   }.property(),
 
   /*
