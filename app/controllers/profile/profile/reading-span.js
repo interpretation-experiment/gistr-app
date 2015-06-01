@@ -30,7 +30,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     write: function() {
       this.sendStateEvent('write');
     },
-    processWords: function() {
+    processWords: function(words) {
+      console.log(`Got words: ${words}`);
       if (this.get('trial') + 1 === this.get('shaping.readingSpanTrialsCount')) {
         // This is the last trial
 

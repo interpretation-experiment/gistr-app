@@ -1,2 +1,15 @@
-TODO: write up to wordsCount words, auto-tokenized. Send list of words to upper controller. Controller saves the percentage, and either saves to model if it's the last trial then finishes, or goes back to reading.
-<button class="btn btn-primary" {{action "save"}}>Save</button>
+<h3>Write down the words you remember</h3>
+
+<form>
+  <div class="form-group">
+    {{token-input class="form-control" id="inputWords" value=words minLength=1 limit=shaping.readingSpanWordsCount placeholder=placeholder}}
+  </div>
+
+  <div class="form-group">
+    {{#if enoughTokens}}
+      <button class="btn btn-primary" {{action "save"}}>Save</button>
+    {{else}}
+      {{#sl-tooltip title="Type at least 3 words" id="inactive-submit"}}<button class="btn btn-primary" disabled=true>Save</button>{{/sl-tooltip}}
+    {{/if}}
+  </div>
+</form>

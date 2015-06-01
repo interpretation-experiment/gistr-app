@@ -5,6 +5,7 @@ import EnterNextMixin from 'gistr/mixins/enter-next';
 
 
 export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
+  growl: Ember.inject.service(),
   shaping: Ember.inject.service(),
 
   /*

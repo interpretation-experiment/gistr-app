@@ -2,6 +2,9 @@ import Ember from 'ember';
 
 
 export default Ember.Component.extend({
+  growl: Ember.inject.service(),
+  shaping: Ember.inject.service(),
+
   /*
    * Copy-paste prevention
    */
@@ -17,9 +20,34 @@ export default Ember.Component.extend({
     Ember.$(window).off(this.get('pasteEvent'));
   }.on('willDestroyElement'),
 
+  /*
+   * Form meta
+   */
+  splitter: /, /,
+  minTokens: 3,
+  tokens: function() {
+    var words = this.get('words') || '';
+    return words.split(this.get('splitter'));
+  }.property('words'),
+  enoughTokens: Ember.computed.gte('tokens.length', 3),
+  placeholder: function() {
+    var wordsCount = this.get('shaping.readingSpanWordsCount');
+    return `Type up to ${wordsCount} words`;
+  }.property(),
+
+  /*
+   * Form fields
+   */
+  words: null,
+  resetInput: function() {
+    this.setProperties({
+      words: null,
+    });
+  },
+
   actions: {
     save: function() {
-      this.sendAction('save');
+      this.sendAction('save', this.get('tokens'));
     }
   }
 });
