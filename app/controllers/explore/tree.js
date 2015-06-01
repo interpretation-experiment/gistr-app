@@ -28,9 +28,13 @@ export default Ember.Controller.extend(SessionMixin, {
 
   actions: {
     hoverSentence: function(sentence) {
-      this.set("hovered", sentence);
+      if (!Ember.isNone(sentence)) {
+        this.set("hovered", sentence);
+      }
     },
     setSelection: function(selection) {
+      if ((selection.start === this.get('selectionStart')) &&
+          (selection.end === this.get('selectionEnd'))) { return; }
       this.set('showPath', false);
       this.set('selectionStart', selection.start);
       this.set('selectionEnd', selection.end);
