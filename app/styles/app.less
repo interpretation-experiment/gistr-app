@@ -16,6 +16,12 @@ label.disabled { color: lightgrey; }
 .changeable:hover { .text-primary(); cursor: pointer; }
 
 /*
+ * Token input tweaks
+ */
+.tokenfield.form-control { height: auto; padding-bottom: 0; }
+.tokenfield.focus:extend(.form-control:focus) {}
+
+/*
  * Don't let introjs mess up our liquid-fire layout
  */
 .introjs-fixParent { position: relative !important; }

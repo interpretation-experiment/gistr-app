@@ -16,6 +16,7 @@
     "pnotify": "~2.0.1",
     "d3": "~3.5.5",
     "jquery.easy-pie-chart": "~2.1.6",
+    "bootstrap-tokenfield": "~0.12.1",
     "sl-bootstrap": "softlayer/sl-bootstrap#~1.1.0",
     "dom-ruler": "0.1.5",
     "fontawesome": "~4.3.0",
