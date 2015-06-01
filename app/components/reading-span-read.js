@@ -32,9 +32,6 @@ export default Ember.Component.extend(TimefulMixin, {
     this.sendAction('next');
   },
 
-  onEnter: function() {
-    this.send('next');
-  },
   actions: {
     next: function() {
       this.sendAction('next');

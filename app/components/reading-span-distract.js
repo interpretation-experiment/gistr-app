@@ -16,9 +16,6 @@ export default Ember.Component.extend(TimefulMixin, {
   timerDone: function() {
     this.set('wait', false);
   },
-  onEnter: function() {
-    this.send('next');
-  },
   actions: {
     next: function() {
       if (!this.get('wait')) {
