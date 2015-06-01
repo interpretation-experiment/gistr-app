@@ -56,8 +56,13 @@ export default Ember.Component.extend(EnterNextMixin, {
     if (lifecycle.get('isInExpTraining')) {
       steps.push({
         element: Ember.$('#exp-play-title').get(0),
-        intro: `<p>Right now you're in <strong>training</strong>: nothing you do is recorded.</p><p>The real experiment starts after ${shaping.get('trainingWork')} trials.</p>`,
+        intro: "Right now you're in <strong>training</strong>: nothing you do is recorded.",
         position: "right"
+      });
+      steps.push({
+        element: Ember.$('#exp-progress').get(0),
+        intro: `The real experiment starts after ${shaping.get('trainingWork')} trials.`,
+        position: "left"
       });
     }
 

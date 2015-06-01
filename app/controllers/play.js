@@ -23,6 +23,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   expProgress: function() {
     return 100 * this.get('currentProfile.reformulationsCount') / this.get('shaping.experimentWork');
   }.property('currentProfile.reformulationsCount', 'shaping.experimentWork'),
+  trainingProgress: function() {
+    return 100 * this.get('streak') / this.get('shaping.trainingWork');
+  }.property('streak', 'shaping.trainingWork'),
   streak: 0,
   resetStreak: function() {
     this.set('streak', 0);
