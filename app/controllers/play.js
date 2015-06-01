@@ -3,7 +3,6 @@ import Ember from 'ember';
 import SessionMixin from 'gistr/mixins/session';
 import EventfulMixin from 'gistr/mixins/eventful';
 import draw from 'gistr/utils/draw';
-import countTokens from 'gistr/utils/count-tokens';
 import splitEvent from 'gistr/utils/split-event';
 
 
@@ -14,27 +13,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   lang: Ember.inject.service(),
 
   /*
-   * Tree shaping parameters
+   * General parameters
    */
   shaping: Ember.inject.service(),
-  pBranch: 0.8,
-
-  /*
-   * Writing parameters
-   */
-  minTokens: 10,
-
-  /*
-   * Timing parameters
-   */
-  readFactor: 1,     // multiplied by the number of tokens, gives seconds
-  writeFactor: 5,    // multiplied by the number of tokens, gives seconds
-  readDuration: function() {
-    return this.get('readFactor') * this.get('sentenceTokensCount');
-  }.property('readFactor', 'sentenceTokensCount'),
-  writeDuration: function() {
-    return this.get('writeFactor') * this.get('sentenceTokensCount');
-  }.property('readFactor', 'sentenceTokensCount'),
 
   /*
    * Global progress and reset
@@ -42,6 +23,9 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   expProgress: function() {
     return 100 * this.get('currentProfile.reformulationsCount') / this.get('shaping.experimentWork');
   }.property('currentProfile.reformulationsCount', 'shaping.experimentWork'),
+  trainingProgress: function() {
+    return 100 * this.get('streak') / this.get('shaping.trainingWork');
+  }.property('streak', 'shaping.trainingWork'),
   streak: 0,
   resetStreak: function() {
     this.set('streak', 0);
@@ -138,9 +122,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Current tree and sentence state and selection
    */
   currentSentence: null,
-  sentenceTokensCount: function() {
-    return countTokens(this.get('currentSentence.text'));
-  }.property('currentSentence.text'),
   resetModels: function() {
     this.setProperties({
       currentSentence: null
@@ -149,7 +130,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
   drawInTree: function(tree) {
     var branchesCount = tree.get('branchesCount'),
         targetBranchCount = this.get('shaping.targetBranchCount'),
-        pBranch = this.get('pBranch'),
+        pBranch = this.get('shaping.branchProbability'),
         root = tree.get('root'),
         tips = tree.get('tips'),
         effectiveTips = tips.underTips.length === 0 ?

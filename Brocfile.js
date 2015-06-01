@@ -30,6 +30,9 @@ app.import('bower_components/ember-fsm/dist/globals/ember-fsm.js');
 app.import('bower_components/bootstrap/dist/js/bootstrap.js');
 app.import('bower_components/bootstrap/dist/css/bootstrap.css');
 
+app.import('bower_components/bootstrap-tokenfield/dist/bootstrap-tokenfield.js');
+app.import('bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css');
+
 app.import('bower_components/pnotify/pnotify.core.js');
 app.import('bower_components/pnotify/pnotify.core.css');
 app.import('bower_components/pnotify/pnotify.buttons.js');

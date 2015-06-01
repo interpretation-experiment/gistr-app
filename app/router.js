@@ -15,6 +15,7 @@ Router.map(function() {
   this.route('profile', function() {
     this.route('profile', function() {
       this.route('questionnaire');
+      this.route('reading-span');
     });
     this.route('admin');
     this.route('emails', function() {

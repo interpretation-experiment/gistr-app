@@ -1,0 +1,22 @@
+{{#if showIntro}}
+  {{computed-intro-js
+      getSteps=introSteps
+      start-if=true
+      on-change="introChange"
+      on-complete="introDone"
+      on-exit="introDone"}}
+{{/if}}
+<div class="instructions instructions-reading-span">
+  {{#each images as |image|}}
+    <img
+        class="{{if image.hidden 'hidden'}}"
+        id="instruction-{{image.name}}"
+        src="assets/images/reading-span/{{image.name}}.png"
+        title="{{image.title}}" />
+  {{/each}}
+</div>
+<div class="center">
+  <h2>Ready to go?</h2>
+  <button class="btn btn-default" {{action "showIntro"}}>Play instructions again</button>
+  <button class="btn btn-primary" {{action "next"}}>Start</button>
+</div>

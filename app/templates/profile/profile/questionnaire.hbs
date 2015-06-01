@@ -2,16 +2,17 @@
   <h2>General questionnaire</h2>
   <p>We need to know a bit about who you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
 
-  <form>
+  <h3>About you</h3>
 
-    <h3>About you</h3>
-
+  <form class="form-inline">
     <div class="form-group {{if errors.age 'has-error'}}">
       <label for="inputAge" class="control-label">Age</label>
       {{input id="inputAge" class="form-control" value=age disabled=isUploading}}
       <span class="help-block">{{errors.age}}</span>
     </div>
+  </form>
 
+  <form>
     <div class="form-group {{if errors.gender 'has-error'}}">
       <label class="control-label">Gender</label>
       <div>

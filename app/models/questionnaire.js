@@ -18,4 +18,5 @@ export default DS.Model.extend({
    * Unused properties
    */
   url: DS.attr('string'),
+  profileUrl: DS.attr('string'),
 });

@@ -8,6 +8,22 @@ export default Ember.Route.extend(LoadingSliderMixin, {
   shaping: Ember.inject.service(),
   questionnaireChoices: Ember.inject.service(),
 
+  /*
+   * Hide tooltips when clicking anywhere, otherwise we get stuck
+   * with some open tooltips that accumulate
+   */
+  tooltipDismissalEvent: 'click.tooltip-dismissal',
+  initTooltipDismissal: function() {
+    Ember.$(window).on(this.get('tooltipDismissalEvent'), function() {
+      Ember.run.later(null, function() {
+        Ember.$('.tooltip').hide();
+      }, 200);
+    });
+  }.on('activate'),
+  closeTooltipDismissal: function() {
+    Ember.$(window).off(this.get('tooltipDismissalEvent'));
+  }.on('deactivate'),
+
   beforeModel: function(/*transition*/) {
     // See if we're logged in, populate language support
     var self = this;

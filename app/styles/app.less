@@ -7,13 +7,30 @@ textarea { resize: vertical; }
 small, h1 small, h2 small, h3 small, h4 small, h5 small, h6 small { color: grey; }
 .badge { background-color: hsl(214, 9%, 75%); }
 .loading-slider span { background-color: #64c8ca; }
+
+/*
+ * Email cards
+ */
 .email-card { border-bottom: 1px solid lightgrey; padding: 5px; }
 .email { color: grey; margin: 5px; }
 .email-card a.icon { padding: 0.2em 1em 0; color: darkred; }
 .email-card a.icon:hover { color: red; }
 .email-card a.icon.working { color: grey; pointer-events: none; }
+
+/*
+ * Small form tweaks
+ */
 label.disabled { color: lightgrey; }
+.checkbox { padding-left: 0; }
 .changeable:hover { .text-primary(); cursor: pointer; }
+label[for=inputAge] { margin-right: 1em; }
+#inputAge { max-width: 3.5em; }
+
+/*
+ * Token input tweaks
+ */
+.tokenfield.form-control { height: auto; padding-bottom: 0; }
+.tokenfield.focus:extend(.form-control:focus) {}
 
 /*
  * Don't let introjs mess up our liquid-fire layout
@@ -114,22 +131,15 @@ p.sentence-details { color: #aaa; }
 /*
  * Instruction images
  */
-div.instructions-drawing {
-  position: relative;
-  height: 230px;
-  width: 610px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: auto;
-  margin-right: auto;
-}
-div.instructions-drawing img {
-  position: absolute;
-  border: 2px solid lightgrey;
-  border-radius: 5px;
-  box-shadow: 0 0 2px lightgrey;
-}
-img#instruction-read1 { top: 0; left: 0; width: 350px; }
-img#instruction-read2 { top: 0; left: 0; width: 350px; }
-img#instruction-distract { top: 80px; left: 130px; width: 102px; }
-img#instruction-write { top: 70px; left: 260px; width: 350px; }
+div.instructions { position: relative; margin: 20px auto 20px auto; }
+div.instructions img { position: absolute; border: 2px solid lightgrey; border-radius: 5px; box-shadow: 0 0 2px lightgrey; }
+div.instructions.instructions-play { height: 230px; width: 610px; }
+.instructions-play img#instruction-read1 { top: 0; left: 0; width: 350px; }
+.instructions-play img#instruction-read2 { top: 0; left: 0; width: 350px; }
+.instructions-play img#instruction-distract { top: 80px; left: 130px; width: 102px; }
+.instructions-play img#instruction-write { top: 70px; left: 260px; width: 350px; }
+div.instructions.instructions-reading-span { height: 241px; width: 610px; }
+.instructions-reading-span img#instruction-read1 { top: 0; left: 0; width: 350px; }
+.instructions-reading-span img#instruction-read2 { top: 0; left: 0; width: 350px; }
+.instructions-reading-span img#instruction-distract { top: 110px; left: 150px; width: 93px; }
+.instructions-reading-span img#instruction-write { top: 120px; left: 260px; width: 350px; }

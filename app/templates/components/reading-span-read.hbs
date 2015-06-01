@@ -1,0 +1,11 @@
+<h3>Memorize these words!</h3>
+<div class="row well">
+  {{#each words as |word|}}
+    <div class="col-xs-6 col-sm-4 center">
+      <p>{{h-capitalize word}}</p>
+    </div>
+  {{/each}}
+</div>
+{{#progress-clock value=progress}}
+  <button class="btn btn-primary" {{action "next"}}>Continue</button>
+{{/progress-clock}}

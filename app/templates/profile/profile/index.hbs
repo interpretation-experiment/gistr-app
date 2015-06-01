@@ -26,15 +26,28 @@
 {{#if currentProfile}}
   <div class="well">
     <h2>Questionnaire
+      &mdash;
       {{#if currentProfile.questionnaireDone}}
-        <span class="icon-big done">{{fa-icon "check"}}</span>
+        <span class="icon-med done">{{fa-icon "check"}}</span>
+        Done
       {{else}}
-        <small>Not yet done.</small>
+        Not yet done
+        {{link-to 'Pass the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}
       {{/if}}
     </h2>
-    {{#unless currentProfile.questionnaireDone}}
-      <p>{{link-to 'Pass the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}</p>
-    {{/unless}}
+  </div>
+
+  <div class="well">
+    <h2>Reading-span test
+      &mdash;
+      {{#if currentProfile.readingSpanDone}}
+        <span class="icon-med done">{{fa-icon "check"}}</span>
+        Done
+      {{else}}
+        Not yet done
+        {{link-to 'Pass the test' 'profile.profile.reading-span' class="btn btn-primary"}}
+      {{/if}}
+    </h2>
   </div>
 {{/if}}
 

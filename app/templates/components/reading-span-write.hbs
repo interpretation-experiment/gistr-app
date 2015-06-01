@@ -1,0 +1,20 @@
+<h3>Write down the words you can recall</h3>
+
+<ul>
+  <li>Capitalization does not count</li>
+  <li><strong>Spelling changes and typos count as mistakes</strong></li>
+</ul>
+
+<form>
+  <div class="form-group">
+    {{token-input class="form-control" id="inputWords" value=words minLength=1 limit=shaping.readingSpanWordsCount placeholder=placeholder disabled=isSaving}}
+  </div>
+
+  <div class="form-group">
+    {{#if enoughTokens}}
+      {{async-button action="save" class="btn btn-primary" default="Save" pending="Saving..."}}
+    {{else}}
+      {{#sl-tooltip title="Type at least 3 words" id="inactive-submit"}}<button class="btn btn-primary" disabled=true>Save</button>{{/sl-tooltip}}
+    {{/if}}
+  </div>
+</form>
