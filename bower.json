@@ -28,5 +28,8 @@
     "typeahead.js": "~0.11.1",
     "intro.js": "~1.0.0",
     "JavaScript-MD5": "~1.1.0"
+  },
+  "resolutions": {
+    "jquery": "^1.11.1"
   }
 }
