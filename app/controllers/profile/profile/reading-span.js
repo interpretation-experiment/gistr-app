@@ -55,8 +55,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
           wordsCount = this.get('shaping.readingSpanWordsCount'),
           promise, span;
 
-      var intersection = userWords.filter(function(userWord) {
-        return trialWords.contains(userWord.toLowerCase());
+      var uniqueUserWords = [],
+          lWord;
+      for (var userWord of userWords) {
+        lWord = userWord.toLowerCase();
+        if (!uniqueUserWords.contains(lWord)) {
+          uniqueUserWords.push(lWord);
+        }
+      }
+      var intersection = uniqueUserWords.filter(function(userWord) {
+        return trialWords.contains(userWord);
       });
 
       scores.push(intersection.length / wordsCount);
