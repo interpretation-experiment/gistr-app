@@ -46,8 +46,14 @@ export default Ember.Component.extend({
   },
 
   actions: {
-    save: function() {
-      this.sendAction('save', this.get('tokens'));
+    save: function(callback) {
+      var self = this;
+
+      this.set('isSaving', true);
+      this.sendAction('save', this.get('tokens'), function() {
+        self.set('isSaving', false);
+        callback(new Ember.RSVP.Promise(function(r) { r(); }));
+      });
     }
   }
 });

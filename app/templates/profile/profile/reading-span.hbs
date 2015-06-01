@@ -1,4 +1,10 @@
-  <h2>Reading-span test</h2>
+<h2 class="row">
+  <div class="col-xs-8">Reading-span test</div>
+  <div class="col-xs-4"><small>
+    Trial {{trial}} out of {{shaping.readingSpanTrialsCount}}
+    {{sl-progress-bar value=testProgress striped=true}}
+  </small></div>
+</h2>
 
 <div class="well">
   {{#if isInInstructions}}

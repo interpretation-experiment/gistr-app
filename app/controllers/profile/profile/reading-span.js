@@ -1,25 +1,40 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
+import mean from 'gistr/utils/mean';
 
 
 export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   shaping: Ember.inject.service(),
 
+  /*
+   * General tracking
+   */
   words: null,
+  scores: [],
   trial: 0,
+  bumpTrial: function() {
+    this.incrementProperty('trial');
+  },
   trialWords: function() {
     var words = this.get('words');
     if (Ember.isNone(words)) { return; }
     return words[this.get('trial')];
   }.property('trial', 'words'),
+  testProgress: function() {
+    return 100 * this.get('trial') / this.get('shaping.readingSpanTrialsCount');
+  }.property('trial', 'shaping.readingSpanTrialsCount'),
   reset: function() {
     this.setProperties({
       words: null,
+      scores: [],
       trial: 0,
     });
   },
 
+  /*
+   * Test actions
+   */
   actions: {
     read: function() {
       this.sendStateEvent('read');
@@ -30,23 +45,42 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     write: function() {
       this.sendStateEvent('write');
     },
-    processWords: function(words) {
-      console.log(`Got words: ${words}`);
+    processWords: function(userWords, finallyCallback) {
+      var self = this,
+          trialWords = this.get('trialWords'),
+          scores = this.get('scores'),
+          wordsCount = this.get('shaping.readingSpanWordsCount'),
+          promise;
+
+      var intersection = userWords.filter(function(userWord) {
+        return trialWords.contains(userWord.toLowerCase());
+      });
+
+      scores.push(intersection.length / wordsCount);
+
       if (this.get('trial') + 1 === this.get('shaping.readingSpanTrialsCount')) {
-        // This is the last trial
-
-        // TODO: save the model, and go to finish
+        // This is the last trial, save our results and finish
+        promise = this.get('store').createRecord('reading-span', {
+          wordsCount: wordsCount,
+          span: mean(scores) * wordsCount
+        }).save().then(function() {
+          self.sendStateEvent('finish');
+        });
       } else {
-        // This isn't the last trial
-
-        // TODO: save the results, and go to read
+        // This isn't the last trial, keep going
+        promise = this.sendStateEvent('read');
       }
+
+      promise.finally(finallyCallback);
     },
     reset: function() {
       this.sendStateEvent('reset');
     },
   },
 
+  /*
+   * FSM definition
+   */
   fsmStates: {
     initialState: 'instructions',
     knownStates: ['instructions', 'reading', 'distracting',
@@ -58,7 +92,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         { instructions: 'reading' },
         {
           writing: 'reading',
-          enter: 'bumpStreak'
+          enter: 'bumpTrial'
         }
       ]
     },
@@ -71,7 +105,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     finish: {
       transition: {
         writing: 'finished',
-        enter: 'bumpStreak'
+        enter: 'bumpTrial'
       }
     },
     reset: {
