@@ -45,7 +45,7 @@ export default Ember.Controller.extend(SessionMixin, {
       }
     },
     togglePath: function() {
-      this.set('showPath', !this.get('showPath'));
+      this.toggleProperty('showPath');
     },
     reset: function() {
       this.reset();
