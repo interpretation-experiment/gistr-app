@@ -4,7 +4,7 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   showIntro: true,
 
-  introSteps: function(user, shaping, lifecycle) {
+  introSteps: function(user, shaping/*, lifecycle*/) {
     return [
       {
         element: Ember.$('#reading-span-title').get(0),
