@@ -1,10 +1,11 @@
-{{#page-header back="explore"}}Detailed tree #{{model.id}}{{/page-header}}
+{{#page-header back="explore"}}
+  Detailed tree #{{model.id}}
+  <small>
+    <blockquote>{{model.root.text}}</blockquote>
+  </small>
+{{/page-header}}
 {{#page-body}}
   {{#if (can 'read trees' model)}}
-    <h2>Starting point</h2>
-    <blockquote>{{model.root.text}}</blockquote>
-
-    <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
     <div class="row">
       <div class="col-sm-6">
         {{tree-graph
@@ -13,10 +14,14 @@
             select="setSelection"
             showLoading="loading"
             finishedLoading="finished"}}
+        {{#if hovered}}
+          <div class="well">
+            {{sentence-card sentence=hovered}}
+          </div>
+        {{/if}}
       </div>
-      <div class="col-sm-6">
-        {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
-        {{#if hasSelection}}
+      {{#if hasSelection}}
+        <div class="col-sm-6">
           {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:"}}{{/if}}
           {{#if hasPath}}
             {{#if showPath}}
@@ -27,8 +32,8 @@
             {{/if}}
           {{/if}}
           {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:"}}{{/if}}
-        {{/if}}
-      </div>
+        </div>
+      {{/if}}
     </div>
 
   {{else}}
