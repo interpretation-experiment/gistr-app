@@ -122,10 +122,19 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Current tree and sentence state and selection
    */
   currentSentence: null,
+  lastSentences: [],
   resetModels: function() {
     this.setProperties({
-      currentSentence: null
+      currentSentence: null,
+      lastSentences: [],
     });
+  },
+  pushLastSentences: function(sentence) {
+    var lastSentences = this.get('lastSentences');
+    lastSentences.push(sentence);
+    if (lastSentences.get('length') > 3) {
+      lastSentences.removeAt(0);
+    }
   },
   drawInTree: function(tree) {
     var branchesCount = tree.get('branchesCount'),
@@ -223,7 +232,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     'task.timeout': function() {
       this.sendStateEvent('task.timeout');
     },
-    processWriting: function() {
+    processWriting: function(sentence) {
+      this.pushLastSentences(sentence);
       this.incrementProperty('streak');
       this.sendStateEvent('task.write.process');
     },

@@ -76,9 +76,9 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
       }).save();
     }
 
-    return promise.then(function() {
+    return promise.then(function(sentence) {
       self.resetInput();
-      self.sendAction('next');
+      self.sendAction('next', sentence);
     }, function(error) {
       self.set('errors', error.errors);
     }).finally(function() {

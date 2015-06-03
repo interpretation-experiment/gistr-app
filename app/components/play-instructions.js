@@ -27,7 +27,7 @@ export default Ember.Component.extend(EnterNextMixin, {
       },
       {
         element: Ember.$('#instruction-read2').get(0),
-        intro: "In limited time &mdash; <strong>It's normal if you don't have the time to read it all!</strong>",
+        intro: "In limited time &mdash; <strong>Try to read as fast as possible!</strong>",
         position: "bottom",
         image: 'read2'
       },
@@ -56,12 +56,12 @@ export default Ember.Component.extend(EnterNextMixin, {
     if (lifecycle.get('isInExpTraining')) {
       steps.push({
         element: Ember.$('#exp-play-title').get(0),
-        intro: "Right now you're in <strong>training</strong>: nothing you do is recorded.",
+        intro: "Right now you're in <strong>training</strong>: nothing you do is recorded",
         position: "right"
       });
       steps.push({
         element: Ember.$('#exp-progress').get(0),
-        intro: `The real experiment starts after ${shaping.get('trainingWork')} trials.`,
+        intro: `The real experiment starts after ${shaping.get('trainingWork')} trials`,
         position: "left"
       });
     }
@@ -82,7 +82,7 @@ export default Ember.Component.extend(EnterNextMixin, {
         intro: "You're now in play mode!",
       },
       {
-        element: Ember.$('.instructions-drawing').get(0),
+        element: Ember.$('.instructions').get(0),
         intro: "<p>It's the same principle.</p><p>But now you can explore how other people transformed sentences! (Go to your home page for that)</p>",
       },
       {

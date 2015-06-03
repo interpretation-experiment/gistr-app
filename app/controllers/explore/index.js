@@ -41,4 +41,7 @@ export default Ember.Controller.extend(SessionMixin, {
       return staff || (bucket.name !== 'training');
     });
   }.property(),
+  bucketResetPage: function() {
+    this.set('page', 1);
+  }.observes('root_bucket')
 });

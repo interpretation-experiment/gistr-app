@@ -53,7 +53,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
           trialWords = this.get('trialWords'),
           scores = this.get('scores'),
           wordsCount = this.get('shaping.readingSpanWordsCount'),
-          promise, span;
+          promise;
 
       var uniqueUserWords = [],
           lWord;
@@ -71,13 +71,19 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
 
       if (this.get('trial') + 1 === this.get('shaping.readingSpanTrialsCount')) {
         // This is the last trial, save our results and finish
-        span = mean(scores) * wordsCount;
+        var span = mean(scores) * wordsCount,
+            lifecycle = this.get('lifecycle');
         this.set('span', span);
         promise = this.get('store').createRecord('reading-span', {
           wordsCount: wordsCount,
           span: span
         }).save().then(function() {
           return profile.reload();
+        }).then(function() {
+          // Transition lifecycle state if possible
+          if (lifecycle.get('validator.isComplete')) {
+            return lifecycle.transitionUp();
+          }
         }).then(function() {
           self.sendStateEvent('finish');
         });

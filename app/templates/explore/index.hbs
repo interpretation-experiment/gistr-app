@@ -33,7 +33,7 @@
       {{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
         <div class="row">
           <div class="col-sm-6">
-            <p>#{{tree.id}} <span class="pull-right">{{tree.sentencesCount}} sentences</span></p>
+            <p>{{h-pluralize tree.sentencesCount 'sentence'}} <span class="pull-right">#{{tree.id}}</span></p>
           </div>
         </div>
         <div class="row">
