@@ -56,7 +56,10 @@
       {{/if}}{{! has exp.doing break }}
 
       {{#if hasPlayingDiffBreak}}
-        TODO: add diff to show how well you did
+        <p>Look at how well you're doing:</p>
+        {{#each lastSentences as |sentence|}}
+          <blockquote>{{diff-sentences sentence1=sentence.parent sentence2=sentence}}</blockquote>
+        {{/each}}
         <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
       {{/if}}{{! has playing diff-break }}
 
