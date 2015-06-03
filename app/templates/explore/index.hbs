@@ -1,6 +1,31 @@
 {{#page-header}}Explore trees{{#if currentUser.isStaff}} <span class="badge">staff</span>{{/if}}{{/page-header}}
 {{#page-body}}
   {{#if (can 'read trees')}}
+    <div class="row">
+      <div class="col-xs-4">
+        {{page-numbers
+            currentPage=page
+            totalPages=totalPages}}
+      </div>
+      <div class="col-xs-4">
+        {{sl-select
+            value=perPage
+            disableSearch=true
+            content=perPageOptions
+            class="form-inline"}}
+        Trees per page
+      </div>
+      <div class="col-xs-4">
+        {{sl-select
+            value=root_bucket
+            disableSearch=true
+            content=buckets
+            optionLabelPath="label"
+            optionValuePath="name"
+            class="form-inline"}}
+        Trees
+      </div>
+    </div>
     {{#unless model}}
       <h3>Nothing here yet!</h3>
       You can only see trees from sentences you rewrote! Go {{link-to 'play' 'play'}} a little and this screen with fill up.
@@ -20,6 +45,9 @@
           </div>
         </div>
       {{/link-to}}{{/each}}
+      {{page-numbers
+          currentPage=page
+          totalPages=totalPages}}
     {{/unless}}
   {{else}}{{! can't read trees }}
     <h2>Oops!</h2>

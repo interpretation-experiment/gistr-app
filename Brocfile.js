@@ -40,4 +40,6 @@ app.import('bower_components/pnotify/pnotify.buttons.css');
 
 app.import('bower_components/d3/d3.js');
 
+app.import('bower_components/google-diff-match-patch/diff_match_patch.js');
+
 module.exports = app.toTree(glyphicons);

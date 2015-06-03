@@ -120,6 +120,27 @@ p.sentence-details { color: #aaa; }
 .node text { font-size: .8em; fill: #555; text-anchor: middle; }
 .link { stroke: #999; stroke-opacity: .6; fill: transparent; }
 .link.through { stroke: blue; }
+.side-col-sm-6 {
+  @media (min-width: 768px) {
+    position: fixed;
+    top: 10px;
+    width: 310px; /* 750 * .5 * 10/12 */
+  }
+  @media (min-width: 992px) { width: 402px; /* 970 * .5 * 10/12 */ }
+  @media (min-width: 1200px) { width: 485px; /* 1170 * .5 * 10/12 */ }
+}
+
+/*
+ * Tree pagination fix
+ */
+ul.pagination { margin-top: 0; }
+
+/*
+ * Sentence diffs
+ */
+.diff-container { display: flex; flex-flow: row wrap; }
+.diff.remove { background-color: #fcc; }
+.diff.add { background-color: #cfc; }
 
 /*
  * Progress clock

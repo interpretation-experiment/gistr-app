@@ -1,33 +1,34 @@
-{{#page-header back="explore"}}Detailed tree #{{model.id}}{{/page-header}}
+{{#page-header back="explore"}}
+  Detailed tree #{{model.id}}
+{{/page-header}}
 {{#page-body}}
   {{#if (can 'read trees' model)}}
-    <h2>Starting point</h2>
-    <blockquote>{{model.root.text}}</blockquote>
-
-    <h2>Evolution <small>(Mouse over the nodes to read the text)</small></h2>
     <div class="row">
-      <div class="col-sm-6">
+      <div id="tree-graph" class="col-sm-6 well">
+        <blockquote>{{model.root.text}}</blockquote>
         {{tree-graph
             tree=model
             hover="hoverSentence"
             select="setSelection"
             showLoading="loading"
             finishedLoading="finished"}}
+        {{#if hovered}}
+          {{sentence-card sentence=hovered}}
+        {{/if}}
       </div>
-      <div class="col-sm-6">
+      <div id="path-detail" class="col-sm-6">
         {{#if hasSelection}}
-          {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:"}}{{/if}}
+          {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:" class="well"}}{{/if}}
           {{#if hasPath}}
             {{#if showPath}}
               <p><button class="btn btn-default" {{action "togglePath"}}>Collapse</button></p>
-              {{#each selectionPath as |sentence|}}{{sentence-card sentence=sentence}}{{/each}}
+              {{#each selectionPath as |sentence|}}{{sentence-card sentence=sentence class="well"}}{{/each}}
             {{else}}
               <p><button class="btn btn-default" {{action "togglePath"}}>Expand</button></p>
             {{/if}}
           {{/if}}
-          {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:"}}{{/if}}
+          {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:" class="well"}}{{/if}}
         {{/if}}
-        {{#if hovered}}{{sentence-card sentence=hovered title="Hovered:"}}{{/if}}
       </div>
     </div>
 
