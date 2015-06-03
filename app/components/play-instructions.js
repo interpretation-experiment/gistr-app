@@ -82,7 +82,7 @@ export default Ember.Component.extend(EnterNextMixin, {
         intro: "You're now in play mode!",
       },
       {
-        element: Ember.$('.instructions-drawing').get(0),
+        element: Ember.$('.instructions').get(0),
         intro: "<p>It's the same principle.</p><p>But now you can explore how other people transformed sentences! (Go to your home page for that)</p>",
       },
       {
