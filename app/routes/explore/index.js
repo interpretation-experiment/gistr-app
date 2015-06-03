@@ -7,6 +7,9 @@ import ceiling from 'gistr/utils/ceiling';
 
 
 export default Ember.Route.extend(SessionMixin, PaginationRouteMixin, {
+  queryParams: {
+    root_bucket: { refreshModel: true }
+  },
   model: function(params) {
     params.paramMapping = {
       page: 'page',
