@@ -43,6 +43,7 @@ export default Ember.Component.extend({
       {
         element: Ember.$('#reading-span-progress').get(0),
         intro: `The whole process loops ${shaping.get('readingSpanTrialsCount')} times, and you're done!`,
+        position: "left",
       }
     ];
   },
