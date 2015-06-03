@@ -16,4 +16,12 @@ export default Ember.Controller.extend(SessionMixin, {
   page: 1,
   perPage: 10,
   perPageOptions: [5, 10, 25, 50, 100],
+
+  pageLoad: function() {
+    var self = this;
+    this.send('loading');
+    this.get('content.promise').finally(function() {
+      self.send('finished');
+    });
+  }.observes('content.promise')
 });
