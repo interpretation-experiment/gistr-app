@@ -5,6 +5,21 @@
       <h3>Nothing here yet!</h3>
       You can only see trees from sentences you rewrote! Go {{link-to 'play' 'play'}} a little and this screen with fill up.
     {{else}}
+      <div class="row">
+        <div class="col-xs-8">
+          {{page-numbers
+              currentPage=page
+              totalPages=totalPages}}
+        </div>
+        <div class="col-xs-4">
+          Trees per page
+          {{sl-select
+              value=perPage
+              disableSearch=true
+              content=perPageOptions
+              class="form-inline"}}
+        </div>
+      </div>
       {{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
         <div class="row">
           <div class="col-sm-6">
@@ -20,6 +35,9 @@
           </div>
         </div>
       {{/link-to}}{{/each}}
+      {{page-numbers
+          currentPage=page
+          totalPages=totalPages}}
     {{/unless}}
   {{else}}{{! can't read trees }}
     <h2>Oops!</h2>
