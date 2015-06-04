@@ -17,33 +17,33 @@ export default Ember.Mixin.create({
    * Timing variables; progress is part of the public API
    */
   _lastNow: null,
-  _time: null,
+  time: null,
   _timer: null,
   _resetTimer: function() {
     this.setProperties({
       '_lastNow': null,
-      '_time': null,
+      'time': null,
       '_timer': null,
     });
   },
   progress: function() {
     var offset = 100 / (this.get('duration') * this.get('precision'));
-    return offset + 100 * this.get('_time') / this.get('duration');
-  }.property('_time'),
+    return offset + 100 * this.get('time') / this.get('duration');
+  }.property('time'),
 
   /*
    * Timing observers and triggerers
    */
   _timeChanged: function() {
-    if (this.get('_time') >= this.get('duration')) {
+    if (this.get('time') >= this.get('duration')) {
       this.timerDone();
     }
-  }.observes('_time'),
+  }.observes('time'),
   _updateTime: function() {
     var now = Date.now(), diff = now - this.get('_lastNow');
     this.setProperties({
       '_lastNow': now,
-      '_time': this.get('_time') + diff / 1000,
+      'time': this.get('time') + diff / 1000,
       '_timer': Ember.run.later(this, this._updateTime,
                                 1000 / this.get('precision'))
     });
@@ -51,14 +51,14 @@ export default Ember.Mixin.create({
   _startTime: function() {
     this.setProperties({
       '_lastNow': Date.now(),
-      '_time': 0,
+      'time': 0,
       '_timer': Ember.run.later(this, this._updateTime,
                                 1000 / this.get('precision'))
     });
   }.on('didInsertElement'),
   pauseTime: function() {
     var now = Date.now(), diff = now - this.get('_lastNow');
-    this.set('_time', this.get('_time') + diff / 1000);
+    this.set('time', this.get('time') + diff / 1000);
     Ember.run.cancel(this.get('_timer'));
   },
   resumeTime: function() {
