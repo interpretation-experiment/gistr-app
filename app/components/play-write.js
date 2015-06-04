@@ -72,7 +72,9 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
         text: self.get('text'),
         parent: self.get('parentSentence'),
         language: self.get('parentSentence.language'),
-        bucket: self.get('parentSentence.bucket')
+        bucket: self.get('parentSentence.bucket'),
+        time_used: self.get('time'),
+        time_allotted: self.get('duration'),
       }).save();
     }
 
