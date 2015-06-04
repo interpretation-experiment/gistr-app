@@ -61,7 +61,7 @@ export default Ember.Mixin.create({
   }.on('didInsertElement'),
   pauseTime: function() {
     var now = Date.now(), diff = now - this.get('_lastNow');
-    this.set('_time', this.get('_time') + diff / 1000)
+    this.set('_time', this.get('_time') + diff / 1000);
     Ember.run.cancel(this.get('_timer'));
   },
   resumeTime: function() {
