@@ -51,11 +51,11 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
     });
   },
   upload: function() {
-    // TODO: pause timer during this
     var self = this,
         profile = this.get('currentProfile'),
         promise;
 
+    this.pauseTime();
     this.set('isUploading', true);
     if (this.get('lifecycle.currentState') === 'exp.training') {
       if (this.get('streak') === this.get('shaping.trainingWork') - 1) {
@@ -82,6 +82,7 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
     }, function(error) {
       self.set('errors', error.errors);
     }).finally(function() {
+      self.resumeTime();
       self.set('isUploading', false);
     });
   },
