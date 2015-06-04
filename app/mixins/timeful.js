@@ -26,13 +26,10 @@ export default Ember.Mixin.create({
       '_timer': null,
     });
   },
-  realProgress: function() {
-    return 100 * this.get('_time') / this.get('duration');
-  }.property('_time'),
   progress: function() {
     var offset = 100 / (this.get('duration') * this.get('precision'));
-    return offset + this.get('realProgress');
-  }.property('realProgress'),
+    return offset + 100 * this.get('_time') / this.get('duration');
+  }.property('_time'),
 
   /*
    * Timing observers and triggerers
