@@ -44,7 +44,7 @@ export default Ember.Controller.extend(SessionMixin, {
     ];
   },
   playIntroSteps: function(user) {
-    var have = user.get('profile.suggestionCredit') > 0 ? 'do' : "don't";
+    var have = user.get('profile.suggestionCredit') > 0 ? 'do' : "don't, yet";
     return [
       {
         element: Ember.$('#title').get(0),
@@ -56,13 +56,18 @@ export default Ember.Controller.extend(SessionMixin, {
         position: 'right'
       },
       {
-        element: Ember.$('#explore').get(0),
-        intro: "Or you can also explore what transformations other people did",
+        element: Ember.$('#new').get(0),
+        intro: `If you have credits (you ${have}), you can suggest your own sentences!`,
         position: 'right'
       },
       {
-        element: Ember.$('#new').get(0),
-        intro: `And if you have credits (you ${have}), you can suggest your own sentences!`,
+        element: Ember.$('#explore').get(0),
+        intro: "You can also explore what transformations other people did",
+        position: 'left'
+      },
+      {
+        element: Ember.$('#reports').get(0),
+        intro: "Or you can have a peek at the results from the experiment, and see how you did compared to the other participants!",
         position: 'left'
       },
       {

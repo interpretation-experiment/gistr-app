@@ -76,11 +76,14 @@
       <div class="col-sm-2 col-sm-offset-2">
         {{link-to 'Play' 'play' class="btn-home btn btn-lg btn-success" id="play"}}
       </div>
-      <div class="col-sm-4">
+      <div class="col-sm-2">
+        {{#link-to 'suggest' class="btn-home btn btn-lg btn-info" id="new"}}New {{credit-badge}}{{/link-to}}
+      </div>
+      <div class="col-sm-2">
         {{link-to 'Explore' 'explore' class="btn-home btn btn-lg btn-warning" id="explore"}}
       </div>
       <div class="col-sm-2">
-        {{#link-to 'suggest' class="btn-home btn btn-lg btn-info" id="new"}}New {{credit-badge}}{{/link-to}}
+        {{link-to 'Reports' 'reports' class="btn-home btn btn-lg btn-primary" id="reports"}}
       </div>
 
     </div>
