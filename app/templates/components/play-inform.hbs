@@ -52,20 +52,35 @@
 
       {{#if hasExpDoingBreak}}
         <p>You're doing great! Take a few seconds to relax before continuing.</p>
-        <button id="active-next" class="btn btn-primary" {{action "next"}}>Continue</button>
-      {{/if}}{{! has exp.doing break }}
+        {{#if emptySentences}}
+          <p>Unfortunately there are no experiment sentences uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>You can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+        {{else}}{{! has sentences }}
+          <button id="active-next" class="btn btn-primary" {{action "next"}}>Continue</button>
+        {{/if}}{{! empty sentences }}
 
-      {{#if hasPlayingDiffBreak}}
+      {{else if hasPlayingDiffBreak}}{{! has exp.doing break }}
+
         <p>Look at how well you're doing:</p>
         {{#each lastSentences as |sentence|}}
           <blockquote>{{diff-sentences sentence1=sentence.parent sentence2=sentence}}</blockquote>
         {{/each}}
-        <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
-      {{/if}}{{! has playing diff-break }}
+        {{#if emptySentences}}
+          <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+        {{else}}{{! has sentences }}
+          <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
+        {{/if}}{{! empty sentences }}
 
-      {{#if hasPlayingExplorationBreak}}
+      {{else if hasPlayingExplorationBreak}}{{! has playing diff-break }}
+
         <p>Want to {{link-to 'have a peak' 'explore.tree' lastSentence.tree}} at the tree you just participated in?</p>
-        <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
+        {{#if emptySentences}}
+          <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+        {{else}}{{! has sentences }}
+          <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
+        {{/if}}{{! empty sentences }}
       {{/if}}{{! has playing exploration-break }}
 
     {{/if}}{{! rhythm events }}
@@ -95,8 +110,7 @@
       <p>We need to know more about you before you can do the experiment.</p>
       {{link-to 'Complete your Profile' 'profile' class="btn btn-primary"}}
 
-      {{! else if lifecycle.isInExpDoing: finished experiment trials, but incomplete lifecycle state. Fill this if we add conditions to exp.doing completion. }}
-
+    {{! else if lifecycle.isInExpDoing: finished experiment trials, but incomplete lifecycle state. Fill this if we add conditions to exp.doing completion. }}
     {{/if}}{{! lifecycle state }}
 
   {{/if}}{{! has work left }}
