@@ -79,7 +79,7 @@ export default Ember.Component.extend({
     this.get('images').map(function(image) {
       image.set('hidden', true);
     });
-  },
+  }.on('didInsertElement'),
 
   images: [
     Ember.Object.create({ name: 'read1', title: 'Reading the words', hidden: true }),
