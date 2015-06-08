@@ -176,8 +176,7 @@ export default Ember.Component.extend({
   },
 
   addAxesAndLegend: function(svg, xAxis, yAxis, margin, chartWidth, chartHeight) {
-    var axes = svg.append('g')
-      .attr('clip-path', 'url(#axes-clip)');
+    var axes = svg.append('g');
 
     axes.append('g')
       .attr('class', 'x axis')
