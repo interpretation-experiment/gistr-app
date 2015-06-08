@@ -9,7 +9,7 @@
         <p>Your reading-span can have a significant impact on what you interpret in a sentence. Here's where you stand compared to the other participants.</p>
       </div>
       <div class="col-sm-6 col-md-4">
-        {{profile-chart values=randomValues profileValue=0.5 xtitle="Reading span"}}
+        {{profile-chart values=readingSpans profileValue=profileReadingSpan xtitle="Reading span"}}
       </div>
     </div>
     <div class="row">
@@ -18,7 +18,7 @@
         <p>Some people write fast but make more mistakes &mdash; others take more time and pay more attention. Where do you stand?</p>
       </div>
       <div class="col-sm-6 col-md-4">
-        {{profile-chart values=randomValues profileValue=0.5 xtitle="Writing time"}}
+        {{profile-chart values=writingTimes profileValue=profileWritingTime xtitle="Writing time"}}
       </div>
     </div>
     <div class="row">
@@ -28,7 +28,7 @@
         <p>A coarse measure of how much we transform is to look at the average number of characters we change when we rewrite a sentence (brought back to the original sentence length).</p>
       </div>
       <div class="col-sm-6 col-md-4">
-        {{profile-chart values=randomValues profileValue=0.5 xtitle="Transformation rate"}}
+        {{profile-chart values=errs profileValue=profileErr xtitle="Transformation rate"}}
       </div>
     </div>
   {{else}}

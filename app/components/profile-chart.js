@@ -14,6 +14,7 @@ export default Ember.Component.extend({
   xtitle: null,         // required
   profileValue: null,   // required
   values: null,         // required
+  enoughValues: Ember.computed.gte('values.length', 2),
 
   /*
    * Resizing
@@ -77,7 +78,7 @@ export default Ember.Component.extend({
 
     var svgWidth  = 196,
         svgHeight = 100,
-        margin = { top: 15, right: 5, bottom: 30, left: 5 },
+        margin = { top: 15, right: 7, bottom: 30, left: 7 },
         chartWidth  = svgWidth  - margin.left - margin.right,
         chartHeight = svgHeight - margin.top  - margin.bottom;
 
@@ -105,14 +106,29 @@ export default Ember.Component.extend({
       self.sizeChart();
     });
 
-    // Draw the chart
-    this.drawPaths(svg, x, y);
-    this.addAxesAndLegend(svg, xAxis, yAxis, margin, chartWidth, chartHeight);
+    // If not enough values, bail
+    if (this.get('enoughValues')) {
+      // Draw the chart
+      this.drawPaths(svg, x, y);
+      this.addAxesAndLegend(svg, xAxis, yAxis, margin, chartWidth, chartHeight);
+    } else {
+      this.bailPaths(svg, chartWidth, chartHeight);
+    }
   }.on('didInsertElement'),
 
   closeDrawing: function() {
     Ember.$(window).off(this.get('resizeEvent'));
   }.on('willDestroyElement'),
+
+  bailPaths: function(svg, chartWidth, chartHeight) {
+    svg.append('g')
+      .append('text')
+        .attr('x', chartWidth / 2)
+        .attr('y', chartHeight / 2)
+        .attr('text-anchor', 'middle')
+        .attr('class', 'bail')
+        .text("(Not enough values to chart)");
+  },
 
   drawPaths: function(svg, x, y) {
     /*
@@ -142,6 +158,8 @@ export default Ember.Component.extend({
     /*
      * Profile line and dot
      */
+    if (Ember.isNone(this.get('profileValue'))) { return; }
+
     var profileLine = d3.svg.line()
       .interpolate('basis')
       .x(x(this.get('profileValue')))
