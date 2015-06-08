@@ -10,7 +10,7 @@ export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, {
   model: function() {
     return Ember.RSVP.hash({
       stats: request(api('/stats/')),
-      profileReadingSpan: this.get('currentProfile.readingSpan.span')
+      profileReadingSpan: this.get('currentProfile.readingSpan')
     });
   },
   setupController: function(controller, model) {
@@ -20,7 +20,7 @@ export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, {
 
     controller.setProperties({
       readingSpans: model.stats.profiles_reading_spans,
-      profileReadingSpan: model.profileReadingSpan,
+      profileReadingSpan: model.profileReadingSpan.get('span'),
       writingTimes: Object.keys(profilesWritingTimes).map(key => profilesWritingTimes[key]),
       profileWritingTime: profilesWritingTimes[profileId],
       errs: Object.keys(profilesErrs).map(key => profilesErrs[key]),
