@@ -2,10 +2,10 @@ import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
 import EventfulMixin from 'gistr/mixins/eventful';
-import splitEvent from 'gistr/utils/split-event';
+import EventInformer from 'gistr/mixins/event-informer';
 
 
-export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
+export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInformer, {
   lang: Ember.inject.service(),
 
   /*
@@ -32,38 +32,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, {
    */
   eventChecks: {},
   eventFilter: function() { return true; },
-  hasEvents: Ember.computed.notEmpty('events'),
-  // TODO: move to mixin
-  filterEvents: function(params) {
-    var events = this.get('events');
-
-    var optIncludes = function(part, param) {
-      return part.includes(param) || Ember.isNone(param);
-    };
-
-    return events.filter(function(event) {
-      var parts = splitEvent(event);
-      return (optIncludes(parts.state, params.state) &&
-              optIncludes(parts.type, params.type) &&
-              optIncludes(parts.name, params.name));
-    });
-  },
-  lifecycleEvent: function() {
-    var events = this.filterEvents({ type: 'lifecycle' });
-    if (events.length > 1) {
-      throw new Error("Got more than one lifecycle event: " + events);
-    }
-    return events.objectAt(0);
-  }.property('events'),
-  hasTransitioned: function() {
-    var lifecycleEvent = this.get('lifecycleEvent');
-    // Note that if this is false, then hasStateWorkLeft will be false
-    // i.e. with event but not transitioned => no work left
-    return !Ember.isNone(lifecycleEvent) && this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
-  }.property('lifecycle.currentState', 'lifecycleEvent'),
-  hasStateWorkLeft: function() {
-    return this.get('lifecycle.validator.actionRoutes').contains('profile');
-  }.property('lifecycle.validator.actionRoutes'),
+  actionRoute: 'profile',
 
   /*
    * Profile form fields, state, and upload

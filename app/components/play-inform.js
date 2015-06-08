@@ -3,9 +3,10 @@ import Ember from 'ember';
 import SessionMixin from 'gistr/mixins/session';
 import splitEvent from 'gistr/utils/split-event';
 import EnterNextMixin from 'gistr/mixins/enter-next';
+import EventInformer from 'gistr/mixins/event-informer';
 
 
-export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
+export default Ember.Component.extend(SessionMixin, EnterNextMixin, EventInformer, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
 
@@ -15,30 +16,7 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
 
   lastSentence: null,
   events: null,
-  hasEvents: Ember.computed.notEmpty('events'),
-
-  filterEvents: function(params) {
-    var events = this.get('events');
-
-    var optIncludes = function(part, param) {
-      return part.includes(param) || Ember.isNone(param);
-    };
-
-    return events.filter(function(event) {
-      var parts = splitEvent(event);
-      return (optIncludes(parts.state, params.state) &&
-              optIncludes(parts.type, params.type) &&
-              optIncludes(parts.name, params.name));
-    });
-  },
-
-  lifecycleEvent: function() {
-    var events = this.filterEvents({ type: 'lifecycle' });
-    if (events.length > 1) {
-      throw new Error("Got more than one lifecycle event: " + events);
-    }
-    return events.objectAt(0);
-  }.property('events'),
+  actionRoute: 'play',
 
   rhythmEvents: function() {
     return this.filterEvents({ type: 'rhythm' });
@@ -73,15 +51,6 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin, {
   }.on('didInsertElement'),
 
   emptySentences: Ember.computed.equal('currentProfile.availableTreesBucket', 0),
-  hasTransitioned: function() {
-    var lifecycleEvent = this.get('lifecycleEvent');
-    // Note that if this is false, then hasStateWorkLeft will be false
-    // i.e. with event but not transitioned => no work left
-    return !Ember.isNone(lifecycleEvent) && this.get('lifecycle.currentState') !== splitEvent(lifecycleEvent).state;
-  }.property('lifecycle.currentState', 'lifecycleEvent'),
-  hasStateWorkLeft: function() {
-    return this.get('lifecycle.validator.actionRoutes').contains('play');
-  }.property('lifecycle.validator.actionRoutes'),
 
   onEnter: function() {
     this.$('#active-next').click();
