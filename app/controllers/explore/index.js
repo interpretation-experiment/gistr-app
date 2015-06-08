@@ -40,7 +40,7 @@ export default Ember.Controller.extend(SessionMixin, {
     return this.get('lifecycle.buckets').filter(function(bucket) {
       return staff || (bucket.name !== 'training');
     });
-  }.property(),
+  }.property('currentUser.isStaff', 'lifecycle.buckets'),
   bucketResetPage: function() {
     this.set('page', 1);
   }.observes('root_bucket')
