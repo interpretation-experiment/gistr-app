@@ -5,10 +5,10 @@ import splitEvent from 'gistr/utils/split-event';
 
 export default Ember.Mixin.create({
   /*
-   * Required properties
+   * Required properties;
+   * - events
+   * - actionRoute
    */
-  events: null,
-  actionRoute: null,
 
   /*
    * Provided helpers

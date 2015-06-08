@@ -233,9 +233,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
       this.sendStateEvent('task.timeout');
     },
     processWriting: function(sentence) {
+      var self = this;
+      this.send('loading');
       this.pushLastSentences(sentence);
       this.incrementProperty('streak');
-      this.sendStateEvent('task.write.process');
+      this.sendStateEvent('task.write.process').finally(function() {
+        self.send('finished');
+      });
     },
     instruct: function() {
       this.sendStateEvent('instruct');
@@ -264,20 +268,17 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
                   'task.writing.processing', 'task.timedout', 'info', 'failed'],
     'task.reading': {
       willEnter: 'selectModels'
+    },
+    info: {
+      didExit: 'resetEvents'
     }
   },
   fsmEvents: {
     'task.read': {
-      transitions: [
-        {
-          from: ['instructions', 'task.writing.processing', 'task.timedout'],
-          to: 'task.reading'
-        },
-        {
-          info: 'task.reading',
-          after: 'resetEvents'
-        }
-      ]
+      transitions: {
+        from: ['instructions', 'task.writing.processing', 'task.timedout', 'info'],
+        to: 'task.reading'
+      },
     },
     'task.distract': {
       transition: { 'task.reading': 'task.distracting' }
@@ -288,8 +289,6 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     'task.timeout': {
       transition: { 'task.writing.user': 'task.timedout' }
     },
-    // TODO: use loading slider for this
-    // TODO: bumpStreak to here
     'task.write.process': {
       transition: {
         from: 'task.writing.user',
