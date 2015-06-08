@@ -2,11 +2,12 @@ import Ember from 'ember';
 
 import PaginationRouteMixin from 'ember-cli-pagination/remote/route-mixin';
 
+import FormRouteMixin from 'gistr/mixins/form-route';
 import SessionMixin from 'gistr/mixins/session';
 import ceiling from 'gistr/utils/ceiling';
 
 
-export default Ember.Route.extend(SessionMixin, PaginationRouteMixin, {
+export default Ember.Route.extend(SessionMixin, FormRouteMixin, PaginationRouteMixin, {
   queryParams: {
     root_bucket: { refreshModel: true }
   },

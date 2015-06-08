@@ -43,5 +43,17 @@ export default Ember.Controller.extend(SessionMixin, {
   }.property('currentUser.isStaff', 'lifecycle.buckets'),
   bucketResetPage: function() {
     this.set('page', 1);
-  }.observes('root_bucket')
+  }.observes('root_bucket'),
+  reset: function() {
+    this.setProperties({
+      page: 1,
+      root_bucket: 'experiment'
+    });
+  },
+
+  actions: {
+    reset: function() {
+      this.reset();
+    }
+  }
 });
