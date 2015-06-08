@@ -1,0 +1,39 @@
+{{document-title title="Reports"}}
+{{page-header title="Reports"}}
+
+{{#page-body}}
+  {{#if (can 'read about')}}
+    <div class="row">
+      <div class="col-sm-6 col-md-offset-2 col-md-4">
+        <h2>Reading span</h2>
+        <p>Your reading-span can have a significant impact on what you interpret in a sentence. Here's where you stand compared to the other participants.</p>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        {{profile-chart values=readingSpans profileValue=profileReadingSpan xtitle="Reading span"}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-md-offset-2 col-md-4">
+        <h2>Writing time</h2>
+        <p>Some people write fast but make more mistakes &mdash; others take more time and pay more attention. Where do you stand?</p>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        {{profile-chart values=writingTimes profileValue=profileWritingTime xtitle="Writing time"}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-md-offset-2 col-md-4">
+        <h2>Transformation rate</h2>
+        <p>Every one of us makes sense of a sentence differently, depending on our own experience and what we expect.</p>
+        <p>A coarse measure of how much we transform is to look at the average number of characters we change when we rewrite a sentence (brought back to the original sentence length).</p>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        {{profile-chart values=errs profileValue=profileErr xtitle="Transformation rate"}}
+      </div>
+    </div>
+  {{else}}
+    <h2>Want to know what this is about?</h2>
+    <h2><a href="#" {{action 'passExperiment'}}>Pass the experiment</a> first!</h2>
+    {{! TODO: add link to prolific academic study once published, "you can even get paid for it!" }}
+  {{/if}}{{! can read about }}
+{{/page-body}}

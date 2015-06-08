@@ -26,10 +26,13 @@ export default Ember.Mixin.create({
       '_timer': null,
     });
   },
+  realProgress: function() {
+    return 100 * this.get('_time') / this.get('duration');
+  }.property('_time'),
   progress: function() {
     var offset = 100 / (this.get('duration') * this.get('precision'));
-    return offset + 100 * this.get('_time') / this.get('duration');
-  }.property('_time'),
+    return offset + this.get('realProgress');
+  }.property('realProgress'),
 
   /*
    * Timing observers and triggerers
@@ -56,6 +59,18 @@ export default Ember.Mixin.create({
                                 1000 / this.get('precision'))
     });
   }.on('didInsertElement'),
+  pauseTime: function() {
+    var now = Date.now(), diff = now - this.get('_lastNow');
+    this.set('_time', this.get('_time') + diff / 1000);
+    Ember.run.cancel(this.get('_timer'));
+  },
+  resumeTime: function() {
+    this.setProperties({
+      '_lastNow': Date.now(),
+      '_timer': Ember.run.later(this, this._updateTime,
+                                1000 / this.get('precision'))
+    });
+  },
   _finishTime: function() {
     Ember.run.cancel(this.get('_timer'));
     this._resetTimer();

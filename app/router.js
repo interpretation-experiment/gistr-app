@@ -27,6 +27,7 @@ Router.map(function() {
   this.route('explore', function() {
     this.route('tree', { path: '/:tree_id' });
   });
+  this.route('reports');
 
   // Why there needs to be the "wildcard" text after the "*"
   // (it can be any other text in fact), beats me.
