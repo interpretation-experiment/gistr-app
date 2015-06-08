@@ -22,7 +22,6 @@ export default Ember.Component.extend({
   chart: null,
   aspectRatio: null,
   resizeEvent: function() {
-    // TODO: adapt when we have multiple charts
     return `resize.profile-chart-${Ember.String.camelize(this.get('xtitle'))}`;
   }.property(),
   sizeChart: function() {
