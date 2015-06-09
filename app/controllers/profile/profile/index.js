@@ -54,6 +54,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
     });
   },
   uploadProfile: function() {
+    // TODO: save prolific ID and reset localStorage
     var self = this, data = this.getProperties('mothertongue'),
         lifecycle = this.get('lifecycle'),
         profile = this.get('currentProfile'),

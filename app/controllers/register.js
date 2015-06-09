@@ -17,6 +17,7 @@ export default Ember.Controller.extend(SessionMixin, {
   password2: null,
   errors: null,
   isRegistering: false,
+  isProlific: false,
   reset: function() {
     this.setProperties({
       username: null,
@@ -24,7 +25,8 @@ export default Ember.Controller.extend(SessionMixin, {
       password1: null,
       password2: null,
       errors: null,
-      isRegistering: false
+      isRegistering: false,
+      isProlific: false,
     });
   },
   register: function() {
