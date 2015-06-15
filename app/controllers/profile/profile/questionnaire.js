@@ -100,6 +100,13 @@ export default Ember.Controller.extend(SessionMixin, {
     });
   }.property('questionnaireChoices.iscoMinors', 'iscoSubmajor'),
 
+  userJustSetNaive: false,
+  watchUserNotNaive: function() {
+    if (this.get('showNaiveDetail') && !this.get('userJustSetNaive')) {
+      this.send('toggleNaiveDetail');
+    }
+  }.observes('notNaive'),
+
   actions: {
     reset: function() {
       this.reset();
@@ -111,7 +118,9 @@ export default Ember.Controller.extend(SessionMixin, {
       this.set('naiveDetail', '');
       this.toggleProperty('showNaiveDetail');
       if (this.get('showNaiveDetail')) {
+        this.set('userJustSetNaive', true);
         this.set('notNaive', true);
+        this.set('userJustSetNaive', false);
       }
     },
     toggleIscoFreetext: function() {

@@ -28,7 +28,7 @@
     <div class="form-group {{if errors.naive 'has-error'}}">
       <div class="checkbox {{if isUploading 'disabled'}}">
         <label>
-          {{input type="checkbox" checked=notNaive disabled=isUploading}} I've heard about this experiment and I know what it is about.{{#unless showNaiveDetail}} <a href="#" {{action "toggleNaiveDetail"}}>Sort of. I'd like to tell you more.</a>{{/unless}}
+          {{input type="checkbox" checked=notNaive disabled=isUploading}} I know what this experiment is about.{{#unless showNaiveDetail}} <a href="#" {{action "toggleNaiveDetail"}}>I can tell you more.</a>{{/unless}}
         </label>
       </div>
       <span class="help-block">{{errors.naive}}</span>
