@@ -29,6 +29,8 @@ export default DS.Model.extend({
   introducedPlayHome: DS.attr('boolean'),
   introducedPlayPlay: DS.attr('boolean'),
 
+  prolificId: DS.attr('string'),
+
   /*
    * Unused properties
    */

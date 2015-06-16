@@ -99,4 +99,11 @@
   {{/if}}{{! changeMothertongue }}
 </div>
 
-{{! TODO: add prolific ID}}
+{{#if currentProfile.prolificId}}
+<div class="well">
+  <h2>Prolific Academic ID
+    &mdash;
+    <span class="badge">{{currentProfile.prolificId}}</span>
+  </h2>
+</div>
+{{/if}}

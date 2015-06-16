@@ -44,6 +44,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
   showOtherInfo: false,
   showBilingualInfo: false,
   resetInput: function() {
+    delete localStorage.prolificId;
     this.setProperties({
       changeMothertongue: false,
       mothertongue: null,
@@ -54,7 +55,6 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
     });
   },
   uploadProfile: function() {
-    // TODO: save prolific ID and reset localStorage
     var self = this, data = this.getProperties('mothertongue'),
         lifecycle = this.get('lifecycle'),
         profile = this.get('currentProfile'),
@@ -64,7 +64,10 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
     this.set('justSaved', false);
 
     if (!profile) {
-      // Create a profile
+      // Create a profile, with Prolific ID if necessary
+      if (!Ember.isNone(localStorage.prolificId)) {
+        data.prolificId = localStorage.prolificId;
+      }
       profile = this.get('store').createRecord('profile', data);
     } else {
       // Update our existing profile
