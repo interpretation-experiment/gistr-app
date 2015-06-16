@@ -104,6 +104,9 @@
   <h2>Prolific Academic ID
     &mdash;
     <span class="badge">{{currentProfile.prolificId}}</span>
+    {{#if lifecycle.isInPlaying}}
+      <a href={{prolificCompletionUrl}} class="btn btn-primary">Go to study completion again</a>
+    {{/if}}
   </h2>
 </div>
 {{/if}}

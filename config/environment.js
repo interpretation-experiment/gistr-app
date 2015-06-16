@@ -40,6 +40,9 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
     ENV.APP.API_HOST = '';
+
+    ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/demo/complete?cc=NOCODE';
+    ENV.APP.PROLIFIC_STUDY_URL = 'https://prolificacademic.co.uk/studies/demo';
   }
 
   if (environment === 'test') {
@@ -57,7 +60,13 @@ module.exports = function(environment) {
   if (environment === 'production') {
     // FIXME: API_HOST defaults to localhost:8000 if not told otherwise
     // (should default to window.location, but well...)
+    // DEPLOY: set this
     ENV.APP.API_HOST = 'http://demo.gistr.io';
+
+    // DEPLOY: set this
+    ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/demo/complete?cc=NOCODE';
+    // DEPLOY: set this
+    ENV.APP.PROLIFIC_STUDY_URL = 'https://prolificacademic.co.uk/studies/demo';
   }
 
   return ENV;

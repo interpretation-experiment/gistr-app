@@ -4,6 +4,7 @@ import SessionMixin from 'gistr/mixins/session';
 import splitEvent from 'gistr/utils/split-event';
 import EnterNextMixin from 'gistr/mixins/enter-next';
 import EventInformer from 'gistr/mixins/event-informer';
+import config from 'gistr/config/environment';
 
 
 export default Ember.Component.extend(SessionMixin, EnterNextMixin, EventInformer, {
@@ -51,6 +52,8 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin, EventInforme
   }.on('didInsertElement'),
 
   emptySentences: Ember.computed.equal('currentProfile.availableTreesBucket', 0),
+
+  prolificCompletionUrl: config.APP.PROLIFIC_COMPLETION_URL,
 
   onEnter: function() {
     this.$('#active-next').click();
