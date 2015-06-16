@@ -1,9 +1,10 @@
 import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
+import ProlificMixin from 'gistr/mixins/prolific';
 
 
-export default Ember.Controller.extend(SessionMixin, {
+export default Ember.Controller.extend(SessionMixin, ProlificMixin, {
   expIntroNotDone: Ember.computed.not('currentProfile.introducedExpHome'),
   playIntroNotDone: Ember.computed.not('currentProfile.introducedPlayHome'),
   doExpIntro: Ember.computed.and('lifecycle.isInExp', 'expIntroNotDone'),

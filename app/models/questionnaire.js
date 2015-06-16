@@ -9,10 +9,8 @@ export default DS.Model.extend({
   gender: DS.attr('string'),
   naive: DS.attr('boolean'),
   naiveDetail: DS.attr('string'),
-  iscoMajor: DS.attr('string'),
-  iscoSubmajor: DS.attr('string'),
-  iscoMinor: DS.attr('string'),
-  iscoFreetext: DS.attr('string'),
+  jobType: DS.attr('string'),
+  jobFreetext: DS.attr('string'),
 
   /*
    * Unused properties

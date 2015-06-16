@@ -4,9 +4,11 @@ import SessionMixin from 'gistr/mixins/session';
 import splitEvent from 'gistr/utils/split-event';
 import EnterNextMixin from 'gistr/mixins/enter-next';
 import EventInformer from 'gistr/mixins/event-informer';
+import ProlificMixin from 'gistr/mixins/prolific';
 
 
-export default Ember.Component.extend(SessionMixin, EnterNextMixin, EventInformer, {
+export default Ember.Component.extend(SessionMixin, EnterNextMixin,
+                                      EventInformer, ProlificMixin, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
 

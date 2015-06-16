@@ -15,11 +15,8 @@ export default Ember.Controller.extend(SessionMixin, {
   naive: Ember.computed.not('notNaive'),
   naiveDetail: "",
   showNaiveDetail: false,
-  iscoMajor: null,
-  iscoSubmajor: null,
-  iscoMinor: null,
-  iscoFreetext: "",
-  showIscoFreetext: false,
+  jobType: null,
+  jobFreetext: null,
   errors: null,
   isUploading: false,
   resetInput: function() {
@@ -29,11 +26,8 @@ export default Ember.Controller.extend(SessionMixin, {
       notNaive: false,
       naiveDetail: "",
       showNaiveDetail: false,
-      iscoMajor: null,
-      iscoSubmajor: null,
-      iscoMinor: null,
-      iscoFreetext: "",
-      showIscoFreetext: false,
+      jobType: null,
+      jobFreetext: null,
       errors: null,
       isUploading: false,
     });
@@ -50,8 +44,7 @@ export default Ember.Controller.extend(SessionMixin, {
         lifecycle = this.get('lifecycle'),
         profile = this.get('currentProfile'),
         data = this.getProperties('age', 'gender', 'naive', 'naiveDetail',
-                                  'iscoMajor', 'iscoSubmajor', 'iscoMinor',
-                                  'iscoFreetext');
+                                  'jobType', 'jobFreetext');
 
     this.set('isUploading', true);
     return this.get('store').createRecord('questionnaire', data).save().then(function() {
@@ -75,31 +68,8 @@ export default Ember.Controller.extend(SessionMixin, {
   },
 
   /*
-   * Questionnaire choices
+   * Naive freetext/checkbox control
    */
-  clearIscoSubmajor: function() {
-    if (!this.get('showIscoFreetext')) {
-      this.set('iscoSubmajor', null);
-    }
-  }.observes('iscoMajor'),
-  clearIscoMinor: function() {
-    if (!this.get('showIscoFreetext')) {
-      this.set('iscoMinor', null);
-    }
-  }.observes('iscoSubmajor'),
-  iscoSubmajorChoices: function() {
-    var iscoMajor = this.get('iscoMajor');
-    return this.get('questionnaireChoices.iscoSubmajors').filter(function(choice) {
-      return choice.name.slice(0, 1) === iscoMajor;
-    });
-  }.property('questionnaireChoices.iscoSubmajors', 'iscoMajor'),
-  iscoMinorChoices: function() {
-    var iscoSubmajor = this.get('iscoSubmajor');
-    return this.get('questionnaireChoices.iscoMinors').filter(function(choice) {
-      return choice.name.slice(0, 2) === iscoSubmajor;
-    });
-  }.property('questionnaireChoices.iscoMinors', 'iscoSubmajor'),
-
   userJustSetNaive: false,
   watchUserNotNaive: function() {
     if (this.get('showNaiveDetail') && !this.get('userJustSetNaive')) {
@@ -121,23 +91,6 @@ export default Ember.Controller.extend(SessionMixin, {
         this.set('userJustSetNaive', true);
         this.set('notNaive', true);
         this.set('userJustSetNaive', false);
-      }
-    },
-    toggleIscoFreetext: function() {
-      this.set('iscoFreetext', '');
-      this.toggleProperty('showIscoFreetext');
-      if (this.get('showIscoFreetext')) {
-        this.setProperties({
-          'iscoMajor': '-',
-          'iscoSubmajor': '--',
-          'iscoMinor': '---'
-        });
-      } else {
-        this.setProperties({
-          'iscoMajor': null,
-          'iscoSubmajor': null,
-          'iscoMinor': null
-        });
       }
     },
   }

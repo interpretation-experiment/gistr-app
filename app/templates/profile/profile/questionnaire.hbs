@@ -42,50 +42,21 @@
       </div>
     {{/if}}
 
-    <h3>What kind of activity do you do daily?</h3>
+    <h3>What you do</h3>
 
-    {{#unless showIscoFreetext}}
-      <p>You might have to explore the lists a little to find your activity.</p>
+    <p>We'd like to know what type of job you work in, or what is your <strong>main daily activity</strong>.</p>
 
-      <div class="form-group {{if errors.iscoMajor 'has-error'}}">
-        <label for="inputIscoMajor" class="control-label">General activity you do daily</label>
-        {{sl-select id="inputIscoMajor" content=questionnaireChoices.iscoMajors value=iscoMajor optionValuePath="name" optionLabelPath="label" placeholder="Select your general type of activity" disabled=isUploading}}
-        <span class="help-block">{{errors.iscoMajor}}</span>
-      </div>
+    <div class="form-group {{if errors.jobType 'has-error'}}">
+      <label for="inputJobType" class="control-label">What is your general type of profession or main daily activity?</label>
+      {{sl-select id="inputJobType" content=questionnaireChoices.jobTypes value=jobType optionValuePath="name" optionLabelPath="label" placeholder="Select your type of job or daily activity" disabled=isUploading}}
+      <span class="help-block">{{errors.jobType}}</span>
+    </div>
 
-      <div class="form-group {{if errors.iscoSubmajor 'has-error'}}">
-        <label for="inputIscoSubmajor" class="control-label {{unless iscoMajor 'disabled'}}">More specifically</label>
-        {{#if iscoMajor}}
-          {{sl-select id="inputIscoSubmajor" content=iscoSubmajorChoices value=iscoSubmajor optionValuePath="name" optionLabelPath="label" placeholder="Select a more detailed description" disabled=isUploading}}
-        {{else}}
-          {{sl-select placeholder="Select your general daily activity first" disabled=true}}
-        {{/if}}{{! iscoMajor }}
-        <span class="help-block">{{errors.iscoSubmajor}}</span>
-      </div>
-
-      <div class="form-group {{if errors.iscoMinor 'has-error'}}">
-        <label for="inputIscoMinor" class="control-label {{unless iscoSubmajor 'disabled'}}">Still more specifically</label>
-        {{#if iscoSubmajor}}
-          {{sl-select id="inputIscoMinor" content=iscoMinorChoices value=iscoMinor optionValuePath="name" optionLabelPath="label" placeholder="Last details" disabled=isUploading}}
-        {{else if iscoMajor}}
-          {{sl-select placeholder="Select the above detailed description first" disabled=true}}
-        {{else}}
-          {{sl-select placeholder="Select your general daily activity first" disabled=true}}
-        {{/if}}
-        <span class="help-block">{{errors.iscoMinor}}</span>
-      </div>
-
-      <p><a href="#" {{action "toggleIscoFreetext"}}>I can't find my way in these categories, let me tell you more.</a></p>
-
-    {{else}}{{! show isco freetext}}
-
-      <div class="form-group">
-        <label for="inputIscoFreetext" class="control-label">What you do doesn't fit in the categories, tell us what it is</label>
-        {{focused-textarea id="inputIscoFreetext" class="form-control" value=iscoFreetext disabled=isUploading rows="1" autoresize=true}}
-        Or <a href="#" {{action "toggleIscoFreetext"}}>go back to the categories</a>.
-      </div>
-
-    {{/unless}}{{! show isco freetext}}
+    <div class="form-group {{if errors.jobFreetext 'has-error'}}">
+      <label for="inputJobFreetext" class="control-label">Please describe your profession or main daily activity. You can use several sentences if necessary.</label>
+      {{textarea id="inputJobFreetext" class="form-control" value=jobFreetext disabled=isUploading rows="1" autoresize=true}}
+      <span class="help-block">{{errors.jobFreetext}}</span>
+    </div>
 
     <div class="form-group {{if errors.non_field_errors 'has-error'}}">
       <span class="help-block">{{errors.non_field_errors}}</span>

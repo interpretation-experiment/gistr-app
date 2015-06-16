@@ -15,6 +15,7 @@ export default Ember.Controller.extend(SessionMixin, {
   email: null,
   password1: null,
   password2: null,
+  prolificId: null,
   errors: null,
   isRegistering: false,
   reset: function() {
@@ -23,8 +24,9 @@ export default Ember.Controller.extend(SessionMixin, {
       email: null,
       password1: null,
       password2: null,
+      prolificId: null,
       errors: null,
-      isRegistering: false
+      isRegistering: false,
     });
   },
   register: function() {

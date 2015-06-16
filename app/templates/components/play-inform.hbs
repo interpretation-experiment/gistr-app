@@ -19,13 +19,18 @@
       {{else if lifecycle.isInPlaying}}{{! just transitioned from exp.doing to playing }}
 
         <h2>You finished the experiment!</h2>
-        TODO: if prolific flavour, add Prolific Academic link. If you keep playing, it's on the home page.
-        {{#if emptySentences}}
-          <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
-          <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
-        {{else}}{{! has sentences }}
-          <button id="active-next" class="btn btn-primary" {{action "instruct"}}>Continue</button>
-        {{/if}}{{! empty sentences }}
+        {{#if currentProfile.prolificId}}
+          <p>Please click the following completion button to show Prolific Academic that you finished the study.</p>
+          <a href={{prolificCompletionUrl}} id="active-next" class="btn btn-warning">Go to study completion</a>
+          <p>Afterwards, come back here to see your results!</p>
+        {{else}}
+          {{#if emptySentences}}
+            <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+            <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+          {{else}}{{! has sentences }}
+            <button id="active-next" class="btn btn-primary" {{action "instruct"}}>Continue</button>
+          {{/if}}{{! empty sentences }}
+        {{/if}}{{! has prolific id }}
 
       {{/if}}{{! lifecycle state }}
 

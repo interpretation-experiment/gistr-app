@@ -3,9 +3,11 @@ import Ember from 'ember';
 import SessionMixin from 'gistr/mixins/session';
 import EventfulMixin from 'gistr/mixins/eventful';
 import EventInformer from 'gistr/mixins/event-informer';
+import ProlificMixin from 'gistr/mixins/prolific';
 
 
-export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInformer, {
+export default Ember.Controller.extend(SessionMixin, EventfulMixin,
+                                       EventInformer, ProlificMixin, {
   lang: Ember.inject.service(),
 
   /*
@@ -44,6 +46,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
   showOtherInfo: false,
   showBilingualInfo: false,
   resetInput: function() {
+    delete localStorage.prolificId;
     this.setProperties({
       changeMothertongue: false,
       mothertongue: null,
@@ -63,7 +66,10 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
     this.set('justSaved', false);
 
     if (!profile) {
-      // Create a profile
+      // Create a profile, with Prolific ID if necessary
+      if (!Ember.isNone(localStorage.prolificId)) {
+        data.prolificId = localStorage.prolificId;
+      }
       profile = this.get('store').createRecord('profile', data);
     } else {
       // Update our existing profile

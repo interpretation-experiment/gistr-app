@@ -11,6 +11,7 @@ Router.map(function() {
     this.route('reset');
   });
   this.route('register');
+  this.route('prolific');
   this.route('about');
   this.route('profile', function() {
     this.route('profile', function() {
