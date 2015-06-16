@@ -3,10 +3,11 @@ import Ember from 'ember';
 import SessionMixin from 'gistr/mixins/session';
 import EventfulMixin from 'gistr/mixins/eventful';
 import EventInformer from 'gistr/mixins/event-informer';
-import config from 'gistr/config/environment';
+import ProlificMixin from 'gistr/mixins/prolific';
 
 
-export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInformer, {
+export default Ember.Controller.extend(SessionMixin, EventfulMixin,
+                                       EventInformer, ProlificMixin, {
   lang: Ember.inject.service(),
 
   /*
@@ -133,7 +134,6 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin, EventInforme
       return language.name === mothertongue;
     }).objectAt(0).label;
   }.property('currentProfile.mothertongue', 'lang.supportedLanguages'),
-  prolificCompletionUrl: config.APP.PROLIFIC_COMPLETION_URL,
 
   /*
    * Profile actions
