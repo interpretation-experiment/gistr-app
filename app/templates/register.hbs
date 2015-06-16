@@ -8,16 +8,16 @@
   {{else}}
     <div class="row">
       <div class="col-sm-6 col-sm-offset-2">
-        {{#if isProlific}}
+        {{#if prolificId}}
           {{#sl-alert theme="info"}}
-            <h2>Thanks for setting your ID.</h2>
+            <h2>Your ID: <span class="badge">{{prolificId}}</span></h2>
+            <p>Made a mistake? {{link-to 'Go back' 'prolific'}}</p>
             <p>Now please sign up to start the experiment.</p>
-            {{! TODO: add clearing possibility }}
           {{/sl-alert}}
         {{else}}
           {{#sl-alert theme="warning" dismissable=true}}
             <h2><strong>Prolific Academic participant?</strong></h2>
-            <h2>Please {{link-to 'enter your ID' 'prolific'}} first.</h2>
+            <h2>Please {{link-to 'enter your ID' 'prolific'}} first</h2>
           {{/sl-alert}}
           {{#sl-alert theme="info"}}Already have an account? {{link-to 'Sign in here' 'login'}}{{/sl-alert}}
         {{/if}}

@@ -6,7 +6,6 @@ import SessionMixin from 'gistr/mixins/session';
 export default Ember.Controller.extend(SessionMixin, {
   prolificIdRegex: /^[a-z0-9]+$/,
 
-
   /*
    * Form fields
    */
@@ -25,6 +24,9 @@ export default Ember.Controller.extend(SessionMixin, {
   actions: {
     reset: function() {
       this.reset();
+    },
+    clearProlificId: function() {
+      delete localStorage.prolificId;
     },
     saveProlificId: function() {
       var prolificId = this.get('prolificId'),
