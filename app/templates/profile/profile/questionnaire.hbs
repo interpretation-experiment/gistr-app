@@ -47,13 +47,13 @@
     <p>We'd like to know what type of job you work in, or what is your <strong>main daily activity</strong>.</p>
 
     <div class="form-group {{if errors.jobType 'has-error'}}">
-      <label for="inputJobType" class="control-label">What is your general type of job or main daily activity?</label>
+      <label for="inputJobType" class="control-label">What is your general type of profession or main daily activity?</label>
       {{sl-select id="inputJobType" content=questionnaireChoices.jobTypes value=jobType optionValuePath="name" optionLabelPath="label" placeholder="Select your type of job or daily activity" disabled=isUploading}}
       <span class="help-block">{{errors.jobType}}</span>
     </div>
 
     <div class="form-group {{if errors.jobFreetext 'has-error'}}">
-      <label for="inputJobFreetext" class="control-label">What <em>exactly</em> is your job or main daily activity? Please elaborate over several sentences if necessary.</label>
+      <label for="inputJobFreetext" class="control-label">Please describe your profession or main daily activity. You can use several sentences if necessary.</label>
       {{textarea id="inputJobFreetext" class="form-control" value=jobFreetext disabled=isUploading rows="1" autoresize=true}}
       <span class="help-block">{{errors.jobFreetext}}</span>
     </div>
