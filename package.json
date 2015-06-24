@@ -45,7 +45,7 @@
     "ember-data": "1.0.0-beta.17",
     "ember-disable-proxy-controllers": "^0.7.0",
     "ember-django-adapter": "^0.5.5",
-    "ember-document-title": "^1.1.11",
+    "ember-document-title": "1.1.11",
     "ember-export-application-global": "^1.0.2",
     "ember-introjs": "^0.2.3",
     "ember-pluralize": "^0.1.0",
