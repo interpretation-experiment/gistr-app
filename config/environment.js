@@ -61,7 +61,7 @@ module.exports = function(environment) {
     // FIXME: API_HOST defaults to localhost:8000 if not told otherwise
     // (should default to window.location, but well...)
     // DEPLOY: set this
-    ENV.APP.API_HOST = 'http://next.gistr.io';
+    ENV.APP.API_HOST = '//next.gistr.io';
 
     // DEPLOY: set this
     ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/demo/complete?cc=NOCODE';
