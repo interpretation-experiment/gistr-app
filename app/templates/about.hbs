@@ -2,18 +2,32 @@
 {{page-header title="About"}}
 
 {{#page-body}}
-  {{#if (can 'read about')}}
-    <h1>The game and experiment</h1>
-    <p><strong>Say something:</strong> it means one thing to your partner, another thing to your closest friend, something else to your parents, and something different again to the stranger you meet in the street. When a politician says something on television, members of his party and the opposition hear different meanings in what was said.</p>
-    <p><strong>What are the processes involved in these interpretations? How do we make sense of the world around us?</strong></p>
-    <p>Gistr is both a game and experiment on how we interpret and make sense in certain contexts, and what consequences this has at large scale. The goal is to collect high quality data on repeated interpretations of content, allowing participants to experiment with sentences and contexts of their own also.</p>
-    <p>This experiment is entirely Free Software, and the development is an <a href="https://github.com/interpretation-experiment" title="Gistr repositories">open process</a>. Learn more more on <a href="https://github.com/interpretation-experiment/gistr-app/wiki" title="Gistr Wiki">the wiki</a>!</p>
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h1>The game and experiment</h1>
+      {{#if (can 'read about')}}
+        <p><strong>Say something:</strong> it means one thing to your partner, another thing to your closest friend, something else to your parents, and something different again to the stranger you meet in the street. When a politician says something on television, members of his party and the opposition hear different meanings in what was said.</p>
+        <p><strong>What are the processes involved in these interpretations? How do we make sense of the world around us?</strong></p>
+        <p>Gistr is both a game and experiment on how we interpret and make sense in certain contexts, and what consequences this has at large scale. The goal is to collect high quality data on repeated interpretations of content, allowing participants to experiment with sentences and contexts of their own also.</p>
+        <p>This experiment is entirely Free Software, and the development is an <a href="https://github.com/interpretation-experiment" title="Gistr repositories">open process</a>. Learn more more on <a href="https://github.com/interpretation-experiment/gistr-app/wiki" title="Gistr Wiki">the wiki</a>!</p>
+      {{else}}
+        <p>How good is your memory? How well do you remember what you read?</p>
+        <p>This experiment shows you how you unconsciously transform what you read: you'll see detailed statistics on how you transform what you read, and see how you compare to the other participants. It lasts about 1 hour and it helps scientific research!</p>
+        <p>Want to read more about this? Please <a href="#" {{action 'passExperiment'}}>pass the experiment</a> first.</p>
+      {{/if}}{{! can read about }}
 
-    <h1>The authors</h1>
-    <p>Created and developed by <a href="https://mehho.net/sl" title="Sébastien Lerique's Homepage">Sébastien Lerique</a> as part of his PhD, advised by and thoroughly discussed with <a href="http://camille.roth.free.fr/index.php">Camille Roth</a>.</p>
-  {{else}}
-    <h2>Want to know what this is about?</h2>
-    <h2><a href="#" {{action 'passExperiment'}}>Pass the experiment</a> first!</h2>
-    <p>You can even <a href="{{prolificStudyUrl}}">get paid for it</a>!</p>
-  {{/if}}{{! can read about }}
+      <h1>Privacy</h1>
+      <p>The experiment collects mostly public data: sentences and their reformulations, along with the time used to read and write them.</p>
+      <p>We don't ask for your name or any other personally identifying information. Your profile, however, contains sensitive data:</p>
+      <ul>
+        <li>A questionnaire you fill during the experiment,</li>
+        <li>A reading-span test you also pass later on,</li>
+        <li>Your email address if you choose to enter it (that's optional).</li>
+      </ul>
+      <p>This information is carefully kept private: no one but our team will ever have access to it, and as with all the data collected here it is only used for the purposes of the experiment.</p>
+
+      <h1>The authors</h1>
+      <p>Created and developed by <a href="https://mehho.net/sl" title="Sébastien Lerique's Homepage">Sébastien Lerique</a> as part of his PhD, advised by and thoroughly discussed with <a href="http://camille.roth.free.fr/index.php">Camille Roth</a>. Both are the <a href="https://cmb.hu-berlin.de/" title="Centre Marc Bloch Webpage">Centre Marc Bloch</a> in Berlin.</p>
+    </div>
+  </div>
 {{/page-body}}
