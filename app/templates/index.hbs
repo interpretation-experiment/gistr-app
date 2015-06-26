@@ -18,13 +18,13 @@
 
 <div class="row">
   <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">
-    <div class="avatar pull-right">
+    <div id="profile" class="avatar pull-right">
 
       {{#if session.isWorking}}
         Loading...
       {{else if session.isAuthenticated}}
         Howdy, <strong>{{currentUser.username}}</strong>
-        {{#link-to 'profile' id="profile"}}
+        {{#link-to 'profile'}}
             {{gravatar-image
                 email=currentUser.email
                 title="Profile"
