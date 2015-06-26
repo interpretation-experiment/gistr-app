@@ -18,55 +18,56 @@
 
 <div class="row">
   <div class="col-xs-9 col-xs-offset-2 col-sm-10 col-sm-offset-1">
+    <div id="profile" class="avatar pull-right">
 
-    {{#if session.isAuthenticated}}
-      {{#link-to 'profile' class="avatar pull-right" id="profile"}}
-          {{gravatar-image
-              email=currentUser.email
-              title="Profile"
-              alt="Avatar"
-              defaultImage="retro"
-              class="img-circle"
-              secure=false
-              size=40}}
-      {{/link-to}}
-    {{/if}}
+      {{#if session.isWorking}}
+        Loading...
+      {{else if session.isAuthenticated}}
+        Howdy, <strong>{{currentUser.username}}</strong>
+        {{#link-to 'profile'}}
+            {{gravatar-image
+                email=currentUser.email
+                title="Profile"
+                alt="Avatar"
+                defaultImage="retro"
+                class="img-circle"
+                secure=false
+                size=40}}
+        {{/link-to}}
+      {{/if}}
 
+    </div>
   </div>
 </div>
 
-{{#page-body class="center"}}
-  <div id="title">
+{{#page-body}}
+  <div class="center" id="title">
     <h1>Gistr</h1>
-    <h2><small>A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Interpretation{{#if (can 'read about')}}. {{link-to 'Learn more' 'about'}}.{{/if}}</small></h2>
+    <h2><small>
+      A {{#sl-tooltip title="Game With a Purpose"}}<strong>GWAP</strong>{{/sl-tooltip}} on Memory and Interpretation
+      <br>
+      by the <a href="https://cmb.hu-berlin.de/" title="Centre Marc Bloch Website">Centre Marc Bloch</a> in Berlin. {{link-to 'Learn more' 'about'}}.
+    </small></h2>
   </div>
 
-  <div class="greeting">
-
-    {{#if session.isWorking}}
-
-      <p>Loading...</p>
-
-    {{else}}
-
-      {{#if session.isAuthenticated}}
-        <p>Howdy, <strong>{{currentUser.username}}</strong></p>
-      {{/if}}{{! session.isAuthenticated }}
-
-      {{#unless (can 'read about')}}
-        <div id="pass">
-          <h2>Want to know what this is about?</h2>
-          {{#if session.isAuthenticated}}
-            <h2>{{link-to 'Pass the experiment' 'play' class="btn btn-primary btn-lg"}}</h2>
-          {{else}}
-            <h2>{{link-to 'Pass the experiment' 'register' class="btn btn-primary btn-lg"}}</h2>
-            <p>And <a href={{prolificStudyUrl}}>get paid for it</a>!</p>
-            <h2>Or {{link-to 'Sign in' 'login'}} if you've already started</h2>
-          {{/if}}{{! session.isAuthenticated}}
-        </div>
-      {{/unless}}{{! can read about }}
-
-    {{/if}}{{! session.isWorking }}
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <div class="greeting">
+        {{#unless (can 'read about')}}
+          <div id="pass">
+            <h3>How good is your memory?</h3>
+            <p>How well do you remember what you read?</p>
+            <p>With this experiment you'll learn how you unconsciously transform what you read. It lasts about 1 hour and it helps scientific research!</p>
+            {{#if session.isAuthenticated}}
+              <p>{{link-to 'Pass the experiment' 'play' class="btn btn-primary"}}</p>
+            {{else}}
+              <p>{{link-to 'Pass the experiment' 'register' class="btn btn-primary"}} &mdash; <a href="{{prolificStudyUrl}}">get paid for it</a> if you want</p>
+              <p>{{link-to 'Sign in' 'login' class="btn btn-default"}} &mdash; if you've already started</p>
+            {{/if}}{{! session.isAuthenticated}}
+          </div>
+        {{/unless}}{{! can read about }}
+      </div>
+    </div>
   </div>
 {{/page-body}}
 
@@ -93,9 +94,9 @@
   <div class="row footer">
     <div id="about-gistr">
       {{#sl-tooltip title="Email the developers"}}<a class="icon" href="mailto:sl@mehho.net" title="Email the developers">{{fa-icon "envelope"}}</a>{{/sl-tooltip}}
+      {{#sl-tooltip title="About Gistr"}}{{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}{{/sl-tooltip}}
       {{#if session.isAuthenticated}}
         {{#if (can 'read about')}}
-          {{#sl-tooltip title="About Gistr"}}{{#link-to 'about' class="icon icon-med"}}{{fa-icon "info-circle"}}{{/link-to}}{{/sl-tooltip}}
           {{#sl-tooltip title="Twitter"}}<a class="icon" href="https://twitter.com/gistrexp" title="Twitter">{{fa-icon "twitter"}}</a>{{/sl-tooltip}}
           {{#sl-tooltip title="GitHub"}}<a class="icon" href="https://github.com/interpretation-experiment/gistr-app" title="GitHub">{{fa-icon "github"}}</a>{{/sl-tooltip}}
         {{/if}}{{! can read about }}

@@ -32,7 +32,7 @@
         Done
       {{else}}
         Not yet done
-        {{link-to 'Pass the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}
+        {{link-to 'Fill the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}
       {{/if}}
     </h2>
   </div>
@@ -105,7 +105,7 @@
     &mdash;
     <span class="badge">{{currentProfile.prolificId}}</span>
     {{#if lifecycle.isInPlaying}}
-      <a href={{prolificCompletionUrl}} class="btn btn-primary">Go to study completion again</a>
+      <a href="{{prolificCompletionUrl}}" class="btn btn-primary">Go to study completion again</a>
     {{/if}}
   </h2>
 </div>
