@@ -52,12 +52,13 @@
         {{#unless (can 'read about')}}
           <div id="pass">
             <h3>How good is your memory?</h3>
-            <p>This experiment lasts about 1 hour and shows you how much you transform the things you read when you repeat them. It also helps scientific research!</p>
+            <p>How well do you remember what you read?</p>
+            <p>This experiment lasts about 1 hour and you'll learn how you unconsciously transform what you read. It also helps scientific research!</p>
             {{#if session.isAuthenticated}}
               <p>{{link-to 'Pass the experiment' 'play' class="btn btn-primary"}}</p>
             {{else}}
-              <p>{{link-to 'Pass the experiment' 'register' class="btn btn-primary"}} &mdash; <a href="{{prolificStudyUrl}}">get paid for it</a> if you want!</p>
-              <p>{{link-to 'Sign in' 'login' class="btn btn-default"}} &mdash; if you've already started.</p>
+              <p>{{link-to 'Pass the experiment' 'register' class="btn btn-primary"}} &mdash; <a href="{{prolificStudyUrl}}">get paid for it</a> if you want</p>
+              <p>{{link-to 'Sign in' 'login' class="btn btn-default"}} &mdash; if you've already started</p>
             {{/if}}{{! session.isAuthenticated}}
           </div>
         {{/unless}}{{! can read about }}
