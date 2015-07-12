@@ -94,12 +94,15 @@ export default Ember.Controller.extend(SessionMixin, {
     // Naive/informed
     if (data.informed) {
       if (!data.informedHow || data.informedHow.length < 5) { errors.informedHow = "Please type at least 5 letters"; }
+      else if (data.informedHow.length > 500) { errors.informedHow = "This field can't be more than 500 characters long"; }
       if (!data.informedWhat || data.informedWhat.length < 5) { errors.informedWhat = "Please type at least 5 letters"; }
+      else if (data.informedWhat.length > 500) { errors.informedWhat = "This field can't be more than 500 characters long"; }
     }
 
     // Job
     if (!data.jobType) { errors.jobType = "Please select a category"; }
     if (!data.jobFreetext || data.jobFreetext.length < 5) { errors.jobFreetext = "Please type at least 5 letters"; }
+    else if (data.jobFreetext.length > 500) { errors.jobFreetext = "This field can't be more than 500 characters long"; }
 
     if (Object.keys(errors).length > 0) {
       this.set('errors', errors);
