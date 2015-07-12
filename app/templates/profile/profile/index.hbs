@@ -28,8 +28,10 @@
     <h2>Questionnaire
       &mdash;
       {{#if currentProfile.questionnaireDone}}
-        <span class="icon-med done">{{fa-icon "check"}}</span>
-        Done
+        {{#sl-tooltip title="Your answers are saved and can't be changed. If you think you made a mistake, contact the developers with the email address at the bottom of the home page."}}
+          <span class="icon-med done">{{fa-icon "check"}}</span>
+          Done
+        {{/sl-tooltip}}
       {{else}}
         Not yet done
         {{link-to 'Fill the questionnaire' 'profile.profile.questionnaire' class="btn btn-primary"}}
