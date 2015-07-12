@@ -109,7 +109,7 @@ export default Ember.Controller.extend(SessionMixin, {
       return false;
     }
 
-     return true
+     return true;
   },
 
   /*
