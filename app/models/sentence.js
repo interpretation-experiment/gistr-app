@@ -20,9 +20,12 @@ export default DS.Model.extend({
   text: DS.attr('string'),
   language: DS.attr('string'),
   bucket: DS.attr('string'),
-  time_proportion: DS.attr('number'),
-  time_used: DS.attr('number'),
-  time_allotted: DS.attr('number'),
+  readTimeProportion: DS.attr('number'),
+  readTimeUsed: DS.attr('number'),
+  readTimeAllotted: DS.attr('number'),
+  writeTimeProportion: DS.attr('number'),
+  writeTimeUsed: DS.attr('number'),
+  writeTimeAllotted: DS.attr('number'),
 
   /*
    * Unused properties

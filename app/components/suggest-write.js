@@ -33,6 +33,10 @@ export default Ember.Component.extend(SessionMixin, {
       data['bucket'] = this.get('lifecycle.bucket');
     }
 
+    // Dummy-fill timings
+    data.readTimeProportion = data.readTimeAllotted = 0;
+    data.writeTimeProportion = data.writeTimeAllotted = 0;
+
     this.set('isUploading', true);
     return this.get('store').createRecord('sentence', data).save().then(function() {
       self.resetInput();

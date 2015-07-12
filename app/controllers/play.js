@@ -122,10 +122,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Current tree and sentence state and selection
    */
   currentSentence: null,
+  readTimings: null,
   lastSentences: [],
   resetModels: function() {
     this.setProperties({
       currentSentence: null,
+      readTimings: null,
       lastSentences: [],
     });
   },
@@ -223,7 +225,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     'task.read': function() {
       this.sendStateEvent('task.read');
     },
-    'task.distract': function() {
+    'task.distract': function(readTimings) {
+      this.set('readTimings', readTimings);
       this.sendStateEvent('task.distract');
     },
     'task.write.user': function() {

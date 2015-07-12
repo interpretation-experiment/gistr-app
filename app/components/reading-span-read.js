@@ -29,7 +29,7 @@ export default Ember.Component.extend(TimefulMixin, {
     return this.get('shaping.readFactor') * this.get('shaping.readingSpanWordsCount');
   }.property('shaping.readFactor', 'sentenceTokensCount'),
   timerDone: function() {
-    this.sendAction('next');
+    this.send('next');
   },
 
   actions: {

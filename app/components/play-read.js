@@ -35,14 +35,19 @@ export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   }.property('shaping.readFactor', 'sentenceTokensCount'),
 
   timerDone: function() {
-    this.sendAction('next');
+    this.send('next');
   },
   onEnter: function() {
     this.send('next');
   },
   actions: {
     next: function() {
-      this.sendAction('next');
+      var proportion = this.get('realProgress') / 100;
+      if (proportion > 1) { proportion = 1; }
+      this.sendAction('next', {
+        readTimeProportion: proportion,
+        readTimeAllotted: this.get('duration')
+      });
     }
   }
 });
