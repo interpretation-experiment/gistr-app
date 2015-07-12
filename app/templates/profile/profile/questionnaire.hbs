@@ -1,6 +1,6 @@
 <div class="well">
   <h2>General questionnaire</h2>
-  <p>We need to know a bit about who you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
+  <p>We need to know a bit about you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
 
   <h3>About you</h3>
 
@@ -25,20 +25,25 @@
       </div>
     </div>
 
-    <div class="form-group {{if errors.naive 'has-error'}}">
+    <div class="form-group {{if errors.informed 'has-error'}}">
       <div class="checkbox {{if isUploading 'disabled'}}">
         <label>
-          {{input type="checkbox" checked=notNaive disabled=isUploading}} I know what this experiment is about.{{#unless showNaiveDetail}} <a href="#" {{action "toggleNaiveDetail"}}>I can tell you more.</a>{{/unless}}
+          {{input type="checkbox" checked=informed disabled=isUploading}} Check this if you know what this experiment is about
         </label>
       </div>
-      <span class="help-block">{{errors.naive}}</span>
+      <span class="help-block">{{errors.informed}}</span>
     </div>
 
-    {{#if showNaiveDetail}}
-      <div class="form-group">
-        <label for="inputNaiveDetail" class="control-label">You know the experiment, tell us more</label>
-        {{focused-textarea id="inputNaiveDetail" class="form-control" value=naiveDetail disabled=isUploading rows="1" autoresize=true}}
-        <a href="#" {{action "toggleNaiveDetail"}}>No, forget about this.</a>
+    {{#if informed}}
+      <div class="form-group {{if errors.informedHow 'has-error'}}">
+        <label for="inputInformedHow" class="control-label">How did you hear about the experiment? You can use several sentences if necessary.</label>
+        {{focused-textarea id="inputInformedHow" class="form-control" value=informedHow disabled=isUploading rows="1" autoresize=true}}
+        <span class="help-block">{{errors.informedHow}}</span>
+      </div>
+      <div class="form-group {{if errors.informedWhat 'has-error'}}">
+        <label for="inputInformedWhat" class="control-label">What exactly do you know about the experiment?</label>
+        {{textarea id="inputInformedWhat" class="form-control" value=informedWhat disabled=isUploading rows="1" autoresize=true}}
+        <span class="help-block">{{errors.informedWhat}}</span>
       </div>
     {{/if}}
 
@@ -62,6 +67,7 @@
       <span class="help-block">{{errors.non_field_errors}}</span>
       {{async-button action="upload" class="btn btn-primary" default="Send answers" pending="Sending answers..."}}
     </div>
+    {{! TODO: add confirmation screen }}
 
   </form>
 

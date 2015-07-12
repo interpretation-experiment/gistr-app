@@ -7,8 +7,9 @@ export default DS.Model.extend({
 
   age: DS.attr('number'),
   gender: DS.attr('string'),
-  naive: DS.attr('boolean'),
-  naiveDetail: DS.attr('string'),
+  informed: DS.attr('boolean'),
+  informedHow: DS.attr('string'),
+  informedWhat: DS.attr('string'),
   jobType: DS.attr('string'),
   jobFreetext: DS.attr('string'),
 

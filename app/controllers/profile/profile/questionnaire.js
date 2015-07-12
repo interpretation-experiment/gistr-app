@@ -11,10 +11,9 @@ export default Ember.Controller.extend(SessionMixin, {
    */
   age: null,
   gender: null,
-  notNaive: false,
-  naive: Ember.computed.not('notNaive'),
-  naiveDetail: "",
-  showNaiveDetail: false,
+  informed: false,
+  informedHow: null,
+  informedWhat: null,
   jobType: null,
   jobFreetext: null,
   errors: null,
@@ -23,9 +22,9 @@ export default Ember.Controller.extend(SessionMixin, {
     this.setProperties({
       age: null,
       gender: null,
-      notNaive: false,
-      naiveDetail: "",
-      showNaiveDetail: false,
+      informed: false,
+      informedHow: null,
+      informedWhat: null,
       jobType: null,
       jobFreetext: null,
       errors: null,
@@ -43,8 +42,11 @@ export default Ember.Controller.extend(SessionMixin, {
     var self = this,
         lifecycle = this.get('lifecycle'),
         profile = this.get('currentProfile'),
-        data = this.getProperties('age', 'gender', 'naive', 'naiveDetail',
+        data = this.getProperties('age', 'gender',
+                                  'informed', 'informedHow', 'informedWhat',
                                   'jobType', 'jobFreetext');
+
+    if (!data.informed) { data.informedHow = data.informedWhat = '-----'; }
 
     this.set('isUploading', true);
     return this.get('store').createRecord('questionnaire', data).save().then(function() {
@@ -68,14 +70,12 @@ export default Ember.Controller.extend(SessionMixin, {
   },
 
   /*
-   * Naive freetext/checkbox control
+   * Informed text control
    */
-  userJustSetNaive: false,
-  watchUserNotNaive: function() {
-    if (this.get('showNaiveDetail') && !this.get('userJustSetNaive')) {
-      this.send('toggleNaiveDetail');
-    }
-  }.observes('notNaive'),
+  watchInformed: function() {
+    this.set('informedHow', null);
+    this.set('informedWhat', null);
+  }.observes('informed'),
 
   actions: {
     reset: function() {
@@ -83,15 +83,6 @@ export default Ember.Controller.extend(SessionMixin, {
     },
     upload: function(callback) {
       callback(this.upload());
-    },
-    toggleNaiveDetail: function() {
-      this.set('naiveDetail', '');
-      this.toggleProperty('showNaiveDetail');
-      if (this.get('showNaiveDetail')) {
-        this.set('userJustSetNaive', true);
-        this.set('notNaive', true);
-        this.set('userJustSetNaive', false);
-      }
     },
   }
 });
