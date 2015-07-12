@@ -5,7 +5,9 @@
     <strong>Make sure your answers are accurate!</strong> Then you can submit them.
     {{/sl-alert}}
   {{else}}
-    <p>We need to know a bit about you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
+    <p>We'd like to know a bit about you before you start the experiment. This will help us understand what influences your results as well as other participants' results.</p>
+    <p>Your answers will be kept strictly private and will only be used for the purposes of the experiment.</p>
+    <p>It takes about 2 minutes to fill the questionnaire. Thanks for participating, and welcome again to Gistr!</p>
   {{/if}}
 
   <h3>About you</h3>
@@ -47,7 +49,7 @@
         <span class="help-block">{{errors.informedHow}}</span>
       </div>
       <div class="form-group {{if errors.informedWhat 'has-error'}}">
-        <label for="inputInformedWhat" class="control-label">What exactly do you know about the experiment?</label>
+        <label for="inputInformedWhat" class="control-label">What exactly do you know about the experiment? Again, use several sentences if necessary.</label>
         {{textarea id="inputInformedWhat" class="form-control" value=informedWhat disabled=isUploadingOrConfirming rows="1" autoresize=true}}
         <span class="help-block">{{errors.informedWhat}}</span>
       </div>
@@ -55,7 +57,7 @@
 
     <h3>What you do</h3>
 
-    <p>We'd like to know what type of job you work in, or what is your <strong>main daily activity</strong>.</p>
+    <p>We'd like to know what type of job you work in, or what is your main daily activity.</p>
 
     <div class="form-group {{if errors.jobType 'has-error'}}">
       <label for="inputJobType" class="control-label">What is your general type of profession or main daily activity?</label>
