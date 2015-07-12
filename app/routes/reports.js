@@ -25,6 +25,7 @@ export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, ProlificMixin
     controller.setProperties({
       readingSpans: model.stats.profiles_reading_spans,
       profileReadingSpan: model.profileReadingSpan.get('span'),
+      readingTimes: Object.keys(profilesReadingTimes).map(key => profilesReadingTimes[key]),
       writingTimes: Object.keys(profilesWritingTimes).map(key => profilesWritingTimes[key]),
       profileWritingTime: profilesWritingTimes[profileId],
       errs: Object.keys(profilesErrs).map(key => profilesErrs[key]),
