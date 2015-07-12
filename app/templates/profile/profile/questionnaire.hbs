@@ -1,13 +1,19 @@
 <div class="well">
   <h2>General questionnaire</h2>
-  <p>We need to know a bit about you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
+  {{#if isUploadingOrConfirming}}
+    {{#sl-alert theme="warning"}}
+    <strong>Make sure your answers are accurate!</strong> Then you can submit them.
+    {{/sl-alert}}
+  {{else}}
+    <p>We need to know a bit about you before you start. <strong>This information is kept private and will only be used for the purposes of the experiment</strong>.</p>
+  {{/if}}
 
   <h3>About you</h3>
 
   <form class="form-inline">
     <div class="form-group {{if errors.age 'has-error'}}">
       <label for="inputAge" class="control-label">Age</label>
-      {{input id="inputAge" class="form-control" value=age disabled=isUploading}}
+      {{input id="inputAge" class="form-control" value=age disabled=isUploadingOrConfirming}}
       <span class="help-block">{{errors.age}}</span>
     </div>
   </form>
@@ -17,8 +23,8 @@
       <label class="control-label">Gender</label>
       <div>
         {{#each questionnaireChoices.genders as |genderDetails|}}
-          <label class="radio-inline {{if isUploading 'disabled'}}">
-            {{radio-button value=genderDetails.name checked=gender disabled=isUploading}} {{genderDetails.label}}
+          <label class="radio-inline {{if isUploadingOrConfirming 'disabled'}}">
+            {{radio-button value=genderDetails.name checked=gender disabled=isUploadingOrConfirming}} {{genderDetails.label}}
           </label>
         {{/each}}
         <span class="help-block">{{errors.gender}}</span>
@@ -26,9 +32,9 @@
     </div>
 
     <div class="form-group {{if errors.informed 'has-error'}}">
-      <div class="checkbox {{if isUploading 'disabled'}}">
+      <div class="checkbox {{if isUploadingOrConfirming 'disabled'}}">
         <label>
-          {{input type="checkbox" checked=informed disabled=isUploading}} Check this if you know what this experiment is about
+          {{input type="checkbox" checked=informed disabled=isUploadingOrConfirming}} Check this if you know what this experiment is about
         </label>
       </div>
       <span class="help-block">{{errors.informed}}</span>
@@ -37,12 +43,12 @@
     {{#if informed}}
       <div class="form-group {{if errors.informedHow 'has-error'}}">
         <label for="inputInformedHow" class="control-label">How did you hear about the experiment? You can use several sentences if necessary.</label>
-        {{focused-textarea id="inputInformedHow" class="form-control" value=informedHow disabled=isUploading rows="1" autoresize=true}}
+        {{focused-textarea id="inputInformedHow" class="form-control" value=informedHow disabled=isUploadingOrConfirming rows="1" autoresize=true}}
         <span class="help-block">{{errors.informedHow}}</span>
       </div>
       <div class="form-group {{if errors.informedWhat 'has-error'}}">
         <label for="inputInformedWhat" class="control-label">What exactly do you know about the experiment?</label>
-        {{textarea id="inputInformedWhat" class="form-control" value=informedWhat disabled=isUploading rows="1" autoresize=true}}
+        {{textarea id="inputInformedWhat" class="form-control" value=informedWhat disabled=isUploadingOrConfirming rows="1" autoresize=true}}
         <span class="help-block">{{errors.informedWhat}}</span>
       </div>
     {{/if}}
@@ -53,21 +59,25 @@
 
     <div class="form-group {{if errors.jobType 'has-error'}}">
       <label for="inputJobType" class="control-label">What is your general type of profession or main daily activity?</label>
-      {{sl-select id="inputJobType" content=questionnaireChoices.jobTypes value=jobType optionValuePath="name" optionLabelPath="label" placeholder="Select your type of job or daily activity" disabled=isUploading}}
+      {{sl-select id="inputJobType" content=questionnaireChoices.jobTypes value=jobType optionValuePath="name" optionLabelPath="label" placeholder="Select your type of job or daily activity" disabled=isUploadingOrConfirming}}
       <span class="help-block">{{errors.jobType}}</span>
     </div>
 
     <div class="form-group {{if errors.jobFreetext 'has-error'}}">
       <label for="inputJobFreetext" class="control-label">Please describe your profession or main daily activity. You can use several sentences if necessary.</label>
-      {{textarea id="inputJobFreetext" class="form-control" value=jobFreetext disabled=isUploading rows="1" autoresize=true}}
+      {{textarea id="inputJobFreetext" class="form-control" value=jobFreetext disabled=isUploadingOrConfirming rows="1" autoresize=true}}
       <span class="help-block">{{errors.jobFreetext}}</span>
     </div>
 
     <div class="form-group {{if errors.non_field_errors 'has-error'}}">
       <span class="help-block">{{errors.non_field_errors}}</span>
-      {{async-button action="upload" class="btn btn-primary" default="Send answers" pending="Sending answers..."}}
+      {{#if isUploadingOrConfirming}}
+        <button {{action "infirm"}} class="btn btn-default" disabled={{isUploading}}>Correct answers</button>
+        {{async-button action="upload" class="btn btn-primary" default="Send answers" pending="Sending answers..."}}
+      {{else}}
+        <button {{action "confirm"}} class="btn btn-primary">Confirm answers</button>
+      {{/if}}
     </div>
-    {{! TODO: add confirmation screen }}
 
   </form>
 

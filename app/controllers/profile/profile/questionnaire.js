@@ -18,6 +18,7 @@ export default Ember.Controller.extend(SessionMixin, {
   jobFreetext: null,
   errors: null,
   isUploading: false,
+  isConfirming: false,
   resetInput: function() {
     this.setProperties({
       age: null,
@@ -29,6 +30,7 @@ export default Ember.Controller.extend(SessionMixin, {
       jobFreetext: null,
       errors: null,
       isUploading: false,
+      isConfirming: false,
     });
   },
   reset: function() {
@@ -49,6 +51,7 @@ export default Ember.Controller.extend(SessionMixin, {
     if (!data.informed) { data.informedHow = data.informedWhat = '-----'; }
 
     this.set('isUploading', true);
+    this.set('isConfirming', false);
     return this.get('store').createRecord('questionnaire', data).save().then(function() {
       return profile.reload();
     }).then(function() {
@@ -70,6 +73,43 @@ export default Ember.Controller.extend(SessionMixin, {
   },
 
   /*
+   * Form validation
+   */
+  isUploadingOrConfirming: Ember.computed.or('isUploading', 'isConfirming'),
+  validate: function() {
+    var errors = {},
+        data = this.getProperties('age', 'gender',
+                                  'informed', 'informedHow', 'informedWhat',
+                                  'jobType', 'jobFreetext');
+
+    // Age
+    var age = Number(data.age);
+    if (!data.age || !Number.isInteger(age)) { errors.age = "Please enter a number"; }
+    else if (age < 3) { errors.age = "This should be greater than or equal to 3"; }
+    else if (age > 120) { errors.age = "This should be lower than or equal to 120"; }
+
+    // Gender
+    if (!data.gender) { errors.gender = "Please choose a gender"; }
+
+    // Naive/informed
+    if (data.informed) {
+      if (!data.informedHow || data.informedHow.length < 5) { errors.informedHow = "Please type at least 5 letters"; }
+      if (!data.informedWhat || data.informedWhat.length < 5) { errors.informedWhat = "Please type at least 5 letters"; }
+    }
+
+    // Job
+    if (!data.jobType) { errors.jobType = "Please select a category"; }
+    if (!data.jobFreetext || data.jobFreetext.length < 5) { errors.jobFreetext = "Please type at least 5 letters"; }
+
+    if (Object.keys(errors).length > 0) {
+      this.set('errors', errors);
+      return false;
+    }
+
+     return true
+  },
+
+  /*
    * Informed text control
    */
   watchInformed: function() {
@@ -80,6 +120,16 @@ export default Ember.Controller.extend(SessionMixin, {
   actions: {
     reset: function() {
       this.reset();
+    },
+    confirm: function() {
+      this.set('errors', null);
+      if (this.validate()) {
+        window.scrollTo(0, 0);
+        this.set('isConfirming', true);
+      }
+    },
+    infirm: function() {
+      this.set('isConfirming', false);
     },
     upload: function(callback) {
       callback(this.upload());
