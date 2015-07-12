@@ -134,6 +134,9 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin,
       return language.name === mothertongue;
     }).objectAt(0).label;
   }.property('currentProfile.mothertongue', 'lang.supportedLanguages'),
+  roundedSpan: function() {
+    return Math.round(this.get('currentProfile.readingSpan.span'));
+  }.property('currentProfile.readingSpan.span'),
 
   /*
    * Profile actions

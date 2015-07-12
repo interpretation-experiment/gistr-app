@@ -43,8 +43,10 @@
     <h2>Reading-span test
       &mdash;
       {{#if currentProfile.readingSpanDone}}
-        <span class="icon-med done">{{fa-icon "check"}}</span>
-        Done
+        {{#sl-tooltip title="Finish the experiment to see how you compare to the other participants!"}}
+          <span class="icon-med done">{{fa-icon "check"}}</span>
+          About {{h-pluralize roundedSpan 'word'}}
+        {{/sl-tooltip}}
       {{else}}
         Not yet done
         {{link-to 'Pass the test' 'profile.profile.reading-span' class="btn btn-primary"}}
