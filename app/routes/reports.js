@@ -18,7 +18,8 @@ export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, ProlificMixin
     if (Ember.isNone(model.profileReadingSpan)) { return; }
 
     var profileId = String(this.get('currentProfile.id')),
-        profilesWritingTimes = model.stats.mean_time_proportion_per_profile,
+        profilesReadingTimes = model.stats.mean_read_time_proportion_per_profile,
+        profilesWritingTimes = model.stats.mean_write_time_proportion_per_profile,
         profilesErrs = model.stats.mean_errs_per_profile;
 
     controller.setProperties({

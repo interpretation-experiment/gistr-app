@@ -69,12 +69,14 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
     } else {
       // We're in `exp.doing` or `playing`, save the work
       promise = this.get('store').createRecord('sentence', {
-        text: self.get('text'),
-        parent: self.get('parentSentence'),
-        language: self.get('parentSentence.language'),
-        bucket: self.get('parentSentence.bucket'),
-        time_proportion: self.get('realProgress') / 100,
-        time_allotted: self.get('duration'),
+        text: this.get('text'),
+        parent: this.get('parentSentence'),
+        language: this.get('parentSentence.language'),
+        bucket: this.get('parentSentence.bucket'),
+        readTimeProportion: this.get('readTimings.readTimeProportion'),
+        readTimeAllotted: this.get('readTimings.readTimeAllotted'),
+        writeTimeProportion: this.get('realProgress') / 100,
+        writeTimeAllotted: this.get('duration'),
       }).save();
     }
 
