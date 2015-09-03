@@ -12,16 +12,15 @@ export default Ember.Component.extend({
         position: "right"
       },
       {
-        element: Ember.$('#instruction-read1').get(0),
+        element: Ember.$('#instruction-read').get(0),
         intro: `You're going to read a <strong>list of ${shaping.get('wordSpanWordsCount')} words</strong>`,
         position: "right",
-        image: 'read1'
+        image: 'read'
       },
       {
-        element: Ember.$('#instruction-read2').get(0),
-        intro: "In limited time &mdash; <strong>Try to read all the words!</strong>",
+        element: Ember.$('#instruction-read').get(0),
+        intro: "<strong>Try to memorize all the words!</strong>",
         position: "bottom",
-        image: 'read2'
       },
       {
         element: Ember.$('#instruction-distract').get(0),
@@ -82,8 +81,7 @@ export default Ember.Component.extend({
   }.on('didInsertElement'),
 
   images: [
-    Ember.Object.create({ name: 'read1', title: 'Reading the words', hidden: true }),
-    Ember.Object.create({ name: 'read2', title: 'Time is short', hidden: true }),
+    Ember.Object.create({ name: 'read', title: 'Reading the words', hidden: true }),
     Ember.Object.create({ name: 'distract', title: 'Remember it well', hidden: true }),
     Ember.Object.create({ name: 'write', title: 'Writing the words you remember', hidden: true })
   ],
