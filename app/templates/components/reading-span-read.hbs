@@ -1,11 +1,2 @@
-<h3>Memorize these words!</h3>
-<div class="row well">
-  {{#each words as |word|}}
-    <div class="col-xs-6 col-sm-4 center">
-      <p>{{h-capitalize word}}</p>
-    </div>
-  {{/each}}
-</div>
-{{#progress-clock value=progress}}
-  <button class="btn btn-primary" {{action "next"}}>Continue</button>
-{{/progress-clock}}
+<h2>Memorize the following words</h2>
+<h3 class="center word-fixation">{{#if isInReading}}{{h-capitalize word}}{{/if}}</h3>
