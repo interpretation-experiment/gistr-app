@@ -6,12 +6,12 @@
       on-complete="introDone"
       on-exit="introDone"}}
 {{/if}}
-<div class="instructions instructions-reading-span">
+<div class="instructions instructions-word-span">
   {{#each images as |image|}}
     <img
         class="{{if image.hidden 'hidden'}}"
         id="instruction-{{image.name}}"
-        src="assets/images/reading-span/{{image.name}}.png"
+        src="assets/images/word-span/{{image.name}}.png"
         title="{{image.title}}" />
   {{/each}}
 </div>

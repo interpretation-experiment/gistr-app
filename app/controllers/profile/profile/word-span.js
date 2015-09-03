@@ -23,8 +23,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
     return words[this.get('trial')];
   }.property('trial', 'words'),
   testProgress: function() {
-    return 100 * this.get('trial') / this.get('shaping.readingSpanTrialsCount');
-  }.property('trial', 'shaping.readingSpanTrialsCount'),
+    return 100 * this.get('trial') / this.get('shaping.wordSpanTrialsCount');
+  }.property('trial', 'shaping.wordSpanTrialsCount'),
   reset: function() {
     this.setProperties({
       words: null,
@@ -52,7 +52,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
           profile = this.get('currentProfile'),
           trialWords = this.get('trialWords'),
           scores = this.get('scores'),
-          wordsCount = this.get('shaping.readingSpanWordsCount'),
+          wordsCount = this.get('shaping.wordSpanWordsCount'),
           promise;
 
       var uniqueUserWords = [],
@@ -69,12 +69,12 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
 
       scores.push(intersection.length / wordsCount);
 
-      if (this.get('trial') + 1 === this.get('shaping.readingSpanTrialsCount')) {
+      if (this.get('trial') + 1 === this.get('shaping.wordSpanTrialsCount')) {
         // This is the last trial, save our results and finish
         var span = mean(scores) * wordsCount,
             lifecycle = this.get('lifecycle');
         this.set('span', span);
-        promise = this.get('store').createRecord('reading-span', {
+        promise = this.get('store').createRecord('word-span', {
           wordsCount: wordsCount,
           span: span
         }).save().then(function() {

@@ -11,15 +11,15 @@ export default Ember.Route.extend(FormRouteMixin, SessionMixin, ProfileRouteMixi
 
   beforeModel: function(transition) {
     if (this._super(transition)) {
-      if (this.get('currentProfile.readingSpanDone')) {
+      if (this.get('currentProfile.wordSpanDone')) {
         this.transitionTo('profile.profile');
       }
     }
   },
   setupController: function(controller/*, model*/) {
-    var availableWords = this.get('shaping.readingSpanWords'),
-        trialsCount = this.get('shaping.readingSpanTrialsCount'),
-        wordsCount = this.get('shaping.readingSpanWordsCount'),
+    var availableWords = this.get('shaping.wordSpanWords'),
+        trialsCount = this.get('shaping.wordSpanTrialsCount'),
+        wordsCount = this.get('shaping.wordSpanWordsCount'),
         words = [],
         flatWords = sample(availableWords, trialsCount * wordsCount);
 

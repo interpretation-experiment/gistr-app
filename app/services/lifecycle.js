@@ -53,12 +53,12 @@ export default Ember.Service.extend(Ember.FSM.Stateful, SessionMixin, {
       }
     },
     'exp.training': {
-      'tested-reading-span': {
+      'tested-word-span': {
         check: function(user) {
-          return !Ember.isNone(user) && user.get('profile.readingSpanDone');
+          return !Ember.isNone(user) && user.get('profile.wordSpanDone');
         },
         route: 'profile',
-        observes: 'currentProfile.readingSpanDone'
+        observes: 'currentProfile.wordSpanDone'
       },
       'answered-questionnaire': {
         check: function(user) {
