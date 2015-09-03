@@ -12,7 +12,7 @@ export default Ember.Service.extend({
   branchProbability: 0.8,     // probability of branching in a tree
   minTokens: 10,              // app-wide minimum number of tokens for sentences
   // Words from the Age of Acquisition norms (Kuperman, 2012), acquired between ages 5 and 10 (included)
-  readingSpanWords: [
+  wordSpanWords: [
     'fawn', 'foul', 'prefix', 'preface', 'centimeter', 'aggression', 'spidery', 'unblocked', 'electricity', 'chatter', 'powdery', 'scold', 'unanswered', 'sunlit', 'originality', 'tingle', 'hardness', 'meadowy', 'lord', 'immature', 'swivel', 'bellyache', 'deli', 'stabber', 'bogyman', 'rawhide', 'fur', 'uncoordinated', 'wooded', 'basics', 'broiler', 'wooden', 'crotch', 'ornamental', 'glassy', 'daybed', 'eagle', 'railing', 'bacon', 'scraper', 'elegant', 'sooth', 'crutch', 'blouse', 'admire', 'captain', 'widen', 'cooking', 'dangler', 'fossil', 'numeral', 'admiral', 'crouch', 'reporter', 'herb', 'herd', 'dorm', 'shriek', 'dork', 'calculate', 'substance', 'unwillingness', 'cupful', 'unfriendly', 'military', 'spotty', 'climber', 'golden', 'roadrunner', 'projection', 'lengthen', 'replace', 'hobble', 'wizardry', 'unsinkable', 'stern', 'explainer', 'unit', 'catchy', 'insecurity', 'overshadow', 'cannibal', 'accommodation', 'symphony', 'telegraph', 'strike', 'reconnection', 'teaspoon', 'paperwork', 'relay', 'relax', 'successful', 'meteorologist', 'reversible', 'hurl', 'hole', 'unpack', 'pursue', 'onstage', 'famed',
     'blade', 'straddle', 'locker', 'locket', 'busyness', 'shelve', 'exhale', 'plunger', 'example', 'moonrise', 'wand', 'household', 'digit', 'ungraceful', 'currency', 'caution', 'counseling', 'organizer', 'pinto', 'absolute', 'hog', 'hoe', 'sugarless', 'hypnosis', 'dimple', 'travel', 'pigsty', 'damage', 'revisit', 'machine', 'playback', 'stickup', 'cheetah', 'preferable', 'guardrail', 'classify', 'gaming', 'uselessness', 'goober', 'diagram', 'possum', 'unselfish', 'tourism', 'testify', 'gusty', 'headquarters', 'fictional', 'childhood', 'sickening', 'wink', 'squint', 'wine', 'restriction', 'pocketknife', 'pinkeye', 'vary', 'kickoff', 'handcuff', 'ewe', 'playhouse', 'fir', 'fit', 'directional', 'lifeline', 'fix', 'fib', 'fig', 'fin', 'doghouse', 'songwriter', 'slate', 'disturb', 'interrupt', 'silver', 'headboard', 'repaint', 'acme', 'blusher', 'calamine', 'buttonhole', 'spotless', 'arrow', 'volcano', 'dumpy', 'burial', 'telescope', 'knockout', 'garment', 'cushion', 'turnip', 'impossible', 'laboratory', 'whip', 'uncollected', 'smirk', 'unclog', 'encourage', 'adapt', 'nightdress', 'waddle',
     'estimate', 'knit', 'flatness', 'chlorine', 'enormous', 'darer', 'shipper', 'disturber', 'gobstopper', 'flurry', 'takeout', 'bated', 'speedy', 'tempting', 'loudness', 'symbolize', 'thumbtack', 'trillion', 'angelic', 'bagful', 'shopper', 'wasp', 'goggle', 'veggie', 'misplace', 'preshrunk', 'instruct', 'discriminator', 'plastic', 'basketball', 'service', 'engagement', 'master', 'tangy', 'critter', 'fuzziness', 'walkaway', 'listen', 'huffy', 'collapse', 'snooty', 'promise', 'wisdom', 'motionless', 'frowner', 'icicle', 'outlaw', 'likely', 'lightener', 'project', 'pneumonia', 'idle', 'dressmaking', 'recheck', 'dozer', 'willingness', 'runner', 'paddler', 'untrained', 'headland', 'corny', 'urinate', 'alive', 'dozen', 'cactus', 'wholesome', 'escalator', 'paramedics', 'manger', 'metallic', 'amusing', 'paintbrush', 'crossbones', 'stirrup', 'shall', 'sugarcane', 'limitless', 'simplify', 'entry', 'drought', 'thriller', 'eyeless', 'dummy', 'singer', 'crayfish', 'episode', 'baldy', 'grove', 'handcart', 'camp', 'temperamental', 'mating', 'incomplete', 'marvel', 'boogie', 'bomb', 'rediscovery', 'reschedule', 'participate', 'recliner',
@@ -120,8 +120,8 @@ export default Ember.Service.extend({
   targetBranchDepth: null,
   experimentWork: null,
   trainingWork: null,
-  readingSpanWordsCount: null,
-  readingSpanTrialsCount: null,
+  wordSpanWordsCount: null,
+  wordSpanTrialsCount: null,
 
   _populationPromise: null,
   populate: function() {
@@ -139,8 +139,8 @@ export default Ember.Service.extend({
         targetBranchDepth: data.target_branch_depth,
         experimentWork: data.experiment_work,
         trainingWork: data.training_work,
-        readingSpanWordsCount: data.reading_span_words_count,
-        readingSpanTrialsCount: data.reading_span_trials_count
+        wordSpanWordsCount: data.word_span_words_count,
+        wordSpanTrialsCount: data.word_span_trials_count
       });
       return self;
     });

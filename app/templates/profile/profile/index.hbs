@@ -40,16 +40,16 @@
   </div>
 
   <div class="well">
-    <h2>Reading-span test
+    <h2>Word span test
       &mdash;
-      {{#if currentProfile.readingSpanDone}}
+      {{#if currentProfile.wordSpanDone}}
         {{#sl-tooltip title="Finish the experiment to see how you compare to the other participants!"}}
           <span class="icon-med done">{{fa-icon "check"}}</span>
           About {{h-pluralize roundedSpan 'word'}}
         {{/sl-tooltip}}
       {{else}}
         Not yet done
-        {{link-to 'Pass the test' 'profile.profile.reading-span' class="btn btn-primary"}}
+        {{link-to 'Pass the test' 'profile.profile.word-span' class="btn btn-primary"}}
       {{/if}}
     </h2>
   </div>

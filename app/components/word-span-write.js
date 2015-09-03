@@ -8,7 +8,7 @@ export default Ember.Component.extend({
   /*
    * Copy-paste prevention
    */
-  pasteEvent: 'paste.reading-span-write',
+  pasteEvent: 'paste.word-span-write',
   initPastePrevention: function() {
     var growl = this.get('growl');
     Ember.$(window).on(this.get('pasteEvent'), function(event) {
@@ -31,7 +31,7 @@ export default Ember.Component.extend({
   }.property('words'),
   enoughTokens: Ember.computed.gte('tokens.length', 3),
   placeholder: function() {
-    var wordsCount = this.get('shaping.readingSpanWordsCount');
+    var wordsCount = this.get('shaping.wordSpanWordsCount');
     return `Type a word and press space (max ${wordsCount} words)`;
   }.property(),
 

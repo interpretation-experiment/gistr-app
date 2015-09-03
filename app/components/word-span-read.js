@@ -8,7 +8,7 @@ export default Ember.Component.extend(Ember.FSM.Stateful, {
   /*
    * Copy-paste prevention
    */
-  copyEvent: 'copy.reading-span-read',
+  copyEvent: 'copy.word-span-read',
   initCopyPrevention: function() {
     var growl = this.get('growl');
     Ember.$(window).on(this.get('copyEvent'), function(event) {

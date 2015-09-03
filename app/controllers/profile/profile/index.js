@@ -104,7 +104,7 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin,
       'has-mothertongue': "Set your mothertongue"
     },
     'exp.training': {
-      'tested-reading-span': "Test your reading-span below",
+      'tested-word-span': "Test your word span below",
       'answered-questionnaire': "Fill in the general questionnaire below"
     }
   },
@@ -135,8 +135,8 @@ export default Ember.Controller.extend(SessionMixin, EventfulMixin,
     }).objectAt(0).label;
   }.property('currentProfile.mothertongue', 'lang.supportedLanguages'),
   roundedSpan: function() {
-    return Math.round(this.get('currentProfile.readingSpan.span'));
-  }.property('currentProfile.readingSpan.span'),
+    return Math.round(this.get('currentProfile.wordSpan.span'));
+  }.property('currentProfile.wordSpan.span'),
 
   /*
    * Profile actions
