@@ -8,7 +8,7 @@ export default Ember.Component.extend({
     return [
       {
         element: Ember.$('#word-span-title').get(0),
-        intro: "You're about to test your word span, welcome!",
+        intro: "You're about to test your word span, welcome! Please <strong>read carefully the instructions that follow</strong> (click <em>Next</em> to start)",
         position: "right"
       },
       {
