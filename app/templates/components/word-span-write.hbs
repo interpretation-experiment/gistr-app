@@ -7,14 +7,14 @@
 
 <form>
   <div class="form-group">
-    {{token-input class="form-control" id="inputWords" value=words minLength=1 limit=shaping.wordSpanWordsCount placeholder=placeholder disabled=isSaving}}
+    {{token-input class="form-control" id="inputWords" value=words minLength=1 limit=wordsCount placeholder=placeholder disabled=isSaving}}
   </div>
 
   <div class="form-group">
     {{#if enoughTokens}}
       {{async-button action="save" class="btn btn-primary" default="Save" pending="Saving..."}}
     {{else}}
-      {{#sl-tooltip title="Type at least 3 words, even if you don't remember them" id="inactive-submit"}}<button class="btn btn-primary" disabled=true>Save</button>{{/sl-tooltip}}
+      {{#sl-tooltip title=saveTip id="inactive-submit"}}<button class="btn btn-primary" disabled=true>Save</button>{{/sl-tooltip}}
     {{/if}}
   </div>
 </form>

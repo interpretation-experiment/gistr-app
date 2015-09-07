@@ -1,31 +1,38 @@
 <h2 class="row">
-  <div class="col-xs-8"><span id="word-span-title">Word span test</span></div>
+<div class="col-xs-8"><span id="word-span-title">Word span test{{#if isPhaseTraining}} &mdash; Training{{/if}}</span></div>
   <div class="col-xs-4"><small id="word-span-progress">
-    Trial {{trial}} out of {{shaping.wordSpanTrialsCount}}
-    {{sl-progress-bar value=testProgress striped=true}}
+    {{#if isPhaseTraining}}
+      Completed {{h-pluralize trial 'training trial'}} out of {{phaseCount}}
+    {{else}}
+      Completed {{h-pluralize trial 'trial'}} out of {{phaseCount}}
+    {{/if}}
+    {{sl-progress-bar value=sessionProgress striped=true}}
   </small></div>
 </h2>
 
 <div class="well">
   {{#if isInInstructions}}
     {{word-span-instructions
-        next="read"}}
+        next="train"}}
 
-  {{else if isInReading}}
-    {{word-span-read
+  {{else if isInTraining}}
+    {{word-span-trial
         words=trialWords
-        next="distract"}}
+        save="processTrial"}}
 
-  {{else if isInDistracting}}
-    {{word-span-distract
-        next="write"}}
+  {{else if isInStarting}}
+    {{word-span-start
+        next="task"}}
 
-  {{else if isInWriting}}
-    {{word-span-write
-        save="processWords"}}
+  {{else if isInTasking}}
+    {{word-span-trial
+        words=trialWords
+        save="processTrial"}}
 
   {{else if isInFinished}}
     {{word-span-finished
+        score=score
+        maxScore=maxScore
         span=span}}
 
   {{/if}}

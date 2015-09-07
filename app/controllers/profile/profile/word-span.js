@@ -8,28 +8,97 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   shaping: Ember.inject.service(),
 
   /*
-   * General tracking
+   * Task configuration
    */
   words: null,
+  sessionCounts: null,
+  phaseCount: function() {
+    return this.get('sessionCounts')[this.get('phase')];
+  }.property('sessionCounts', 'phase'),
+
+  /*
+   * Task results
+   */
   span: null,
-  scores: [],
+  spanStats: {},
+  score: 0,
+  maxScore: function() {
+    var words = this.get('words');
+    if (Ember.isNone(words)) { return null; }
+
+    var taskingWords = words['tasking'];
+    return taskingWords.reduce((acc, trialWords) => acc + trialWords.length, 0);
+  }.property('words'),
+  pushSpanTrial: function(passed) {
+    var setSize = this.get('trialWords.length'),
+        stats = this.get('spanStats');
+    if (setSize in stats) {
+      stats[setSize].push(passed);
+    } else {
+      stats[setSize] = [passed];
+    }
+  },
+  computeSpan: function() {
+    var stats = this.get('spanStats'),
+        setSizes = Object.keys(stats).sort().reverse(),
+        threshold = 2/3,
+        minTrials = 3,
+        span;
+
+    for (var size of setSizes) {
+      // All sizes must have at least minTrials measures
+      var nMeasures = stats[size].length;
+      Ember.assert(nMeasures >= minTrials,
+                  `Set size ${size} has only ${nMeasures} measures`);
+
+      // Iterating in decreasing order, the last setSize to have
+      // a mean >= threshold is our span
+      if (mean(stats[size]) >= threshold) {
+        span = size;
+      }
+    }
+
+    this.set('span', span);
+    return span;
+  },
+
+  /*
+   * Status tracking
+   */
   trial: 0,
   bumpTrial: function() {
     this.incrementProperty('trial');
   },
+  resetTrial: function() {
+    this.set('trial', 0);
+  },
+
+  phase: function() {
+    var state = this.get('currentState');
+    if (state === 'instructions' || state === 'training') {
+      return 'training';
+    } else {
+      return 'tasking';
+    }
+  }.property('currentState'),
+  isPhaseTraining: Ember.computed.equal('phase', 'training'),
+  isPhaseTasking: Ember.computed.equal('phase', 'tasking'),
+  sessionWords: function() {
+    return (this.get('words') || {})[this.get('currentState')];
+  }.property('words', 'currentState'),
   trialWords: function() {
-    var words = this.get('words');
-    if (Ember.isNone(words)) { return; }
-    return words[this.get('trial')];
-  }.property('trial', 'words'),
-  testProgress: function() {
-    return 100 * this.get('trial') / this.get('shaping.wordSpanTrialsCount');
-  }.property('trial', 'shaping.wordSpanTrialsCount'),
+    return (this.get('sessionWords') || {})[this.get('trial')];
+  }.property('sessionWords', 'trial'),
+  sessionProgress: function() {
+    return 100 * this.get('trial') / this.get('phaseCount');
+  }.property('trial', 'phaseCount'),
   reset: function() {
     this.setProperties({
       words: null,
+      sessionCounts: null,
       span: null,
-      scores: [],
+      spanState: {},
+      score: 0,
       trial: 0,
     });
   },
@@ -38,58 +107,51 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    * Test actions
    */
   actions: {
-    read: function() {
-      this.sendStateEvent('read');
+    train: function() {
+      this.sendStateEvent('train');
     },
-    distract: function() {
-      this.sendStateEvent('distract');
+    task: function() {
+      this.sendStateEvent('task');
     },
-    write: function() {
-      this.sendStateEvent('write');
-    },
-    processWords: function(userWords, finallyCallback) {
+    processTrial: function(passed, trialScore, finallyCallback) {
       var self = this,
           profile = this.get('currentProfile'),
-          trialWords = this.get('trialWords'),
-          scores = this.get('scores'),
-          wordsCount = this.get('shaping.wordSpanWordsCount'),
+          phaseCount = this.get('phaseCount'),
+          lifecycle = this.get('lifecycle'),
           promise;
 
-      var uniqueUserWords = [],
-          lWord;
-      for (var userWord of userWords) {
-        lWord = userWord.toLowerCase();
-        if (!uniqueUserWords.contains(lWord)) {
-          uniqueUserWords.push(lWord);
+      if (this.get('currentState') === 'training') {
+        if (this.get('trial') + 1 === phaseCount) {
+          // It was the last training trial
+          promise = this.sendStateEvent('start');
+        } else {
+          // This was a training trial, but not the last
+          promise = this.sendStateEvent('train');
         }
-      }
-      var intersection = uniqueUserWords.filter(function(userWord) {
-        return trialWords.contains(userWord);
-      });
-
-      scores.push(intersection.length / wordsCount);
-
-      if (this.get('trial') + 1 === this.get('shaping.wordSpanTrialsCount')) {
-        // This is the last trial, save our results and finish
-        var span = mean(scores) * wordsCount,
-            lifecycle = this.get('lifecycle');
-        this.set('span', span);
-        promise = this.get('store').createRecord('word-span', {
-          wordsCount: wordsCount,
-          span: span
-        }).save().then(function() {
-          return profile.reload();
-        }).then(function() {
-          // Transition lifecycle state if possible
-          if (lifecycle.get('validator.isComplete')) {
-            return lifecycle.transitionUp();
-          }
-        }).then(function() {
-          self.sendStateEvent('finish');
-        });
       } else {
-        // This isn't the last trial, keep going
-        promise = this.sendStateEvent('read');
+        // Save our score and span stats
+        this.incrementProperty('score', trialScore);
+        this.pushSpanTrial(passed);
+        if (this.get('trial') + 1 === phaseCount) {
+          // It was the last tasking trial
+          this.computeSpan();
+          promise = this.get('store').createRecord('word-span', {
+            score: this.get('score'),
+            span: this.get('span'),
+          }).save().then(function() {
+            return profile.reload();
+          }).then(function() {
+            // Transition lifecycle state if possible
+            if (lifecycle.get('validator.isComplete')) {
+              return lifecycle.transitionUp();
+            }
+          }).then(function() {
+            self.sendStateEvent('finish');
+          });
+        } else {
+          // This was a tasking trial, but not the last
+          promise = this.sendStateEvent('task');
+        }
       }
 
       promise.finally(finallyCallback);
@@ -104,37 +166,30 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
    */
   fsmStates: {
     initialState: 'instructions',
-    knownStates: ['instructions', 'reading', 'distracting',
-                  'writing', 'finished', 'failed'],
+    knownStates: ['instructions', 'training', 'starting',
+                  'tasking', 'finished', 'failed']
   },
   fsmEvents: {
-    read: {
+    train: {
       transitions: [
-        { instructions: 'reading' },
-        {
-          writing: 'reading',
-          enter: 'bumpTrial'
-        }
+        { instructions: 'training' },
+        { training: 'training', enter: 'bumpTrial' },
       ]
     },
-    distract: {
-      transition: { reading: 'distracting' }
+    start: {
+      transition: { training: 'starting', enter: 'resetTrial' }
     },
-    write: {
-      transition: { distracting: 'writing' }
+    task: {
+      transitions: [
+        { starting: 'tasking' },
+        { tasking: 'tasking', enter: 'bumpTrial' }
+      ]
     },
     finish: {
-      transition: {
-        writing: 'finished',
-        enter: 'bumpTrial'
-      }
+      transition: { tasking: 'finished', enter: 'bumpTrial' }
     },
     reset: {
-      transition: {
-        from: '$all',
-        to: '$initial',
-        didEnter: 'reset'
-      }
+      transition: { from: '$all', to: '$initial', didEnter: 'reset' }
     }
-  }
+  },
 });

@@ -3,7 +3,11 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   growl: Ember.inject.service(),
-  shaping: Ember.inject.service(),
+
+  /*
+   * Parameters
+   */
+  wordsCount: null,
 
   /*
    * Copy-paste prevention
@@ -24,16 +28,26 @@ export default Ember.Component.extend({
    * Form meta
    */
   splitter: /, /,
-  minTokens: 3,
+  minTokens: function() {
+    var wordsCount = this.get('wordsCount');
+    return Math.min(wordsCount - 1, 3);
+  }.property('wordsCount'),
   tokens: function() {
     var words = this.get('words') || '';
+    if (words.length === 0) { return []; }
     return words.split(this.get('splitter'));
   }.property('words'),
-  enoughTokens: Ember.computed.gte('tokens.length', 3),
+  enoughTokens: function() {
+    return this.get('tokens.length') >= this.get('minTokens');
+  }.property('tokens.length', 'minTokens'),
   placeholder: function() {
-    var wordsCount = this.get('shaping.wordSpanWordsCount');
+    var wordsCount = this.get('wordsCount');
     return `Type a word and press space (max ${wordsCount} words)`;
-  }.property(),
+  }.property('wordsCount'),
+  saveTip: function() {
+    var minTokens = this.get('minTokens');
+    return `Type at least ${minTokens} words, even if you don't remember them`;
+  }.property('minTokens'),
 
   /*
    * Form fields

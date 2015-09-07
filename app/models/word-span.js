@@ -4,7 +4,7 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   created: DS.attr('date'),
   profile: DS.belongsTo('profile', { async: true }),
-  wordsCount: DS.attr('number'),
+  score: DS.attr('number'),
   span: DS.attr('number'),
 
   /*

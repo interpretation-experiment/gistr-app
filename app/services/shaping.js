@@ -120,8 +120,13 @@ export default Ember.Service.extend({
   targetBranchDepth: null,
   experimentWork: null,
   trainingWork: null,
-  wordSpanWordsCount: null,
-  wordSpanTrialsCount: null,
+
+  /*
+   * Static parameters
+   */
+  wordSpanTrainingSetSizes: [2],
+  wordSpanTaskingSetSizes: [3, 4, 5, 6, 7],
+  wordSpanTrialsPerSetSize: 3,
 
   _populationPromise: null,
   populate: function() {
@@ -139,8 +144,6 @@ export default Ember.Service.extend({
         targetBranchDepth: data.target_branch_depth,
         experimentWork: data.experiment_work,
         trainingWork: data.training_work,
-        wordSpanWordsCount: data.word_span_words_count,
-        wordSpanTrialsCount: data.word_span_trials_count
       });
       return self;
     });
