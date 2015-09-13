@@ -40,7 +40,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
   },
   computeSpan: function() {
     var stats = this.get('spanStats'),
-        setSizes = Object.keys(stats).sort().reverse(),
+        setSizes = Object.keys(stats).sort(),
         threshold = 2/3,
         minTrials = 3,
         span;
@@ -51,10 +51,10 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
       Ember.assert(nMeasures >= minTrials,
                   `Set size ${size} has only ${nMeasures} measures`);
 
-      // Iterating in decreasing order, the last setSize to have
+      // Iterating in increasing order, the last setSize to have
       // a mean >= threshold is our span
       if (mean(stats[size]) >= threshold) {
-        span = size;
+        span = parseInt(size);
       }
     }
 
