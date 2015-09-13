@@ -23,7 +23,7 @@ export default Ember.Component.extend({
       },
       {
         element: Ember.$('#instruction-read').get(0),
-        intro: `You're going to read a <strong>list of words</strong> (there can be from ${minSize} to ${maxSize} words)`,
+        intro: `You're going to <strong>read a list of words</strong>. We start with a list of ${minSize} words, then the lists get gradually longer, up to ${maxSize} words.`,
         position: "right",
         image: 'read'
       },
