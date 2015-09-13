@@ -43,7 +43,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         setSizes = Object.keys(stats).sort(),
         threshold = 2/3,
         minTrials = 3,
-        span;
+        span = 0;
 
     for (var size of setSizes) {
       // All sizes must have at least minTrials measures
