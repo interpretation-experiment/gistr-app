@@ -24,19 +24,17 @@ test('span is properly computed', function(assert) {
       4: [true, false, false],
       5: [true, false, false],
     });
-  });
-  assert.equal(controller.computeSpan(), 3);
-  assert.equal(controller.get('span'), 3);
-  Ember.run(function() {
+    assert.equal(controller.computeSpan(), 3);
+    assert.equal(controller.get('span'), 3);
+
     controller.set('spanStats', {
       3: [true, true, true],
       4: [true, true, false],
       5: [true, false, false],
     });
-  });
-  assert.equal(controller.computeSpan(), 4);
-  assert.equal(controller.get('span'), 4);
-  Ember.run(function() {
+    assert.equal(controller.computeSpan(), 4);
+    assert.equal(controller.get('span'), 4);
+
     controller.set('spanStats', {
       3: [true, true, true],
       4: [true, true, true],
@@ -44,7 +42,7 @@ test('span is properly computed', function(assert) {
       6: [true, false, true],
       7: [true, false, false],
     });
+    assert.equal(controller.computeSpan(), 6);
+    assert.equal(controller.get('span'), 6);
   });
-  assert.equal(controller.computeSpan(), 6);
-  assert.equal(controller.get('span'), 6);
 });
