@@ -1,0 +1,11 @@
+{{#if isInReading}}
+  {{word-span-read
+      words=words
+      next="write"}}
+
+{{else if isInWriting}}
+  {{word-span-write
+      wordsCount=words.length
+      save="processTokens"}}
+
+{{/if}}

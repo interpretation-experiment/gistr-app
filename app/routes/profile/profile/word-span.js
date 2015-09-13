@@ -18,16 +18,32 @@ export default Ember.Route.extend(FormRouteMixin, SessionMixin, ProfileRouteMixi
   },
   setupController: function(controller/*, model*/) {
     var availableWords = this.get('shaping.wordSpanWords'),
-        trialsCount = this.get('shaping.wordSpanTrialsCount'),
-        wordsCount = this.get('shaping.wordSpanWordsCount'),
-        words = [],
-        flatWords = sample(availableWords, trialsCount * wordsCount);
+        trialsPerSetSize = this.get('shaping.wordSpanTrialsPerSetSize'),
+        setSizes = {
+          'training': this.get('shaping.wordSpanTrainingSetSizes'),
+          'tasking': this.get('shaping.wordSpanTaskingSetSizes'),
+        },
+        summer = (acc, n) => acc + trialsPerSetSize * n,
+        trainingWordCount = setSizes['training'].reduce(summer, 0),
+        taskingWordCount = setSizes['tasking'].reduce(summer, 0),
+        words = { 'training': [], 'tasking': [] },
+        flatWords = sample(availableWords, trainingWordCount + taskingWordCount),
+        index = 0;
 
-    for (var i = 0; i < trialsCount; i++) {
-      words.push(flatWords.slice(i * wordsCount, (i + 1) * wordsCount));
+    for (var tipe of ['training', 'tasking']) {
+      for (var size of setSizes[tipe]) {
+        for (var j = 0; j < trialsPerSetSize; j++) {
+          words[tipe].push(flatWords.slice(index, index + size));
+          index += size;
+        }
+      }
     }
 
     controller.set('words', words);
+    controller.set('sessionCounts', {
+      'training': setSizes['training'].length * trialsPerSetSize,
+      'tasking': setSizes['tasking'].length * trialsPerSetSize
+    });
   },
   scrollUp: function() {
     window.scrollTo(0, 0);

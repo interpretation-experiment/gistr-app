@@ -5,6 +5,16 @@ export default Ember.Component.extend({
   showIntro: true,
 
   introSteps: function(user, shaping/*, lifecycle*/) {
+    var trainingSizes = shaping.get('wordSpanTrainingSetSizes'),
+        taskingSizes = shaping.get('wordSpanTaskingSetSizes'),
+        minSize = Math.min(Math.min.apply(null, trainingSizes),
+                           Math.min.apply(null, taskingSizes)),
+        maxSize = Math.max(Math.max.apply(null, trainingSizes),
+                           Math.max.apply(null, taskingSizes)),
+        trialsPerSize = shaping.get('wordSpanTrialsPerSetSize'),
+        trainingCount = trainingSizes.length * trialsPerSize,
+        taskingCount = taskingSizes.length * trialsPerSize;
+
     return [
       {
         element: Ember.$('#word-span-title').get(0),
@@ -13,35 +23,29 @@ export default Ember.Component.extend({
       },
       {
         element: Ember.$('#instruction-read').get(0),
-        intro: `You're going to read a <strong>list of ${shaping.get('wordSpanWordsCount')} words</strong>`,
+        intro: `You're going to <strong>read a list of words</strong>. We start with a list of ${minSize} words, then the lists get gradually longer, up to ${maxSize} words.`,
         position: "right",
         image: 'read'
       },
       {
         element: Ember.$('#instruction-read').get(0),
-        intro: "<strong>Try to memorize all the words!</strong>",
+        intro: "Try to memorize all the words presented!",
         position: "bottom",
       },
       {
-        element: Ember.$('#instruction-distract').get(0),
-        intro: "Then there's a pause",
-        position: "right",
-        image: 'distract'
-      },
-      {
         element: Ember.$('#instruction-write').get(0),
-        intro: "And you must rewrite the words you remember",
-        position: "top",
+        intro: "Then you must rewrite the words <strong>in the same order</strong>",
+        position: "left",
         image: 'write'
       },
       {
         element: Ember.$('#instruction-write').get(0),
         intro: "Capitalization doesn't count, but <strong>typos and spelling changes count as mistakes!</strong>",
-        position: "left",
+        position: "top",
       },
       {
         element: Ember.$('#word-span-progress').get(0),
-        intro: `The whole process loops ${shaping.get('wordSpanTrialsCount')} times, and you're done!`,
+        intro: `Right now you have <strong>${trainingCount} trials to practice</strong>, then there are <strong>${taskingCount} real trials</strong> and you're done!`,
         position: "left",
       }
     ];
@@ -82,7 +86,6 @@ export default Ember.Component.extend({
 
   images: [
     Ember.Object.create({ name: 'read', title: 'Reading the words', hidden: true }),
-    Ember.Object.create({ name: 'distract', title: 'Remember it well', hidden: true }),
-    Ember.Object.create({ name: 'write', title: 'Writing the words you remember', hidden: true })
+    Ember.Object.create({ name: 'write', title: 'Writing the words in the same order', hidden: true })
   ],
 });
