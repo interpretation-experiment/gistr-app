@@ -45,7 +45,8 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, {
         minTrials = 3,
         span = 0;
 
-    for (var size of setSizes) {
+    for (var i = 0; i < setSizes.length; i++) {
+      var size = setSizes[i];
       // All sizes must have at least minTrials measures
       var nMeasures = stats[size].length;
       Ember.assert(nMeasures >= minTrials,

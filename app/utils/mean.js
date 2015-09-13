@@ -6,8 +6,8 @@ export default function mean(array) {
   if (array.length === 0) { return; }
 
   var sum = 0;
-  for (var value of array) {
-    sum += value;
+  for (var i = 0; i < array.length; i++) {
+    sum += array[i];
   }
   return sum / array.length;
 }
