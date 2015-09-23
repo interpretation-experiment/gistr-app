@@ -57,16 +57,16 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
   }
 
-  if (environment === 'production') {
-    // FIXME: API_HOST defaults to localhost:8000 if not told otherwise
-    // (should default to window.location, but well...)
-    // DEPLOY: set this
+  if (environment === 'staging') {
     ENV.APP.API_HOST = '//next.gistr.io';
-
-    // DEPLOY: set this
     ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/demo/complete?cc=NOCODE';
-    // DEPLOY: set this
     ENV.APP.PROLIFIC_STUDY_URL = 'https://prolificacademic.co.uk/studies/demo';
+  }
+
+  if (environment === 'production') {
+    ENV.APP.API_HOST = '//gistr.io';
+    ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/551aa5c3fdf99b2c58162de9/complete?cc=COCBA68J';
+    ENV.APP.PROLIFIC_STUDY_URL = 'https://prolificacademic.co.uk/studies/551aa5c3fdf99b2c58162de9';
   }
 
   return ENV;

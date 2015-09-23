@@ -2,8 +2,27 @@
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var Funnel = require('broccoli-funnel');
+var env = EmberApp.env();
+var isProductionLikeBuild = ['production', 'staging'].indexOf(env) > -1;
 
-var app = new EmberApp();
+var app = new EmberApp({
+  fingerprint: {
+    enabled: isProductionLikeBuild,
+    prepend: '//d1zez0cfifq2rx.cloudfront.net/',
+  },
+  sourcemaps: { enabled: !isProductionLikeBuild, },
+  minifyCSS: { enabled: isProductionLikeBuild },
+  minifyJS: { enabled: isProductionLikeBuild },
+
+  tests: process.env.EMBER_CLI_TEST_COMMAND || !isProductionLikeBuild,
+  hinting: process.env.EMBER_CLI_TEST_COMMAND || !isProductionLikeBuild,
+
+  vendorFiles: {
+    'ember.js': {
+      staging:  'bower_components/ember/ember.prod.js'
+    }
+  }
+});
 
 // Use `app.import` to add additional libraries to the generated
 // output files.
