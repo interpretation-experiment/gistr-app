@@ -16,7 +16,10 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-      API_NAMESPACE: 'api'
+      API_NAMESPACE: 'api',
+
+      // FIXME: workaround for https://github.com/ember-cli/ember-cli-deploy/issues/219
+      CDN_PREPEND: '//d1zez0cfifq2rx.cloudfront.net/'
     },
 
     torii: {
@@ -59,12 +62,20 @@ module.exports = function(environment) {
 
   if (environment === 'staging') {
     ENV.APP.API_HOST = '//next.gistr.io';
+
+    // FIXME: workaround for https://github.com/ember-cli/ember-cli-deploy/issues/219
+    ENV.APP.DO_CDN_FINGERPRINT = true;
+
     ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/demo/complete?cc=NOCODE';
     ENV.APP.PROLIFIC_STUDY_URL = 'https://prolificacademic.co.uk/studies/demo';
   }
 
   if (environment === 'production') {
     ENV.APP.API_HOST = '//gistr.io';
+
+    // FIXME: workaround for https://github.com/ember-cli/ember-cli-deploy/issues/219
+    ENV.APP.DO_CDN_FINGERPRINT = true;
+
     ENV.APP.PROLIFIC_COMPLETION_URL = 'https://prolificacademic.co.uk/submissions/551aa5c3fdf99b2c58162de9/complete?cc=COCBA68J';
     ENV.APP.PROLIFIC_STUDY_URL = 'https://prolificacademic.co.uk/studies/551aa5c3fdf99b2c58162de9';
   }

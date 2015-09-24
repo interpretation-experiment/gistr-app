@@ -9,6 +9,7 @@ var app = new EmberApp({
   fingerprint: {
     enabled: isProductionLikeBuild,
     prepend: '//d1zez0cfifq2rx.cloudfront.net/',
+    generateAssetMap: true
   },
   sourcemaps: { enabled: !isProductionLikeBuild, },
   minifyCSS: { enabled: isProductionLikeBuild },

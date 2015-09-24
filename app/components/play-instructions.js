@@ -5,6 +5,7 @@ import EnterNextMixin from 'gistr/mixins/enter-next';
 
 export default Ember.Component.extend(EnterNextMixin, {
   lifecycle: Ember.inject.service(),
+  assetMap: Ember.inject.service(),
 
   doExpIntro: null,
   doPlayIntro: null,
@@ -150,10 +151,21 @@ export default Ember.Component.extend(EnterNextMixin, {
     });
   },
 
-  images: [
-    Ember.Object.create({ name: 'read1', title: 'Reading a sentence', hidden: false }),
-    Ember.Object.create({ name: 'read2', title: 'Time is short', hidden: false }),
-    Ember.Object.create({ name: 'distract', title: 'Remember it well', hidden: false }),
-    Ember.Object.create({ name: 'write', title: 'Writing the sentence', hidden: false })
+  imageDefinitions: [
+    { name: 'read1', title: 'Reading a sentence', fingerprint: '9d25ea8f14b2019efce93285645929ea' },
+    { name: 'read2', title: 'Time is short', fingerprint: 'efb67e2355031e784c8d501ee3dfef90' },
+    { name: 'distract', title: 'Remember it well', fingerprint: '2a6b1ed9182367f38ddfcbea8422b5e4' },
+    { name: 'write', title: 'Writing the sentence', fingerprint: '0f6c3d49b6ca3f4efa7d93ca9cde25ba' }
   ],
+  images: function() {
+    var assets = this.get('assetMap');
+    return this.get('imageDefinitions').map(function(def) {
+      return Ember.Object.create({
+        name: def.name,
+        source: assets.resolve('assets/images/play/' + def.name, def.fingerprint, '.png'),
+        title: def.title,
+        hidden: false
+      });
+    });
+  }.property()
 });
