@@ -22,7 +22,7 @@ export default Ember.Component.extend(CtrlEnterNextMixin, {
       },
       {
         element: Ember.$('#instruction-read1').get(0),
-        intro: "You're going to read a sentence",
+        intro: "You're going to read a text (which can be from a sentence up to several paragraphs)",
         position: "right",
         image: 'read1'
       },
@@ -46,7 +46,7 @@ export default Ember.Component.extend(CtrlEnterNextMixin, {
       },
       {
         element: Ember.$('#instruction-write').get(0),
-        intro: 'Pay attention to <strong>capitalization</strong> and <strong>punctuation</strong>, even at the end of the sentence! (You can ignore ending periods though)',
+        intro: 'Pay attention to <strong>capitalization</strong> and <strong>punctuation</strong>',
         position: "left",
       },
       {
@@ -78,15 +78,15 @@ export default Ember.Component.extend(CtrlEnterNextMixin, {
       },
       {
         element: Ember.$('.instructions').get(0),
-        intro: "<p>It's the same principle.</p><p>But now you can explore how other people transformed sentences! (Go to your home page for that)</p>",
+        intro: "<p>It's the same principle.</p><p>But now you can explore how other people transformed texts! (Go to your home page for that)</p>",
       },
       {
         element: Ember.$('#available-sentences').get(0),
-        intro: "This tells you the number of sentences you haven't seen yet &mdash; it grows if other people suggest new ones",
+        intro: "This tells you the number of texts you haven't seen yet &mdash; it grows if other people suggest new ones",
       },
       {
         element: Ember.$('#next-credit').get(0),
-        intro: `Every ${cost} sentences you win a <strong>suggestion credit</strong> &mdash; head over to your home page to suggest your sentence!`,
+        intro: `Every ${cost} texts you win a <strong>suggestion credit</strong> &mdash; head over to your home page to suggest your text!`,
       }
     ];
   },
@@ -152,10 +152,10 @@ export default Ember.Component.extend(CtrlEnterNextMixin, {
   },
 
   imageDefinitions: [
-    { name: 'read1', title: 'Reading a sentence', fingerprint: '9d25ea8f14b2019efce93285645929ea' },
+    { name: 'read1', title: 'Reading a text', fingerprint: '9d25ea8f14b2019efce93285645929ea' },
     { name: 'read2', title: 'Time is short', fingerprint: 'efb67e2355031e784c8d501ee3dfef90' },
     { name: 'distract', title: 'Remember it well', fingerprint: '2a6b1ed9182367f38ddfcbea8422b5e4' },
-    { name: 'write', title: 'Writing the sentence', fingerprint: '0f6c3d49b6ca3f4efa7d93ca9cde25ba' }
+    { name: 'write', title: 'Writing the text', fingerprint: '3b8edeb7ba0cde9a371a6a63624bb7b3' }
   ],
   images: function() {
     var assets = this.get('assetMap');

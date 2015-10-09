@@ -8,8 +8,8 @@
 
         {{#if emptySentences}}
           <h2>You just finished training!</h2>
-          <p>Unfortunately there are no experiment sentences uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
-          <p>You can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+          <p>Unfortunately there are no experiment texts uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>You can wait for texts to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
           <h2>The experiment starts <strong>now</strong>!</h2>
           <p>You just finished training.</p>
@@ -25,8 +25,8 @@
           <p>Afterwards, come back here to see your results!</p>
         {{else}}
           {{#if emptySentences}}
-            <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
-            <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+            <p>Unfortunately there are no other texts to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+            <p>If you want to keep playing you can wait for texts to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
           {{else}}{{! has sentences }}
             <button id="active-next" class="btn btn-primary" {{action "instruct"}}>Continue</button>
           {{/if}}{{! empty sentences }}
@@ -58,8 +58,8 @@
       {{#if hasExpDoingBreak}}
         <p>You're doing great! Take a few seconds to relax before continuing.</p>
         {{#if emptySentences}}
-          <p>Unfortunately there are no experiment sentences uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
-          <p>You can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+          <p>Unfortunately there are no experiment texts uploaded yet.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>You can wait for texts to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
           <button id="active-next" class="btn btn-primary" {{action "next"}}>Continue</button>
         {{/if}}{{! empty sentences }}
@@ -71,8 +71,8 @@
           <blockquote>{{diff-sentences sentence1=sentence.parent sentence2=sentence}}</blockquote>
         {{/each}}
         {{#if emptySentences}}
-          <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
-          <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+          <p>Unfortunately there are no other texts to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>If you want to keep playing you can wait for texts to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
           <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
         {{/if}}{{! empty sentences }}
@@ -81,8 +81,8 @@
 
         <p>Want to {{link-to 'have a peak' 'explore.tree' lastSentence.tree}} at the tree you just participated in?</p>
         {{#if emptySentences}}
-          <p>Unfortunately there are no other sentences to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
-          <p>If you want to keep playing you can wait for sentences to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
+          <p>Unfortunately there are no other texts to play with.{{#if hasCreditOrIsStaf}} Go {{link-to 'suggest' 'suggest'}} your own!{{#if isStaff}} (You're staff){{/if}}{{/if}}</p>
+          <p>If you want to keep playing you can wait for texts to appear, but if it's been like this for a long time don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
         {{else}}{{! has sentences }}
           <button id="active-next" class="btn btn-primary" {{action "next"}}>Keep playing</button>
         {{/if}}{{! empty sentences }}
@@ -98,9 +98,9 @@
 
     {{#if emptySentences}}
 
-      <h2>Oops, no more sentences!</h2>
-      <p>It seems you've worked real hard and used up all our sentences!</p>
-      <p>You can wait for more sentences to appear{{#if hasCreditOrIsStaff}} or go {{link-to 'suggest' 'suggest'}} your own{{#if isStaff}} (you're staff){{/if}}{{/if}}.</p>
+      <h2>Oops, no more texts!</h2>
+      <p>It seems you've worked real hard and used up all our texts!</p>
+      <p>You can wait for more texts to appear{{#if hasCreditOrIsStaff}} or go {{link-to 'suggest' 'suggest'}} your own{{#if isStaff}} (you're staff){{/if}}{{/if}}.</p>
       <p>If it's been like this for a long time, don't hesitate to <a title="Contact on Twitter" href="https://twitter.com/gistrexp">contact</a> <a title="Email the lead dev" href="mailto:sl@mehho.net">the</a> <a title="File a bug on GitHub" href="https://github.com/interpretation-experiment/gistr-app/issues/new">developers</a>!</p>
 
     {{/if}}

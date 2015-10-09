@@ -46,7 +46,7 @@ export default Ember.Component.extend(SessionMixin, CtrlEnterNextMixin,
       if (splitEvent(event).name === 'new-credit') {
         this.get('growl').success(
           'New credit!',
-          'You can suggest a new sentence by going to Home > New'
+          'You can suggest a new text by going to Home > New'
         );
       }
     }

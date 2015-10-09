@@ -2,16 +2,16 @@
 {{#page-header}}
   <div class="row">
     {{#if lifecycle.isInPlaying}}
-      <div class="col-sm-12"><span id="exp-play-title">Play <small><span id="available-sentences">available sentences <span class="badge">{{currentProfile.availableTreesBucket}}</span></span> | <span id="next-credit">next credit in <span class="badge">{{currentProfile.nextCreditIn}}</span> sentences</span></small></span></div>
+      <div class="col-sm-12"><span id="exp-play-title">Play <small><span id="available-sentences">available texts <span class="badge">{{currentProfile.availableTreesBucket}}</span></span> | <span id="next-credit">next credit in <span class="badge">{{currentProfile.nextCreditIn}}</span> texts</span></small></span></div>
     {{else}}{{! lifecycle is not in playing }}
       <div class="col-sm-6"><span id="exp-play-title">Experiment{{#if lifecycle.isInExpTraining}} &mdash; training{{/if}}</span></div>
       <div class="col-sm-6"><small id="exp-progress">
         {{#if lifecycle.isInExpTraining}}
-          Completed {{h-pluralize streak 'training sentence'}} out of {{shaping.trainingWork}}
+          Completed {{h-pluralize streak 'training text'}} out of {{shaping.trainingWork}}
           {{sl-progress-bar value=trainingProgress striped=true}}
         {{else}}{{! lifecycle is in exp.doing }}
-          Completed {{h-pluralize currentProfile.reformulationsCount 'sentence'}} out of {{shaping.experimentWork}}
-          {{sl-progress-bar value=expProgress striped=true title="There's a pause every 10 sentences"}}
+          Completed {{h-pluralize currentProfile.reformulationsCount 'text'}} out of {{shaping.experimentWork}}
+          {{sl-progress-bar value=expProgress striped=true title="There's a pause every 10 texts"}}
         {{/if}}
       </small></div>
     {{/if}}{{! lifecycle is in playing }}
