@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
-import EnterNextMixin from 'gistr/mixins/enter-next';
+import CtrlEnterNextMixin from 'gistr/mixins/ctrl-enter-next';
 
 
-export default Ember.Component.extend(EnterNextMixin, {
+export default Ember.Component.extend(CtrlEnterNextMixin, {
   lifecycle: Ember.inject.service(),
   assetMap: Ember.inject.service(),
 
@@ -11,7 +11,7 @@ export default Ember.Component.extend(EnterNextMixin, {
   doPlayIntro: null,
   manualIntro: false,
   showIntro: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualIntro'),
-  dontCatchEnter: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualIntro'),
+  dontCatchCtrlEnter: Ember.computed.or('doExpIntro', 'doPlayIntro', 'manualIntro'),
 
   expIntroSteps: function(user, shaping, lifecycle) {
     var steps = [
@@ -107,7 +107,7 @@ export default Ember.Component.extend(EnterNextMixin, {
     this.set('manualIntro', false);
   },
 
-  onEnter: function() {
+  onCtrlEnter: function() {
     this.send('next');
   },
   actions: {

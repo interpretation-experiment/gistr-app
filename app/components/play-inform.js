@@ -2,12 +2,12 @@ import Ember from 'ember';
 
 import SessionMixin from 'gistr/mixins/session';
 import splitEvent from 'gistr/utils/split-event';
-import EnterNextMixin from 'gistr/mixins/enter-next';
+import CtrlEnterNextMixin from 'gistr/mixins/ctrl-enter-next';
 import EventInformer from 'gistr/mixins/event-informer';
 import ProlificMixin from 'gistr/mixins/prolific';
 
 
-export default Ember.Component.extend(SessionMixin, EnterNextMixin,
+export default Ember.Component.extend(SessionMixin, CtrlEnterNextMixin,
                                       EventInformer, ProlificMixin, {
   growl: Ember.inject.service(),
   lifecycle: Ember.inject.service(),
@@ -54,7 +54,7 @@ export default Ember.Component.extend(SessionMixin, EnterNextMixin,
 
   emptySentences: Ember.computed.equal('currentProfile.availableTreesBucket', 0),
 
-  onEnter: function() {
+  onCtrlEnter: function() {
     this.$('#active-next').click();
   },
   actions: {
