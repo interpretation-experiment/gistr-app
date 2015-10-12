@@ -9,10 +9,12 @@ export default function sample(values, number) {
   }
 
   var remainingValues = Ember.copy(values),
-      sampled = [];
+      sampled = [],
+      index;
   for (var i = 0; i < number; i++) {
-    sampled.push(remainingValues[randint(remainingValues.length)]);
-    remainingValues.removeAt(i);
+    index = randint(remainingValues.length);
+    sampled.push(remainingValues[index]);
+    remainingValues.removeAt(index);
   }
 
   return sampled;
