@@ -15,8 +15,6 @@ export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, ProlificMixin
     });
   },
   setupController: function(controller, model) {
-    if (Ember.isNone(model.profileWordSpan)) { return; }
-
     var profileId = String(this.get('currentProfile.id')),
         profilesReadingTimes = model.stats.mean_read_time_proportion_per_profile,
         profilesWritingTimes = model.stats.mean_write_time_proportion_per_profile,
@@ -24,7 +22,7 @@ export default Ember.Route.extend(SessionMixin, ProfileRouteMixin, ProlificMixin
 
     controller.setProperties({
       wordSpans: model.stats.profiles_word_spans,
-      profileWordSpan: model.profileWordSpan.get('span'),
+      profileWordSpan: Ember.isNone(model.profileWordSpan) ? undefined : model.profileWordSpan.get('span'),
       readingTimes: Object.keys(profilesReadingTimes).map(key => profilesReadingTimes[key]),
       writingTimes: Object.keys(profilesWritingTimes).map(key => profilesWritingTimes[key]),
       profileWritingTime: profilesWritingTimes[profileId],
