@@ -12,13 +12,12 @@
             select="setSelection"
             showLoading="loading"
             finishedLoading="finished"}}
-        {{#if hovered}}
-          {{sentence-card sentence=hovered}}
-        {{/if}}
       </div>
       <div id="path-detail" class="col-sm-6">
         {{#if hasSelection}}
+	  {{#if selectionEnd}}{{#if hovered}}{{sentence-card sentence=hovered}}{{/if}}{{/if}}
           {{#if selectionStart}}{{sentence-card sentence=selectionStart title="Selection start:" class="well"}}{{/if}}
+	  {{#unless selectionEnd}}{{#if hovered}}{{sentence-card sentence=hovered}}{{/if}}{{/unless}}
           {{#if hasPath}}
             {{#if showPath}}
               <p><button class="btn btn-default" {{action "togglePath"}}>Collapse</button></p>
@@ -28,6 +27,10 @@
             {{/if}}
           {{/if}}
           {{#if selectionEnd}}{{sentence-card sentence=selectionEnd title="Selection end:" class="well"}}{{/if}}
+	{{else}}
+          {{#if hovered}}
+            {{sentence-card sentence=hovered}}
+          {{/if}}
         {{/if}}
       </div>
     </div>

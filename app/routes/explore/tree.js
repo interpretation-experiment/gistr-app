@@ -20,7 +20,7 @@ export default Ember.Route.extend(FormRouteMixin, {
       if (Ember.isNone(top)) { top = $graph.offset().top; }
 
       if ($window.scrollTop() > top - 10) {
-        if (lastSet === true) { return; }
+        if (lastSet === true || $graph.height() >= $path.height()) { return; }
         lastSet = true;
         $graph.addClass('side-col-sm-6');
         $path.addClass('col-sm-offset-6');
