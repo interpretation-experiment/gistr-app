@@ -209,7 +209,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     });
 
     return this.store.find('tree', shapedFilter).then(function(trees) {
-      if (trees.length === 0) {
+      if (trees.get('length') === 0) {
         // We're out of luck, all the available trees are already full! Still, get one of those
         return self.store.find('tree', unshapedFilter);
       } else {
