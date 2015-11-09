@@ -29,7 +29,10 @@ export default Ember.Controller.extend(SessionMixin, {
   actions: {
     hoverSentence: function(sentence) {
       if (!Ember.isNone(sentence)) {
-        this.set("hovered", sentence);
+        var self = this;
+        sentence.then(function(res) {
+          self.set("hovered", res);
+        });
       }
     },
     setSelection: function(selection) {

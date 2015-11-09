@@ -12,6 +12,7 @@ export default Ember.Component.extend(SessionMixin, {
    */
   tagName: 'div',
   classNameBindings: ['overview:graph-overview:graph-detail'],
+  hovered: null,
 
   /*
    * Utility properties
@@ -148,6 +149,7 @@ export default Ember.Component.extend(SessionMixin, {
         .attr("r", 8)
         .classed("root", function(d) { return Ember.isNone(d.parent); });
 
+    this.set('node', node);
     return node;
   },
   styleLinks: function(link) {
@@ -203,16 +205,20 @@ export default Ember.Component.extend(SessionMixin, {
           });
     });
   },
+  watchHovered: function() {
+    var hoveredId = parseInt(this.get('hovered.id'));
+    this.get('node').selectAll("circle").attr("r", function(d) {
+      return d.sentenceId === hoveredId ? 10 : 8;
+    });
+  }.observes('hovered'),
   setMouseListeners: function(node, link) {
     var self = this;
     // Set event listeners
     node.selectAll("circle")
         .on("mouseover", function(d) {
-          d3.select(this).attr("r", 10);
           self.sendAction("hover", self.store.find('sentence', d.sentenceId));
         })
         .on("mouseout", function(/*d*/) {
-          d3.select(this).attr("r", 8);
           self.sendAction("hover", null);
         })
         .on("click", function(/*d*/) {
