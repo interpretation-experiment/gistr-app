@@ -56,7 +56,10 @@ export default Ember.Controller.extend({
       type: 'POST',
       data: data
     }).then(function() {
-      return self.get('session').close('spreadr');
+      var session = self.get('session');
+      if (session.get('isAuthenticated')) {
+        return session.close('spreadr');
+      }
     }).then(function() {
       self.set('resetted', true);
       self.set('resetting', false);
