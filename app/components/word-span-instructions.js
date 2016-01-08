@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 
 export default Ember.Component.extend({
+  assetMap: Ember.inject.service(),
+
   showIntro: true,
 
   introSteps: function(user, shaping/*, lifecycle*/) {
@@ -84,8 +86,19 @@ export default Ember.Component.extend({
     });
   }.on('didInsertElement'),
 
-  images: [
-    Ember.Object.create({ name: 'read', title: 'Reading the words', hidden: true }),
-    Ember.Object.create({ name: 'write', title: 'Writing the words in the same order', hidden: true })
+  imageDefinitions: [
+    { name: 'read', title: 'Reading the words', fingerprint: '4d160a5874d08955462ddb78fdae7800' },
+    { name: 'write', title: 'Writing the words in the same order', fingerprint: '8ffafa2e7868b6d8dccfd586a8adcd65' }
   ],
+  images: function() {
+    var assets = this.get('assetMap');
+    return this.get('imageDefinitions').map(function(def) {
+      return Ember.Object.create({
+        name: def.name,
+        source: assets.resolve('assets/images/word-span/' + def.name, def.fingerprint, '.png'),
+        title: def.title,
+        hidden: true
+      });
+    });
+  }.property()
 });

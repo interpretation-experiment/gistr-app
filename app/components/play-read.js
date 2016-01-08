@@ -1,11 +1,11 @@
 import Ember from 'ember';
 
 import TimefulMixin from 'gistr/mixins/timeful';
-import EnterNextMixin from 'gistr/mixins/enter-next';
+import CtrlEnterNextMixin from 'gistr/mixins/ctrl-enter-next';
 import countTokens from 'gistr/utils/count-tokens';
 
 
-export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
+export default Ember.Component.extend(TimefulMixin, CtrlEnterNextMixin, {
   growl: Ember.inject.service(),
   shaping: Ember.inject.service(),
 
@@ -37,7 +37,7 @@ export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   timerDone: function() {
     this.send('next');
   },
-  onEnter: function() {
+  onCtrlEnter: function() {
     this.send('next');
   },
   actions: {

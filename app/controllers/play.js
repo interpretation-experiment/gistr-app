@@ -122,11 +122,13 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
    * Current tree and sentence state and selection
    */
   currentSentence: null,
+  trainingSentences: null,
   readTimings: null,
   lastSentences: [],
   resetModels: function() {
     this.setProperties({
       currentSentence: null,
+      trainingSentences: null,
       readTimings: null,
       lastSentences: [],
     });
@@ -167,6 +169,16 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     }
   },
   selectModels: function() {
+    if (this.get('lifecycle.currentState') === 'exp.training' &&
+        this.get('trainingSentences.length') > 0) {
+      // Take the next sentence from the ones sampled by the route,
+      // and return straight away. If there weren't enough sentences in the
+      // training bucket to fill the whole trainingWork, we skip this and
+      // start sampling with the regular method below.
+      this.set('currentSentence', this.get('trainingSentences').pop());
+      return;
+    }
+
     // FIXME: evaluate if this can be moved to route, and break the cycle?
     var self = this, profile = this.get('currentProfile'),
         mothertongue = profile.get('mothertongue'),
@@ -197,7 +209,7 @@ export default Ember.Controller.extend(Ember.FSM.Stateful, SessionMixin, Eventfu
     });
 
     return this.store.find('tree', shapedFilter).then(function(trees) {
-      if (trees.length === 0) {
+      if (trees.get('length') === 0) {
         // We're out of luck, all the available trees are already full! Still, get one of those
         return self.store.find('tree', unshapedFilter);
       } else {

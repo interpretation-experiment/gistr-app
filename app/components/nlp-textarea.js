@@ -46,13 +46,13 @@ export default Ember.Component.extend({
   initKeyListeners: function() {
     var self = this;
     this.$('textarea').on(this.get('keydownEvent'), function(event) {
-      // Enter key: prevent the newline from appearing
-      if (event.keyCode === 13) { return false; }
+      // Ctrl+Enter key: prevent the newline from appearing
+      if (event.keyCode === 13  && event.ctrlKey) { return false; }
     });
     this.$('textarea').on(this.get('keyupEvent'), function(event) {
-      // Enter key: send information to upper powers
-      if (event.keyCode === 13) {
-        self.sendAction('onEnter');
+      // Ctrl+Enter key: send information to upper powers
+      if (event.keyCode === 13 && event.ctrlKey) {
+        self.sendAction('onCtrlEnter');
         return false;
       }
     });

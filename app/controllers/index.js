@@ -53,12 +53,12 @@ export default Ember.Controller.extend(SessionMixin, ProlificMixin, {
       },
       {
         element: Ember.$('#play').get(0),
-        intro: "You can continue transforming sentences",
+        intro: "You can continue transforming texts",
         position: 'right'
       },
       {
         element: Ember.$('#new').get(0),
-        intro: `If you have credits (you ${have}), you can suggest your own sentences!`,
+        intro: `If you have credits (you ${have}), you can suggest your own texts!`,
         position: 'right'
       },
       {

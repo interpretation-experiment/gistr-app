@@ -1,6 +1,6 @@
 {{document-title title="New"}}
 {{#page-header}}
-  Suggest new sentence <small>credits {{credit-badge}}</small>
+  Suggest new text <small>credits {{credit-badge}}</small>
 {{/page-header}}
 
 {{#page-body}}
@@ -16,7 +16,7 @@
       {{#if (can 'create sentences')}}
         <button class="btn btn-default" {{action 'suggest'}}>Suggest again {{credit-badge}}</button>
       {{else}}
-        <p>You have no credit left to suggest new sentences! Interpret a few sentences to get more credit.</p>
+        <p>You have no credit left to suggest new texts! {{link-to 'Interpret' 'play'}} a few texts to get more credit.</p>
       {{/if}}
 
     {{/if}}

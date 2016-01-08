@@ -1,10 +1,10 @@
 import Ember from 'ember';
 
 import TimefulMixin from 'gistr/mixins/timeful';
-import EnterNextMixin from 'gistr/mixins/enter-next';
+import CtrlEnterNextMixin from 'gistr/mixins/ctrl-enter-next';
 
 
-export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
+export default Ember.Component.extend(TimefulMixin, CtrlEnterNextMixin, {
   duration: 2,  // seconds
   timeLeft: function() {
     var duration = this.get('duration'),
@@ -17,7 +17,7 @@ export default Ember.Component.extend(TimefulMixin, EnterNextMixin, {
   timerDone: function() {
     this.set('wait', false);
   },
-  onEnter: function() {
+  onCtrlEnter: function() {
     this.send('next');
   },
   actions: {

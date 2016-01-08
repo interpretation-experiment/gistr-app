@@ -1,11 +1,11 @@
 import Ember from 'ember';
 
-import EnterNextMixin from 'gistr/mixins/enter-next';
+import CtrlEnterNextMixin from 'gistr/mixins/ctrl-enter-next';
 
 
-export default Ember.Component.extend(EnterNextMixin, {
+export default Ember.Component.extend(CtrlEnterNextMixin, {
   lifecycle: Ember.inject.service(),
-  onEnter: function() {
+  onCtrlEnter: function() {
     this.send('next');
   },
   actions: {

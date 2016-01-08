@@ -101,7 +101,7 @@ export default Ember.Component.extend(TimefulMixin, SessionMixin, {
   tokensCountInfo: function() {
     if (this.get('enoughTokens')) { return; }
 
-    var info = "Your sentence must be at least " + this.get('shaping.minTokens') + " words long";
+    var info = "Your text must be at least " + this.get('shaping.minTokens') + " words long";
     if (this.get('text')) {
       info += " (type " + this.get('tokensLeft') + " more)";
     }

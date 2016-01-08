@@ -24,9 +24,8 @@ export default Ember.Route.extend(SessionMixin, FormRouteMixin, PaginationRouteM
       ]
     };
     // Restrict to own trees if not staff
-    var profile = this.get('currentProfile');
-    if (!profile.get('isStaff')) {
-      params.profile = profile.get('id');
+    if (!this.get('currentUser.isStaff')) {
+      params.profile = this.get('currentProfile.id');
     }
     return this.findPaged('tree', params);
   }

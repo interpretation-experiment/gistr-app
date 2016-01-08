@@ -22,7 +22,7 @@
         <img
             class="{{if image.hidden 'hidden'}}"
             id="instruction-{{image.name}}"
-            src="assets/images/play/{{image.name}}.png"
+            src="{{image.source}}"
             title="{{image.title}}" />
       {{/each}}
     </div>
@@ -31,5 +31,5 @@
 <div class="center">
   <h1>Ready to go?</h1>
   <button class="btn btn-default" {{action "showIntro"}}>Play instructions again</button>
-  {{#sl-tooltip title="Press Enter!"}}<button class="btn btn-primary" {{action "next"}}>Start</button>{{/sl-tooltip}}
+  {{#sl-tooltip title="Press Ctrl+Enter!"}}<button class="btn btn-primary" {{action "next"}}>Start</button>{{/sl-tooltip}}
 </div>

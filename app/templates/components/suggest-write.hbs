@@ -9,7 +9,7 @@
         disabled=isUploading
         info="updateMetaText"
         }}
-        Type in a new sentence:
+        Type in a new text:
     {{/nlp-textarea}}
 
     {{#select-language
@@ -17,11 +17,11 @@
         inputId="inputLanguage"
         guess=guessedLanguage
         disabled=isUploading
-        placeholder="Select the sentence's language"
+        placeholder="Select the text's language"
         languageSelected="updateLanguage"
         as |manual|
         }}
-      Language of the sentence
+      Language of the text
       {{#if manual}}
         (manually set):
       {{else}}
@@ -56,6 +56,6 @@
 
 {{else}}
 
-  <p>You have no credit left to suggest new sentences! {{link-to 'Interpret' 'play'}} a few sentences to get more credit.</p>
+  <p>You have no credit left to suggest new texts! {{link-to 'Interpret' 'play'}} a few texts to get more credit.</p>
 
 {{/if}}

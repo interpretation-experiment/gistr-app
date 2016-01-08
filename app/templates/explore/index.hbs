@@ -28,12 +28,12 @@
     </div>
     {{#unless model}}
       <h3>Nothing here yet!</h3>
-      You can only see trees from sentences you rewrote! Go {{link-to 'play' 'play'}} a little and this screen with fill up.
+      You can only see trees from texts you rewrote! Go {{link-to 'play' 'play'}} a little and this screen with fill up.
     {{else}}
       {{#each model as |tree|}}{{#link-to 'explore.tree' tree class="tree-card"}}
         <div class="row">
           <div class="col-sm-6">
-            <p>{{h-pluralize tree.sentencesCount 'sentence'}} <span class="pull-right">#{{tree.id}}</span></p>
+            <p>{{h-pluralize tree.sentencesCount 'text'}} <span class="pull-right">#{{tree.id}}</span></p>
           </div>
         </div>
         <div class="row">
