@@ -19,7 +19,7 @@ You can then run the development server with:
 npm run dev
 ```
 
-Building the whole project can be done with
+Building the whole project can be done with:
 
 ```bash
 npm run build
