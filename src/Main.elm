@@ -54,4 +54,4 @@ urlUpdate ( url, maybeRoute ) model =
 
 init : ( String, Maybe Router.Route ) -> ( Model, Cmd Msg )
 init ( url, maybeRoute ) =
-    urlUpdate ( url, maybeRoute ) (Model Router.Home)
+    urlUpdate ( url, maybeRoute ) (Model.initialModel Router.Home)
