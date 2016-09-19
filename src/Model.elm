@@ -13,6 +13,7 @@ type alias Model =
 
 type alias LoginModel =
     { input : Types.Credentials
+    , feedback : Types.Feedback
     }
 
 
@@ -28,7 +29,9 @@ initialModel route =
 
 initialLoginModel : LoginModel
 initialLoginModel =
-    { input = Types.Credentials "" "" }
+    { input = Types.Credentials "" ""
+    , feedback = Types.emptyFeedback
+    }
 
 
 emptyForms : Model -> Model

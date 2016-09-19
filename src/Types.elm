@@ -1,4 +1,15 @@
-module Types exposing (User, Credentials, Auth(..))
+module Types
+    exposing
+        ( User
+        , Credentials
+        , Token
+        , Feedback
+        , Auth(..)
+        , emptyFeedback
+        , globalFeedback
+        )
+
+import Dict
 
 
 type alias User =
@@ -13,6 +24,20 @@ type alias Credentials =
     { username : String
     , password : String
     }
+
+
+type alias Feedback =
+    Dict.Dict String String
+
+
+emptyFeedback : Feedback
+emptyFeedback =
+    Dict.empty
+
+
+globalFeedback : String -> Feedback
+globalFeedback value =
+    Dict.singleton "global" value
 
 
 type alias Token =

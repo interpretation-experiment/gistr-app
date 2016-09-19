@@ -9,3 +9,10 @@ type Msg
     | LoginFormUsername String
     | LoginFormPassword String
     | Login Types.Credentials
+    | LoginTokenSuccess Types.Token
+    | LoginTokenFail Types.Feedback
+    | LoginUserSuccess Types.Token Types.User
+    | LoginUserFail String
+    | Logout
+    | LogoutSuccess
+    | LogoutFail String

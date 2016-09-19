@@ -3,7 +3,7 @@ module View.Profile exposing (view)
 import Helpers
 import Html
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg exposing (Msg(Logout))
 import Router
 
 
@@ -16,6 +16,7 @@ header : Html.Html Msg
 header =
     Html.div []
         [ Helpers.navButton Router.Home "Back"
+        , Helpers.evButton Logout "Logout"
         , Html.h1 [] [ Html.text "Profile" ]
         ]
 

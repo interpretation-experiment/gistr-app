@@ -1,4 +1,4 @@
-module Helpers exposing (cmd, navButton, navA, loading)
+module Helpers exposing (cmd, evButton, navButton, evA, navA, loading)
 
 import Html
 import Html.Attributes as Attributes
@@ -14,20 +14,28 @@ cmd msg =
     Task.perform (always msg) (always msg) (Task.succeed ())
 
 
+evButton : Msg -> String -> Html.Html Msg
+evButton msg text =
+    Html.button
+        [ Events.onClick msg ]
+        [ Html.text text ]
+
+
 navButton : Router.Route -> String -> Html.Html Msg
 navButton route text =
-    Html.button
-        [ Events.onClick (NavigateTo route) ]
+    evButton (NavigateTo route) text
+
+
+evA : String -> Msg -> String -> Html.Html Msg
+evA url msg text =
+    Html.a
+        [ Attributes.href url, onClickMsg msg ]
         [ Html.text text ]
 
 
 navA : Router.Route -> String -> Html.Html Msg
 navA route text =
-    Html.a
-        [ Attributes.href (Router.toUrl route)
-        , onClickMsg (NavigateTo route)
-        ]
-        [ Html.text text ]
+    evA (Router.toUrl route) (NavigateTo route) text
 
 
 onClickMsg : a -> Html.Attribute a
