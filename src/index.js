@@ -6,20 +6,8 @@ require('font-awesome/css/font-awesome.css');
 // Require index.html so it gets copied to dist
 require('./index.html');
 
-var Elm = require('./Main.elm');
+var Elm = require('./App.elm');
 var mountNode = document.getElementById('main');
 
 // The third value on embed are the initial values for incomming ports into Elm
-var app = Elm.Main.embed(mountNode);
-
-app.ports.setLocalToken.subscribe(function(token) {
-  if (!token) {
-    localStorage.removeItem("token");
-  } else {
-    localStorage.setItem("token", token);
-  }
-});
-
-app.ports.getLocalToken.subscribe(function() {
-  app.ports.localToken.send(localStorage.getItem("token"));
-});
+var app = Elm.App.embed(mountNode);

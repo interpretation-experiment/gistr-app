@@ -7,7 +7,7 @@
     "watch": "webpack --watch",
     "dev": "webpack-dev-server --port 3000"
   },
-  "repository": "https://gitlab.com/wehlutyk/gistr-app/",
+  "repository": "https://gitlab.com/wehlutyk/gistr-app.git",
   "author": "Sébastien Lerique <sl@mehho.net>",
   "license": "GPL-3.0",
   "dependencies": {
@@ -20,6 +20,6 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-dev-server": "^1.15.0"
+    "webpack-dev-server": "^1.16.1"
   }
 }
