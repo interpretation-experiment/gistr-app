@@ -17,6 +17,7 @@ import UrlParser exposing (Parser, (</>), format, oneOf, s)
 type Route
     = Home
     | About
+    | Login
     | Profile ProfileRoute
 
 
@@ -24,6 +25,10 @@ type ProfileRoute
     = Tests
     | Settings
     | Emails
+
+
+
+-- URL -> ROUTE
 
 
 locationParser : Navigation.Location -> ( String, Maybe Route )
@@ -43,6 +48,7 @@ urlParser =
     oneOf
         [ format Home (s "")
         , format About (s "about")
+        , format Login (s "login")
         , format Profile (s "profile" </> profileUrlParser)
         , format (Profile Tests) (s "profile")
         ]
@@ -58,7 +64,7 @@ profileUrlParser =
 
 
 
--- REVERSE ROUTING
+-- ROUTE -> URL
 
 
 toUrl : Route -> String
@@ -69,6 +75,9 @@ toUrl route =
 
         About ->
             "/about"
+
+        Login ->
+            "/login"
 
         Profile profileRoute ->
             "/profile" ++ (toProfileUrl profileRoute)

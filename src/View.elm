@@ -6,6 +6,7 @@ import Msg exposing (Msg)
 import Router
 import View.About
 import View.Home
+import View.Login
 import View.Profile
 
 
@@ -17,6 +18,9 @@ view model =
 
         Router.About ->
             View.About.view model
+
+        Router.Login ->
+            View.Login.view model
 
         Router.Profile profileRoute ->
             View.Profile.view model profileRoute

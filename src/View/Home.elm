@@ -13,4 +13,5 @@ view model =
         [ Html.h1 [] [ Html.text "Home" ]
         , Helpers.navButton Router.About "About"
         , Helpers.navButton (Router.Profile Router.Tests) "Profile"
+        , Helpers.navButton Router.Login "Login"
         ]
