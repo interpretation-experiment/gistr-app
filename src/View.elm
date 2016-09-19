@@ -1,9 +1,8 @@
 module View exposing (view)
 
 import Html
-import Html.Events
 import Model exposing (Model)
-import Msg exposing (Msg(..))
+import Msg exposing (Msg)
 import Router
 import View.About
 import View.Home
