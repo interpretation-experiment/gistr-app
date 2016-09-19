@@ -44,7 +44,7 @@ update msg model =
 
 urlUpdate : Maybe Route -> Model -> ( Model, Cmd Msg )
 urlUpdate maybeRoute model =
-    case maybeRoute of
+    case (Debug.log "route" maybeRoute) of
         Just route ->
             { model | route = route } ! []
 
