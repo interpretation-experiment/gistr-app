@@ -1,4 +1,4 @@
-module Model exposing (Model, LoginModel, initialModel)
+module Model exposing (Model, LoginModel, initialModel, emptyForms)
 
 import Router
 import Types
@@ -29,3 +29,10 @@ initialModel route =
 initialLoginModel : LoginModel
 initialLoginModel =
     { input = Types.Credentials "" "" }
+
+
+emptyForms : Model -> Model
+emptyForms model =
+    { model
+        | loginModel = initialLoginModel
+    }
