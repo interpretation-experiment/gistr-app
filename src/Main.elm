@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
@@ -32,20 +33,25 @@ subscriptions model =
 -- URL UPDATE
 
 
-urlUpdate : Maybe Router.Route -> Model -> ( Model, Cmd Msg )
-urlUpdate maybeRoute model =
-    case (Debug.log "route" maybeRoute) of
-        Just route ->
-            { model | route = route } ! []
+urlUpdate : ( String, Maybe Router.Route ) -> Model -> ( Model, Cmd Msg )
+urlUpdate ( url, maybeRoute ) model =
+    let
+        route =
+            maybeRoute ? model.route
 
-        Nothing ->
-            model ! [ Navigation.modifyUrl (Router.toUrl model.route) ]
+        routeUrl =
+            Router.toUrl route
+    in
+        if url /= routeUrl then
+            model ! [ Navigation.modifyUrl (Debug.log "corrected url" routeUrl) ]
+        else
+            { model | route = route } ! []
 
 
 
 -- INIT
 
 
-init : Maybe Router.Route -> ( Model, Cmd Msg )
-init maybeRoute =
-    urlUpdate maybeRoute (Model Router.Home)
+init : ( String, Maybe Router.Route ) -> ( Model, Cmd Msg )
+init ( url, maybeRoute ) =
+    urlUpdate ( url, maybeRoute ) (Model Router.Home)

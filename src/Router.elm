@@ -26,10 +26,16 @@ type ProfileRoute
     | Emails
 
 
-locationParser : Navigation.Location -> Maybe Route
+locationParser : Navigation.Location -> ( String, Maybe Route )
 locationParser location =
-    UrlParser.parse identity urlParser (String.dropLeft 1 location.pathname)
-        |> Result.toMaybe
+    let
+        path =
+            location.pathname
+    in
+        ( path
+        , UrlParser.parse identity urlParser (String.dropLeft 1 path)
+            |> Result.toMaybe
+        )
 
 
 urlParser : Parser (Route -> a) a
@@ -38,6 +44,7 @@ urlParser =
         [ format Home (s "")
         , format About (s "about")
         , format Profile (s "profile" </> profileUrlParser)
+        , format (Profile Tests) (s "profile")
         ]
 
 
