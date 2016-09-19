@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch",
-    "dev": "webpack-dev-server --port 3000"
+    "dev": "webpack-dev-server"
   },
   "repository": "https://gitlab.com/wehlutyk/gistr-app.git",
   "author": "Sébastien Lerique <sl@mehho.net>",
