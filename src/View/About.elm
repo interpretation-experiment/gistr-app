@@ -9,7 +9,17 @@ import Router
 
 view : Model -> Html.Html Msg
 view model =
+    Html.div [] [ header, body model ]
+
+
+header : Html.Html Msg
+header =
     Html.div []
         [ Helpers.navButton Router.Home "Back"
         , Html.h1 [] [ Html.text "About" ]
         ]
+
+
+body : Model -> Html.Html Msg
+body model =
+    Html.div [] []

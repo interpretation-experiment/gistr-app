@@ -1,4 +1,4 @@
-module Types exposing (User, Auth(..))
+module Types exposing (User, Credentials, Auth(..))
 
 
 type alias User =
@@ -6,6 +6,12 @@ type alias User =
     , username : String
     , isActive : Bool
     , isStaff : Bool
+    }
+
+
+type alias Credentials =
+    { username : String
+    , password : String
     }
 
 

@@ -8,17 +8,20 @@ import Router
 
 
 view : Model -> Router.ProfileRoute -> Html.Html Msg
-view model profileRoute =
+view model route =
+    Html.div [] [ header, menu route, body route ]
+
+
+header : Html.Html Msg
+header =
     Html.div []
         [ Helpers.navButton Router.Home "Back"
         , Html.h1 [] [ Html.text "Profile" ]
-        , profileMenu profileRoute
-        , profileView profileRoute
         ]
 
 
-profileMenu : Router.ProfileRoute -> Html.Html Msg
-profileMenu profileRoute =
+menu : Router.ProfileRoute -> Html.Html Msg
+menu route =
     Html.ul []
         [ Html.li [] [ Helpers.navButton (Router.Profile Router.Tests) "Tests" ]
         , Html.li [] [ Helpers.navButton (Router.Profile Router.Settings) "Settings" ]
@@ -26,9 +29,9 @@ profileMenu profileRoute =
         ]
 
 
-profileView : Router.ProfileRoute -> Html.Html Msg
-profileView profileRoute =
-    case profileRoute of
+body : Router.ProfileRoute -> Html.Html Msg
+body route =
+    case route of
         Router.Tests ->
             Html.text "Tests"
 
