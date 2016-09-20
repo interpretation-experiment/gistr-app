@@ -19,7 +19,7 @@ header : Html.Html Msg
 header =
     Html.div []
         [ Helpers.navButton Router.Login "Back"
-        , Html.h1 [] [ Html.text "Recover password" ]
+        , Html.h1 [] [ Html.text "Password recovery" ]
         ]
 
 
