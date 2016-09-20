@@ -1,4 +1,4 @@
-module Api exposing (call, authCall, login, loginUser, logout)
+module Api exposing (call, authCall, login, getUser, logout)
 
 import Decoders
 import Encoders
@@ -47,8 +47,8 @@ login credentials =
                     (HttpBuilder.jsonReader (Decoders.feedback loginFeedbackFields))
     in
         Task.perform
-            (badOr Types.globalFeedback >> LoginTokenFail)
-            (.data >> LoginTokenSuccess)
+            (badOr Types.globalFeedback >> LoginFail)
+            (.data >> GotToken)
             task
 
 
@@ -57,8 +57,8 @@ loginFeedbackFields =
     [ "username", "password", "global" ]
 
 
-loginUser : Types.Token -> Cmd Msg
-loginUser token =
+getUser : Types.Token -> Cmd Msg
+getUser token =
     let
         task =
             authCall HttpBuilder.get "/users/me/" token
@@ -67,8 +67,8 @@ loginUser token =
                     (HttpBuilder.jsonReader Decoders.detail)
     in
         Task.perform
-            (badOr identity >> LoginUserFail)
-            (.data >> LoginUserSuccess token)
+            (badOr identity >> GetUserFail)
+            (.data >> GotUser token)
             task
 
 

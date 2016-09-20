@@ -5,6 +5,7 @@ import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
 import Router
+import Subscriptions
 import Update
 import View
 
@@ -16,17 +17,8 @@ main =
         , view = View.view
         , update = Update.update
         , urlUpdate = urlUpdate
-        , subscriptions = subscriptions
+        , subscriptions = Subscriptions.subscriptions
         }
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
 
 
 
@@ -54,4 +46,8 @@ urlUpdate ( url, maybeRoute ) model =
 
 init : ( String, Maybe Router.Route ) -> ( Model, Cmd Msg )
 init ( url, maybeRoute ) =
-    urlUpdate ( url, maybeRoute ) (Model.initialModel Router.Home)
+    let
+        ( model, cmd ) =
+            urlUpdate ( url, maybeRoute ) (Model.initialModel Router.Home)
+    in
+        model ! [ cmd, Subscriptions.localTokenGet ]

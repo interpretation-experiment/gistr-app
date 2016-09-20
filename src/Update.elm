@@ -6,12 +6,16 @@ import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
 import Router
+import Subscriptions
 import Types
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case (Debug.log "msg" msg) of
+        NoOp ->
+            model ! []
+
         NavigateTo route ->
             model
                 ! if model.route /= route then
@@ -21,68 +25,66 @@ update msg model =
 
         LoginFormUsername username ->
             let
-                loginModel =
-                    model.loginModel
-
                 input =
-                    { username = username
-                    , password = loginModel.input.password
-                    }
+                    model.loginModel.input
 
-                newLoginModel =
-                    { loginModel | input = input }
+                newInput =
+                    { input | username = username }
             in
-                { model | loginModel = newLoginModel } ! []
+                { model | loginModel = Model.withInput newInput model.loginModel } ! []
 
         LoginFormPassword password ->
             let
-                loginModel =
-                    model.loginModel
-
                 input =
-                    { username = loginModel.input.username
-                    , password = password
-                    }
+                    model.loginModel.input
 
-                newLoginModel =
-                    { loginModel | input = input }
+                newInput =
+                    { input | password = password }
             in
-                { model | loginModel = newLoginModel } ! []
+                { model | loginModel = Model.withInput newInput model.loginModel } ! []
 
         Login credentials ->
             { model | auth = Types.Authenticating } ! [ Api.login credentials ]
 
-        LoginTokenSuccess token ->
-            { model | auth = Types.Authenticating } ! [ Api.loginUser token ]
+        LoginFail feedback ->
+            { model
+                | auth = Types.Anonymous
+                , loginModel = Model.withFeedback feedback model.loginModel
+            }
+                ! []
 
-        -- DO: set localToken
-        LoginTokenFail feedback ->
-            let
-                loginModel =
-                    model.loginModel
+        GotToken token ->
+            { model | auth = Types.Authenticating }
+                ! [ Api.getUser token
+                  , Subscriptions.localTokenSet token
+                  ]
 
-                newLoginModel =
-                    { loginModel | feedback = feedback }
-            in
-                { model | auth = Types.Anonymous, loginModel = newLoginModel } ! []
+        GotLocalToken maybeToken ->
+            case maybeToken of
+                Just token ->
+                    { model | auth = Types.Authenticating } ! [ Api.getUser token ]
 
-        LoginUserSuccess token user ->
+                Nothing ->
+                    { model | auth = Types.Anonymous } ! []
+
+        GotUser token user ->
             Model.emptyForms { model | auth = Types.Authenticated token user }
                 ! [ Helpers.cmd (NavigateTo Router.Home) ]
 
-        LoginUserFail error ->
+        GetUserFail error ->
             let
                 _ =
                     Debug.log "error fetching user" error
             in
-                Model.emptyForms { model | auth = Types.Anonymous } ! []
+                Model.emptyForms { model | auth = Types.Anonymous }
+                    ! [ Subscriptions.localTokenClear ]
 
         Logout ->
             case model.auth of
                 Types.Authenticated token _ ->
-                    { model | auth = Types.Authenticating } ! [ Api.logout token ]
+                    { model | auth = Types.Authenticating }
+                        ! [ Api.logout token, Subscriptions.localTokenClear ]
 
-                -- DO: clear localToken
                 -- Ignore any other status (there's no one to log out)
                 _ ->
                     model ! []
@@ -96,5 +98,4 @@ update msg model =
                 _ =
                     Debug.log "error logging user out" error
             in
-                Model.emptyForms { model | auth = Types.Anonymous }
-                    ! [ Helpers.cmd (NavigateTo Router.Home) ]
+                model ! [ Helpers.cmd LogoutSuccess ]

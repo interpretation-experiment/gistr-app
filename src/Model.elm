@@ -1,4 +1,12 @@
-module Model exposing (Model, LoginModel, initialModel, emptyForms)
+module Model
+    exposing
+        ( Model
+        , LoginModel
+        , initialModel
+        , emptyForms
+        , withFeedback
+        , withInput
+        )
 
 import Router
 import Types
@@ -39,3 +47,16 @@ emptyForms model =
     { model
         | loginModel = initialLoginModel
     }
+
+
+withFeedback :
+    Types.Feedback
+    -> { a | feedback : Types.Feedback }
+    -> { a | feedback : Types.Feedback }
+withFeedback feedback form =
+    { form | feedback = feedback }
+
+
+withInput : b -> { a | input : b } -> { a | input : b }
+withInput input form =
+    { form | input = input }
