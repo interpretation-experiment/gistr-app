@@ -18,6 +18,7 @@ type Route
     = Home
     | About
     | Login
+    | Recover
     | Profile ProfileRoute
 
 
@@ -49,6 +50,7 @@ urlParser =
         [ format Home (s "")
         , format About (s "about")
         , format Login (s "login")
+        , format Recover (s "recover")
         , format Profile (s "profile" </> profileUrlParser)
         , format (Profile Tests) (s "profile")
         ]
@@ -78,6 +80,9 @@ toUrl route =
 
         Login ->
             "/login"
+
+        Recover ->
+            "/recover"
 
         Profile profileRoute ->
             "/profile" ++ (toProfileUrl profileRoute)

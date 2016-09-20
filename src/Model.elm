@@ -1,25 +1,23 @@
 module Model
     exposing
-        ( Model
-        , LoginModel
-        , initialModel
+        ( FormModel
+        , Model
         , emptyForms
+        , initialModel
         )
 
 import Router
 import Types
 
 
+-- MAIN MODEL
+
+
 type alias Model =
     { route : Router.Route
     , auth : Types.Auth
-    , loginModel : LoginModel
-    }
-
-
-type alias LoginModel =
-    { input : Types.Credentials
-    , feedback : Types.Feedback
+    , loginModel : FormModel Types.Credentials
+    , recoverModel : FormModel ()
     }
 
 
@@ -27,13 +25,24 @@ initialModel : Router.Route -> Model
 initialModel route =
     { route = route
     , auth = Types.Authenticating
-    , loginModel = initialLoginModel
+    , loginModel = formModel Types.emptyCredentials
+    , recoverModel = formModel ()
     }
 
 
-initialLoginModel : LoginModel
-initialLoginModel =
-    { input = Types.Credentials "" ""
+
+-- FORMS
+
+
+type alias FormModel a =
+    { input : a
+    , feedback : Types.Feedback
+    }
+
+
+formModel : a -> FormModel a
+formModel input =
+    { input = input
     , feedback = Types.emptyFeedback
     }
 
@@ -41,5 +50,6 @@ initialLoginModel =
 emptyForms : Model -> Model
 emptyForms model =
     { model
-        | loginModel = initialLoginModel
+        | loginModel = formModel Types.emptyCredentials
+        , recoverModel = formModel ()
     }

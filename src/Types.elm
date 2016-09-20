@@ -1,10 +1,11 @@
 module Types
     exposing
-        ( User
+        ( Auth(..)
         , Credentials
-        , Token
         , Feedback
-        , Auth(..)
+        , Token
+        , User
+        , emptyCredentials
         , emptyFeedback
         , globalFeedback
         )
@@ -24,6 +25,11 @@ type alias Credentials =
     { username : String
     , password : String
     }
+
+
+emptyCredentials : Credentials
+emptyCredentials =
+    Credentials "" ""
 
 
 type alias Feedback =

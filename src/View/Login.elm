@@ -41,7 +41,7 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Model.LoginModel -> Bool -> Html.Html Msg
+form : Model.FormModel Types.Credentials -> Bool -> Html.Html Msg
 form { input, feedback } enabled =
     Html.div []
         [ Html.div []
@@ -85,7 +85,7 @@ form { input, feedback } enabled =
                     , Attributes.disabled (not enabled)
                     ]
                     [ Html.text "Sign in" ]
-                  -- DO: forgotten password link
+                , Helpers.navA Router.Recover "I forgot my password"
                 ]
             ]
         ]
