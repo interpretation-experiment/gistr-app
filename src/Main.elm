@@ -1,11 +1,12 @@
 module Main exposing (..)
 
+import Dict
+import LocalStorage
 import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
 import Router
-import Subscriptions
 import Update
 import View
 
@@ -17,7 +18,7 @@ main =
         , view = View.view
         , update = Update.update
         , urlUpdate = urlUpdate
-        , subscriptions = Subscriptions.subscriptions
+        , subscriptions = subscriptions
         }
 
 
@@ -41,6 +42,20 @@ urlUpdate ( url, maybeRoute ) model =
 
 
 
+-- SUBSCRIPTIONS
+
+
+localStorageTags : Dict.Dict String (Maybe String -> Msg)
+localStorageTags =
+    Dict.fromList [ ( LocalStorage.token, Msg.GotLocalToken ) ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    LocalStorage.subscribe localStorageTags Msg.NoOp
+
+
+
 -- INIT
 
 
@@ -50,4 +65,4 @@ init ( url, maybeRoute ) =
         ( model, cmd ) =
             urlUpdate ( url, maybeRoute ) (Model.initialModel Router.Home)
     in
-        model ! [ cmd, Subscriptions.localTokenGet ]
+        model ! [ cmd, LocalStorage.tokenGet ]

@@ -4,8 +4,6 @@ module Model
         , LoginModel
         , initialModel
         , emptyForms
-        , withFeedback
-        , withInput
         )
 
 import Router
@@ -28,9 +26,7 @@ type alias LoginModel =
 initialModel : Router.Route -> Model
 initialModel route =
     { route = route
-    , auth =
-        Types.Anonymous
-        -- TODO: change to authenticating at start
+    , auth = Types.Authenticating
     , loginModel = initialLoginModel
     }
 
@@ -47,16 +43,3 @@ emptyForms model =
     { model
         | loginModel = initialLoginModel
     }
-
-
-withFeedback :
-    Types.Feedback
-    -> { a | feedback : Types.Feedback }
-    -> { a | feedback : Types.Feedback }
-withFeedback feedback form =
-    { form | feedback = feedback }
-
-
-withInput : b -> { a | input : b } -> { a | input : b }
-withInput input form =
-    { form | input = input }

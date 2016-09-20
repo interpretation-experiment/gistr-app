@@ -1,5 +1,6 @@
 module View.Login exposing (view)
 
+import Dict
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -41,7 +42,7 @@ body model =
 
 
 form : Model.LoginModel -> Bool -> Html.Html Msg
-form { input } enabled =
+form { input, feedback } enabled =
     Html.div []
         [ Html.div [] []
           -- DO: register block
@@ -58,7 +59,7 @@ form { input } enabled =
                     , Events.onInput Msg.LoginFormUsername
                     ]
                     []
-                  --, Html.span [] [ Html.text (feedback.username ? "") ]
+                , Html.span [] [ Html.text (Helpers.feedbackGet "username" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
@@ -71,11 +72,11 @@ form { input } enabled =
                     , Events.onInput Msg.LoginFormPassword
                     ]
                     []
-                  --, Html.span [] [ Html.text (feedback.password ? "") ]
+                , Html.span [] [ Html.text (Helpers.feedbackGet "password" feedback) ]
                 ]
             , Html.div []
-                --[ Html.span [] [ Html.text (feedback.global ? "") ]
-                [ Html.button
+                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (not enabled)
                     ]

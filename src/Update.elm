@@ -6,7 +6,7 @@ import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
 import Router
-import Subscriptions
+import LocalStorage
 import Types
 
 
@@ -31,7 +31,7 @@ update msg model =
                 newInput =
                     { input | username = username }
             in
-                { model | loginModel = Model.withInput newInput model.loginModel } ! []
+                { model | loginModel = Helpers.withInput newInput model.loginModel } ! []
 
         LoginFormPassword password ->
             let
@@ -41,7 +41,7 @@ update msg model =
                 newInput =
                     { input | password = password }
             in
-                { model | loginModel = Model.withInput newInput model.loginModel } ! []
+                { model | loginModel = Helpers.withInput newInput model.loginModel } ! []
 
         Login credentials ->
             { model | auth = Types.Authenticating } ! [ Api.login credentials ]
@@ -49,14 +49,14 @@ update msg model =
         LoginFail feedback ->
             { model
                 | auth = Types.Anonymous
-                , loginModel = Model.withFeedback feedback model.loginModel
+                , loginModel = Helpers.withFeedback feedback model.loginModel
             }
                 ! []
 
         GotToken token ->
             { model | auth = Types.Authenticating }
                 ! [ Api.getUser token
-                  , Subscriptions.localTokenSet token
+                  , LocalStorage.tokenSet token
                   ]
 
         GotLocalToken maybeToken ->
@@ -77,13 +77,13 @@ update msg model =
                     Debug.log "error fetching user" error
             in
                 Model.emptyForms { model | auth = Types.Anonymous }
-                    ! [ Subscriptions.localTokenClear ]
+                    ! [ LocalStorage.tokenClear ]
 
         Logout ->
             case model.auth of
                 Types.Authenticated token _ ->
                     { model | auth = Types.Authenticating }
-                        ! [ Api.logout token, Subscriptions.localTokenClear ]
+                        ! [ Api.logout token, LocalStorage.tokenClear ]
 
                 -- Ignore any other status (there's no one to log out)
                 _ ->
