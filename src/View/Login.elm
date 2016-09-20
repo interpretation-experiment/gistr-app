@@ -44,8 +44,12 @@ body model =
 form : Model.LoginModel -> Bool -> Html.Html Msg
 form { input, feedback } enabled =
     Html.div []
-        [ Html.div [] []
-          -- DO: register block
+        [ Html.div []
+            [ Html.text "No account yet? "
+            , Helpers.navA Router.Home "Sign up"
+            , Html.text "!"
+              -- DO: set destination to Register
+            ]
         , Html.form [ Events.onSubmit (Msg.Login input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
