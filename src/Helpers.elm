@@ -9,6 +9,7 @@ module Helpers
         , navButton
         , withFeedback
         , withInput
+        , withStatus
         )
 
 import Dict
@@ -85,6 +86,11 @@ withFeedback feedback form =
 withInput : b -> { a | input : b } -> { a | input : b }
 withInput input form =
     { form | input = input }
+
+
+withStatus : b -> { a | status : b } -> { a | status : b }
+withStatus status form =
+    { form | status = status }
 
 
 feedbackGet : String -> Types.Feedback -> String

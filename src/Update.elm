@@ -30,8 +30,13 @@ update msg model =
 
                 newInput =
                     { input | username = username }
+
+                loginModel =
+                    model.loginModel
+                        |> Helpers.withInput newInput
+                        |> Helpers.withFeedback Types.emptyFeedback
             in
-                { model | loginModel = Helpers.withInput newInput model.loginModel } ! []
+                { model | loginModel = loginModel } ! []
 
         LoginFormPassword password ->
             let
@@ -40,24 +45,28 @@ update msg model =
 
                 newInput =
                     { input | password = password }
+
+                loginModel =
+                    model.loginModel
+                        |> Helpers.withInput newInput
+                        |> Helpers.withFeedback Types.emptyFeedback
             in
-                { model | loginModel = Helpers.withInput newInput model.loginModel } ! []
+                { model | loginModel = loginModel } ! []
 
         Login credentials ->
             { model | auth = Types.Authenticating } ! [ Api.login credentials ]
 
         LoginFail feedback ->
-            { model
-                | auth = Types.Anonymous
-                , loginModel = Helpers.withFeedback feedback model.loginModel
-            }
-                ! []
+            let
+                loginModel =
+                    model.loginModel
+                        |> Helpers.withFeedback feedback
+            in
+                { model | auth = Types.Anonymous, loginModel = loginModel } ! []
 
         GotToken token ->
             { model | auth = Types.Authenticating }
-                ! [ Api.getUser token
-                  , LocalStorage.tokenSet token
-                  ]
+                ! [ Api.getUser token, LocalStorage.tokenSet token ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
@@ -99,3 +108,38 @@ update msg model =
                     Debug.log "error logging user out" error
             in
                 model ! [ Helpers.cmd LogoutSuccess ]
+
+        Recover email ->
+            let
+                recoverModel =
+                    model.recoverModel
+                        |> Helpers.withStatus Model.Sending
+            in
+                { model | recoverModel = recoverModel } ! [ Api.recover email ]
+
+        RecoverFormInput input ->
+            let
+                recoverModel =
+                    model.recoverModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | recoverModel = recoverModel } ! []
+
+        RecoverFail feedback ->
+            let
+                recoverModel =
+                    model.recoverModel
+                        |> Helpers.withStatus Model.Form
+                        |> Helpers.withFeedback feedback
+            in
+                { model | recoverModel = recoverModel } ! []
+
+        RecoverSuccess ->
+            let
+                recoverModel =
+                    model.recoverModel
+                        |> Helpers.withStatus Model.Sent
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | recoverModel = recoverModel } ! []

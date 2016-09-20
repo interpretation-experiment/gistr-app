@@ -41,7 +41,7 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Model.FormModel Types.Credentials -> Bool -> Html.Html Msg
+form : Model.LoginModel -> Bool -> Html.Html Msg
 form { input, feedback } enabled =
     Html.div []
         [ Html.div []

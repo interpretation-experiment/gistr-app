@@ -18,3 +18,7 @@ type Msg
     | Logout
     | LogoutSuccess
     | LogoutFail String
+    | Recover String
+    | RecoverFormInput String
+    | RecoverFail Types.Feedback
+    | RecoverSuccess

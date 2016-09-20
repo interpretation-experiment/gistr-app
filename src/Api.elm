@@ -1,4 +1,12 @@
-module Api exposing (call, authCall, login, getUser, logout)
+module Api
+    exposing
+        ( authCall
+        , call
+        , getUser
+        , login
+        , logout
+        , recover
+        )
 
 import Decoders
 import Encoders
@@ -84,4 +92,20 @@ logout token =
         Task.perform
             (badOr identity >> LogoutFail)
             (always LogoutSuccess)
+            task
+
+
+recover : String -> Cmd Msg
+recover email =
+    let
+        task =
+            call HttpBuilder.post "/rest-auth/password/reset/"
+                |> HttpBuilder.withJsonBody (Encoders.email email)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    (HttpBuilder.jsonReader (Decoders.feedback [ "email" ]))
+    in
+        Task.perform
+            (badOr (Types.customFeedback "email") >> RecoverFail)
+            (always RecoverSuccess)
             task

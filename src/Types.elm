@@ -5,6 +5,7 @@ module Types
         , Feedback
         , Token
         , User
+        , customFeedback
         , emptyCredentials
         , emptyFeedback
         , globalFeedback
@@ -43,7 +44,12 @@ emptyFeedback =
 
 globalFeedback : String -> Feedback
 globalFeedback value =
-    Dict.singleton "global" value
+    customFeedback "global" value
+
+
+customFeedback : String -> String -> Feedback
+customFeedback key =
+    Dict.singleton key
 
 
 type alias Token =
