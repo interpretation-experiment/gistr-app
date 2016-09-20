@@ -35,7 +35,7 @@ urlUpdate ( url, maybeRoute ) model =
         routeUrl =
             Router.toUrl route
     in
-        if url /= routeUrl then
+        if (Debug.log "going to" url) /= routeUrl then
             model ! [ Navigation.modifyUrl (Debug.log "corrected url" routeUrl) ]
         else
             Model.emptyForms { model | route = route } ! []

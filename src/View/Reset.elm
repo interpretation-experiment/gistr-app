@@ -1,4 +1,4 @@
-module View.Recover exposing (view)
+module View.Reset exposing (view)
 
 import Helpers
 import Html
@@ -16,7 +16,7 @@ header : Html.Html Msg
 header =
     Html.div []
         [ Helpers.navButton Router.Login "Back"
-        , Html.h1 [] [ Html.text "Recover password" ]
+        , Html.h1 [] [ Html.text "Set new password" ]
         ]
 
 

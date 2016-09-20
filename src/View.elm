@@ -9,6 +9,7 @@ import View.Home
 import View.Login
 import View.Profile
 import View.Recover
+import View.Reset
 
 
 view : Model -> Html.Html Msg
@@ -25,6 +26,9 @@ view model =
 
         Router.Recover ->
             View.Recover.view model
+
+        Router.Reset ->
+            View.Reset.view model
 
         Router.Profile profileRoute ->
             View.Profile.view model profileRoute
