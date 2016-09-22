@@ -95,25 +95,11 @@ popItem key items =
         Just [] ->
             Dict.remove key items
 
-        Just [ head ] ->
+        Just [ _ ] ->
             Dict.remove key items
 
-        Just (head :: rest) ->
+        Just (_ :: rest) ->
             Dict.insert key rest items
-
-
-itemsQuery : Items -> String
-itemsQuery items =
-    let
-        expand ( key, values ) =
-            List.map ((,) key) values
-    in
-        Dict.toList items
-            |> List.sort
-            |> List.map expand
-            |> List.concat
-            |> List.map (\( k, v ) -> k ++ "=" ++ v)
-            |> String.join "&"
 
 
 splitFirst : String -> String -> ( String, String )
@@ -131,12 +117,12 @@ splitFirst split str =
 -- ACTUAL PARSING
 
 
-parseWithoutRest :
+parseFullPath :
     ( Chunks, Items )
     -> a
     -> UrlParser a b
     -> Result String b
-parseWithoutRest ( chunks, items ) formatter actuallyParse =
+parseFullPath ( chunks, items ) formatter actuallyParse =
     case actuallyParse ( chunks, items ) formatter of
         Err msg ->
             Err msg
@@ -168,7 +154,7 @@ parse formatter urlParser url =
         items =
             queryItems query
     in
-        parseWithoutRest ( chunks, items ) formatter urlParser
+        parseFullPath ( chunks, items ) formatter urlParser
 
 
 
@@ -225,7 +211,7 @@ oneOfHelp choices parts formatter =
             Err "Tried many parsers, but none of them worked!"
 
         parseUrl :: otherParsers ->
-            case (parseWithoutRest parts formatter parseUrl) of
+            case parseFullPath parts formatter parseUrl of
                 Err _ ->
                     oneOfHelp otherParsers parts formatter
 
