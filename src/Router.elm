@@ -6,9 +6,21 @@ module Router
         , toUrl
         )
 
-import String
 import Navigation
-import UrlParser exposing (Parser, (</>), format, oneOf, s)
+import String
+import UrlQueryParser
+    exposing
+        ( (</>)
+        , (<?>)
+        , QueryParser
+        , UrlParser
+        , customQ
+        , format
+        , maybeQ
+        , oneOf
+        , s
+        , stringQ
+        )
 
 
 -- ROUTES
@@ -17,6 +29,9 @@ import UrlParser exposing (Parser, (</>), format, oneOf, s)
 type Route
     = Home
     | About
+    | Login (Maybe Route)
+    | Recover
+    | Reset String String
     | Profile ProfileRoute
 
 
@@ -26,22 +41,49 @@ type ProfileRoute
     | Emails
 
 
-locationParser : Navigation.Location -> Maybe Route
+
+-- URL -> ROUTE
+
+
+locationParser : Navigation.Location -> ( String, Maybe Route )
 locationParser location =
-    UrlParser.parse identity urlParser (String.dropLeft 1 location.pathname)
-        |> Result.toMaybe
+    let
+        path =
+            location.pathname
+
+        query =
+            location.search
+    in
+        ( path ++ query
+        , String.dropLeft 1 path
+            ++ query
+            |> UrlQueryParser.parse identity urlParser
+            |> Result.toMaybe
+        )
 
 
-urlParser : Parser (Route -> a) a
-urlParser =
+routeQ : String -> QueryParser (Route -> a) a
+routeQ =
+    customQ "ROUTE" (UrlQueryParser.parse identity urlParser << String.dropLeft 1)
+
+
+urlParser : UrlParser (Route -> a) a
+urlParser items formatter =
     oneOf
         [ format Home (s "")
         , format About (s "about")
+        , format Recover (s "login" </> s "recover")
+        , format Reset
+            (s "login" </> s "reset" <?> stringQ "uid" <?> stringQ "token")
+        , format Login (s "login" <?> maybeQ (routeQ "next"))
         , format Profile (s "profile" </> profileUrlParser)
+        , format (Profile Tests) (s "profile")
         ]
+        items
+        formatter
 
 
-profileUrlParser : Parser (ProfileRoute -> a) a
+profileUrlParser : UrlParser (ProfileRoute -> a) a
 profileUrlParser =
     oneOf
         [ format Tests (s "tests")
@@ -51,7 +93,7 @@ profileUrlParser =
 
 
 
--- REVERSE ROUTING
+-- ROUTE -> URL
 
 
 toUrl : Route -> String
@@ -62,6 +104,20 @@ toUrl route =
 
         About ->
             "/about"
+
+        Login maybeNext ->
+            case maybeNext of
+                Nothing ->
+                    "/login"
+
+                Just next ->
+                    "/login?next=" ++ (toUrl next)
+
+        Recover ->
+            "/login/recover"
+
+        Reset uid token ->
+            "/login/reset?token=" ++ token ++ "&uid=" ++ uid
 
         Profile profileRoute ->
             "/profile" ++ (toProfileUrl profileRoute)
