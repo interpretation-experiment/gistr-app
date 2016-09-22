@@ -14,7 +14,7 @@ type Msg
     | GotToken Types.Token
     | GotLocalToken (Maybe Types.Token)
     | GotUser Types.Token Types.User
-    | GetUserFail String
+    | GetUserFail Types.Feedback
     | Logout
     | LogoutSuccess
     | LogoutFail String

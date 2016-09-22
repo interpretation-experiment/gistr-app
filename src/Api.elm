@@ -75,7 +75,7 @@ getUser token =
                     (HttpBuilder.jsonReader Decoders.detail)
     in
         Task.perform
-            (badOr identity >> GetUserFail)
+            (badOr identity >> Types.globalFeedback >> GetUserFail)
             (.data >> GotUser token)
             task
 

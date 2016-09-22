@@ -17,11 +17,12 @@ update msg model =
             model ! []
 
         NavigateTo route ->
-            model
-                ! if model.route /= route then
-                    [ Navigation.newUrl (Router.toUrl route) ]
-                  else
-                    []
+            let
+                authRoute =
+                    Router.authRedirect model.auth route
+            in
+                Model.emptyForms { model | route = authRoute }
+                    ! [ Navigation.newUrl (Router.toUrl authRoute) ]
 
         LoginFormUsername username ->
             let
@@ -54,7 +55,10 @@ update msg model =
                 { model | loginModel = loginModel } ! []
 
         Login credentials ->
-            { model | auth = Types.Authenticating } ! [ Api.login credentials ]
+            Helpers.withAuth
+                Types.Authenticating
+                model
+                ! [ Api.login credentials ]
 
         LoginFail feedback ->
             let
@@ -62,19 +66,27 @@ update msg model =
                     model.loginModel
                         |> Helpers.withFeedback feedback
             in
-                { model | auth = Types.Anonymous, loginModel = loginModel } ! []
+                Helpers.withAuth
+                    Types.Anonymous
+                    { model | loginModel = loginModel }
+                    ! []
 
         GotToken token ->
-            { model | auth = Types.Authenticating }
+            Helpers.withAuth
+                Types.Authenticating
+                model
                 ! [ Api.getUser token, LocalStorage.tokenSet token ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
                 Just token ->
-                    { model | auth = Types.Authenticating } ! [ Api.getUser token ]
+                    Helpers.withAuth
+                        Types.Authenticating
+                        model
+                        ! [ Api.getUser token ]
 
                 Nothing ->
-                    { model | auth = Types.Anonymous } ! []
+                    Helpers.withAuth Types.Anonymous model ! []
 
         GotUser token user ->
             let
@@ -86,21 +98,25 @@ update msg model =
                         _ ->
                             Router.Home
             in
-                Model.emptyForms { model | auth = Types.Authenticated token user }
-                    ! [ Helpers.cmd (NavigateTo next) ]
+                model
+                    |> Helpers.withAuth (Types.Authenticated token user)
+                    |> update (NavigateTo next)
 
-        GetUserFail error ->
+        GetUserFail feedback ->
             let
-                _ =
-                    Debug.log "error fetching user" error
+                loginModel =
+                    model.loginModel
+                        |> Helpers.withFeedback (Debug.log "error fetching user" feedback)
             in
-                Model.emptyForms { model | auth = Types.Anonymous }
+                Helpers.withAuth
+                    Types.Anonymous
+                    { model | loginModel = loginModel }
                     ! [ LocalStorage.tokenClear ]
 
         Logout ->
             case model.auth of
                 Types.Authenticated token _ ->
-                    { model | auth = Types.Authenticating }
+                    Helpers.withAuth Types.Authenticating model
                         ! [ Api.logout token, LocalStorage.tokenClear ]
 
                 -- Ignore any other status (there's no one to log out)
@@ -108,15 +124,16 @@ update msg model =
                     model ! []
 
         LogoutSuccess ->
-            Model.emptyForms { model | auth = Types.Anonymous }
-                ! [ Helpers.cmd (NavigateTo Router.Home) ]
+            model
+                |> Helpers.withAuth Types.Anonymous
+                |> update (NavigateTo Router.Home)
 
         LogoutFail error ->
             let
                 _ =
                     Debug.log "error logging user out" error
             in
-                model ! [ Helpers.cmd LogoutSuccess ]
+                update LogoutSuccess model
 
         Recover email ->
             let

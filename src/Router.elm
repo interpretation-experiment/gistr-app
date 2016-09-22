@@ -1,13 +1,15 @@
 module Router
     exposing
-        ( Route(..)
-        , ProfileRoute(..)
+        ( ProfileRoute(..)
+        , Route(..)
+        , authRedirect
         , locationParser
         , toUrl
         )
 
 import Navigation
 import String
+import Types
 import UrlQueryParser
     exposing
         ( (</>)
@@ -39,6 +41,29 @@ type ProfileRoute
     = Tests
     | Settings
     | Emails
+
+
+authRedirect : Types.Auth -> Route -> Route
+authRedirect auth route =
+    case auth of
+        Types.Anonymous ->
+            case route of
+                Profile profileRoute ->
+                    Login (Just route)
+
+                _ ->
+                    route
+
+        Types.Authenticated _ _ ->
+            case route of
+                Login _ ->
+                    Home
+
+                _ ->
+                    route
+
+        Types.Authenticating ->
+            route
 
 
 

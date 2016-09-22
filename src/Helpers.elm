@@ -7,6 +7,7 @@ module Helpers
         , loading
         , navA
         , navButton
+        , withAuth
         , withFeedback
         , withInput
         , withStatus
@@ -96,3 +97,15 @@ withStatus status form =
 feedbackGet : String -> Types.Feedback -> String
 feedbackGet key feedback =
     Dict.get key feedback ? ""
+
+
+
+-- AUTH WITH ROUTING
+
+
+withAuth : Types.Auth -> Model -> Model
+withAuth auth model =
+    { model
+        | auth = auth
+        , route = Router.authRedirect auth model.route
+    }

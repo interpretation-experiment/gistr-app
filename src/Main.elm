@@ -27,21 +27,23 @@ main =
 
 
 urlUpdate : ( String, Maybe Router.Route ) -> Model -> ( Model, Cmd Msg )
-urlUpdate ( url, maybeRoute ) model =
+urlUpdate ( requestedUrl, maybeRoute ) model =
     let
         route =
             maybeRoute ? model.route
 
-        routeUrl =
+        url =
             Router.toUrl route
 
-        cmds =
-            if (Debug.log "url" url) /= routeUrl then
-                [ Navigation.modifyUrl (Debug.log "corrected url" routeUrl) ]
-            else
-                []
+        _ =
+            Debug.log "url update" requestedUrl
     in
-        Model.emptyForms { model | route = route } ! cmds
+        if route /= model.route then
+            Update.update (Msg.NavigateTo route) model
+        else if url /= requestedUrl then
+            ( model, Navigation.modifyUrl url )
+        else
+            model ! []
 
 
 
