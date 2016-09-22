@@ -27,8 +27,8 @@ view model =
         Router.Recover ->
             View.Recover.view model
 
-        Router.Reset ->
-            View.Reset.view model
+        Router.Reset uid token ->
+            View.Reset.view model uid token
 
         Router.Profile profileRoute ->
             View.Profile.view model profileRoute

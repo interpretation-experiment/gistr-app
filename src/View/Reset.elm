@@ -7,9 +7,9 @@ import Msg exposing (Msg)
 import Router
 
 
-view : Model -> Html.Html Msg
-view model =
-    Html.div [] [ header, body model ]
+view : Model -> String -> String -> Html.Html Msg
+view model uid token =
+    Html.div [] [ header, body model uid token ]
 
 
 header : Html.Html Msg
@@ -20,6 +20,9 @@ header =
         ]
 
 
-body : Model -> Html.Html Msg
-body model =
-    Html.div [] []
+body : Model -> String -> String -> Html.Html Msg
+body model uid token =
+    Html.div []
+        [ Html.p [] [ Html.text ("uid: " ++ uid) ]
+        , Html.p [] [ Html.text ("token: " ++ token) ]
+        ]

@@ -1,6 +1,5 @@
 module View.Login exposing (view)
 
-import Dict
 import Helpers
 import Html
 import Html.Attributes as Attributes

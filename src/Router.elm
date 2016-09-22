@@ -6,9 +6,18 @@ module Router
         , toUrl
         )
 
-import String
 import Navigation
-import UrlParser exposing (Parser, (</>), format, oneOf, s)
+import String
+import UrlQueryParser
+    exposing
+        ( (</>)
+        , (<?>)
+        , UrlParser
+        , format
+        , oneOf
+        , s
+        , stringQ
+        )
 
 
 -- ROUTES
@@ -19,7 +28,7 @@ type Route
     | About
     | Login
     | Recover
-    | Reset
+    | Reset String String
     | Profile ProfileRoute
 
 
@@ -38,27 +47,46 @@ locationParser location =
     let
         path =
             location.pathname
+
+        query =
+            location.search
     in
-        ( path
-        , UrlParser.parse identity urlParser (String.dropLeft 1 path)
+        ( path ++ query
+        , String.dropLeft 1 path
+            ++ query
+            |> UrlQueryParser.parse identity urlParser
             |> Result.toMaybe
         )
 
 
-urlParser : Parser (Route -> a) a
+{-|
+    Can't define a hypothetical routeQ here
+
+    ```
+    import UrlQueryParser exposing (QueryParser, customQ)
+
+    routeQ : String -> QueryParser (Route -> a) a
+    routeQ key =
+        customQ "ROUTE" (UrlQueryParser.parse identity urlParser) key
+    ```
+
+    as it runs into [#873](https://github.com/elm-lang/elm-compiler/issues/873).
+-}
+urlParser : UrlParser (Route -> a) a
 urlParser =
     oneOf
         [ format Home (s "")
         , format About (s "about")
-        , format Recover (s "login" </> (s "recover"))
-        , format Reset (s "login" </> (s "reset"))
+        , format Recover (s "login" </> s "recover")
+        , format Reset
+            (s "login" </> s "reset" <?> stringQ "uid" <?> stringQ "token")
         , format Login (s "login")
         , format Profile (s "profile" </> profileUrlParser)
         , format (Profile Tests) (s "profile")
         ]
 
 
-profileUrlParser : Parser (ProfileRoute -> a) a
+profileUrlParser : UrlParser (ProfileRoute -> a) a
 profileUrlParser =
     oneOf
         [ format Tests (s "tests")
@@ -86,8 +114,8 @@ toUrl route =
         Recover ->
             "/login/recover"
 
-        Reset ->
-            "/login/reset"
+        Reset uid token ->
+            "/login/reset?token=" ++ token ++ "&uid=" ++ uid
 
         Profile profileRoute ->
             "/profile" ++ (toProfileUrl profileRoute)
