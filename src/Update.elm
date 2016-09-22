@@ -2,11 +2,12 @@ module Update exposing (update)
 
 import Api
 import Helpers
+import LocalStorage
+import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
 import Router
-import LocalStorage
 import Types
 
 
@@ -92,11 +93,8 @@ update msg model =
             let
                 next =
                     case model.route of
-                        Router.Login (Just next) ->
-                            next
-
-                        Router.Login Nothing ->
-                            Router.Home
+                        Router.Login maybeNext ->
+                            maybeNext ? Router.Home
 
                         _ ->
                             model.route
