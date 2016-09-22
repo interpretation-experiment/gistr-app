@@ -29,16 +29,6 @@ import String
 {-
    Things left to do:
    - url encoding/decoding of query parameters
-   - decide between:
-       (1) failing when some query parameters are left unparsed (current),
-           meaning lists can be parsed as we do with listQ: it stops whenever
-           a parameter fails parsing, and the overall parser will fail because
-           of left over parameters
-       (2) allowing left over parameters, meaning lists have to be parsed with
-           their own dedicated intListQ and stringListQ (and customListQ)
-           functions, because we can't distinguish between a failed parser and
-           an unfound query argument without looking into the parser itself
-           (or, we need to parameterise Parser's error type)
    - document everything
 -}
 -- PARSERS
@@ -52,20 +42,25 @@ import String
 -}
 
 
-type alias Parser parts formatter result =
-    parts -> formatter -> Result String ( parts, result )
+type alias Parser error parts formatter result =
+    parts -> formatter -> Result error ( parts, result )
 
 
 type alias UrlParser formatter result =
-    Parser ( Chunks, Items ) formatter result
+    Parser String ( Chunks, Items ) formatter result
+
+
+type QueryError
+    = NotFound String
+    | BadFormat String
 
 
 type alias QueryParser formatter result =
-    Parser Items formatter result
+    Parser QueryError Items formatter result
 
 
 type alias PathParser formatter result =
-    Parser Chunks formatter result
+    Parser String Chunks formatter result
 
 
 
@@ -147,26 +142,18 @@ parseWithoutRest ( chunks, items ) formatter actuallyParse =
             Err msg
 
         Ok ( ( restChunks, restItems ), result ) ->
-            case ( restChunks, Dict.toList restItems ) of
-                ( [], [] ) ->
+            case restChunks of
+                [] ->
                     Ok result
 
-                ( [], [ ( "", [ "" ] ) ] ) ->
-                    Ok result
-
-                ( [ "" ], [] ) ->
-                    Ok result
-
-                ( [ "" ], [ ( "", [ "" ] ) ] ) ->
+                [ "" ] ->
                     Ok result
 
                 _ ->
                     Err <|
                         "The path and query parsers worked, but /"
                             ++ String.join "/" restChunks
-                            ++ "?"
-                            ++ itemsQuery restItems
-                            ++ " was left over."
+                            ++ " (and possibly some query parameters) was left over"
 
 
 parse : a -> UrlParser a b -> String -> Result String b
@@ -188,7 +175,7 @@ parse formatter urlParser url =
 -- PARSER OPERATIONS
 
 
-chain : Parser p a b -> Parser p b c -> Parser p a c
+chain : Parser e p a b -> Parser e p b c -> Parser e p a c
 chain parseFirst parseRest =
     \parts func ->
         parseFirst parts func
@@ -202,6 +189,7 @@ queryToUrlParser parseQuery =
     \( chunks, items ) formatter ->
         parseQuery items formatter
             |> Result.map (\( i, r ) -> ( ( chunks, i ), r ))
+            |> Result.formatError toString
 
 
 pathToUrlParser : PathParser a b -> UrlParser a b
@@ -245,7 +233,7 @@ oneOfHelp choices parts formatter =
                     Ok ( ( [], Dict.empty ), result )
 
 
-format : formatter -> Parser p formatter a -> Parser p (a -> result) result
+format : formatter -> Parser e p formatter a -> Parser e p (a -> result) result
 format input parse =
     \parts func ->
         case parse parts input of
@@ -268,7 +256,7 @@ sQ key =
                 Ok ( popItem key items, result )
 
             _ ->
-                Err ("Didn't find query parameter " ++ key)
+                Err (NotFound ("Didn't find query parameter " ++ key))
 
 
 maybeQ : QueryParser (a -> a) a -> QueryParser (Maybe a -> b) b
@@ -285,25 +273,30 @@ maybeQ parseQuery =
 listQ : QueryParser (a -> a) a -> QueryParser (List a -> b) b
 listQ queryParser =
     \items func ->
-        let
-            ( restItems, results ) =
-                parseUntil queryParser items []
-        in
-            Ok ( restItems, func (List.reverse results) )
+        case listQHelp queryParser [] items of
+            Err error ->
+                Err error
+
+            Ok ( restItems, results ) ->
+                Ok ( restItems, func (List.reverse results) )
 
 
-parseUntil : QueryParser (a -> a) a -> Items -> List a -> ( Items, List a )
-parseUntil queryParser items results =
-    let
-        parseQuery =
-            queryParser
-    in
-        case parseQuery items identity of
-            Err _ ->
-                ( items, results )
+listQHelp : QueryParser (a -> a) a -> List a -> Items -> Result QueryError ( Items, List a )
+listQHelp parseQuery results items =
+    case parseQuery items identity of
+        Err (BadFormat msg) ->
+            Err (BadFormat msg)
 
-            Ok ( restItems, result ) ->
-                parseUntil queryParser restItems (result :: results)
+        Err (NotFound msg) ->
+            case results of
+                [] ->
+                    Err (NotFound msg)
+
+                _ ->
+                    Ok ( items, results )
+
+        Ok ( restItems, result ) ->
+            listQHelp parseQuery (result :: results) restItems
 
 
 stringQ : String -> QueryParser (String -> a) a
@@ -333,20 +326,22 @@ customQ tipe stringToSomething key =
                             )
 
                     Err msg ->
-                        Err
-                            ("Parsing `"
-                                ++ value
-                                ++ "` went wrong: "
-                                ++ msg
-                            )
+                        Err <|
+                            BadFormat
+                                ("Parsing `"
+                                    ++ value
+                                    ++ "` went wrong: "
+                                    ++ msg
+                                )
 
             _ ->
-                Err
-                    ("Didn't find query parameter "
-                        ++ key
-                        ++ "="
-                        ++ tipe
-                    )
+                Err <|
+                    NotFound
+                        ("Didn't find query parameter "
+                            ++ key
+                            ++ "="
+                            ++ tipe
+                        )
 
 
 
