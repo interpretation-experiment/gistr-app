@@ -34,11 +34,14 @@ urlUpdate ( url, maybeRoute ) model =
 
         routeUrl =
             Router.toUrl route
+
+        cmds =
+            if (Debug.log "url" url) /= routeUrl then
+                [ Navigation.modifyUrl (Debug.log "corrected url" routeUrl) ]
+            else
+                []
     in
-        if (Debug.log "going to" url) /= routeUrl then
-            model ! [ Navigation.modifyUrl (Debug.log "corrected url" routeUrl) ]
-        else
-            Model.emptyForms { model | route = route } ! []
+        Model.emptyForms { model | route = route } ! cmds
 
 
 
