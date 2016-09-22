@@ -95,8 +95,11 @@ update msg model =
                         Router.Login (Just next) ->
                             next
 
-                        _ ->
+                        Router.Login Nothing ->
                             Router.Home
+
+                        _ ->
+                            model.route
             in
                 model
                     |> Helpers.withAuth (Types.Authenticated token user)
