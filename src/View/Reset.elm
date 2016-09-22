@@ -15,7 +15,7 @@ view model uid token =
 header : Html.Html Msg
 header =
     Html.div []
-        [ Helpers.navButton Router.Login "Back"
+        [ Helpers.navButton (Router.Login Nothing) "Back"
         , Html.h1 [] [ Html.text "Set new password" ]
         ]
 

@@ -77,8 +77,17 @@ update msg model =
                     { model | auth = Types.Anonymous } ! []
 
         GotUser token user ->
-            Model.emptyForms { model | auth = Types.Authenticated token user }
-                ! [ Helpers.cmd (NavigateTo Router.Home) ]
+            let
+                next =
+                    case model.route of
+                        Router.Login (Just next) ->
+                            next
+
+                        _ ->
+                            Router.Home
+            in
+                Model.emptyForms { model | auth = Types.Authenticated token user }
+                    ! [ Helpers.cmd (NavigateTo next) ]
 
         GetUserFail error ->
             let

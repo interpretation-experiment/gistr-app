@@ -26,29 +26,34 @@ import Result
 import String
 
 
-{-|
-    Things left to do:
-    - url encoding/decoding of query parameters
-    - decide between:
-        (1) failing when some query parameters are left unparsed (current),
-            meaning lists can be parsed as we do with listQ: it stops whenever
-            a parameter fails parsing, and the overall parser will fail because
-            of left over parameters
-        (2) allowing left over parameters, meaning lists have to be parsed with
-            their own dedicated intListQ and stringListQ (and customListQ)
-            functions, because we can't distinguish between a failed parser and
-            an unfound query argument without looking into the parser itself
-            (or, we need to parameterise Parser's error type)
-    - document everything
+{-
+   Things left to do:
+   - url encoding/decoding of query parameters
+   - decide between:
+       (1) failing when some query parameters are left unparsed (current),
+           meaning lists can be parsed as we do with listQ: it stops whenever
+           a parameter fails parsing, and the overall parser will fail because
+           of left over parameters
+       (2) allowing left over parameters, meaning lists have to be parsed with
+           their own dedicated intListQ and stringListQ (and customListQ)
+           functions, because we can't distinguish between a failed parser and
+           an unfound query argument without looking into the parser itself
+           (or, we need to parameterise Parser's error type)
+   - document everything
+-}
+-- PARSERS
+{-
+   We don't box these types (i.e. not doing `type Parser = Parser (...)`)
+   because it prevents us from defining recursive parsers. Basically if you
+   box these types, your recursive parser will necessarily be defined
+   pointfree, running into
+   [#873](https://github.com/elm-lang/elm-compiler/issues/873). To get around
+   this we need to destructure the parsers to define recursion non pointfree.
 -}
 
 
-
--- PARSERS
-
-
-type Parser parts formatter result
-    = Parser (parts -> formatter -> Result String ( parts, result ))
+type alias Parser parts formatter result =
+    parts -> formatter -> Result String ( parts, result )
 
 
 type alias UrlParser formatter result =
@@ -131,12 +136,12 @@ splitFirst split str =
 -- ACTUAL PARSING
 
 
-innerParse :
+parseWithoutRest :
     ( Chunks, Items )
     -> a
     -> UrlParser a b
     -> Result String b
-innerParse ( chunks, items ) formatter (Parser actuallyParse) =
+parseWithoutRest ( chunks, items ) formatter actuallyParse =
     case actuallyParse ( chunks, items ) formatter of
         Err msg ->
             Err msg
@@ -176,7 +181,7 @@ parse formatter urlParser url =
         items =
             queryItems query
     in
-        innerParse ( chunks, items ) formatter urlParser
+        parseWithoutRest ( chunks, items ) formatter urlParser
 
 
 
@@ -184,29 +189,26 @@ parse formatter urlParser url =
 
 
 chain : Parser p a b -> Parser p b c -> Parser p a c
-chain (Parser parseFirst) (Parser parseRest) =
-    Parser <|
-        \parts func ->
-            parseFirst parts func
-                `Result.andThen`
-                    \( restParts, restFunc ) ->
-                        parseRest restParts restFunc
+chain parseFirst parseRest =
+    \parts func ->
+        parseFirst parts func
+            `Result.andThen`
+                \( restParts, restFunc ) ->
+                    parseRest restParts restFunc
 
 
 queryToUrlParser : QueryParser a b -> UrlParser a b
-queryToUrlParser (Parser parseQuery) =
-    Parser <|
-        \( chunks, items ) formatter ->
-            parseQuery items formatter
-                |> Result.map (\( i, r ) -> ( ( chunks, i ), r ))
+queryToUrlParser parseQuery =
+    \( chunks, items ) formatter ->
+        parseQuery items formatter
+            |> Result.map (\( i, r ) -> ( ( chunks, i ), r ))
 
 
 pathToUrlParser : PathParser a b -> UrlParser a b
-pathToUrlParser (Parser parsePath) =
-    Parser <|
-        \( chunks, items ) formatter ->
-            parsePath chunks formatter
-                |> Result.map (\( c, r ) -> ( ( c, items ), r ))
+pathToUrlParser parsePath =
+    \( chunks, items ) formatter ->
+        parsePath chunks formatter
+            |> Result.map (\( c, r ) -> ( ( c, items ), r ))
 
 
 (</>) : UrlParser a b -> UrlParser b c -> UrlParser a c
@@ -221,38 +223,37 @@ pathToUrlParser (Parser parsePath) =
 
 oneOf : List (UrlParser a b) -> UrlParser a b
 oneOf choices =
-    Parser (oneOfHelp choices)
+    oneOfHelp choices
 
 
 oneOfHelp :
-    List (Parser p a b)
-    -> p
+    List (UrlParser a b)
+    -> ( Chunks, Items )
     -> a
-    -> Result String ( p, b )
+    -> Result String ( ( Chunks, Items ), b )
 oneOfHelp choices parts formatter =
     case choices of
         [] ->
             Err "Tried many parsers, but none of them worked!"
 
-        (Parser parseUrl) :: otherParsers ->
-            case (parseUrl parts formatter) of
+        parseUrl :: otherParsers ->
+            case (parseWithoutRest parts formatter parseUrl) of
                 Err _ ->
                     oneOfHelp otherParsers parts formatter
 
-                Ok answerPair ->
-                    Ok answerPair
+                Ok result ->
+                    Ok ( ( [], Dict.empty ), result )
 
 
 format : formatter -> Parser p formatter a -> Parser p (a -> result) result
-format input (Parser parse) =
-    Parser <|
-        \parts func ->
-            case parse parts input of
-                Err msg ->
-                    Err msg
+format input parse =
+    \parts func ->
+        case parse parts input of
+            Err msg ->
+                Err msg
 
-                Ok ( newParts, value ) ->
-                    Ok ( newParts, func value )
+            Ok ( newParts, value ) ->
+                Ok ( newParts, func value )
 
 
 
@@ -261,43 +262,40 @@ format input (Parser parse) =
 
 sQ : String -> QueryParser a a
 sQ key =
-    Parser <|
-        \items result ->
-            case Dict.get key items of
-                Just (value :: rest) ->
-                    Ok ( popItem key items, result )
+    \items result ->
+        case Dict.get key items of
+            Just (value :: rest) ->
+                Ok ( popItem key items, result )
 
-                _ ->
-                    Err ("Didn't find query parameter " ++ key)
+            _ ->
+                Err ("Didn't find query parameter " ++ key)
 
 
 maybeQ : QueryParser (a -> a) a -> QueryParser (Maybe a -> b) b
-maybeQ (Parser parseQuery) =
-    Parser <|
-        \items func ->
-            case parseQuery items identity of
-                Err _ ->
-                    Ok ( items, func Nothing )
+maybeQ parseQuery =
+    \items func ->
+        case parseQuery items identity of
+            Err _ ->
+                Ok ( items, func Nothing )
 
-                Ok ( newItems, result ) ->
-                    Ok ( newItems, func (Just result) )
+            Ok ( newItems, result ) ->
+                Ok ( newItems, func (Just result) )
 
 
 listQ : QueryParser (a -> a) a -> QueryParser (List a -> b) b
 listQ queryParser =
-    Parser <|
-        \items func ->
-            let
-                ( restItems, results ) =
-                    parseUntil queryParser items []
-            in
-                Ok ( restItems, func (List.reverse results) )
+    \items func ->
+        let
+            ( restItems, results ) =
+                parseUntil queryParser items []
+        in
+            Ok ( restItems, func (List.reverse results) )
 
 
 parseUntil : QueryParser (a -> a) a -> Items -> List a -> ( Items, List a )
 parseUntil queryParser items results =
     let
-        (Parser parseQuery) =
+        parseQuery =
             queryParser
     in
         case parseQuery items identity of
@@ -324,32 +322,31 @@ customQ :
     -> String
     -> QueryParser (a -> output) output
 customQ tipe stringToSomething key =
-    Parser <|
-        \items func ->
-            case Dict.get key items of
-                Just (value :: rest) ->
-                    case stringToSomething value of
-                        Ok something ->
-                            Ok
-                                ( popItem key items
-                                , func something
-                                )
+    \items func ->
+        case Dict.get key items of
+            Just (value :: rest) ->
+                case stringToSomething value of
+                    Ok something ->
+                        Ok
+                            ( popItem key items
+                            , func something
+                            )
 
-                        Err msg ->
-                            Err
-                                ("Parsing `"
-                                    ++ value
-                                    ++ "` went wrong: "
-                                    ++ msg
-                                )
+                    Err msg ->
+                        Err
+                            ("Parsing `"
+                                ++ value
+                                ++ "` went wrong: "
+                                ++ msg
+                            )
 
-                _ ->
-                    Err
-                        ("Didn't find query parameter "
-                            ++ key
-                            ++ "="
-                            ++ tipe
-                        )
+            _ ->
+                Err
+                    ("Didn't find query parameter "
+                        ++ key
+                        ++ "="
+                        ++ tipe
+                    )
 
 
 
@@ -359,22 +356,21 @@ customQ tipe stringToSomething key =
 s : String -> UrlParser a a
 s str =
     pathToUrlParser <|
-        Parser <|
-            \chunks result ->
-                case chunks of
-                    [] ->
-                        Err ("Got to the end of the URL but wanted /" ++ str)
+        \chunks result ->
+            case chunks of
+                [] ->
+                    Err ("Got to the end of the URL but wanted /" ++ str)
 
-                    chunk :: remaining ->
-                        if chunk == str then
-                            Ok ( remaining, result )
-                        else
-                            Err
-                                ("Wanted /"
-                                    ++ str
-                                    ++ " but got /"
-                                    ++ String.join "/" chunks
-                                )
+                chunk :: remaining ->
+                    if chunk == str then
+                        Ok ( remaining, result )
+                    else
+                        Err
+                            ("Wanted /"
+                                ++ str
+                                ++ " but got /"
+                                ++ String.join "/" chunks
+                            )
 
 
 string : UrlParser (String -> a) a
@@ -390,21 +386,20 @@ int =
 custom : String -> (String -> Result String a) -> UrlParser (a -> output) output
 custom tipe stringToSomething =
     pathToUrlParser <|
-        Parser <|
-            \chunks func ->
-                case chunks of
-                    [] ->
-                        Err ("Got to the end of the URL but wanted /" ++ tipe)
+        \chunks func ->
+            case chunks of
+                [] ->
+                    Err ("Got to the end of the URL but wanted /" ++ tipe)
 
-                    chunk :: remaining ->
-                        case stringToSomething chunk of
-                            Ok something ->
-                                Ok ( remaining, func something )
+                chunk :: remaining ->
+                    case stringToSomething chunk of
+                        Ok something ->
+                            Ok ( remaining, func something )
 
-                            Err msg ->
-                                Err
-                                    ("Parsing `"
-                                        ++ chunk
-                                        ++ "` went wrong: "
-                                        ++ msg
-                                    )
+                        Err msg ->
+                            Err
+                                ("Parsing `"
+                                    ++ chunk
+                                    ++ "` went wrong: "
+                                    ++ msg
+                                )

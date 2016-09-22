@@ -12,8 +12,11 @@ import UrlQueryParser
     exposing
         ( (</>)
         , (<?>)
+        , QueryParser
         , UrlParser
+        , customQ
         , format
+        , maybeQ
         , oneOf
         , s
         , stringQ
@@ -26,7 +29,7 @@ import UrlQueryParser
 type Route
     = Home
     | About
-    | Login
+    | Login (Maybe Route)
     | Recover
     | Reset String String
     | Profile ProfileRoute
@@ -59,31 +62,25 @@ locationParser location =
         )
 
 
-{-|
-    Can't define a hypothetical routeQ here
+routeQ : String -> QueryParser (Route -> a) a
+routeQ =
+    customQ "ROUTE" (UrlQueryParser.parse identity urlParser << String.dropLeft 1)
 
-    ```
-    import UrlQueryParser exposing (QueryParser, customQ)
 
-    routeQ : String -> QueryParser (Route -> a) a
-    routeQ key =
-        customQ "ROUTE" (UrlQueryParser.parse identity urlParser) key
-    ```
-
-    as it runs into [#873](https://github.com/elm-lang/elm-compiler/issues/873).
--}
 urlParser : UrlParser (Route -> a) a
-urlParser =
+urlParser items formatter =
     oneOf
         [ format Home (s "")
         , format About (s "about")
         , format Recover (s "login" </> s "recover")
         , format Reset
             (s "login" </> s "reset" <?> stringQ "uid" <?> stringQ "token")
-        , format Login (s "login")
+        , format Login (s "login" <?> maybeQ (routeQ "next"))
         , format Profile (s "profile" </> profileUrlParser)
         , format (Profile Tests) (s "profile")
         ]
+        items
+        formatter
 
 
 profileUrlParser : UrlParser (ProfileRoute -> a) a
@@ -108,8 +105,13 @@ toUrl route =
         About ->
             "/about"
 
-        Login ->
-            "/login"
+        Login maybeNext ->
+            case maybeNext of
+                Nothing ->
+                    "/login"
+
+                Just next ->
+                    "/login?next=" ++ (toUrl next)
 
         Recover ->
             "/login/recover"

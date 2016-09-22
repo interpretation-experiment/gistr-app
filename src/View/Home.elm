@@ -24,7 +24,7 @@ body model =
         Types.Anonymous ->
             Html.div []
                 [ Helpers.navButton Router.About "About"
-                , Helpers.navButton Router.Login "Login"
+                , Helpers.navButton (Router.Login Nothing) "Login"
                 ]
 
         Types.Authenticating ->
