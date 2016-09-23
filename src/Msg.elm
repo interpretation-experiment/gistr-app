@@ -18,7 +18,16 @@ type Msg
     | Logout
     | LogoutSuccess
     | LogoutFail String
+    | ProlificFormInput String
+    | ProlificFormSubmit String
     | Recover String
     | RecoverFormInput String
     | RecoverFail Types.Feedback
     | RecoverSuccess
+    | Reset Types.ResetCredentials String String
+    | ResetFormInput Types.ResetCredentials
+    | ResetFail Types.Feedback
+    | ResetSuccess
+    | Register Types.RegisterCredentials
+    | RegisterFormInput Types.RegisterCredentials
+    | RegisterFail Types.Feedback

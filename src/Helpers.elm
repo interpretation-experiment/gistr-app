@@ -1,12 +1,14 @@
 module Helpers
     exposing
-        ( cmd
+        ( alreadyAuthed
+        , cmd
         , evA
         , evButton
         , feedbackGet
         , loading
         , navA
         , navButton
+        , notAuthed
         , withAuth
         , withFeedback
         , withInput
@@ -70,6 +72,16 @@ onClickMsg msg =
 loading : Html.Html msg
 loading =
     Html.p [] [ Html.text "Loading..." ]
+
+
+notAuthed : Html.Html msg
+notAuthed =
+    Html.p [] [ Html.text "Not signed in" ]
+
+
+alreadyAuthed : Types.User -> Html.Html msg
+alreadyAuthed user =
+    Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
 
 
 

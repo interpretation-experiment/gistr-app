@@ -35,7 +35,7 @@ body model =
                     form model.loginModel False
 
                 Types.Authenticated _ user ->
-                    Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+                    Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
@@ -45,9 +45,8 @@ form { input, feedback } enabled =
     Html.div []
         [ Html.div []
             [ Html.text "No account yet? "
-            , Helpers.navA Router.Home "Sign up"
+            , Helpers.navA (Router.Register Nothing) "Sign up"
             , Html.text "!"
-              -- DO: set destination to Register
             ]
         , Html.form [ Events.onSubmit (Msg.Login input) ]
             [ Html.div []

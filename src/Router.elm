@@ -34,6 +34,8 @@ type Route
     | Login (Maybe Route)
     | Recover
     | Reset String String
+    | Register (Maybe String)
+    | Prolific
     | Profile ProfileRoute
 
 
@@ -57,6 +59,12 @@ authRedirect auth route =
         Types.Authenticated _ _ ->
             case route of
                 Login _ ->
+                    Home
+
+                Recover ->
+                    Profile Settings
+
+                Prolific ->
                     Home
 
                 _ ->
@@ -97,12 +105,14 @@ urlParser items formatter =
     oneOf
         [ format Home (s "")
         , format About (s "about")
+        , format Login (s "login" <?> maybeQ (routeQ "next"))
         , format Recover (s "login" </> s "recover")
         , format Reset
             (s "login" </> s "reset" <?> stringQ "uid" <?> stringQ "token")
-        , format Login (s "login" <?> maybeQ (routeQ "next"))
-        , format Profile (s "profile" </> profileUrlParser)
+        , format Register (s "register" <?> maybeQ (stringQ "prolific_id"))
+        , format Prolific (s "register" </> s "prolific")
         , format (Profile Tests) (s "profile")
+        , format Profile (s "profile" </> profileUrlParser)
         ]
         items
         formatter
@@ -143,6 +153,17 @@ toUrl route =
 
         Reset uid token ->
             "/login/reset?token=" ++ token ++ "&uid=" ++ uid
+
+        Register maybeProlific ->
+            case maybeProlific of
+                Nothing ->
+                    "/register"
+
+                Just prolificId ->
+                    "/register?prolific_id=" ++ prolificId
+
+        Prolific ->
+            "/register/prolific"
 
         Profile profileRoute ->
             "/profile" ++ (toProfileUrl profileRoute)

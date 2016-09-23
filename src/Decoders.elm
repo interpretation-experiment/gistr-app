@@ -1,6 +1,7 @@
 module Decoders exposing (token, detail, user, feedback)
 
 import Dict
+import Maybe.Extra exposing ((?))
 import Json.Decode as JD
 import Json.Decode.Pipeline as Pipeline
 import Set
@@ -30,47 +31,35 @@ user =
         |> Pipeline.required "is_staff" JD.bool
 
 
-feedback : List String -> JD.Decoder Types.Feedback
+feedback : Dict.Dict String String -> JD.Decoder Types.Feedback
 feedback fields =
     let
         uncheckedFeedback =
             JD.dict (JD.tuple1 identity JD.string)
-                |> JD.map translateFeedback
+                |> JD.map (translateFeedback fields)
     in
         uncheckedFeedback `JD.andThen` (checkFeedback fields)
 
 
-translateFeedback : Types.Feedback -> Types.Feedback
-translateFeedback feedback =
+translateFeedback : Dict.Dict String String -> Types.Feedback -> Types.Feedback
+translateFeedback fields feedback =
     Dict.toList feedback
-        |> List.map translateItem
+        |> List.map (translateItem fields)
         |> Dict.fromList
 
 
-translateItem : ( String, String ) -> ( String, String )
-translateItem ( key, value ) =
-    let
-        key' =
-            case key of
-                "non_field_errors" ->
-                    "global"
-
-                "__all__" ->
-                    "global"
-
-                _ ->
-                    key
-    in
-        ( key', value )
+translateItem : Dict.Dict String String -> ( String, String ) -> ( String, String )
+translateItem fields ( key, value ) =
+    ( (Dict.get key fields) ? key, value )
 
 
-checkFeedback : List String -> Types.Feedback -> JD.Decoder Types.Feedback
+checkFeedback : Dict.Dict String String -> Types.Feedback -> JD.Decoder Types.Feedback
 checkFeedback fields feedback =
     let
         isEmpty =
             Dict.keys feedback
                 |> Set.fromList
-                |> Set.intersect (Set.fromList fields)
+                |> Set.intersect (Set.fromList (Dict.values fields))
                 |> Set.isEmpty
     in
         if isEmpty then

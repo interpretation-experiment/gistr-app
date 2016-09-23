@@ -7,7 +7,9 @@ import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
+import Regex
 import Router
+import String
 import Types
 
 
@@ -91,17 +93,16 @@ update msg model =
 
         GotUser token user ->
             let
-                next =
-                    case model.route of
-                        Router.Login maybeNext ->
-                            maybeNext ? Router.Home
-
-                        _ ->
-                            model.route
+                model' =
+                    model
+                        |> Helpers.withAuth (Types.Authenticated token user)
             in
-                model
-                    |> Helpers.withAuth (Types.Authenticated token user)
-                    |> update (NavigateTo next)
+                case model.route of
+                    Router.Login maybeNext ->
+                        update (NavigateTo (maybeNext ? Router.Home)) model'
+
+                    _ ->
+                        model' ! []
 
         GetUserFail feedback ->
             let
@@ -125,9 +126,17 @@ update msg model =
                     model ! []
 
         LogoutSuccess ->
-            model
-                |> Helpers.withAuth Types.Anonymous
-                |> update (NavigateTo Router.Home)
+            let
+                model' =
+                    model
+                        |> Helpers.withAuth Types.Anonymous
+            in
+                case model.route of
+                    Router.Reset _ _ ->
+                        model' ! []
+
+                    _ ->
+                        update (NavigateTo Router.Home) model'
 
         LogoutFail error ->
             let
@@ -135,6 +144,35 @@ update msg model =
                     Debug.log "error logging user out" error
             in
                 update LogoutSuccess model
+
+        ProlificFormInput input ->
+            let
+                prolificModel =
+                    model.prolificModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | prolificModel = prolificModel } ! []
+
+        ProlificFormSubmit input ->
+            let
+                regex =
+                    Regex.regex "^[a-z0-9]+$"
+            in
+                if Regex.contains regex input then
+                    update (NavigateTo <| Router.Register <| Just input) model
+                else
+                    { model
+                        | prolificModel =
+                            Helpers.withFeedback
+                                (Types.globalFeedback
+                                    ("This is not a valid "
+                                        ++ "Prolific Academic ID "
+                                    )
+                                )
+                                model.prolificModel
+                    }
+                        ! []
 
         Recover email ->
             let
@@ -157,7 +195,7 @@ update msg model =
             let
                 recoverModel =
                     model.recoverModel
-                        |> Helpers.withStatus Model.Form
+                        |> Helpers.withStatus Model.Entering
                         |> Helpers.withFeedback feedback
             in
                 { model | recoverModel = recoverModel } ! []
@@ -170,3 +208,85 @@ update msg model =
                         |> Helpers.withFeedback Types.emptyFeedback
             in
                 { model | recoverModel = recoverModel } ! []
+
+        Reset credentials uid token ->
+            -- check credentials for correctness: length, match
+            -- and either feedback or send to server
+            let
+                feedback =
+                    Types.emptyFeedback
+                        |> (Types.updateFeedback "password1"
+                                (if String.length credentials.password1 < 6 then
+                                    (Just "Password must be at least 6 characters")
+                                 else
+                                    Nothing
+                                )
+                           )
+                        |> (Types.updateFeedback "global"
+                                (if credentials.password1 /= credentials.password2 then
+                                    (Just "The two passwords don't match")
+                                 else
+                                    Nothing
+                                )
+                           )
+            in
+                if feedback == Types.emptyFeedback then
+                    { model
+                        | resetModel =
+                            model.resetModel
+                                |> Helpers.withStatus Model.Sending
+                    }
+                        ! [ Api.reset credentials uid token ]
+                else
+                    update (ResetFail feedback) model
+
+        ResetFormInput input ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | resetModel = resetModel } ! []
+
+        ResetFail feedback ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withFeedback feedback
+            in
+                { model | resetModel = resetModel } ! []
+
+        ResetSuccess ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withStatus Model.Sent
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                update Logout { model | resetModel = resetModel }
+
+        Register credentials ->
+            Helpers.withAuth Types.Authenticating model
+                ! [ Api.register credentials ]
+
+        RegisterFormInput input ->
+            let
+                registerModel =
+                    model.registerModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | registerModel = registerModel } ! []
+
+        RegisterFail feedback ->
+            let
+                registerModel =
+                    model.registerModel
+                        |> Helpers.withFeedback feedback
+            in
+                Helpers.withAuth
+                    Types.Anonymous
+                    { model | registerModel = registerModel }
+                    ! []

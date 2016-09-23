@@ -20,12 +20,7 @@ view model route =
                     [ Helpers.loading ]
 
                 Types.Anonymous ->
-                    [ Html.p []
-                        [ Html.text "Not signed in. "
-                        , Helpers.navA (Router.Profile route |> Just |> Router.Login) "Sign in"
-                        , Html.text " first!"
-                        ]
-                    ]
+                    [ Helpers.notAuthed ]
     in
         Html.div [] ((header model) :: contents)
 
