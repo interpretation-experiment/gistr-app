@@ -70,7 +70,7 @@ login credentials =
     in
         Task.perform
             (badOr Types.globalFeedback >> LoginFail)
-            (.data >> GotToken)
+            (.data >> GotToken Nothing)
             task
 
 
@@ -83,8 +83,8 @@ loginFeedbackFields =
         ]
 
 
-getUser : Types.Token -> Cmd Msg
-getUser token =
+getUser : Maybe String -> Types.Token -> Cmd Msg
+getUser maybeProlific token =
     let
         task =
             authCall HttpBuilder.get "/users/me/" token
@@ -94,7 +94,7 @@ getUser token =
     in
         Task.perform
             (badOr identity >> Types.globalFeedback >> GetUserFail)
-            (.data >> GotUser token)
+            (.data >> GotUser maybeProlific token)
             task
 
 
@@ -102,8 +102,8 @@ getUser token =
 -- REGISTER
 
 
-register : Types.RegisterCredentials -> Cmd Msg
-register credentials =
+register : Maybe String -> Types.RegisterCredentials -> Cmd Msg
+register maybeProlific credentials =
     let
         task =
             call HttpBuilder.post "/rest-auth/registration/"
@@ -114,7 +114,7 @@ register credentials =
     in
         Task.perform
             (badOr Types.globalFeedback >> RegisterFail)
-            (.data >> GotToken)
+            (.data >> GotToken maybeProlific)
             task
 
 

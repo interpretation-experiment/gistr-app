@@ -44,7 +44,7 @@ form : Model.RegisterModel -> Maybe String -> Bool -> Html.Html Msg
 form { input, feedback } maybeProlific enabled =
     Html.div []
         [ prolificLogin maybeProlific
-        , Html.form [ Events.onSubmit (Msg.Register input) ]
+        , Html.form [ Events.onSubmit (Msg.Register maybeProlific input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input

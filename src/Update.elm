@@ -74,11 +74,13 @@ update msg model =
                     { model | loginModel = loginModel }
                     ! []
 
-        GotToken token ->
+        GotToken maybeProlific token ->
             Helpers.withAuth
                 Types.Authenticating
                 model
-                ! [ Api.getUser token, LocalStorage.tokenSet token ]
+                ! [ Api.getUser maybeProlific token
+                  , LocalStorage.tokenSet token
+                  ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
@@ -86,12 +88,13 @@ update msg model =
                     Helpers.withAuth
                         Types.Authenticating
                         model
-                        ! [ Api.getUser token ]
+                        ! [ Api.getUser Nothing token ]
 
                 Nothing ->
                     Helpers.withAuth Types.Anonymous model ! []
 
-        GotUser token user ->
+        GotUser maybeProlific token user ->
+            -- TODO: if the user has no profile, initiate creation (and keep status authenticating)
             let
                 model' =
                     model
@@ -210,8 +213,6 @@ update msg model =
                 { model | recoverModel = recoverModel } ! []
 
         Reset credentials uid token ->
-            -- check credentials for correctness: length, match
-            -- and either feedback or send to server
             let
                 feedback =
                     Types.emptyFeedback
@@ -267,9 +268,9 @@ update msg model =
             in
                 update Logout { model | resetModel = resetModel }
 
-        Register credentials ->
+        Register maybeProlific credentials ->
             Helpers.withAuth Types.Authenticating model
-                ! [ Api.register credentials ]
+                ! [ Api.register maybeProlific credentials ]
 
         RegisterFormInput input ->
             let

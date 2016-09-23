@@ -11,9 +11,9 @@ type Msg
     | LoginFormPassword String
     | Login Types.Credentials
     | LoginFail Types.Feedback
-    | GotToken Types.Token
+    | GotToken (Maybe String) Types.Token
     | GotLocalToken (Maybe Types.Token)
-    | GotUser Types.Token Types.User
+    | GotUser (Maybe String) Types.Token Types.User
     | GetUserFail Types.Feedback
     | Logout
     | LogoutSuccess
@@ -28,6 +28,6 @@ type Msg
     | ResetFormInput Types.ResetCredentials
     | ResetFail Types.Feedback
     | ResetSuccess
-    | Register Types.RegisterCredentials
+    | Register (Maybe String) Types.RegisterCredentials
     | RegisterFormInput Types.RegisterCredentials
     | RegisterFail Types.Feedback
