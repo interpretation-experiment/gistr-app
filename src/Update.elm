@@ -30,32 +30,11 @@ update msg model =
         Error error ->
             update (NavigateTo Router.Error) { model | error = Just error }
 
-        LoginFormUsername username ->
+        LoginFormInput input ->
             let
-                input =
-                    model.loginModel.input
-
-                newInput =
-                    { input | username = username }
-
                 loginModel =
                     model.loginModel
-                        |> Helpers.withInput newInput
-                        |> Helpers.withFeedback Types.emptyFeedback
-            in
-                { model | loginModel = loginModel } ! []
-
-        LoginFormPassword password ->
-            let
-                input =
-                    model.loginModel.input
-
-                newInput =
-                    { input | password = password }
-
-                loginModel =
-                    model.loginModel
-                        |> Helpers.withInput newInput
+                        |> Helpers.withInput input
                         |> Helpers.withFeedback Types.emptyFeedback
             in
                 { model | loginModel = loginModel } ! []
