@@ -58,7 +58,7 @@ form { input, feedback } enabled =
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
                     , Attributes.value input.username
-                    , Events.onInput Msg.LoginFormUsername
+                    , Events.onInput (Msg.LoginFormInput << \u -> { input | username = u })
                     ]
                     []
                 , Html.span [] [ Html.text (Helpers.feedbackGet "username" feedback) ]
@@ -71,7 +71,7 @@ form { input, feedback } enabled =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password
-                    , Events.onInput Msg.LoginFormPassword
+                    , Events.onInput (Msg.LoginFormInput << \p -> { input | password = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Helpers.feedbackGet "password" feedback) ]

@@ -9,10 +9,10 @@ module Helpers
         , navA
         , navButton
         , notAuthed
-        , withAuth
         , withFeedback
         , withInput
         , withStatus
+        , (!!)
         )
 
 import Dict
@@ -21,7 +21,6 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
 import Maybe.Extra exposing ((?))
-import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo))
 import Router
 import Task
@@ -31,6 +30,11 @@ import Types
 cmd : a -> Cmd a
 cmd msg =
     Task.perform (always msg) (always msg) (Task.succeed ())
+
+
+(!!) : ( model, Cmd msg ) -> List (Cmd msg) -> ( model, Cmd msg )
+(!!) ( model, cmd ) cmds =
+    model ! (cmd :: cmds)
 
 
 
@@ -109,15 +113,3 @@ withStatus status form =
 feedbackGet : String -> Types.Feedback -> String
 feedbackGet key feedback =
     Dict.get key feedback ? ""
-
-
-
--- AUTH WITH ROUTING
-
-
-withAuth : Types.Auth -> Model -> Model
-withAuth auth model =
-    { model
-        | auth = auth
-        , route = Router.authRedirect auth model.route
-    }

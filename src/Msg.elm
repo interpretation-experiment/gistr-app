@@ -8,8 +8,7 @@ type Msg
     = NoOp
     | NavigateTo Router.Route
     | Error String
-    | LoginFormUsername String
-    | LoginFormPassword String
+    | LoginFormInput Types.Credentials
     | Login Types.Credentials
     | LoginFail Types.Feedback
     | GotToken (Maybe String) Types.Token
