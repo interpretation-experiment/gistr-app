@@ -7,7 +7,9 @@ import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
+import Regex
 import Router
+import String
 import Types
 
 
@@ -24,6 +26,9 @@ update msg model =
             in
                 Model.emptyForms { model | route = authRoute }
                     ! [ Navigation.newUrl (Router.toUrl authRoute) ]
+
+        Error error ->
+            update (NavigateTo Router.Error) { model | error = Just error }
 
         LoginFormUsername username ->
             let
@@ -72,11 +77,13 @@ update msg model =
                     { model | loginModel = loginModel }
                     ! []
 
-        GotToken token ->
+        GotToken maybeProlific token ->
             Helpers.withAuth
                 Types.Authenticating
                 model
-                ! [ Api.getUser token, LocalStorage.tokenSet token ]
+                ! [ Api.getUser maybeProlific token
+                  , LocalStorage.tokenSet token
+                  ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
@@ -84,24 +91,28 @@ update msg model =
                     Helpers.withAuth
                         Types.Authenticating
                         model
-                        ! [ Api.getUser token ]
+                        ! [ Api.getUser Nothing token ]
 
                 Nothing ->
                     Helpers.withAuth Types.Anonymous model ! []
 
-        GotUser token user ->
-            let
-                next =
-                    case model.route of
-                        Router.Login maybeNext ->
-                            maybeNext ? Router.Home
+        GotUser maybeProlific token user ->
+            case user.profile of
+                Just _ ->
+                    let
+                        model' =
+                            model
+                                |> Helpers.withAuth (Types.Authenticated token user)
+                    in
+                        case model.route of
+                            Router.Login maybeNext ->
+                                update (NavigateTo (maybeNext ? Router.Home)) model'
 
-                        _ ->
-                            model.route
-            in
-                model
-                    |> Helpers.withAuth (Types.Authenticated token user)
-                    |> update (NavigateTo next)
+                            _ ->
+                                update (NavigateTo model'.route) model'
+
+                Nothing ->
+                    model ! [ Api.createProfile user maybeProlific token ]
 
         GetUserFail feedback ->
             let
@@ -114,20 +125,22 @@ update msg model =
                     { model | loginModel = loginModel }
                     ! [ LocalStorage.tokenClear ]
 
-        Logout ->
-            case model.auth of
-                Types.Authenticated token _ ->
-                    Helpers.withAuth Types.Authenticating model
-                        ! [ Api.logout token, LocalStorage.tokenClear ]
-
-                -- Ignore any other status (there's no one to log out)
-                _ ->
-                    model ! []
+        Logout token ->
+            Helpers.withAuth Types.Authenticating model
+                ! [ Api.logout token, LocalStorage.tokenClear ]
 
         LogoutSuccess ->
-            model
-                |> Helpers.withAuth Types.Anonymous
-                |> update (NavigateTo Router.Home)
+            let
+                model' =
+                    model
+                        |> Helpers.withAuth Types.Anonymous
+            in
+                case model.route of
+                    Router.Reset _ _ ->
+                        model' ! []
+
+                    _ ->
+                        update (NavigateTo Router.Home) model'
 
         LogoutFail error ->
             let
@@ -135,6 +148,35 @@ update msg model =
                     Debug.log "error logging user out" error
             in
                 update LogoutSuccess model
+
+        ProlificFormInput input ->
+            let
+                prolificModel =
+                    model.prolificModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | prolificModel = prolificModel } ! []
+
+        ProlificFormSubmit input ->
+            let
+                regex =
+                    Regex.regex "^[a-z0-9]+$"
+            in
+                if Regex.contains regex input then
+                    update (NavigateTo <| Router.Register <| Just input) model
+                else
+                    { model
+                        | prolificModel =
+                            Helpers.withFeedback
+                                (Types.globalFeedback
+                                    ("This is not a valid "
+                                        ++ "Prolific Academic ID "
+                                    )
+                                )
+                                model.prolificModel
+                    }
+                        ! []
 
         Recover email ->
             let
@@ -157,7 +199,7 @@ update msg model =
             let
                 recoverModel =
                     model.recoverModel
-                        |> Helpers.withStatus Model.Form
+                        |> Helpers.withStatus Model.Entering
                         |> Helpers.withFeedback feedback
             in
                 { model | recoverModel = recoverModel } ! []
@@ -170,3 +212,94 @@ update msg model =
                         |> Helpers.withFeedback Types.emptyFeedback
             in
                 { model | recoverModel = recoverModel } ! []
+
+        Reset credentials uid token ->
+            let
+                feedback =
+                    Types.emptyFeedback
+                        |> (Types.updateFeedback "password1"
+                                (if String.length credentials.password1 < 6 then
+                                    (Just "Password must be at least 6 characters")
+                                 else
+                                    Nothing
+                                )
+                           )
+                        |> (Types.updateFeedback "global"
+                                (if credentials.password1 /= credentials.password2 then
+                                    (Just "The two passwords don't match")
+                                 else
+                                    Nothing
+                                )
+                           )
+            in
+                if feedback == Types.emptyFeedback then
+                    { model
+                        | resetModel =
+                            model.resetModel
+                                |> Helpers.withStatus Model.Sending
+                    }
+                        ! [ Api.reset credentials uid token ]
+                else
+                    update (ResetFail feedback) model
+
+        ResetFormInput input ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | resetModel = resetModel } ! []
+
+        ResetFail feedback ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withFeedback feedback
+            in
+                { model | resetModel = resetModel } ! []
+
+        ResetSuccess ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withStatus Model.Sent
+                        |> Helpers.withFeedback Types.emptyFeedback
+
+                model' =
+                    { model | resetModel = resetModel }
+            in
+                case model.auth of
+                    Types.Authenticated token _ ->
+                        update (Logout token) model'
+
+                    _ ->
+                        model' ! []
+
+        Register maybeProlific credentials ->
+            Helpers.withAuth Types.Authenticating model
+                ! [ Api.register maybeProlific credentials ]
+
+        RegisterFormInput input ->
+            let
+                registerModel =
+                    model.registerModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | registerModel = registerModel } ! []
+
+        RegisterFail feedback ->
+            let
+                registerModel =
+                    model.registerModel
+                        |> Helpers.withFeedback feedback
+            in
+                Helpers.withAuth
+                    Types.Anonymous
+                    { model | registerModel = registerModel }
+                    ! []
+
+        CreatedProfile token user profile ->
+            update (GotUser Nothing token { user | profile = Just profile }) model

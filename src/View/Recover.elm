@@ -30,7 +30,7 @@ body model =
             case model.auth of
                 Types.Anonymous ->
                     case model.recoverModel.status of
-                        Model.Form ->
+                        Model.Entering ->
                             form model.recoverModel True
 
                         Model.Sending ->
@@ -43,7 +43,7 @@ body model =
                     Helpers.loading
 
                 Types.Authenticated _ user ->
-                    Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+                    Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
@@ -73,7 +73,7 @@ form { input, feedback } enabled =
                     []
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "email" feedback) ]
+                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (not enabled)

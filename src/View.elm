@@ -5,10 +5,13 @@ import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
 import View.About
+import View.Error
 import View.Home
 import View.Login
 import View.Profile
+import View.Prolific
 import View.Recover
+import View.Register
 import View.Reset
 
 
@@ -29,6 +32,15 @@ view model =
 
         Router.Reset uid token ->
             View.Reset.view model uid token
+
+        Router.Register maybeProlific ->
+            View.Register.view model maybeProlific
+
+        Router.Error ->
+            View.Error.view model
+
+        Router.Prolific ->
+            View.Prolific.view model
 
         Router.Profile profileRoute ->
             View.Profile.view model profileRoute

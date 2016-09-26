@@ -13,19 +13,14 @@ view model route =
     let
         contents =
             case model.auth of
-                Types.Authenticated _ _ ->
-                    [ menu route, body route ]
+                Types.Authenticated _ user ->
+                    [ menu route, body route user ]
 
                 Types.Authenticating ->
                     [ Helpers.loading ]
 
                 Types.Anonymous ->
-                    [ Html.p []
-                        [ Html.text "Not signed in. "
-                        , Helpers.navA (Router.Profile route |> Just |> Router.Login) "Sign in"
-                        , Html.text " first!"
-                        ]
-                    ]
+                    [ Helpers.notAuthed ]
     in
         Html.div [] ((header model) :: contents)
 
@@ -35,8 +30,8 @@ header model =
     let
         logout =
             case model.auth of
-                Types.Authenticated _ _ ->
-                    Helpers.evButton Logout "Logout"
+                Types.Authenticated token _ ->
+                    Helpers.evButton (Logout token) "Logout"
 
                 _ ->
                     Html.span [] []
@@ -57,8 +52,8 @@ menu route =
         ]
 
 
-body : Router.ProfileRoute -> Html.Html Msg
-body route =
+body : Router.ProfileRoute -> Types.User -> Html.Html Msg
+body route user =
     case route of
         Router.Tests ->
             Html.text "Tests"
