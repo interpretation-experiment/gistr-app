@@ -35,6 +35,7 @@ type Route
     | Recover
     | Reset String String
     | Register (Maybe String)
+    | Error
     | Prolific
     | Profile ProfileRoute
 
@@ -63,6 +64,9 @@ authRedirect auth route =
 
                 Recover ->
                     Profile Settings
+
+                Register _ ->
+                    Home
 
                 Prolific ->
                     Home
@@ -110,6 +114,7 @@ urlParser items formatter =
         , format Reset
             (s "login" </> s "reset" <?> stringQ "uid" <?> stringQ "token")
         , format Register (s "register" <?> maybeQ (stringQ "prolific_id"))
+        , format Error (s "error")
         , format Prolific (s "register" </> s "prolific")
         , format (Profile Tests) (s "profile")
         , format Profile (s "profile" </> profileUrlParser)
@@ -161,6 +166,9 @@ toUrl route =
 
                 Just prolificId ->
                     "/register?prolific_id=" ++ prolificId
+
+        Error ->
+            "/error"
 
         Prolific ->
             "/register/prolific"

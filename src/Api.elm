@@ -2,6 +2,7 @@ module Api
     exposing
         ( authCall
         , call
+        , createProfile
         , getUser
         , login
         , logout
@@ -127,6 +128,22 @@ registerFeedbackFields =
         , ( "password2", "password2" )
         , ( "__all__", "global" )
         ]
+
+
+createProfile : Types.User -> Maybe String -> String -> Cmd Msg
+createProfile user maybeProlific token =
+    let
+        task =
+            authCall HttpBuilder.post "/profiles/" token
+                |> HttpBuilder.withJsonBody (Encoders.newProfile maybeProlific)
+                |> HttpBuilder.send
+                    (HttpBuilder.jsonReader Decoders.profile)
+                    (HttpBuilder.jsonReader Decoders.detail)
+    in
+        Task.perform
+            (badOr identity >> Error)
+            (.data >> CreatedProfile token user)
+            task
 
 
 

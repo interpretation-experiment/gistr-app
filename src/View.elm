@@ -5,6 +5,7 @@ import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
 import View.About
+import View.Error
 import View.Home
 import View.Login
 import View.Profile
@@ -34,6 +35,9 @@ view model =
 
         Router.Register maybeProlific ->
             View.Register.view model maybeProlific
+
+        Router.Error ->
+            View.Error.view model
 
         Router.Prolific ->
             View.Prolific.view model

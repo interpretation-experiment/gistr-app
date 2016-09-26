@@ -27,6 +27,9 @@ update msg model =
                 Model.emptyForms { model | route = authRoute }
                     ! [ Navigation.newUrl (Router.toUrl authRoute) ]
 
+        Error error ->
+            update (NavigateTo Router.Error) { model | error = Just error }
+
         LoginFormUsername username ->
             let
                 input =
@@ -94,18 +97,22 @@ update msg model =
                     Helpers.withAuth Types.Anonymous model ! []
 
         GotUser maybeProlific token user ->
-            -- TODO: if the user has no profile, initiate creation (and keep status authenticating)
-            let
-                model' =
-                    model
-                        |> Helpers.withAuth (Types.Authenticated token user)
-            in
-                case model.route of
-                    Router.Login maybeNext ->
-                        update (NavigateTo (maybeNext ? Router.Home)) model'
+            case user.profile of
+                Just _ ->
+                    let
+                        model' =
+                            model
+                                |> Helpers.withAuth (Types.Authenticated token user)
+                    in
+                        case model.route of
+                            Router.Login maybeNext ->
+                                update (NavigateTo (maybeNext ? Router.Home)) model'
 
-                    _ ->
-                        model' ! []
+                            _ ->
+                                update (NavigateTo model'.route) model'
+
+                Nothing ->
+                    model ! [ Api.createProfile user maybeProlific token ]
 
         GetUserFail feedback ->
             let
@@ -118,15 +125,9 @@ update msg model =
                     { model | loginModel = loginModel }
                     ! [ LocalStorage.tokenClear ]
 
-        Logout ->
-            case model.auth of
-                Types.Authenticated token _ ->
-                    Helpers.withAuth Types.Authenticating model
-                        ! [ Api.logout token, LocalStorage.tokenClear ]
-
-                -- Ignore any other status (there's no one to log out)
-                _ ->
-                    model ! []
+        Logout token ->
+            Helpers.withAuth Types.Authenticating model
+                ! [ Api.logout token, LocalStorage.tokenClear ]
 
         LogoutSuccess ->
             let
@@ -265,8 +266,16 @@ update msg model =
                     model.resetModel
                         |> Helpers.withStatus Model.Sent
                         |> Helpers.withFeedback Types.emptyFeedback
+
+                model' =
+                    { model | resetModel = resetModel }
             in
-                update Logout { model | resetModel = resetModel }
+                case model.auth of
+                    Types.Authenticated token _ ->
+                        update (Logout token) model'
+
+                    _ ->
+                        model' ! []
 
         Register maybeProlific credentials ->
             Helpers.withAuth Types.Authenticating model
@@ -291,3 +300,6 @@ update msg model =
                     Types.Anonymous
                     { model | registerModel = registerModel }
                     ! []
+
+        CreatedProfile token user profile ->
+            update (GotUser Nothing token { user | profile = Just profile }) model

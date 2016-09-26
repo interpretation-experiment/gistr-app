@@ -1,14 +1,11 @@
-module Decoders exposing (token, detail, user, feedback)
+module Decoders exposing (token, detail, user, profile, feedback)
 
+import Date
 import Dict
-import Maybe.Extra exposing ((?))
 import Json.Decode as JD
 import Json.Decode.Pipeline as Pipeline
+import Maybe.Extra exposing ((?))
 import Set
-
-
--- exposing (decode, optional, required, hardcoded)
-
 import Types
 
 
@@ -29,6 +26,41 @@ user =
         |> Pipeline.required "username" JD.string
         |> Pipeline.required "is_active" JD.bool
         |> Pipeline.required "is_staff" JD.bool
+        |> Pipeline.required "profile" (Pipeline.nullable profile)
+
+
+profile : JD.Decoder Types.Profile
+profile =
+    Pipeline.decode Types.Profile
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "created" date
+        |> Pipeline.required "prolific_id" (Pipeline.nullable JD.string)
+        |> Pipeline.required "user" JD.int
+        |> Pipeline.required "user_username" JD.string
+        |> Pipeline.required "mothertongue" JD.string
+        |> Pipeline.required "trained_reformulations" JD.bool
+        |> Pipeline.required "reformulations_count" JD.int
+        |> Pipeline.required "available_trees_counts" treeCounts
+
+
+treeCounts : JD.Decoder Types.TreeCounts
+treeCounts =
+    Pipeline.decode Types.TreeCounts
+        |> Pipeline.required "training" JD.int
+        |> Pipeline.required "experiment" JD.int
+
+
+date : JD.Decoder Date.Date
+date =
+    JD.string
+        `JD.andThen`
+            \str ->
+                case Date.fromString str of
+                    Err err ->
+                        JD.fail err
+
+                    Ok date ->
+                        JD.succeed date
 
 
 feedback : Dict.Dict String String -> JD.Decoder Types.Feedback

@@ -2,11 +2,13 @@ module Encoders
     exposing
         ( credentials
         , email
+        , newProfile
         , resetCredentials
         , registerCredentials
         )
 
 import Json.Encode as JE
+import Maybe.Extra exposing (mapDefault)
 import Types
 
 
@@ -40,4 +42,12 @@ registerCredentials credentials =
         , ( "email", JE.string credentials.email )
         , ( "password1", JE.string credentials.password1 )
         , ( "password2", JE.string credentials.password2 )
+        ]
+
+
+newProfile : Maybe String -> JE.Value
+newProfile maybeProlific =
+    JE.object
+        [ ( "prolific_id", mapDefault JE.null JE.string maybeProlific )
+        , ( "mothertongue", JE.string "english" )
         ]

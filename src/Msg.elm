@@ -7,6 +7,7 @@ import Types
 type Msg
     = NoOp
     | NavigateTo Router.Route
+    | Error String
     | LoginFormUsername String
     | LoginFormPassword String
     | Login Types.Credentials
@@ -15,7 +16,7 @@ type Msg
     | GotLocalToken (Maybe Types.Token)
     | GotUser (Maybe String) Types.Token Types.User
     | GetUserFail Types.Feedback
-    | Logout
+    | Logout Types.Token
     | LogoutSuccess
     | LogoutFail String
     | ProlificFormInput String
@@ -31,3 +32,4 @@ type Msg
     | Register (Maybe String) Types.RegisterCredentials
     | RegisterFormInput Types.RegisterCredentials
     | RegisterFail Types.Feedback
+    | CreatedProfile Types.Token Types.User Types.Profile
