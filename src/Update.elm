@@ -40,37 +40,23 @@ update msg model =
                 { model | loginModel = loginModel } ! []
 
         Login credentials ->
-            Helpers.withAuth
-                Types.Authenticating
-                model
-                ! [ Api.login credentials ]
+            Helpers.withAuth Types.Authenticating model ! [ Api.login credentials ]
 
         LoginFail feedback ->
             let
                 loginModel =
-                    model.loginModel
-                        |> Helpers.withFeedback feedback
+                    Helpers.withFeedback feedback model.loginModel
             in
-                Helpers.withAuth
-                    Types.Anonymous
-                    { model | loginModel = loginModel }
-                    ! []
+                Helpers.withAuth Types.Anonymous { model | loginModel = loginModel } ! []
 
         GotToken maybeProlific token ->
-            Helpers.withAuth
-                Types.Authenticating
-                model
-                ! [ Api.getUser maybeProlific token
-                  , LocalStorage.tokenSet token
-                  ]
+            Helpers.withAuth Types.Authenticating model
+                ! [ Api.getUser maybeProlific token, LocalStorage.tokenSet token ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
                 Just token ->
-                    Helpers.withAuth
-                        Types.Authenticating
-                        model
-                        ! [ Api.getUser Nothing token ]
+                    Helpers.withAuth Types.Authenticating model ! [ Api.getUser Nothing token ]
 
                 Nothing ->
                     Helpers.withAuth Types.Anonymous model ! []
@@ -80,8 +66,7 @@ update msg model =
                 Just _ ->
                     let
                         model' =
-                            model
-                                |> Helpers.withAuth (Types.Authenticated token user)
+                            Helpers.withAuth (Types.Authenticated token user) model
                     in
                         case model.route of
                             Router.Login maybeNext ->
@@ -96,12 +81,9 @@ update msg model =
         GetUserFail feedback ->
             let
                 loginModel =
-                    model.loginModel
-                        |> Helpers.withFeedback (Debug.log "error fetching user" feedback)
+                    Helpers.withFeedback (Debug.log "error fetching user" feedback) model.loginModel
             in
-                Helpers.withAuth
-                    Types.Anonymous
-                    { model | loginModel = loginModel }
+                Helpers.withAuth Types.Anonymous { model | loginModel = loginModel }
                     ! [ LocalStorage.tokenClear ]
 
         Logout token ->
@@ -111,8 +93,7 @@ update msg model =
         LogoutSuccess ->
             let
                 model' =
-                    model
-                        |> Helpers.withAuth Types.Anonymous
+                    Helpers.withAuth Types.Anonymous model
             in
                 case model.route of
                     Router.Reset _ _ ->
@@ -160,8 +141,7 @@ update msg model =
         Recover email ->
             let
                 recoverModel =
-                    model.recoverModel
-                        |> Helpers.withStatus Model.Sending
+                    Helpers.withStatus Model.Sending model.recoverModel
             in
                 { model | recoverModel = recoverModel } ! [ Api.recover email ]
 
@@ -198,25 +178,21 @@ update msg model =
                     Types.emptyFeedback
                         |> (Types.updateFeedback "password1"
                                 (if String.length credentials.password1 < 6 then
-                                    (Just "Password must be at least 6 characters")
+                                    Just "Password must be at least 6 characters"
                                  else
                                     Nothing
                                 )
                            )
                         |> (Types.updateFeedback "global"
                                 (if credentials.password1 /= credentials.password2 then
-                                    (Just "The two passwords don't match")
+                                    Just "The two passwords don't match"
                                  else
                                     Nothing
                                 )
                            )
             in
                 if feedback == Types.emptyFeedback then
-                    { model
-                        | resetModel =
-                            model.resetModel
-                                |> Helpers.withStatus Model.Sending
-                    }
+                    { model | resetModel = Helpers.withStatus Model.Sending model.resetModel }
                         ! [ Api.reset credentials uid token ]
                 else
                     update (ResetFail feedback) model
@@ -257,8 +233,7 @@ update msg model =
                         model' ! []
 
         Register maybeProlific credentials ->
-            Helpers.withAuth Types.Authenticating model
-                ! [ Api.register maybeProlific credentials ]
+            Helpers.withAuth Types.Authenticating model ! [ Api.register maybeProlific credentials ]
 
         RegisterFormInput input ->
             let
@@ -272,13 +247,9 @@ update msg model =
         RegisterFail feedback ->
             let
                 registerModel =
-                    model.registerModel
-                        |> Helpers.withFeedback feedback
+                    Helpers.withFeedback feedback model.registerModel
             in
-                Helpers.withAuth
-                    Types.Anonymous
-                    { model | registerModel = registerModel }
-                    ! []
+                Helpers.withAuth Types.Anonymous { model | registerModel = registerModel } ! []
 
         CreatedProfile token user profile ->
             update (GotUser Nothing token { user | profile = Just profile }) model
