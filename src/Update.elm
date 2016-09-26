@@ -1,7 +1,7 @@
 module Update exposing (update)
 
 import Api
-import Helpers
+import Helpers exposing ((!!))
 import LocalStorage
 import Maybe.Extra exposing ((?))
 import Model exposing (Model)
@@ -40,40 +40,35 @@ update msg model =
                 { model | loginModel = loginModel } ! []
 
         Login credentials ->
-            Helpers.withAuth Types.Authenticating model ! [ Api.login credentials ]
+            auth Types.Authenticating model !! [ Api.login credentials ]
 
         LoginFail feedback ->
             let
                 loginModel =
                     Helpers.withFeedback feedback model.loginModel
             in
-                Helpers.withAuth Types.Anonymous { model | loginModel = loginModel } ! []
+                auth Types.Anonymous { model | loginModel = loginModel }
 
         GotToken maybeProlific token ->
-            Helpers.withAuth Types.Authenticating model
-                ! [ Api.getUser maybeProlific token, LocalStorage.tokenSet token ]
+            model ! [ Api.getUser maybeProlific token, LocalStorage.tokenSet token ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
                 Just token ->
-                    Helpers.withAuth Types.Authenticating model ! [ Api.getUser Nothing token ]
+                    model ! [ Api.getUser Nothing token ]
 
                 Nothing ->
-                    Helpers.withAuth Types.Anonymous model ! []
+                    auth Types.Anonymous model
 
         GotUser maybeProlific token user ->
             case user.profile of
                 Just _ ->
-                    let
-                        model' =
-                            Helpers.withAuth (Types.Authenticated token user) model
-                    in
-                        case model.route of
-                            Router.Login maybeNext ->
-                                update (NavigateTo (maybeNext ? Router.Home)) model'
+                    case model.route of
+                        Router.Login maybeNext ->
+                            authNav (Types.Authenticated token user) (maybeNext ? Router.Home) model
 
-                            _ ->
-                                update (NavigateTo model'.route) model'
+                        _ ->
+                            auth (Types.Authenticated token user) model
 
                 Nothing ->
                     model ! [ Api.createProfile user maybeProlific token ]
@@ -83,24 +78,19 @@ update msg model =
                 loginModel =
                     Helpers.withFeedback (Debug.log "error fetching user" feedback) model.loginModel
             in
-                Helpers.withAuth Types.Anonymous { model | loginModel = loginModel }
-                    ! [ LocalStorage.tokenClear ]
+                auth Types.Anonymous { model | loginModel = loginModel }
+                    !! [ LocalStorage.tokenClear ]
 
         Logout token ->
-            Helpers.withAuth Types.Authenticating model
-                ! [ Api.logout token, LocalStorage.tokenClear ]
+            auth Types.Authenticating model !! [ Api.logout token, LocalStorage.tokenClear ]
 
         LogoutSuccess ->
-            let
-                model' =
-                    Helpers.withAuth Types.Anonymous model
-            in
-                case model.route of
-                    Router.Reset _ _ ->
-                        model' ! []
+            case model.route of
+                Router.Reset _ _ ->
+                    auth Types.Anonymous model
 
-                    _ ->
-                        update (NavigateTo Router.Home) model'
+                _ ->
+                    authNav Types.Anonymous Router.Home model
 
         LogoutFail error ->
             let
@@ -233,7 +223,7 @@ update msg model =
                         model' ! []
 
         Register maybeProlific credentials ->
-            Helpers.withAuth Types.Authenticating model ! [ Api.register maybeProlific credentials ]
+            auth Types.Authenticating model !! [ Api.register maybeProlific credentials ]
 
         RegisterFormInput input ->
             let
@@ -249,7 +239,21 @@ update msg model =
                 registerModel =
                     Helpers.withFeedback feedback model.registerModel
             in
-                Helpers.withAuth Types.Anonymous { model | registerModel = registerModel } ! []
+                auth Types.Anonymous { model | registerModel = registerModel }
 
         CreatedProfile token user profile ->
             update (GotUser Nothing token { user | profile = Just profile }) model
+
+
+
+-- AUTH WITH ROUTING
+
+
+auth : Types.Auth -> Model -> ( Model, Cmd Msg )
+auth auth' model =
+    update (NavigateTo model.route) { model | auth = auth' }
+
+
+authNav : Types.Auth -> Router.Route -> Model -> ( Model, Cmd Msg )
+authNav auth' route model =
+    auth auth' { model | route = route }
