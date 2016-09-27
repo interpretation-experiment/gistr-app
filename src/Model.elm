@@ -1,6 +1,7 @@
 module Model
     exposing
-        ( FormStatus(..)
+        ( EmailsModel
+        , FormStatus(..)
         , LoginModel
         , Model
         , ProlificModel
@@ -27,7 +28,14 @@ type alias Model =
     , resetModel : ResetModel
     , prolificModel : ProlificModel
     , registerModel : RegisterModel
+    , emailsModel : EmailsModel
     }
+
+
+
+{-
+   TODO: use FormStatus in all forms, don't rely on Auth
+-}
 
 
 type FormStatus
@@ -46,6 +54,7 @@ initialModel route =
     , resetModel = emptyResetModel
     , prolificModel = emptyProlificModel
     , registerModel = emptyRegisterModel
+    , emailsModel = emptyEmailsModel
     }
 
 
@@ -57,6 +66,7 @@ emptyForms model =
         , resetModel = emptyResetModel
         , prolificModel = emptyProlificModel
         , registerModel = emptyRegisterModel
+        , emailsModel = emptyEmailsModel
     }
 
 
@@ -146,4 +156,23 @@ emptyRegisterModel : RegisterModel
 emptyRegisterModel =
     { input = Types.emptyRegisterCredentials
     , feedback = Types.emptyFeedback
+    }
+
+
+
+-- EMAILS
+
+
+type alias EmailsModel =
+    { input : String
+    , feedback : Types.Feedback
+    , status : FormStatus
+    }
+
+
+emptyEmailsModel : EmailsModel
+emptyEmailsModel =
+    { input = ""
+    , feedback = Types.emptyFeedback
+    , status = Entering
     }

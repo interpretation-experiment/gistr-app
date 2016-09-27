@@ -2,6 +2,7 @@ module Encoders
     exposing
         ( credentials
         , email
+        , newEmail
         , newProfile
         , resetCredentials
         , registerCredentials
@@ -51,3 +52,9 @@ newProfile maybeProlific =
         [ ( "prolific_id", mapDefault JE.null JE.string maybeProlific )
         , ( "mothertongue", JE.string "english" )
         ]
+
+
+newEmail : String -> JE.Value
+newEmail email =
+    JE.object
+        [ ( "email", JE.string email ) ]

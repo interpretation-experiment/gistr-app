@@ -32,3 +32,12 @@ type Msg
     | RegisterFormInput Types.RegisterCredentials
     | RegisterFail Types.Feedback
     | CreatedProfile Types.Token Types.User Types.Profile
+    | VerifyEmail Types.Email
+    | VerifyEmailSent
+    | PrimaryEmail Types.Email
+    | PrimariedEmail
+    | DeleteEmail Types.Email
+    | DeletedEmail
+    | EmailFormInput String
+    | AddEmail String
+    | AddEmailFail Types.Feedback

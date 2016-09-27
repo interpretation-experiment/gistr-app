@@ -41,16 +41,14 @@ cmd msg =
 -- VIEWS
 
 
-evButton : Msg -> String -> Html.Html Msg
-evButton msg text =
-    Html.button
-        [ Events.onClick msg ]
-        [ Html.text text ]
+evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
+evButton attrs msg text =
+    Html.button ((Events.onClick msg) :: attrs) [ Html.text text ]
 
 
 navButton : Router.Route -> String -> Html.Html Msg
 navButton route text =
-    evButton (NavigateTo route) text
+    evButton [] (NavigateTo route) text
 
 
 evA : String -> Msg -> String -> Html.Html Msg

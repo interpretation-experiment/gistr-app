@@ -9,6 +9,7 @@ module Api
         , recover
         , reset
         , register
+        , addEmail
         )
 
 import Decoders
@@ -20,6 +21,12 @@ import Task
 import Types
 
 
+{-
+   TODO: give an Auth type to authenticated api calls,
+   processed before giving to authCall
+
+   TODO: use Task.andThen for user-profile chains
+-}
 -- CONFIG
 
 
@@ -188,8 +195,7 @@ recover email =
 recoverFeedbackFields : Dict.Dict String String
 recoverFeedbackFields =
     Dict.fromList
-        [ ( "email", "global" )
-        ]
+        [ ( "email", "global" ) ]
 
 
 
@@ -226,3 +232,29 @@ translateResetFeedback : Types.Feedback -> Types.Feedback
 translateResetFeedback feedback =
     feedback
         |> Dict.update "resetCredentials" (Maybe.map (always "There was a problem. Did you use the last password-reset link you received?"))
+
+
+
+-- EMAILS
+
+
+addEmail : String -> Types.Token -> Cmd Msg
+addEmail email token =
+    let
+        task =
+            authCall HttpBuilder.post "/emails/" token
+                |> HttpBuilder.withJsonBody (Encoders.newEmail email)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    (HttpBuilder.jsonReader (Decoders.feedback addEmailFeedbackFields))
+    in
+        Task.perform
+            (badOr Types.globalFeedback >> AddEmailFail)
+            (always NoOp)
+            -- TODO: chain with getUser
+            task
+
+
+addEmailFeedbackFields : Dict.Dict String String
+addEmailFeedbackFields =
+    Dict.fromList [ ( "email", "global" ) ]

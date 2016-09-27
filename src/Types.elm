@@ -2,6 +2,7 @@ module Types
     exposing
         ( Auth(..)
         , Credentials
+        , Email
         , Feedback
         , Profile
         , RegisterCredentials
@@ -31,6 +32,7 @@ type alias User =
     , isActive : Bool
     , isStaff : Bool
     , profile : Maybe Profile
+    , emails : List Email
     }
 
 
@@ -75,6 +77,16 @@ type alias Profile =
 type alias TreeCounts =
     { training : Int
     , experiment : Int
+    }
+
+
+type alias Email =
+    { id : Int
+    , user : Int
+    , email : String
+    , verified : Bool
+    , primary : Bool
+    , transacting : Bool
     }
 
 

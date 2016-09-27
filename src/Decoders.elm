@@ -1,4 +1,4 @@
-module Decoders exposing (token, detail, user, profile, feedback)
+module Decoders exposing (token, detail, user, email, profile, feedback)
 
 import Date
 import Dict
@@ -27,6 +27,7 @@ user =
         |> Pipeline.required "is_active" JD.bool
         |> Pipeline.required "is_staff" JD.bool
         |> Pipeline.required "profile" (Pipeline.nullable profile)
+        |> Pipeline.required "emails" (JD.list email)
 
 
 profile : JD.Decoder Types.Profile
@@ -61,6 +62,17 @@ date =
 
                     Ok date ->
                         JD.succeed date
+
+
+email : JD.Decoder Types.Email
+email =
+    Pipeline.decode Types.Email
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "user" JD.int
+        |> Pipeline.required "email" JD.string
+        |> Pipeline.required "verified" JD.bool
+        |> Pipeline.required "primary" JD.bool
+        |> Pipeline.hardcoded False
 
 
 feedback : Dict.Dict String String -> JD.Decoder Types.Feedback

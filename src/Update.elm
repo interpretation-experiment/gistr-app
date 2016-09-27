@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import Api
+import Cmds
 import Helpers exposing ((!!))
 import LocalStorage
 import Maybe.Extra exposing ((?))
@@ -25,7 +26,9 @@ update msg model =
                     Router.authRedirect model.auth route
             in
                 Model.emptyForms { model | route = authRoute }
-                    ! [ Navigation.newUrl (Router.toUrl authRoute) ]
+                    ! ((Navigation.newUrl (Router.toUrl authRoute))
+                        :: Cmds.cmdsForRoute model authRoute
+                      )
 
         Error error ->
             update (NavigateTo Router.Error) { model | error = Just error }
@@ -243,6 +246,56 @@ update msg model =
 
         CreatedProfile token user profile ->
             update (GotUser Nothing token { user | profile = Just profile }) model
+
+        VerifyEmail email ->
+            Debug.crash "todo"
+
+        VerifyEmailSent ->
+            Debug.crash "todo"
+
+        PrimaryEmail email ->
+            Debug.crash "todo"
+
+        PrimariedEmail ->
+            Debug.crash "todo"
+
+        DeleteEmail email ->
+            Debug.crash "todo"
+
+        DeletedEmail ->
+            Debug.crash "todo"
+
+        EmailFormInput input ->
+            let
+                emailsModel =
+                    model.emailsModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | emailsModel = emailsModel } ! []
+
+        AddEmail input ->
+            case model.auth of
+                Types.Authenticated token _ ->
+                    let
+                        emailsModel =
+                            model.emailsModel
+                                |> Helpers.withStatus Model.Sending
+                    in
+                        { model | emailsModel = emailsModel }
+                            ! [ Api.addEmail input token ]
+
+                _ ->
+                    model ! []
+
+        AddEmailFail feedback ->
+            let
+                emailsModel =
+                    model.emailsModel
+                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withFeedback feedback
+            in
+                { model | emailsModel = emailsModel } ! []
 
 
 
