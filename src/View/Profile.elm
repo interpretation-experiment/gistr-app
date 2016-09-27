@@ -94,7 +94,7 @@ emails { input, feedback, status } emails' =
                     , Attributes.disabled (status == Model.Sending)
                     , Attributes.type' "email"
                     , Attributes.value input
-                    , Events.onInput EmailFormInput
+                    , Events.onInput AddEmailFormInput
                     ]
                     []
                 , Html.button

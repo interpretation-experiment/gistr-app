@@ -22,8 +22,8 @@ type Msg
     | LogoutFail Types.Error
     | LogoutSuccess
       -- PROLIFIC
-    | ProlificFormInput String
-    | Prolific String
+    | SetProlificFormInput String
+    | SetProlific String
       -- PASSWORD RECOVERY
     | RecoverFormInput String
     | Recover String
@@ -43,7 +43,7 @@ type Msg
     | VerifyEmailSuccess
     | PrimaryEmail Types.Email
     | DeleteEmail Types.Email
-    | EmailFormInput String
+    | AddEmailFormInput String
     | AddEmail String
     | AddEmailFail Types.Error
     | AddEmailSuccess Types.User

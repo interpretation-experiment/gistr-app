@@ -52,7 +52,7 @@ form { input, feedback } =
             [ Html.text "Before we start, "
             , Html.strong [] [ Html.text "please enter your Prolific Academic ID" ]
             ]
-        , Html.form [ Events.onSubmit (Msg.Prolific input) ]
+        , Html.form [ Events.onSubmit (Msg.SetProlific input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputProlificId" ] [ Html.text "Prolific Academic ID" ]
                 , Html.input
@@ -61,7 +61,7 @@ form { input, feedback } =
                     , Attributes.placeholder "5381d3c8717b341db325eec3"
                     , Attributes.type' "text"
                     , Attributes.value input
-                    , Events.onInput Msg.ProlificFormInput
+                    , Events.onInput Msg.SetProlificFormInput
                     ]
                     []
                 , Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]

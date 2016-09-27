@@ -128,7 +128,7 @@ update msg model =
         {-
            PROLIFIC
         -}
-        ProlificFormInput input ->
+        SetProlificFormInput input ->
             let
                 prolificModel =
                     model.prolificModel
@@ -137,7 +137,7 @@ update msg model =
             in
                 { model | prolificModel = prolificModel } ! []
 
-        Prolific prolificId ->
+        SetProlific prolificId ->
             let
                 regex =
                     Regex.regex "^[a-z0-9]+$"
@@ -312,7 +312,7 @@ update msg model =
         DeleteEmail email ->
             Debug.crash "todo"
 
-        EmailFormInput input ->
+        AddEmailFormInput input ->
             let
                 emailsModel =
                     model.emailsModel
