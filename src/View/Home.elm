@@ -31,7 +31,7 @@ body model =
         Types.Authenticating ->
             Html.div [] [ Helpers.loading ]
 
-        Types.Authenticated _ user ->
+        Types.Authenticated { user } ->
             Html.div []
                 [ Html.p [] [ Html.text ("Howdy, " ++ user.username) ]
                 , Html.div []

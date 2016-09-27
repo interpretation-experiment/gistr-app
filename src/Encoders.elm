@@ -26,11 +26,11 @@ email email' =
     JE.object [ ( "email", JE.string email' ) ]
 
 
-resetCredentials : Types.ResetCredentials -> String -> String -> JE.Value
-resetCredentials credentials uid token =
+resetCredentials : Types.ResetCredentials -> Types.ResetTokens -> JE.Value
+resetCredentials { password1, password2 } { uid, token } =
     JE.object
-        [ ( "new_password1", JE.string credentials.password1 )
-        , ( "new_password2", JE.string credentials.password2 )
+        [ ( "new_password1", JE.string password1 )
+        , ( "new_password2", JE.string password2 )
         , ( "uid", JE.string uid )
         , ( "token", JE.string token )
         ]

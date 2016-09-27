@@ -7,11 +7,12 @@ import Html.Events as Events
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
+import Types
 
 
-view : Model -> String -> String -> Html.Html Msg
-view model uid token =
-    Html.div [] [ header, body model uid token ]
+view : Model -> Types.ResetTokens -> Html.Html Msg
+view model tokens =
+    Html.div [] [ header, body model tokens ]
 
 
 header : Html.Html Msg
@@ -22,13 +23,13 @@ header =
         ]
 
 
-body : Model -> String -> String -> Html.Html Msg
-body model uid token =
+body : Model -> Types.ResetTokens -> Html.Html Msg
+body model tokens =
     let
         inner =
             case model.resetModel.status of
                 Model.Form formStatus ->
-                    form model.resetModel uid token formStatus
+                    form model.resetModel tokens formStatus
 
                 Model.Sent ->
                     sent
@@ -36,11 +37,11 @@ body model uid token =
         Html.div [] [ inner ]
 
 
-form : Model.ResetModel -> String -> String -> Model.FormStatus -> Html.Html Msg
-form { input, feedback } uid token formStatus =
+form : Model.ResetModel -> Types.ResetTokens -> Model.FormStatus -> Html.Html Msg
+form { input, feedback } tokens formStatus =
     Html.div []
         [ Html.h2 [] [ Html.text "Set your new password" ]
-        , Html.form [ Events.onSubmit (Msg.Reset input uid token) ]
+        , Html.form [ Events.onSubmit (Msg.Reset input tokens) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input

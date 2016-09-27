@@ -15,7 +15,7 @@ view model route =
     let
         contents =
             case model.auth of
-                Types.Authenticated _ user ->
+                Types.Authenticated { user } ->
                     [ menu route, body model route user ]
 
                 Types.Authenticating ->
@@ -32,8 +32,8 @@ header model =
     let
         logout =
             case model.auth of
-                Types.Authenticated token _ ->
-                    Helpers.evButton [] (Logout token) "Logout"
+                Types.Authenticated auth ->
+                    Helpers.evButton [] Logout "Logout"
 
                 _ ->
                     Html.span [] []

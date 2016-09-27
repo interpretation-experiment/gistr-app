@@ -1,15 +1,18 @@
 module Types
     exposing
-        ( Auth(..)
+        ( AuthStatus(..)
+        , Auth
         , Credentials
         , Email
         , Feedback
         , Profile
         , RegisterCredentials
         , ResetCredentials
+        , ResetTokens
         , Token
         , TreeCounts
         , User
+        , Error(..)
         , customFeedback
         , emptyCredentials
         , emptyFeedback
@@ -21,6 +24,15 @@ module Types
 
 import Date
 import Dict
+
+
+-- API
+
+
+type Error
+    = ApiFeedback Feedback
+    | Unrecoverable String
+
 
 
 -- USER AND LOGIN
@@ -51,10 +63,14 @@ type alias Token =
     String
 
 
-type Auth
+type AuthStatus
     = Anonymous
     | Authenticating
-    | Authenticated Token User
+    | Authenticated Auth
+
+
+type alias Auth =
+    { token : Token, user : User }
 
 
 
@@ -138,6 +154,12 @@ type alias ResetCredentials =
 emptyResetCredentials : ResetCredentials
 emptyResetCredentials =
     ResetCredentials "" ""
+
+
+type alias ResetTokens =
+    { uid : String
+    , token : String
+    }
 
 
 

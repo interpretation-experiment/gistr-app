@@ -13,6 +13,7 @@ module Helpers
         , withInput
         , withStatus
         , (!!)
+        , updateUser
         )
 
 import Dict
@@ -35,6 +36,19 @@ cmd msg =
 (!!) : ( model, Cmd msg ) -> List (Cmd msg) -> ( model, Cmd msg )
 (!!) ( model, cmd ) cmds =
     model ! (cmd :: cmds)
+
+
+updateUser :
+    { a | auth : Types.AuthStatus }
+    -> Types.User
+    -> { a | auth : Types.AuthStatus }
+updateUser model user =
+    case model.auth of
+        Types.Authenticated auth ->
+            { model | auth = Types.Authenticated { auth | user = user } }
+
+        _ ->
+            model
 
 
 

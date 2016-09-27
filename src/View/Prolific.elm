@@ -34,8 +34,8 @@ body model =
                 Types.Authenticating ->
                     Helpers.loading
 
-                Types.Authenticated _ user ->
-                    Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+                Types.Authenticated { user } ->
+                    Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
@@ -52,7 +52,7 @@ form { input, feedback } =
             [ Html.text "Before we start, "
             , Html.strong [] [ Html.text "please enter your Prolific Academic ID" ]
             ]
-        , Html.form [ Events.onSubmit (Msg.ProlificFormSubmit input) ]
+        , Html.form [ Events.onSubmit (Msg.Prolific input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputProlificId" ] [ Html.text "Prolific Academic ID" ]
                 , Html.input

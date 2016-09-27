@@ -39,7 +39,7 @@ body model =
                 Types.Authenticating ->
                     Helpers.loading
 
-                Types.Authenticated _ user ->
+                Types.Authenticated { user } ->
                     Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]

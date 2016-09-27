@@ -6,38 +6,44 @@ import Types
 
 type Msg
     = NoOp
+      -- NAVIGATION
     | NavigateTo Router.Route
-    | Error String
+    | Error Types.Error
+      -- LOGIN
     | LoginFormInput Types.Credentials
     | Login Types.Credentials
-    | LoginFail Types.Feedback
-    | GotToken (Maybe String) Types.Token
+    | LoginFail Types.Error
+    | LoginSuccess Types.Auth
+      -- LOCAL TOKEN LOGIN
     | GotLocalToken (Maybe Types.Token)
-    | GotUser (Maybe String) Types.Token Types.User
-    | GetUserFail Types.Feedback
-    | Logout Types.Token
+    | LoginLocalTokenFail Types.Error
+      -- LOGOUT
+    | Logout
+    | LogoutFail Types.Error
     | LogoutSuccess
-    | LogoutFail String
+      -- PROLIFIC
     | ProlificFormInput String
-    | ProlificFormSubmit String
-    | Recover String
+    | Prolific String
+      -- PASSWORD RECOVERY
     | RecoverFormInput String
-    | RecoverFail Types.Feedback
+    | Recover String
+    | RecoverFail Types.Error
     | RecoverSuccess
-    | Reset Types.ResetCredentials String String
+      -- PASSWORD RESET
     | ResetFormInput Types.ResetCredentials
-    | ResetFail Types.Feedback
+    | Reset Types.ResetCredentials Types.ResetTokens
+    | ResetFail Types.Error
     | ResetSuccess
-    | Register (Maybe String) Types.RegisterCredentials
+      -- REGISTRATION
     | RegisterFormInput Types.RegisterCredentials
-    | RegisterFail Types.Feedback
-    | CreatedProfile Types.Token Types.User Types.Profile
+    | Register (Maybe String) Types.RegisterCredentials
+    | RegisterFail Types.Error
+      -- EMAIL MANAGEMENT
     | VerifyEmail Types.Email
-    | VerifyEmailSent
+    | VerifyEmailSuccess
     | PrimaryEmail Types.Email
-    | PrimariedEmail
     | DeleteEmail Types.Email
-    | DeletedEmail
     | EmailFormInput String
     | AddEmail String
-    | AddEmailFail Types.Feedback
+    | AddEmailFail Types.Error
+    | AddEmailSuccess Types.User

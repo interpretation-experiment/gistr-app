@@ -11,6 +11,7 @@ import Navigation
 import Regex
 import Router
 import String
+import Task
 import Types
 
 
@@ -20,6 +21,9 @@ update msg model =
         NoOp ->
             model ! []
 
+        {-
+           NAVIGATION
+        -}
         NavigateTo route ->
             let
                 authRoute =
@@ -31,8 +35,13 @@ update msg model =
                       )
 
         Error error ->
-            update (NavigateTo Router.Error) { model | error = Just error }
+            -- Don't use `udpate (NavigateTo ...)` here so as not to lose the form inputs
+            { model | route = Router.Error, error = Just error }
+                ! [ Navigation.newUrl (Router.toUrl Router.Error) ]
 
+        {-
+           LOGIN
+        -}
         LoginFormInput input ->
             let
                 loginModel =
@@ -47,69 +56,78 @@ update msg model =
                 loginModel =
                     Helpers.withStatus Model.Sending model.loginModel
             in
-                { model | loginModel = loginModel } ! [ Api.login credentials ]
+                { model | loginModel = loginModel }
+                    ! [ Api.login credentials
+                            |> Task.perform LoginFail LoginSuccess
+                      ]
 
-        LoginFail feedback ->
-            let
-                loginModel =
-                    model.loginModel
-                        |> Helpers.withStatus Model.Entering
-                        |> Helpers.withFeedback feedback
-            in
-                { model | loginModel = loginModel } ! []
+        LoginFail error ->
+            feedbackOrUnrecoverable error model <|
+                (\feedback ->
+                    let
+                        loginModel =
+                            model.loginModel
+                                |> Helpers.withStatus Model.Entering
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | loginModel = loginModel }
+                            ! []
+                )
 
-        GotToken maybeProlific token ->
-            auth Types.Authenticating model !! [ Api.getUser maybeProlific token, LocalStorage.tokenSet token ]
+        LoginSuccess auth ->
+            (case model.route of
+                Router.Login maybeNext ->
+                    updateAuthNav (Types.Authenticated auth) (maybeNext ? Router.Home) model
 
+                _ ->
+                    updateAuth (Types.Authenticated auth) model
+            )
+                !! [ LocalStorage.tokenSet auth.token ]
+
+        {-
+           LOCAL TOKEN LOGIN
+        -}
         GotLocalToken maybeToken ->
             case maybeToken of
                 Just token ->
-                    auth Types.Authenticating model !! [ Api.getUser Nothing token ]
+                    model ! [ Api.fetchAuth token |> Task.perform LoginLocalTokenFail LoginSuccess ]
 
                 Nothing ->
-                    auth Types.Anonymous model
+                    updateAuth Types.Anonymous model
 
-        GotUser maybeProlific token user ->
-            case user.profile of
-                Just _ ->
-                    case model.route of
-                        Router.Login maybeNext ->
-                            authNav (Types.Authenticated token user) (maybeNext ? Router.Home) model
+        LoginLocalTokenFail _ ->
+            updateAuth Types.Anonymous model !! [ LocalStorage.tokenClear ]
 
-                        _ ->
-                            auth (Types.Authenticated token user) model
-
-                Nothing ->
-                    model ! [ Api.createProfile user maybeProlific token ]
-
-        GetUserFail feedback ->
-            let
-                ( model', cmd ) =
-                    auth Types.Anonymous model
-
-                loginModel =
-                    Helpers.withFeedback (Debug.log "error fetching user" feedback) model'.loginModel
-            in
-                { model' | loginModel = loginModel } ! [ cmd, LocalStorage.tokenClear ]
-
-        Logout token ->
-            auth Types.Authenticating model !! [ Api.logout token, LocalStorage.tokenClear ]
-
-        LogoutSuccess ->
-            case model.route of
-                Router.Reset _ _ ->
-                    auth Types.Anonymous model
-
-                _ ->
-                    authNav Types.Anonymous Router.Home model
+        {-
+           LOGOUT
+        -}
+        Logout ->
+            authenticatedOrIgnore model <|
+                (\auth ->
+                    updateAuth Types.Authenticating model
+                        !! [ Api.logout auth |> Task.perform LogoutFail (always LogoutSuccess)
+                           , LocalStorage.tokenClear
+                           ]
+                )
 
         LogoutFail error ->
             let
                 _ =
-                    Debug.log "error logging user out" error
+                    Debug.log "error logging user out" (toString error)
             in
                 update LogoutSuccess model
 
+        LogoutSuccess ->
+            case model.route of
+                Router.Reset _ ->
+                    updateAuth Types.Anonymous model
+
+                _ ->
+                    updateAuthNav Types.Anonymous Router.Home model
+
+        {-
+           PROLIFIC
+        -}
         ProlificFormInput input ->
             let
                 prolificModel =
@@ -119,13 +137,13 @@ update msg model =
             in
                 { model | prolificModel = prolificModel } ! []
 
-        ProlificFormSubmit input ->
+        Prolific prolificId ->
             let
                 regex =
                     Regex.regex "^[a-z0-9]+$"
             in
-                if Regex.contains regex input then
-                    update (NavigateTo <| Router.Register <| Just input) model
+                if Regex.contains regex prolificId then
+                    update (NavigateTo <| Router.Register <| Just prolificId) model
                 else
                     { model
                         | prolificModel =
@@ -139,13 +157,9 @@ update msg model =
                     }
                         ! []
 
-        Recover email ->
-            let
-                recoverModel =
-                    Helpers.withStatus (Model.Form Model.Sending) model.recoverModel
-            in
-                { model | recoverModel = recoverModel } ! [ Api.recover email ]
-
+        {-
+           PASSWORD RECOVERY
+        -}
         RecoverFormInput input ->
             let
                 recoverModel =
@@ -155,14 +169,25 @@ update msg model =
             in
                 { model | recoverModel = recoverModel } ! []
 
-        RecoverFail feedback ->
+        Recover email ->
             let
                 recoverModel =
-                    model.recoverModel
-                        |> Helpers.withStatus (Model.Form Model.Entering)
-                        |> Helpers.withFeedback feedback
+                    Helpers.withStatus (Model.Form Model.Sending) model.recoverModel
             in
-                { model | recoverModel = recoverModel } ! []
+                { model | recoverModel = recoverModel }
+                    ! [ Api.recover email |> Task.perform RecoverFail (always RecoverSuccess) ]
+
+        RecoverFail error ->
+            feedbackOrUnrecoverable error model <|
+                (\feedback ->
+                    let
+                        recoverModel =
+                            model.recoverModel
+                                |> Helpers.withStatus (Model.Form Model.Entering)
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | recoverModel = recoverModel } ! []
+                )
 
         RecoverSuccess ->
             let
@@ -173,7 +198,19 @@ update msg model =
             in
                 { model | recoverModel = recoverModel } ! []
 
-        Reset credentials uid token ->
+        {-
+           PASSWORD RESET
+        -}
+        ResetFormInput input ->
+            let
+                resetModel =
+                    model.resetModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | resetModel = resetModel } ! []
+
+        Reset credentials tokens ->
             let
                 feedback =
                     Types.emptyFeedback
@@ -199,27 +236,21 @@ update msg model =
                                 (Model.Form Model.Sending)
                                 model.resetModel
                     }
-                        ! [ Api.reset credentials uid token ]
+                        ! [ Api.reset credentials tokens |> Task.perform ResetFail (always ResetSuccess) ]
                 else
-                    update (ResetFail feedback) model
+                    update (ResetFail <| Types.ApiFeedback feedback) model
 
-        ResetFormInput input ->
-            let
-                resetModel =
-                    model.resetModel
-                        |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
-            in
-                { model | resetModel = resetModel } ! []
-
-        ResetFail feedback ->
-            let
-                resetModel =
-                    model.resetModel
-                        |> Helpers.withStatus (Model.Form Model.Entering)
-                        |> Helpers.withFeedback feedback
-            in
-                { model | resetModel = resetModel } ! []
+        ResetFail error ->
+            feedbackOrUnrecoverable error model <|
+                (\feedback ->
+                    let
+                        resetModel =
+                            model.resetModel
+                                |> Helpers.withStatus (Model.Form Model.Entering)
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | resetModel = resetModel } ! []
+                )
 
         ResetSuccess ->
             let
@@ -231,20 +262,11 @@ update msg model =
                 model' =
                     { model | resetModel = resetModel }
             in
-                case model.auth of
-                    Types.Authenticated token _ ->
-                        update (Logout token) model'
+                authenticatedOrIgnore model' (\_ -> update Logout model')
 
-                    _ ->
-                        model' ! []
-
-        Register maybeProlific credentials ->
-            let
-                registerModel =
-                    Helpers.withStatus Model.Sending model.registerModel
-            in
-                { model | registerModel = registerModel } ! [ Api.register maybeProlific credentials ]
-
+        {-
+           REGISTRATION
+        -}
         RegisterFormInput input ->
             let
                 registerModel =
@@ -254,34 +276,40 @@ update msg model =
             in
                 { model | registerModel = registerModel } ! []
 
-        RegisterFail feedback ->
+        Register maybeProlific credentials ->
             let
                 registerModel =
-                    model.registerModel
-                        |> Helpers.withStatus Model.Entering
-                        |> Helpers.withFeedback feedback
+                    Helpers.withStatus Model.Sending model.registerModel
             in
-                { model | registerModel = registerModel } ! []
+                { model | registerModel = registerModel }
+                    ! [ Api.register maybeProlific credentials |> Task.perform RegisterFail LoginSuccess ]
 
-        CreatedProfile token user profile ->
-            update (GotUser Nothing token { user | profile = Just profile }) model
+        RegisterFail error ->
+            feedbackOrUnrecoverable error model <|
+                (\feedback ->
+                    let
+                        registerModel =
+                            model.registerModel
+                                |> Helpers.withStatus Model.Entering
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | registerModel = registerModel } ! []
+                )
 
+        {-
+           EMAIL MANAGEMENT
+        -}
         VerifyEmail email ->
             Debug.crash "todo"
 
-        VerifyEmailSent ->
+        VerifyEmailSuccess ->
+            -- TODO popup notification
             Debug.crash "todo"
 
         PrimaryEmail email ->
             Debug.crash "todo"
 
-        PrimariedEmail ->
-            Debug.crash "todo"
-
         DeleteEmail email ->
-            Debug.crash "todo"
-
-        DeletedEmail ->
             Debug.crash "todo"
 
         EmailFormInput input ->
@@ -294,38 +322,80 @@ update msg model =
                 { model | emailsModel = emailsModel } ! []
 
         AddEmail input ->
-            case model.auth of
-                Types.Authenticated token _ ->
+            authenticatedOrIgnore model <|
+                (\auth ->
                     let
                         emailsModel =
                             model.emailsModel
                                 |> Helpers.withStatus Model.Sending
                     in
                         { model | emailsModel = emailsModel }
-                            ! [ Api.addEmail input token ]
+                            ! [ Api.addEmail input auth |> Task.perform AddEmailFail AddEmailSuccess ]
+                )
 
-                _ ->
-                    model ! []
+        AddEmailFail error ->
+            feedbackOrUnrecoverable error model <|
+                (\feedback ->
+                    let
+                        emailsModel =
+                            model.emailsModel
+                                |> Helpers.withStatus Model.Entering
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | emailsModel = emailsModel } ! []
+                )
 
-        AddEmailFail feedback ->
+        AddEmailSuccess user ->
+            -- TODO: popup notification + saved badge
             let
                 emailsModel =
                     model.emailsModel
+                        |> Helpers.withInput ""
                         |> Helpers.withStatus Model.Entering
-                        |> Helpers.withFeedback feedback
             in
-                { model | emailsModel = emailsModel } ! []
+                Helpers.updateUser { model | emailsModel = emailsModel } user ! []
 
 
 
 -- AUTH WITH ROUTING
 
 
-auth : Types.Auth -> Model -> ( Model, Cmd Msg )
-auth auth' model =
-    update (NavigateTo model.route) { model | auth = auth' }
+updateAuth : Types.AuthStatus -> Model -> ( Model, Cmd Msg )
+updateAuth authStatus model =
+    update (NavigateTo model.route) { model | auth = authStatus }
 
 
-authNav : Types.Auth -> Router.Route -> Model -> ( Model, Cmd Msg )
-authNav auth' route model =
-    auth auth' { model | route = route }
+updateAuthNav : Types.AuthStatus -> Router.Route -> Model -> ( Model, Cmd Msg )
+updateAuthNav authStatus route model =
+    updateAuth authStatus { model | route = route }
+
+
+
+-- UPDATE HELPERS
+
+
+feedbackOrUnrecoverable :
+    Types.Error
+    -> Model
+    -> (Types.Feedback -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+feedbackOrUnrecoverable error model feedbackFunc =
+    case error of
+        Types.Unrecoverable error' ->
+            update (Error error) model
+
+        Types.ApiFeedback feedback ->
+            feedbackFunc feedback
+
+
+authenticatedOrIgnore :
+    Model
+    -> (Types.Auth -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+authenticatedOrIgnore model authFunc =
+    case model.auth of
+        Types.Authenticated auth ->
+            authFunc auth
+
+        _ ->
+            model ! []

@@ -22,8 +22,8 @@ import Types
 
 type alias Model =
     { route : Router.Route
-    , auth : Types.Auth
-    , error : Maybe String
+    , auth : Types.AuthStatus
+    , error : Maybe Types.Error
     , loginModel : LoginModel
     , recoverModel : RecoverModel
     , resetModel : ResetModel
