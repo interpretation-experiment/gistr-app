@@ -44,6 +44,7 @@ type Msg
     | PrimaryEmail Types.Email
     | PrimaryEmailSuccess Types.User
     | DeleteEmail Types.Email
+    | DeleteEmailSuccess Types.User
     | AddEmailFormInput String
     | AddEmail String
     | AddEmailFail Types.Error

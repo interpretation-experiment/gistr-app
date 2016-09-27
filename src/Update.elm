@@ -333,19 +333,12 @@ update msg model =
                             auth.user
 
                         emails =
-                            -- Set e.transacting and e.primary to True on our email,
-                            -- and possibly on the other primary email
-                            List.map
-                                (\e ->
-                                    { e
-                                        | transacting = (e.id == email.id) || e.primary
-                                        , primary = (e.id == email.id) || e.primary
-                                    }
-                                )
-                                user.emails
+                            -- Set e.primary to True on our email and possibly on the other primary email,
+                            -- and set e.transacting on all emails
+                            List.map (\e -> { e | transacting = True }) user.emails
                     in
                         Helpers.updateUser model { user | emails = emails }
-                            ! [ Api.setPrimaryEmail { email | primary = True } auth
+                            ! [ Api.updateEmail { email | primary = True } auth
                                     |> Task.perform Error PrimaryEmailSuccess
                               ]
 
@@ -354,7 +347,35 @@ update msg model =
                 \auth -> Helpers.updateUser model user ! []
 
         DeleteEmail email ->
-            Debug.crash "todo"
+            authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        user =
+                            auth.user
+
+                        secondaryEmails =
+                            List.filter (\e -> (e.id /= email.id) && (not e.primary)) user.emails
+
+                        ( emails, fixPrimary ) =
+                            case ( email.primary, secondaryEmails ) of
+                                ( True, secondaryEmail :: _ ) ->
+                                    ( List.map (\e -> { e | transacting = True }) user.emails
+                                    , Api.updateEmail { secondaryEmail | primary = True } auth
+                                    )
+
+                                _ ->
+                                    ( List.map (\e -> { e | transacting = (e.id == email.id) }) user.emails
+                                    , Task.succeed user
+                                    )
+                    in
+                        Helpers.updateUser model { user | emails = emails }
+                            ! [ Task.andThen fixPrimary (always <| Api.deleteEmail email auth)
+                                    |> Task.perform Error DeleteEmailSuccess
+                              ]
+
+        DeleteEmailSuccess user ->
+            authenticatedOrIgnore model <|
+                \auth -> Helpers.updateUser model user ! []
 
         AddEmailFormInput input ->
             let

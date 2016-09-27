@@ -12,7 +12,8 @@ module Api
         , register
         , addEmail
         , requestEmailVerification
-        , setPrimaryEmail
+        , updateEmail
+        , deleteEmail
         )
 
 import Decoders
@@ -273,12 +274,12 @@ requestEmailVerification email { token } =
         |> Task.map .data
 
 
-setPrimaryEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
-setPrimaryEmail email { token } =
+updateEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
+updateEmail email { token } =
     let
         putEmail =
             authCall HttpBuilder.put ("/emails/" ++ (toString email.id) ++ "/") token
-                |> HttpBuilder.withJsonBody (Encoders.email { email | primary = True })
+                |> HttpBuilder.withJsonBody (Encoders.email email)
                 |> HttpBuilder.send
                     (always (Ok ()))
                     HttpBuilder.stringReader
@@ -286,3 +287,17 @@ setPrimaryEmail email { token } =
                 |> Task.map .data
     in
         putEmail `Task.andThen` (always <| fetchUser token)
+
+
+deleteEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
+deleteEmail email { token } =
+    let
+        deleteEmail =
+            authCall HttpBuilder.delete ("/emails/" ++ (toString email.id) ++ "/") token
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    HttpBuilder.stringReader
+                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+                |> Task.map .data
+    in
+        deleteEmail `Task.andThen` (always <| fetchUser token)
