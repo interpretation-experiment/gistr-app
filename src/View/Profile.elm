@@ -123,7 +123,7 @@ email email' =
                 []
             else
                 [ Html.span [] [ Html.text "Unverified" ]
-                , Helpers.evButton [ disabled ] (VerifyEmail email') "Send verification email"
+                , Helpers.evButton [ disabled ] (RequestEmailVerification email') "Send verification email"
                 ]
 
         setPrimary =

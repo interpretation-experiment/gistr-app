@@ -39,9 +39,10 @@ type Msg
     | Register (Maybe String) Types.RegisterCredentials
     | RegisterFail Types.Error
       -- EMAIL MANAGEMENT
-    | VerifyEmail Types.Email
-    | VerifyEmailSuccess
+    | RequestEmailVerification Types.Email
+    | RequestEmailVerificationSuccess Types.Email
     | PrimaryEmail Types.Email
+    | PrimaryEmailSuccess Types.User
     | DeleteEmail Types.Email
     | AddEmailFormInput String
     | AddEmail String

@@ -63,7 +63,7 @@ update msg model =
 
         LoginFail error ->
             feedbackOrUnrecoverable error model <|
-                (\feedback ->
+                \feedback ->
                     let
                         loginModel =
                             model.loginModel
@@ -72,7 +72,6 @@ update msg model =
                     in
                         { model | loginModel = loginModel }
                             ! []
-                )
 
         LoginSuccess auth ->
             (case model.route of
@@ -103,12 +102,11 @@ update msg model =
         -}
         Logout ->
             authenticatedOrIgnore model <|
-                (\auth ->
+                \auth ->
                     updateAuth Types.Authenticating model
                         !! [ Api.logout auth |> Task.perform LogoutFail (always LogoutSuccess)
                            , LocalStorage.tokenClear
                            ]
-                )
 
         LogoutFail error ->
             let
@@ -179,7 +177,7 @@ update msg model =
 
         RecoverFail error ->
             feedbackOrUnrecoverable error model <|
-                (\feedback ->
+                \feedback ->
                     let
                         recoverModel =
                             model.recoverModel
@@ -187,7 +185,6 @@ update msg model =
                                 |> Helpers.withFeedback feedback
                     in
                         { model | recoverModel = recoverModel } ! []
-                )
 
         RecoverSuccess ->
             let
@@ -242,7 +239,7 @@ update msg model =
 
         ResetFail error ->
             feedbackOrUnrecoverable error model <|
-                (\feedback ->
+                \feedback ->
                     let
                         resetModel =
                             model.resetModel
@@ -250,7 +247,6 @@ update msg model =
                                 |> Helpers.withFeedback feedback
                     in
                         { model | resetModel = resetModel } ! []
-                )
 
         ResetSuccess ->
             let
@@ -286,7 +282,7 @@ update msg model =
 
         RegisterFail error ->
             feedbackOrUnrecoverable error model <|
-                (\feedback ->
+                \feedback ->
                     let
                         registerModel =
                             model.registerModel
@@ -294,20 +290,68 @@ update msg model =
                                 |> Helpers.withFeedback feedback
                     in
                         { model | registerModel = registerModel } ! []
-                )
 
         {-
            EMAIL MANAGEMENT
         -}
-        VerifyEmail email ->
-            Debug.crash "todo"
+        RequestEmailVerification email ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        user =
+                            auth.user
 
-        VerifyEmailSuccess ->
+                        emails =
+                            -- Set e.transacting to True on our email
+                            List.map (\e -> { e | transacting = e.id == email.id }) user.emails
+                    in
+                        Helpers.updateUser model { user | emails = emails }
+                            ! [ Api.requestEmailVerification email auth
+                                    |> Task.perform Error (always <| RequestEmailVerificationSuccess email)
+                              ]
+
+        RequestEmailVerificationSuccess email ->
             -- TODO popup notification
-            Debug.crash "todo"
+            authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        user =
+                            auth.user
+
+                        emails =
+                            -- Set e.transacting to False on our email,
+                            -- and leave the rest untouched
+                            List.map (\e -> { e | transacting = (e.id /= email.id) && e.transacting }) user.emails
+                    in
+                        Helpers.updateUser model { user | emails = emails } ! []
 
         PrimaryEmail email ->
-            Debug.crash "todo"
+            authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        user =
+                            auth.user
+
+                        emails =
+                            -- Set e.transacting and e.primary to True on our email,
+                            -- and possibly on the other primary email
+                            List.map
+                                (\e ->
+                                    { e
+                                        | transacting = (e.id == email.id) || e.primary
+                                        , primary = (e.id == email.id) || e.primary
+                                    }
+                                )
+                                user.emails
+                    in
+                        Helpers.updateUser model { user | emails = emails }
+                            ! [ Api.setPrimaryEmail { email | primary = True } auth
+                                    |> Task.perform Error PrimaryEmailSuccess
+                              ]
+
+        PrimaryEmailSuccess user ->
+            authenticatedOrIgnore model <|
+                \auth -> Helpers.updateUser model user ! []
 
         DeleteEmail email ->
             Debug.crash "todo"
@@ -323,7 +367,7 @@ update msg model =
 
         AddEmail input ->
             authenticatedOrIgnore model <|
-                (\auth ->
+                \auth ->
                     let
                         emailsModel =
                             model.emailsModel
@@ -331,11 +375,10 @@ update msg model =
                     in
                         { model | emailsModel = emailsModel }
                             ! [ Api.addEmail input auth |> Task.perform AddEmailFail AddEmailSuccess ]
-                )
 
         AddEmailFail error ->
             feedbackOrUnrecoverable error model <|
-                (\feedback ->
+                \feedback ->
                     let
                         emailsModel =
                             model.emailsModel
@@ -343,7 +386,6 @@ update msg model =
                                 |> Helpers.withFeedback feedback
                     in
                         { model | emailsModel = emailsModel } ! []
-                )
 
         AddEmailSuccess user ->
             -- TODO: popup notification + saved badge

@@ -2,6 +2,7 @@ module Encoders
     exposing
         ( credentials
         , email
+        , recoveryEmail
         , newEmail
         , newProfile
         , resetCredentials
@@ -21,8 +22,8 @@ credentials credentials' =
         ]
 
 
-email : String -> JE.Value
-email email' =
+recoveryEmail : String -> JE.Value
+recoveryEmail email' =
     JE.object [ ( "email", JE.string email' ) ]
 
 
@@ -58,3 +59,14 @@ newEmail : String -> JE.Value
 newEmail email =
     JE.object
         [ ( "email", JE.string email ) ]
+
+
+email : Types.Email -> JE.Value
+email email' =
+    JE.object
+        [ ( "id", JE.int email'.id )
+        , ( "user", JE.int email'.id )
+        , ( "email", JE.string email'.email )
+        , ( "verified", JE.bool email'.verified )
+        , ( "primary", JE.bool email'.primary )
+        ]

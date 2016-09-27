@@ -11,6 +11,8 @@ module Api
         , reset
         , register
         , addEmail
+        , requestEmailVerification
+        , setPrimaryEmail
         )
 
 import Decoders
@@ -125,7 +127,7 @@ fetchUserWithoutProfile token =
     authCall HttpBuilder.get "/users/me/" token
         |> HttpBuilder.send
             (HttpBuilder.jsonReader Decoders.user)
-            (HttpBuilder.jsonReader Decoders.detail)
+            HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
 
@@ -136,7 +138,7 @@ createProfile maybeProlific { token, user } =
         |> HttpBuilder.withJsonBody (Encoders.newProfile maybeProlific)
         |> HttpBuilder.send
             (HttpBuilder.jsonReader Decoders.profile)
-            (HttpBuilder.jsonReader Decoders.detail)
+            HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map (.data >> \p -> { user | profile = Just p })
 
@@ -180,7 +182,7 @@ logout { token } =
     authCall HttpBuilder.post "/rest-auth/logout/" token
         |> HttpBuilder.send
             (always (Ok ()))
-            (HttpBuilder.jsonReader Decoders.detail)
+            HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
 
@@ -192,7 +194,7 @@ logout { token } =
 recover : String -> Task.Task Types.Error ()
 recover email =
     call HttpBuilder.post "/rest-auth/password/reset/"
-        |> HttpBuilder.withJsonBody (Encoders.email email)
+        |> HttpBuilder.withJsonBody (Encoders.recoveryEmail email)
         |> HttpBuilder.send
             (always (Ok ()))
             (HttpBuilder.jsonReader (Decoders.feedback recoverFeedbackFields))
@@ -259,3 +261,28 @@ addEmail email { token } =
 addEmailFeedbackFields : Dict.Dict String String
 addEmailFeedbackFields =
     Dict.fromList [ ( "email", "global" ) ]
+
+
+requestEmailVerification : Types.Email -> Types.Auth -> Task.Task Types.Error ()
+requestEmailVerification email { token } =
+    authCall HttpBuilder.post ("/emails/" ++ (toString email.id) ++ "/verify/") token
+        |> HttpBuilder.send
+            (always (Ok ()))
+            HttpBuilder.stringReader
+        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+        |> Task.map .data
+
+
+setPrimaryEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
+setPrimaryEmail email { token } =
+    let
+        putEmail =
+            authCall HttpBuilder.put ("/emails/" ++ (toString email.id) ++ "/") token
+                |> HttpBuilder.withJsonBody (Encoders.email { email | primary = True })
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    HttpBuilder.stringReader
+                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+                |> Task.map .data
+    in
+        putEmail `Task.andThen` (always <| fetchUser token)
