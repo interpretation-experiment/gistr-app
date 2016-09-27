@@ -43,22 +43,28 @@ update msg model =
                 { model | loginModel = loginModel } ! []
 
         Login credentials ->
-            auth Types.Authenticating model !! [ Api.login credentials ]
+            let
+                loginModel =
+                    Helpers.withStatus Model.Sending model.loginModel
+            in
+                { model | loginModel = loginModel } ! [ Api.login credentials ]
 
         LoginFail feedback ->
             let
                 loginModel =
-                    Helpers.withFeedback feedback model.loginModel
+                    model.loginModel
+                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withFeedback feedback
             in
-                auth Types.Anonymous { model | loginModel = loginModel }
+                { model | loginModel = loginModel } ! []
 
         GotToken maybeProlific token ->
-            model ! [ Api.getUser maybeProlific token, LocalStorage.tokenSet token ]
+            auth Types.Authenticating model !! [ Api.getUser maybeProlific token, LocalStorage.tokenSet token ]
 
         GotLocalToken maybeToken ->
             case maybeToken of
                 Just token ->
-                    model ! [ Api.getUser Nothing token ]
+                    auth Types.Authenticating model !! [ Api.getUser Nothing token ]
 
                 Nothing ->
                     auth Types.Anonymous model
@@ -78,11 +84,13 @@ update msg model =
 
         GetUserFail feedback ->
             let
+                ( model', cmd ) =
+                    auth Types.Anonymous model
+
                 loginModel =
-                    Helpers.withFeedback (Debug.log "error fetching user" feedback) model.loginModel
+                    Helpers.withFeedback (Debug.log "error fetching user" feedback) model'.loginModel
             in
-                auth Types.Anonymous { model | loginModel = loginModel }
-                    !! [ LocalStorage.tokenClear ]
+                { model' | loginModel = loginModel } ! [ cmd, LocalStorage.tokenClear ]
 
         Logout token ->
             auth Types.Authenticating model !! [ Api.logout token, LocalStorage.tokenClear ]
@@ -134,7 +142,7 @@ update msg model =
         Recover email ->
             let
                 recoverModel =
-                    Helpers.withStatus Model.Sending model.recoverModel
+                    Helpers.withStatus (Model.Form Model.Sending) model.recoverModel
             in
                 { model | recoverModel = recoverModel } ! [ Api.recover email ]
 
@@ -151,7 +159,7 @@ update msg model =
             let
                 recoverModel =
                     model.recoverModel
-                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withStatus (Model.Form Model.Entering)
                         |> Helpers.withFeedback feedback
             in
                 { model | recoverModel = recoverModel } ! []
@@ -185,7 +193,12 @@ update msg model =
                            )
             in
                 if feedback == Types.emptyFeedback then
-                    { model | resetModel = Helpers.withStatus Model.Sending model.resetModel }
+                    { model
+                        | resetModel =
+                            Helpers.withStatus
+                                (Model.Form Model.Sending)
+                                model.resetModel
+                    }
                         ! [ Api.reset credentials uid token ]
                 else
                     update (ResetFail feedback) model
@@ -203,7 +216,7 @@ update msg model =
             let
                 resetModel =
                     model.resetModel
-                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withStatus (Model.Form Model.Entering)
                         |> Helpers.withFeedback feedback
             in
                 { model | resetModel = resetModel } ! []
@@ -226,7 +239,11 @@ update msg model =
                         model' ! []
 
         Register maybeProlific credentials ->
-            auth Types.Authenticating model !! [ Api.register maybeProlific credentials ]
+            let
+                registerModel =
+                    Helpers.withStatus Model.Sending model.registerModel
+            in
+                { model | registerModel = registerModel } ! [ Api.register maybeProlific credentials ]
 
         RegisterFormInput input ->
             let
@@ -240,9 +257,11 @@ update msg model =
         RegisterFail feedback ->
             let
                 registerModel =
-                    Helpers.withFeedback feedback model.registerModel
+                    model.registerModel
+                        |> Helpers.withStatus Model.Entering
+                        |> Helpers.withFeedback feedback
             in
-                auth Types.Anonymous { model | registerModel = registerModel }
+                { model | registerModel = registerModel } ! []
 
         CreatedProfile token user profile ->
             update (GotUser Nothing token { user | profile = Just profile }) model

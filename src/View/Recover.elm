@@ -30,11 +30,8 @@ body model =
             case model.auth of
                 Types.Anonymous ->
                     case model.recoverModel.status of
-                        Model.Entering ->
-                            form model.recoverModel True
-
-                        Model.Sending ->
-                            form model.recoverModel False
+                        Model.Form formStatus ->
+                            form model.recoverModel formStatus
 
                         Model.Sent ->
                             sent model.recoverModel
@@ -48,8 +45,8 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Model.RecoverModel -> Bool -> Html.Html Msg
-form { input, feedback } enabled =
+form : Model.RecoverModel -> Model.FormStatus -> Html.Html Msg
+form { input, feedback } formStatus =
     Html.div []
         [ Html.h2 [] [ Html.text "Reset your password" ]
         , Html.p [] [ Html.text "Type in the email address you gave for your account and we'll send you an email with instructions to reset your password." ]
@@ -63,7 +60,7 @@ form { input, feedback } enabled =
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (formStatus == Model.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey@example.com"
                     , Attributes.type' "mail"
@@ -76,7 +73,7 @@ form { input, feedback } enabled =
                 [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (formStatus == Model.Sending)
                     ]
                     [ Html.text "Request password reset" ]
                 ]

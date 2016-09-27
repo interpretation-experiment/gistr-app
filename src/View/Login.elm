@@ -29,10 +29,10 @@ body model =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.loginModel True
+                    form model.loginModel
 
                 Types.Authenticating ->
-                    form model.loginModel False
+                    Helpers.loading
 
                 Types.Authenticated _ user ->
                     Helpers.alreadyAuthed user
@@ -40,8 +40,8 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Model.LoginModel -> Bool -> Html.Html Msg
-form { input, feedback } enabled =
+form : Model.LoginModel -> Html.Html Msg
+form { input, feedback, status } =
     Html.div []
         [ Html.div []
             [ Html.text "No account yet? "
@@ -53,7 +53,7 @@ form { input, feedback } enabled =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -67,7 +67,7 @@ form { input, feedback } enabled =
                 [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password
@@ -80,7 +80,7 @@ form { input, feedback } enabled =
                 [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     ]
                     [ Html.text "Sign in" ]
                 , Helpers.navA Router.Recover "I forgot my password"

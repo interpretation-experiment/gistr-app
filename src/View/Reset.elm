@@ -27,11 +27,8 @@ body model uid token =
     let
         inner =
             case model.resetModel.status of
-                Model.Entering ->
-                    form model.resetModel uid token True
-
-                Model.Sending ->
-                    form model.resetModel uid token False
+                Model.Form formStatus ->
+                    form model.resetModel uid token formStatus
 
                 Model.Sent ->
                     sent
@@ -39,8 +36,8 @@ body model uid token =
         Html.div [] [ inner ]
 
 
-form : Model.ResetModel -> String -> String -> Bool -> Html.Html Msg
-form { input, feedback } uid token enabled =
+form : Model.ResetModel -> String -> String -> Model.FormStatus -> Html.Html Msg
+form { input, feedback } uid token formStatus =
     Html.div []
         [ Html.h2 [] [ Html.text "Set your new password" ]
         , Html.form [ Events.onSubmit (Msg.Reset input uid token) ]
@@ -48,7 +45,7 @@ form { input, feedback } uid token enabled =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (formStatus == Model.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
@@ -62,7 +59,7 @@ form { input, feedback } uid token enabled =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (formStatus == Model.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -76,7 +73,7 @@ form { input, feedback } uid token enabled =
                 , Html.span [] [ Html.text (Helpers.feedbackGet "resetCredentials" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (formStatus == Model.Sending)
                     ]
                     [ Html.text "Set new password" ]
                 ]

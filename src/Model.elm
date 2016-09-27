@@ -1,6 +1,7 @@
 module Model
     exposing
         ( EmailsModel
+        , PageStatus(..)
         , FormStatus(..)
         , LoginModel
         , Model
@@ -32,15 +33,13 @@ type alias Model =
     }
 
 
-
-{-
-   TODO: use FormStatus in all forms, don't rely on Auth
--}
-
-
 type FormStatus
     = Entering
     | Sending
+
+
+type PageStatus
+    = Form FormStatus
     | Sent
 
 
@@ -77,6 +76,7 @@ emptyForms model =
 type alias LoginModel =
     { input : Types.Credentials
     , feedback : Types.Feedback
+    , status : FormStatus
     }
 
 
@@ -84,6 +84,7 @@ emptyLoginModel : LoginModel
 emptyLoginModel =
     { input = Types.emptyCredentials
     , feedback = Types.emptyFeedback
+    , status = Entering
     }
 
 
@@ -94,7 +95,7 @@ emptyLoginModel =
 type alias RecoverModel =
     { input : String
     , feedback : Types.Feedback
-    , status : FormStatus
+    , status : PageStatus
     }
 
 
@@ -102,7 +103,7 @@ emptyRecoverModel : RecoverModel
 emptyRecoverModel =
     { input = ""
     , feedback = Types.emptyFeedback
-    , status = Entering
+    , status = Form Entering
     }
 
 
@@ -113,7 +114,7 @@ emptyRecoverModel =
 type alias ResetModel =
     { input : Types.ResetCredentials
     , feedback : Types.Feedback
-    , status : FormStatus
+    , status : PageStatus
     }
 
 
@@ -121,7 +122,7 @@ emptyResetModel : ResetModel
 emptyResetModel =
     { input = Types.emptyResetCredentials
     , feedback = Types.emptyFeedback
-    , status = Entering
+    , status = Form Entering
     }
 
 
@@ -149,6 +150,7 @@ emptyProlificModel =
 type alias RegisterModel =
     { input : Types.RegisterCredentials
     , feedback : Types.Feedback
+    , status : FormStatus
     }
 
 
@@ -156,6 +158,7 @@ emptyRegisterModel : RegisterModel
 emptyRegisterModel =
     { input = Types.emptyRegisterCredentials
     , feedback = Types.emptyFeedback
+    , status = Entering
     }
 
 

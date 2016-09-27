@@ -29,10 +29,10 @@ body model maybeProlific =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.registerModel maybeProlific True
+                    form model.registerModel maybeProlific
 
                 Types.Authenticating ->
-                    form model.registerModel maybeProlific False
+                    Helpers.loading
 
                 Types.Authenticated _ user ->
                     Helpers.alreadyAuthed user
@@ -40,8 +40,8 @@ body model maybeProlific =
         Html.div [] [ inner ]
 
 
-form : Model.RegisterModel -> Maybe String -> Bool -> Html.Html Msg
-form { input, feedback } maybeProlific enabled =
+form : Model.RegisterModel -> Maybe String -> Html.Html Msg
+form { input, feedback, status } maybeProlific =
     Html.div []
         [ prolificLogin maybeProlific
         , Html.form [ Events.onSubmit (Msg.Register maybeProlific input) ]
@@ -49,7 +49,7 @@ form { input, feedback } maybeProlific enabled =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -63,7 +63,7 @@ form { input, feedback } maybeProlific enabled =
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     , Attributes.placeholder "joey@example.com (optional)"
                     , Attributes.type' "email"
                     , Attributes.value input.email
@@ -76,7 +76,7 @@ form { input, feedback } maybeProlific enabled =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
@@ -89,7 +89,7 @@ form { input, feedback } maybeProlific enabled =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -102,7 +102,7 @@ form { input, feedback } maybeProlific enabled =
                 [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status == Model.Sending)
                     ]
                     [ Html.text "Sign up" ]
                 ]
