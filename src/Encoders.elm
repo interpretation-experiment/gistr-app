@@ -1,6 +1,7 @@
 module Encoders
     exposing
         ( credentials
+        , user
         , email
         , recoveryEmail
         , newEmail
@@ -21,6 +22,16 @@ credentials credentials' =
     JE.object
         [ ( "username", JE.string credentials'.username )
         , ( "password", JE.string credentials'.password )
+        ]
+
+
+user : Types.User -> JE.Value
+user user' =
+    JE.object
+        [ ( "id", JE.int user'.id )
+        , ( "username", JE.string user'.username )
+        , ( "is_active", JE.bool user'.isActive )
+        , ( "is_staff", JE.bool user'.isStaff )
         ]
 
 

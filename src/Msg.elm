@@ -45,6 +45,11 @@ type Msg
     | ChangePasswordSuccess Types.Auth
     | ChangePasswordRecover
     | ChangePasswordRecoverSuccess
+      -- USERNAME MANAGEMENT
+    | ChangeUsernameFormInput String
+    | ChangeUsername String
+    | ChangeUsernameFail Types.Error
+    | ChangeUsernameSuccess Types.User
       -- EMAIL MANAGEMENT
     | RequestEmailVerification Types.Email
     | RequestEmailVerificationSuccess Types.Email

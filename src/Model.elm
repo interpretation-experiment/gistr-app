@@ -11,6 +11,7 @@ module Model
         , ResetModel
         , RegisterModel
         , ChangePasswordModel
+        , ChangeUsernameModel
         , emptyForms
         , initialModel
         )
@@ -34,6 +35,7 @@ type alias Model =
     , emailsModel : EmailsModel
     , emailConfirmationModel : EmailConfirmationModel
     , changePasswordModel : ChangePasswordModel
+    , changeUsernameModel : ChangeUsernameModel
     }
 
 
@@ -60,21 +62,20 @@ initialModel route =
     , emailsModel = emptyEmailsModel
     , emailConfirmationModel = SendingConfirmation
     , changePasswordModel = emptyChangePasswordModel
+    , changeUsernameModel = emptyChangeUsernameModel
     }
 
 
 emptyForms : Model -> Model
 emptyForms model =
-    { model
-        | loginModel = emptyLoginModel
-        , recoverModel = emptyRecoverModel
-        , resetModel = emptyResetModel
-        , prolificModel = emptyProlificModel
-        , registerModel = emptyRegisterModel
-        , emailsModel = emptyEmailsModel
-        , emailConfirmationModel = SendingConfirmation
-        , changePasswordModel = emptyChangePasswordModel
-    }
+    let
+        emptyModel =
+            initialModel model.route
+    in
+        { emptyModel
+            | auth = model.auth
+            , error = model.error
+        }
 
 
 
@@ -184,6 +185,25 @@ type alias ChangePasswordModel =
 emptyChangePasswordModel : ChangePasswordModel
 emptyChangePasswordModel =
     { input = Types.emptyPasswordCredentials
+    , feedback = Types.emptyFeedback
+    , status = Entering
+    }
+
+
+
+-- USERNAME
+
+
+type alias ChangeUsernameModel =
+    { input : String
+    , feedback : Types.Feedback
+    , status : FormStatus
+    }
+
+
+emptyChangeUsernameModel : ChangeUsernameModel
+emptyChangeUsernameModel =
+    { input = ""
     , feedback = Types.emptyFeedback
     , status = Entering
     }

@@ -33,7 +33,11 @@ header model =
         logout =
             case model.auth of
                 Types.Authenticated auth ->
-                    Helpers.evButton [] Logout "Logout"
+                    Html.div []
+                        [ Html.text "Logged in as "
+                        , Html.strong [] [ Html.text auth.user.username ]
+                        , Helpers.evButton [] Logout "Logout"
+                        ]
 
                 _ ->
                     Html.span [] []
@@ -61,7 +65,10 @@ body model route user =
             Html.text "Tests"
 
         Router.Settings ->
-            Html.div [] [ passwordChange model.changePasswordModel ]
+            Html.div []
+                [ passwordChange model.changePasswordModel
+                , usernameChange model.changeUsernameModel
+                ]
 
         Router.Emails ->
             emails model.emailsModel user.emails
@@ -123,6 +130,29 @@ passwordChange { input, feedback, status } =
                     [ Html.text "Update password" ]
                 , Helpers.evA "#" Msg.ChangePasswordRecover "I forgot my current password"
                 ]
+            ]
+        ]
+
+
+usernameChange : Model.ChangeUsernameModel -> Html.Html Msg
+usernameChange { input, feedback, status } =
+    Html.div []
+        [ Html.h2 [] [ Html.text "Change username" ]
+        , Html.form [ Events.onSubmit (ChangeUsername input) ]
+            [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+            , Html.input
+                [ Attributes.id "inputUsername"
+                , Attributes.disabled (status == Model.Sending)
+                , Attributes.type' "text"
+                , Attributes.value input
+                , Events.onInput ChangeUsernameFormInput
+                ]
+                []
+            , Html.button
+                [ Attributes.type' "submit"
+                , Attributes.disabled (status == Model.Sending)
+                ]
+                [ Html.text "Update username" ]
             ]
         ]
 

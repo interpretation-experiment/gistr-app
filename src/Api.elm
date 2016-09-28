@@ -10,6 +10,7 @@ module Api
         , recover
         , reset
         , register
+        , updateUser
         , changePassword
         , addEmail
         , requestEmailVerification
@@ -239,7 +240,36 @@ resetFeedbackFields =
 translateResetFeedback : Types.Feedback -> Types.Feedback
 translateResetFeedback feedback =
     feedback
-        |> Dict.update "resetCredentials" (Maybe.map (always "There was a problem. Did you use the last password-reset link you received?"))
+        |> Dict.update
+            "resetCredentials"
+            (Maybe.map
+                (always
+                    ("There was a problem. Did you use the"
+                        ++ " last password-reset link you received?"
+                    )
+                )
+            )
+
+
+
+-- USER
+
+
+updateUser : Types.User -> Types.Auth -> Task.Task Types.Error Types.User
+updateUser user { token } =
+    authCall HttpBuilder.put ("/users/" ++ (toString user.id) ++ "/") token
+        |> HttpBuilder.withJsonBody (Encoders.user user)
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader Decoders.user)
+            (HttpBuilder.jsonReader (Decoders.feedback usernameChangeFeedbackFields))
+        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
+        |> Task.map .data
+
+
+usernameChangeFeedbackFields : Dict.Dict String String
+usernameChangeFeedbackFields =
+    Dict.fromList
+        [ ( "username", "global" ) ]
 
 
 

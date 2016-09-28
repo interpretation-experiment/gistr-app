@@ -329,7 +329,7 @@ update msg model =
                         { model | changePasswordModel = changePasswordModel } ! []
 
         ChangePasswordSuccess auth ->
-            -- TODO popup notification + saved badge
+            -- TODO saved badge
             update (LoginSuccess auth) model
 
         ChangePasswordRecover ->
@@ -358,6 +358,49 @@ update msg model =
         ChangePasswordRecoverSuccess ->
             -- TODO popup notification
             model ! []
+
+        {-
+           USERNAME MANAGEMENT
+        -}
+        ChangeUsernameFormInput input ->
+            let
+                changeUsernameModel =
+                    model.changeUsernameModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | changeUsernameModel = changeUsernameModel } ! []
+
+        ChangeUsername username ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        user =
+                            auth.user
+
+                        changeUsernameModel =
+                            model.changeUsernameModel
+                                |> Helpers.withStatus Model.Sending
+                    in
+                        { model | changeUsernameModel = changeUsernameModel }
+                            ! [ Api.updateUser { user | username = username } auth
+                                    |> Task.perform ChangeUsernameFail ChangeUsernameSuccess
+                              ]
+
+        ChangeUsernameFail error ->
+            feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    let
+                        changeUsernameModel =
+                            model.changeUsernameModel
+                                |> Helpers.withStatus Model.Entering
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | changeUsernameModel = changeUsernameModel } ! []
+
+        ChangeUsernameSuccess user ->
+            -- TODO saved badge
+            Helpers.updateUser (Model.emptyForms model) user ! []
 
         {-
            EMAIL MANAGEMENT
@@ -500,13 +543,7 @@ update msg model =
 
         AddEmailSuccess user ->
             -- TODO: popup notification + saved badge
-            let
-                emailsModel =
-                    model.emailsModel
-                        |> Helpers.withInput ""
-                        |> Helpers.withStatus Model.Entering
-            in
-                Helpers.updateUser { model | emailsModel = emailsModel } user ! []
+            Helpers.updateUser (Model.emptyForms model) user ! []
 
 
 
