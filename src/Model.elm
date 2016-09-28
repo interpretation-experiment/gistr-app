@@ -10,6 +10,7 @@ module Model
         , RecoverModel
         , ResetModel
         , RegisterModel
+        , ChangePasswordModel
         , emptyForms
         , initialModel
         )
@@ -32,6 +33,7 @@ type alias Model =
     , registerModel : RegisterModel
     , emailsModel : EmailsModel
     , emailConfirmationModel : EmailConfirmationModel
+    , changePasswordModel : ChangePasswordModel
     }
 
 
@@ -57,6 +59,7 @@ initialModel route =
     , registerModel = emptyRegisterModel
     , emailsModel = emptyEmailsModel
     , emailConfirmationModel = SendingConfirmation
+    , changePasswordModel = emptyChangePasswordModel
     }
 
 
@@ -70,6 +73,7 @@ emptyForms model =
         , registerModel = emptyRegisterModel
         , emailsModel = emptyEmailsModel
         , emailConfirmationModel = SendingConfirmation
+        , changePasswordModel = emptyChangePasswordModel
     }
 
 
@@ -161,6 +165,25 @@ type alias RegisterModel =
 emptyRegisterModel : RegisterModel
 emptyRegisterModel =
     { input = Types.emptyRegisterCredentials
+    , feedback = Types.emptyFeedback
+    , status = Entering
+    }
+
+
+
+-- PASSWORD
+
+
+type alias ChangePasswordModel =
+    { input : Types.PasswordCredentials
+    , feedback : Types.Feedback
+    , status : FormStatus
+    }
+
+
+emptyChangePasswordModel : ChangePasswordModel
+emptyChangePasswordModel =
+    { input = Types.emptyPasswordCredentials
     , feedback = Types.emptyFeedback
     , status = Entering
     }

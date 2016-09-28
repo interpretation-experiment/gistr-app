@@ -10,6 +10,7 @@ module Api
         , recover
         , reset
         , register
+        , changePassword
         , addEmail
         , requestEmailVerification
         , updateEmail
@@ -239,6 +240,39 @@ translateResetFeedback : Types.Feedback -> Types.Feedback
 translateResetFeedback feedback =
     feedback
         |> Dict.update "resetCredentials" (Maybe.map (always "There was a problem. Did you use the last password-reset link you received?"))
+
+
+
+-- PASSWORD CHANGE
+
+
+changePassword : Types.PasswordCredentials -> Types.Auth -> Task.Task Types.Error Types.Auth
+changePassword credentials auth =
+    let
+        loginCredentials =
+            { username = auth.user.username, password = credentials.password1 }
+
+        postPassword =
+            authCall HttpBuilder.post "/rest-auth/password/change/" auth.token
+                |> HttpBuilder.withJsonBody (Encoders.passwordCredentials credentials)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    (HttpBuilder.jsonReader (Decoders.feedback passwordChangeFeedbackFields))
+                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
+                |> Task.map .data
+    in
+        postPassword
+            `Task.andThen` (always <| logout auth)
+            `Task.andThen` (always <| login loginCredentials)
+
+
+passwordChangeFeedbackFields : Dict.Dict String String
+passwordChangeFeedbackFields =
+    Dict.fromList
+        [ ( "old_password", "oldPassword" )
+        , ( "new_password1", "password1" )
+        , ( "new_password2", "password2" )
+        ]
 
 
 

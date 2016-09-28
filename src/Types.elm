@@ -6,6 +6,7 @@ module Types
         , Email
         , Feedback
         , Profile
+        , PasswordCredentials
         , RegisterCredentials
         , ResetCredentials
         , ResetTokens
@@ -16,6 +17,7 @@ module Types
         , customFeedback
         , emptyCredentials
         , emptyFeedback
+        , emptyPasswordCredentials
         , emptyRegisterCredentials
         , emptyResetCredentials
         , globalFeedback
@@ -177,6 +179,22 @@ type alias RegisterCredentials =
 emptyRegisterCredentials : RegisterCredentials
 emptyRegisterCredentials =
     RegisterCredentials "" "" "" ""
+
+
+
+-- PASSWORD
+
+
+type alias PasswordCredentials =
+    { oldPassword : String
+    , password1 : String
+    , password2 : String
+    }
+
+
+emptyPasswordCredentials : PasswordCredentials
+emptyPasswordCredentials =
+    PasswordCredentials "" "" ""
 
 
 

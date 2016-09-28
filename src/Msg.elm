@@ -38,6 +38,13 @@ type Msg
     | RegisterFormInput Types.RegisterCredentials
     | Register (Maybe String) Types.RegisterCredentials
     | RegisterFail Types.Error
+      -- PASSWORD MANAGEMENT
+    | ChangePasswordFormInput Types.PasswordCredentials
+    | ChangePassword Types.PasswordCredentials
+    | ChangePasswordFail Types.Error
+    | ChangePasswordSuccess Types.Auth
+    | ChangePasswordRecover
+    | ChangePasswordRecoverSuccess
       -- EMAIL MANAGEMENT
     | RequestEmailVerification Types.Email
     | RequestEmailVerificationSuccess Types.Email

@@ -3,7 +3,7 @@ module Update exposing (update)
 import Api
 import Helpers exposing ((!!))
 import LocalStorage
-import Maybe.Extra exposing ((?))
+import Maybe.Extra exposing ((?), or)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
@@ -85,7 +85,8 @@ update msg model =
         GotLocalToken maybeToken ->
             case maybeToken of
                 Just token ->
-                    model ! [ Api.fetchAuth token |> Task.perform LoginLocalTokenFail LoginSuccess ]
+                    model
+                        ! [ Api.fetchAuth token |> Task.perform LoginLocalTokenFail LoginSuccess ]
 
                 Nothing ->
                     updateAuth Types.Anonymous model
@@ -229,7 +230,9 @@ update msg model =
                                 (Model.Form Model.Sending)
                                 model.resetModel
                     }
-                        ! [ Api.reset credentials tokens |> Task.perform ResetFail (always ResetSuccess) ]
+                        ! [ Api.reset credentials tokens
+                                |> Task.perform ResetFail (always ResetSuccess)
+                          ]
                 else
                     update (ResetFail <| Types.ApiFeedback feedback) model
 
@@ -274,7 +277,9 @@ update msg model =
                     Helpers.withStatus Model.Sending model.registerModel
             in
                 { model | registerModel = registerModel }
-                    ! [ Api.register maybeProlific credentials |> Task.perform RegisterFail LoginSuccess ]
+                    ! [ Api.register maybeProlific credentials
+                            |> Task.perform RegisterFail LoginSuccess
+                      ]
 
         RegisterFail error ->
             feedbackOrUnrecoverable error model <|
@@ -286,6 +291,73 @@ update msg model =
                                 |> Helpers.withFeedback feedback
                     in
                         { model | registerModel = registerModel } ! []
+
+        {-
+           PASSWORD MANAGEMENT
+        -}
+        ChangePasswordFormInput input ->
+            let
+                changePasswordModel =
+                    model.changePasswordModel
+                        |> Helpers.withInput input
+                        |> Helpers.withFeedback Types.emptyFeedback
+            in
+                { model | changePasswordModel = changePasswordModel } ! []
+
+        ChangePassword credentials ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        changePasswordModel =
+                            model.changePasswordModel
+                                |> Helpers.withStatus Model.Sending
+                    in
+                        { model | changePasswordModel = changePasswordModel }
+                            ! [ Api.changePassword credentials auth
+                                    |> Task.perform ChangePasswordFail ChangePasswordSuccess
+                              ]
+
+        ChangePasswordFail error ->
+            feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    let
+                        changePasswordModel =
+                            model.changePasswordModel
+                                |> Helpers.withStatus Model.Entering
+                                |> Helpers.withFeedback feedback
+                    in
+                        { model | changePasswordModel = changePasswordModel } ! []
+
+        ChangePasswordSuccess auth ->
+            -- TODO popup notification + saved badge
+            update (LoginSuccess auth) model
+
+        ChangePasswordRecover ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        maybePrimary =
+                            List.filter (\e -> e.primary) auth.user.emails |> List.head
+
+                        maybeRecovery =
+                            maybePrimary `or` (List.head auth.user.emails)
+                    in
+                        case maybeRecovery of
+                            Nothing ->
+                                -- TODO popup notification
+                                model ! []
+
+                            Just email ->
+                                -- TODO popup notification
+                                model
+                                    ! [ Api.recover email.email
+                                            |> Task.perform Error
+                                                (always ChangePasswordRecoverSuccess)
+                                      ]
+
+        ChangePasswordRecoverSuccess ->
+            -- TODO popup notification
+            model ! []
 
         {-
            EMAIL MANAGEMENT
@@ -303,7 +375,8 @@ update msg model =
                     in
                         Helpers.updateUser model { user | emails = emails }
                             ! [ Api.requestEmailVerification email auth
-                                    |> Task.perform Error (always <| RequestEmailVerificationSuccess email)
+                                    |> Task.perform Error
+                                        (always <| RequestEmailVerificationSuccess email)
                               ]
 
         RequestEmailVerificationSuccess email ->
@@ -317,12 +390,13 @@ update msg model =
                         emails =
                             -- Set e.transacting to False on our email,
                             -- and leave the rest untouched
-                            List.map (\e -> { e | transacting = (e.id /= email.id) && e.transacting }) user.emails
+                            List.map
+                                (\e -> { e | transacting = (e.id /= email.id) && e.transacting })
+                                user.emails
                     in
                         Helpers.updateUser model { user | emails = emails } ! []
 
         EmailConfirmationFail error ->
-            -- TODO: elucidate redirection when not logged in
             -- TODO popup notification
             feedbackOrUnrecoverable error model <|
                 \_ ->
@@ -344,8 +418,8 @@ update msg model =
                             auth.user
 
                         emails =
-                            -- Set e.primary to True on our email and possibly on the other primary email,
-                            -- and set e.transacting on all emails
+                            -- Set e.primary to True on our email and possibly on the other
+                            -- primary email, and set e.transacting on all emails
                             List.map (\e -> { e | transacting = True }) user.emails
                     in
                         Helpers.updateUser model { user | emails = emails }
@@ -375,7 +449,9 @@ update msg model =
                                     )
 
                                 _ ->
-                                    ( List.map (\e -> { e | transacting = (e.id == email.id) }) user.emails
+                                    ( List.map
+                                        (\e -> { e | transacting = (e.id == email.id) })
+                                        user.emails
                                     , Task.succeed user
                                     )
                     in
@@ -407,7 +483,9 @@ update msg model =
                                 |> Helpers.withStatus Model.Sending
                     in
                         { model | emailsModel = emailsModel }
-                            ! [ Api.addEmail input auth |> Task.perform AddEmailFail AddEmailSuccess ]
+                            ! [ Api.addEmail input auth
+                                    |> Task.perform AddEmailFail AddEmailSuccess
+                              ]
 
         AddEmailFail error ->
             feedbackOrUnrecoverable error model <|

@@ -61,13 +61,70 @@ body model route user =
             Html.text "Tests"
 
         Router.Settings ->
-            Html.text "Settings"
+            Html.div [] [ passwordChange model.changePasswordModel ]
 
         Router.Emails ->
             emails model.emailsModel user.emails
 
         Router.Confirm key ->
             emailConfirmation model.emailConfirmationModel key
+
+
+passwordChange : Model.ChangePasswordModel -> Html.Html Msg
+passwordChange { input, feedback, status } =
+    Html.div []
+        [ Html.h2 [] [ Html.text "Change password" ]
+        , Html.form [ Events.onSubmit (Msg.ChangePassword input) ]
+            [ Html.div []
+                [ Html.label [ Attributes.for "inputOldPassword" ] [ Html.text "Old password" ]
+                , Html.input
+                    [ Attributes.id "inputOldPassword"
+                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.placeholder "Your old password"
+                    , Attributes.type' "password"
+                    , Attributes.value input.oldPassword
+                    , Events.onInput (Msg.ChangePasswordFormInput << \o -> { input | oldPassword = o })
+                    ]
+                    []
+                , Html.span [] [ Html.text (Helpers.feedbackGet "oldPassword" feedback) ]
+                ]
+            , Html.div []
+                [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
+                , Html.input
+                    [ Attributes.id "inputPassword1"
+                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type' "password"
+                    , Attributes.value input.password1
+                    , Events.onInput (Msg.ChangePasswordFormInput << \p -> { input | password1 = p })
+                    ]
+                    []
+                , Html.span [] [ Html.text (Helpers.feedbackGet "password1" feedback) ]
+                ]
+            , Html.div []
+                [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
+                , Html.input
+                    [ Attributes.id "inputPassword2"
+                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type' "password"
+                    , Attributes.value input.password2
+                    , Events.onInput (Msg.ChangePasswordFormInput << \p -> { input | password2 = p })
+                    ]
+                    []
+                , Html.span [] [ Html.text (Helpers.feedbackGet "password2" feedback) ]
+                ]
+            , Html.div []
+                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                , Html.button
+                    [ Attributes.type' "submit"
+                    , Attributes.disabled (status == Model.Sending)
+                    ]
+                    [ Html.text "Update password" ]
+                , Helpers.evA "#" Msg.ChangePasswordRecover "I forgot my current password"
+                ]
+            ]
+        ]
 
 
 emails : Model.EmailsModel -> List Types.Email -> Html.Html Msg

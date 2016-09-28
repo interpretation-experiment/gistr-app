@@ -8,6 +8,7 @@ module Encoders
         , newProfile
         , resetCredentials
         , registerCredentials
+        , passwordCredentials
         )
 
 import Json.Encode as JE
@@ -53,6 +54,15 @@ newProfile maybeProlific =
     JE.object
         [ ( "prolific_id", mapDefault JE.null JE.string maybeProlific )
         , ( "mothertongue", JE.string "english" )
+        ]
+
+
+passwordCredentials : Types.PasswordCredentials -> JE.Value
+passwordCredentials { oldPassword, password1, password2 } =
+    JE.object
+        [ ( "old_password", JE.string oldPassword )
+        , ( "new_password1", JE.string password1 )
+        , ( "new_password2", JE.string password2 )
         ]
 
 
