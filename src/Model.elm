@@ -1,6 +1,7 @@
 module Model
     exposing
         ( EmailsModel
+        , EmailConfirmationModel(..)
         , PageStatus(..)
         , FormStatus(..)
         , LoginModel
@@ -30,6 +31,7 @@ type alias Model =
     , prolificModel : ProlificModel
     , registerModel : RegisterModel
     , emailsModel : EmailsModel
+    , emailConfirmationModel : EmailConfirmationModel
     }
 
 
@@ -54,6 +56,7 @@ initialModel route =
     , prolificModel = emptyProlificModel
     , registerModel = emptyRegisterModel
     , emailsModel = emptyEmailsModel
+    , emailConfirmationModel = SendingConfirmation
     }
 
 
@@ -66,6 +69,7 @@ emptyForms model =
         , prolificModel = emptyProlificModel
         , registerModel = emptyRegisterModel
         , emailsModel = emptyEmailsModel
+        , emailConfirmationModel = SendingConfirmation
     }
 
 
@@ -179,3 +183,8 @@ emptyEmailsModel =
     , feedback = Types.emptyFeedback
     , status = Entering
     }
+
+
+type EmailConfirmationModel
+    = SendingConfirmation
+    | ConfirmationFail

@@ -14,14 +14,18 @@ module Helpers
         , withStatus
         , (!!)
         , updateUser
+        , navigateTo
+        , authenticatedOrIgnore
         )
 
+import Cmds
 import Dict
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
 import Maybe.Extra exposing ((?))
+import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo))
 import Router
 import Task
@@ -31,6 +35,10 @@ import Types
 cmd : a -> Cmd a
 cmd msg =
     Task.perform (always msg) (always msg) (Task.succeed ())
+
+
+
+-- UPDATES
 
 
 (!!) : ( model, Cmd msg ) -> List (Cmd msg) -> ( model, Cmd msg )
@@ -49,6 +57,29 @@ updateUser model user =
 
         _ ->
             model
+
+
+navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
+navigateTo model route =
+    let
+        authRoute =
+            Router.authRedirect model.auth (Debug.log "nav request" route)
+    in
+        Model.emptyForms { model | route = (Debug.log "nav final" authRoute) }
+            ! Cmds.cmdsForRoute model authRoute
+
+
+authenticatedOrIgnore :
+    Model
+    -> (Types.Auth -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+authenticatedOrIgnore model authFunc =
+    case model.auth of
+        Types.Authenticated auth ->
+            authFunc auth
+
+        _ ->
+            model ! []
 
 
 

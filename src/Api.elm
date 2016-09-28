@@ -14,6 +14,7 @@ module Api
         , requestEmailVerification
         , updateEmail
         , deleteEmail
+        , confirmEmail
         )
 
 import Decoders
@@ -50,10 +51,10 @@ authCall method url token =
 
 
 errorAs :
-    (a -> Types.Error)
-    -> (String -> Types.Error)
+    (a -> b)
+    -> (String -> b)
     -> HttpBuilder.Error a
-    -> Types.Error
+    -> b
 errorAs format default error =
     case error of
         HttpBuilder.BadResponse response ->
@@ -292,7 +293,7 @@ updateEmail email { token } =
 deleteEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
 deleteEmail email { token } =
     let
-        deleteEmail =
+        delete =
             authCall HttpBuilder.delete ("/emails/" ++ (toString email.id) ++ "/") token
                 |> HttpBuilder.send
                     (always (Ok ()))
@@ -300,4 +301,20 @@ deleteEmail email { token } =
                 |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
                 |> Task.map .data
     in
-        deleteEmail `Task.andThen` (always <| fetchUser token)
+        delete `Task.andThen` (always <| fetchUser token)
+
+
+confirmEmail : String -> Types.Auth -> Task.Task Types.Error Types.User
+confirmEmail key { token } =
+    let
+        confirm =
+            call HttpBuilder.post "/rest-auth/registration/verify-email/"
+                |> HttpBuilder.withJsonBody (Encoders.emailConfirmationKey key)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    (HttpBuilder.jsonReader Decoders.detail)
+                |> Task.mapError
+                    (errorAs (Types.globalFeedback >> Types.ApiFeedback) Types.Unrecoverable)
+                |> Task.map .data
+    in
+        confirm `Task.andThen` (always <| fetchUser token)

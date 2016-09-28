@@ -44,6 +44,7 @@ type ProfileRoute
     = Tests
     | Settings
     | Emails
+    | Confirm String
 
 
 authRedirect : Types.AuthStatus -> Route -> Route
@@ -129,6 +130,7 @@ profileUrlParser =
         [ format Tests (s "tests")
         , format Settings (s "settings")
         , format Emails (s "emails")
+        , format Confirm (s "emails" </> s "confirm" <?> stringQ "key")
         ]
 
 
@@ -188,3 +190,6 @@ toProfileUrl profileRoute =
 
         Emails ->
             "/emails"
+
+        Confirm key ->
+            "/emails/confirm?key=" ++ key

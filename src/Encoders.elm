@@ -4,6 +4,7 @@ module Encoders
         , email
         , recoveryEmail
         , newEmail
+        , emailConfirmationKey
         , newProfile
         , resetCredentials
         , registerCredentials
@@ -70,3 +71,9 @@ email email' =
         , ( "verified", JE.bool email'.verified )
         , ( "primary", JE.bool email'.primary )
         ]
+
+
+emailConfirmationKey : String -> JE.Value
+emailConfirmationKey key =
+    JE.object
+        [ ( "key", JE.string key ) ]

@@ -1,7 +1,6 @@
 module Update exposing (update)
 
 import Api
-import Cmds
 import Helpers exposing ((!!))
 import LocalStorage
 import Maybe.Extra exposing ((?))
@@ -26,13 +25,10 @@ update msg model =
         -}
         NavigateTo route ->
             let
-                authRoute =
-                    Router.authRedirect model.auth route
+                ( model', cmd ) =
+                    Helpers.navigateTo model route
             in
-                Model.emptyForms { model | route = authRoute }
-                    ! ((Navigation.newUrl (Router.toUrl authRoute))
-                        :: Cmds.cmdsForRoute model authRoute
-                      )
+                model' ! [ cmd, Navigation.newUrl (Router.toUrl model'.route) ]
 
         Error error ->
             -- Don't use `udpate (NavigateTo ...)` here so as not to lose the form inputs
@@ -101,7 +97,7 @@ update msg model =
            LOGOUT
         -}
         Logout ->
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     updateAuth Types.Authenticating model
                         !! [ Api.logout auth |> Task.perform LogoutFail (always LogoutSuccess)
@@ -258,7 +254,7 @@ update msg model =
                 model' =
                     { model | resetModel = resetModel }
             in
-                authenticatedOrIgnore model' (\_ -> update Logout model')
+                Helpers.authenticatedOrIgnore model' (\_ -> update Logout model')
 
         {-
            REGISTRATION
@@ -295,7 +291,7 @@ update msg model =
            EMAIL MANAGEMENT
         -}
         RequestEmailVerification email ->
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     let
                         user =
@@ -312,7 +308,7 @@ update msg model =
 
         RequestEmailVerificationSuccess email ->
             -- TODO popup notification
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     let
                         user =
@@ -325,8 +321,23 @@ update msg model =
                     in
                         Helpers.updateUser model { user | emails = emails } ! []
 
+        EmailConfirmationFail error ->
+            -- TODO: elucidate redirection when not logged in
+            -- TODO popup notification
+            feedbackOrUnrecoverable error model <|
+                \_ ->
+                    { model | emailConfirmationModel = Model.ConfirmationFail } ! []
+
+        EmailConfirmationSuccess user ->
+            -- TODO popup notification
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    update
+                        (NavigateTo <| Router.Profile Router.Emails)
+                        (Helpers.updateUser model user)
+
         PrimaryEmail email ->
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     let
                         user =
@@ -343,11 +354,11 @@ update msg model =
                               ]
 
         PrimaryEmailSuccess user ->
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth -> Helpers.updateUser model user ! []
 
         DeleteEmail email ->
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     let
                         user =
@@ -374,7 +385,8 @@ update msg model =
                               ]
 
         DeleteEmailSuccess user ->
-            authenticatedOrIgnore model <|
+            -- TODO popup notification
+            Helpers.authenticatedOrIgnore model <|
                 \auth -> Helpers.updateUser model user ! []
 
         AddEmailFormInput input ->
@@ -387,7 +399,7 @@ update msg model =
                 { model | emailsModel = emailsModel } ! []
 
         AddEmail input ->
-            authenticatedOrIgnore model <|
+            Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     let
                         emailsModel =
@@ -420,7 +432,7 @@ update msg model =
 
 
 
--- AUTH WITH ROUTING
+-- ROUTING WITH AUTH
 
 
 updateAuth : Types.AuthStatus -> Model -> ( Model, Cmd Msg )
@@ -444,21 +456,8 @@ feedbackOrUnrecoverable :
     -> ( Model, Cmd Msg )
 feedbackOrUnrecoverable error model feedbackFunc =
     case error of
-        Types.Unrecoverable error' ->
+        Types.Unrecoverable _ ->
             update (Error error) model
 
         Types.ApiFeedback feedback ->
             feedbackFunc feedback
-
-
-authenticatedOrIgnore :
-    Model
-    -> (Types.Auth -> ( Model, Cmd Msg ))
-    -> ( Model, Cmd Msg )
-authenticatedOrIgnore model authFunc =
-    case model.auth of
-        Types.Authenticated auth ->
-            authFunc auth
-
-        _ ->
-            model ! []

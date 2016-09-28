@@ -41,6 +41,8 @@ type Msg
       -- EMAIL MANAGEMENT
     | RequestEmailVerification Types.Email
     | RequestEmailVerificationSuccess Types.Email
+    | EmailConfirmationFail Types.Error
+    | EmailConfirmationSuccess Types.User
     | PrimaryEmail Types.Email
     | PrimaryEmailSuccess Types.User
     | DeleteEmail Types.Email

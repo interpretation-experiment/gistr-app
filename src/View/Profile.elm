@@ -66,6 +66,9 @@ body model route user =
         Router.Emails ->
             emails model.emailsModel user.emails
 
+        Router.Confirm key ->
+            emailConfirmation model.emailConfirmationModel key
+
 
 emails : Model.EmailsModel -> List Types.Email -> Html.Html Msg
 emails { input, feedback, status } emails' =
@@ -139,3 +142,20 @@ email email' =
                 ++ setPrimary
                 ++ [ Helpers.evButton [ disabled ] (DeleteEmail email') "Delete" ]
             )
+
+
+emailConfirmation : Model.EmailConfirmationModel -> String -> Html.Html Msg
+emailConfirmation model key =
+    case model of
+        Model.SendingConfirmation ->
+            Html.h2 [] [ Html.text "Confirming your email address..." ]
+
+        Model.ConfirmationFail ->
+            Html.div []
+                [ Html.h2 [] [ Html.text "Email confirmation failed" ]
+                , Html.p []
+                    [ Html.text "There was a problem. Did you use the "
+                    , Html.strong [] [ Html.text "last verification email" ]
+                    , Html.text " you received?"
+                    ]
+                ]
