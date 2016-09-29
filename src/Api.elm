@@ -1,27 +1,28 @@
 module Api
     exposing
-        ( authCall
+        ( addEmail
+        , authCall
         , call
+        , changePassword
+        , confirmEmail
         , createProfile
-        , fetchUser
+        , deleteEmail
         , fetchAuth
+        , fetchUser
         , login
         , logout
         , recover
-        , reset
         , register
-        , updateUser
-        , changePassword
-        , addEmail
         , requestEmailVerification
+        , reset
         , updateEmail
-        , deleteEmail
-        , confirmEmail
+        , updateUser
         )
 
 import Decoders
 import Dict
 import Encoders
+import Feedback
 import HttpBuilder exposing (RequestBuilder)
 import Task
 import Types
@@ -237,18 +238,15 @@ resetFeedbackFields =
         ]
 
 
-translateResetFeedback : Types.Feedback -> Types.Feedback
+translateResetFeedback : Feedback.Feedback -> Feedback.Feedback
 translateResetFeedback feedback =
-    feedback
-        |> Dict.update
-            "resetCredentials"
-            (Maybe.map
-                (always
-                    ("There was a problem. Did you use the"
-                        ++ " last password-reset link you received?"
-                    )
-                )
+    Feedback.updateError "resetCredentials"
+        (Just
+            ("There was a problem. Did you use the"
+                ++ " last password-reset link you received?"
             )
+        )
+        feedback
 
 
 
@@ -378,7 +376,7 @@ confirmEmail key { token } =
                     (always (Ok ()))
                     (HttpBuilder.jsonReader Decoders.detail)
                 |> Task.mapError
-                    (errorAs (Types.globalFeedback >> Types.ApiFeedback) Types.Unrecoverable)
+                    (errorAs (Feedback.globalError >> Types.ApiFeedback) Types.Unrecoverable)
                 |> Task.map .data
     in
         confirm `Task.andThen` (always <| fetchUser token)

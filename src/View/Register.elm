@@ -1,5 +1,6 @@
 module View.Register exposing (view)
 
+import Feedback
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -57,7 +58,7 @@ form { input, feedback, status } maybeProlific =
                     , Events.onInput (Msg.RegisterFormInput << \u -> { input | username = u })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "username" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
@@ -70,7 +71,7 @@ form { input, feedback, status } maybeProlific =
                     , Events.onInput (Msg.RegisterFormInput << \e -> { input | email = e })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "email" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "email" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
@@ -83,7 +84,7 @@ form { input, feedback, status } maybeProlific =
                     , Events.onInput (Msg.RegisterFormInput << \p -> { input | password1 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password1" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm password" ]
@@ -96,10 +97,10 @@ form { input, feedback, status } maybeProlific =
                     , Events.onInput (Msg.RegisterFormInput << \p -> { input | password2 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password2" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (status == Model.Sending)

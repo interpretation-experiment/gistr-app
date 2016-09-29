@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import Api
+import Feedback
 import Helpers exposing ((!!))
 import LocalStorage
 import Maybe.Extra exposing ((?), or)
@@ -43,7 +44,7 @@ update msg model =
                 loginModel =
                     model.loginModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | loginModel = loginModel } ! []
 
@@ -128,7 +129,7 @@ update msg model =
                 prolificModel =
                     model.prolificModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | prolificModel = prolificModel } ! []
 
@@ -143,7 +144,7 @@ update msg model =
                     { model
                         | prolificModel =
                             Helpers.withFeedback
-                                (Types.globalFeedback
+                                (Feedback.globalError
                                     ("This is not a valid "
                                         ++ "Prolific Academic ID "
                                     )
@@ -160,7 +161,7 @@ update msg model =
                 recoverModel =
                     model.recoverModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | recoverModel = recoverModel } ! []
 
@@ -188,7 +189,7 @@ update msg model =
                 recoverModel =
                     model.recoverModel
                         |> Helpers.withStatus Model.Sent
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | recoverModel = recoverModel } ! []
 
@@ -200,22 +201,22 @@ update msg model =
                 resetModel =
                     model.resetModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | resetModel = resetModel } ! []
 
         Reset credentials tokens ->
             let
                 feedback =
-                    Types.emptyFeedback
-                        |> (Types.updateFeedback "password1"
+                    Feedback.empty
+                        |> (Feedback.updateError "password1"
                                 (if String.length credentials.password1 < 6 then
                                     Just "Password must be at least 6 characters"
                                  else
                                     Nothing
                                 )
                            )
-                        |> (Types.updateFeedback "global"
+                        |> (Feedback.updateError "global"
                                 (if credentials.password1 /= credentials.password2 then
                                     Just "The two passwords don't match"
                                  else
@@ -223,7 +224,7 @@ update msg model =
                                 )
                            )
             in
-                if feedback == Types.emptyFeedback then
+                if feedback == Feedback.empty then
                     { model
                         | resetModel =
                             Helpers.withStatus
@@ -252,7 +253,7 @@ update msg model =
                 resetModel =
                     model.resetModel
                         |> Helpers.withStatus Model.Sent
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
 
                 model' =
                     { model | resetModel = resetModel }
@@ -267,7 +268,7 @@ update msg model =
                 registerModel =
                     model.registerModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | registerModel = registerModel } ! []
 
@@ -300,7 +301,7 @@ update msg model =
                 changePasswordModel =
                     model.changePasswordModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | changePasswordModel = changePasswordModel } ! []
 
@@ -367,7 +368,7 @@ update msg model =
                 changeUsernameModel =
                     model.changeUsernameModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | changeUsernameModel = changeUsernameModel } ! []
 
@@ -513,7 +514,7 @@ update msg model =
                 emailsModel =
                     model.emailsModel
                         |> Helpers.withInput input
-                        |> Helpers.withFeedback Types.emptyFeedback
+                        |> Helpers.withFeedback Feedback.empty
             in
                 { model | emailsModel = emailsModel } ! []
 
@@ -567,7 +568,7 @@ updateAuthNav authStatus route model =
 feedbackOrUnrecoverable :
     Types.Error
     -> Model
-    -> (Types.Feedback -> ( Model, Cmd Msg ))
+    -> (Feedback.Feedback -> ( Model, Cmd Msg ))
     -> ( Model, Cmd Msg )
 feedbackOrUnrecoverable error model feedbackFunc =
     case error of

@@ -1,25 +1,25 @@
 module Helpers
     exposing
-        ( alreadyAuthed
+        ( (!!)
+        , alreadyAuthed
+        , authenticatedOrIgnore
         , cmd
         , evA
         , evButton
-        , feedbackGet
         , loading
         , navA
         , navButton
+        , navigateTo
         , notAuthed
+        , updateUser
         , withFeedback
         , withInput
         , withStatus
-        , (!!)
-        , updateUser
-        , navigateTo
-        , authenticatedOrIgnore
         )
 
 import Cmds
 import Dict
+import Feedback
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
@@ -126,6 +126,10 @@ notAuthed =
     Html.p [] [ Html.text "Not signed in" ]
 
 
+
+-- TODO: rename to "authed" and use in Profile header
+
+
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
@@ -136,9 +140,9 @@ alreadyAuthed user =
 
 
 withFeedback :
-    Types.Feedback
-    -> { a | feedback : Types.Feedback }
-    -> { a | feedback : Types.Feedback }
+    Feedback.Feedback
+    -> { a | feedback : Feedback.Feedback }
+    -> { a | feedback : Feedback.Feedback }
 withFeedback feedback form =
     { form | feedback = feedback }
 
@@ -151,8 +155,3 @@ withInput input form =
 withStatus : b -> { a | status : b } -> { a | status : b }
 withStatus status form =
     { form | status = status }
-
-
-feedbackGet : String -> Types.Feedback -> String
-feedbackGet key feedback =
-    Dict.get key feedback ? ""

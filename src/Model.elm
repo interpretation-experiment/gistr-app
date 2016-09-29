@@ -1,21 +1,22 @@
 module Model
     exposing
-        ( EmailsModel
+        ( ChangePasswordModel
+        , ChangeUsernameModel
         , EmailConfirmationModel(..)
-        , PageStatus(..)
+        , EmailsModel
         , FormStatus(..)
         , LoginModel
         , Model
+        , PageStatus(..)
         , ProlificModel
         , RecoverModel
-        , ResetModel
         , RegisterModel
-        , ChangePasswordModel
-        , ChangeUsernameModel
+        , ResetModel
         , emptyForms
         , initialModel
         )
 
+import Feedback
 import Router
 import Types
 
@@ -37,16 +38,6 @@ type alias Model =
     , changePasswordModel : ChangePasswordModel
     , changeUsernameModel : ChangeUsernameModel
     }
-
-
-type FormStatus
-    = Entering
-    | Sending
-
-
-type PageStatus
-    = Form FormStatus
-    | Sent
 
 
 initialModel : Router.Route -> Model
@@ -78,13 +69,23 @@ emptyForms model =
         }
 
 
+type FormStatus
+    = Entering
+    | Sending
+
+
+type PageStatus
+    = Form FormStatus
+    | Sent
+
+
 
 -- LOGIN
 
 
 type alias LoginModel =
     { input : Types.Credentials
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : FormStatus
     }
 
@@ -92,7 +93,7 @@ type alias LoginModel =
 emptyLoginModel : LoginModel
 emptyLoginModel =
     { input = Types.emptyCredentials
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Entering
     }
 
@@ -103,7 +104,7 @@ emptyLoginModel =
 
 type alias RecoverModel =
     { input : String
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : PageStatus
     }
 
@@ -111,7 +112,7 @@ type alias RecoverModel =
 emptyRecoverModel : RecoverModel
 emptyRecoverModel =
     { input = ""
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Form Entering
     }
 
@@ -122,7 +123,7 @@ emptyRecoverModel =
 
 type alias ResetModel =
     { input : Types.ResetCredentials
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : PageStatus
     }
 
@@ -130,7 +131,7 @@ type alias ResetModel =
 emptyResetModel : ResetModel
 emptyResetModel =
     { input = Types.emptyResetCredentials
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Form Entering
     }
 
@@ -141,14 +142,14 @@ emptyResetModel =
 
 type alias ProlificModel =
     { input : String
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     }
 
 
 emptyProlificModel : ProlificModel
 emptyProlificModel =
     { input = ""
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     }
 
 
@@ -158,7 +159,7 @@ emptyProlificModel =
 
 type alias RegisterModel =
     { input : Types.RegisterCredentials
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : FormStatus
     }
 
@@ -166,7 +167,7 @@ type alias RegisterModel =
 emptyRegisterModel : RegisterModel
 emptyRegisterModel =
     { input = Types.emptyRegisterCredentials
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Entering
     }
 
@@ -177,7 +178,7 @@ emptyRegisterModel =
 
 type alias ChangePasswordModel =
     { input : Types.PasswordCredentials
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : FormStatus
     }
 
@@ -185,7 +186,7 @@ type alias ChangePasswordModel =
 emptyChangePasswordModel : ChangePasswordModel
 emptyChangePasswordModel =
     { input = Types.emptyPasswordCredentials
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Entering
     }
 
@@ -196,7 +197,7 @@ emptyChangePasswordModel =
 
 type alias ChangeUsernameModel =
     { input : String
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : FormStatus
     }
 
@@ -204,7 +205,7 @@ type alias ChangeUsernameModel =
 emptyChangeUsernameModel : ChangeUsernameModel
 emptyChangeUsernameModel =
     { input = ""
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Entering
     }
 
@@ -215,7 +216,7 @@ emptyChangeUsernameModel =
 
 type alias EmailsModel =
     { input : String
-    , feedback : Types.Feedback
+    , feedback : Feedback.Feedback
     , status : FormStatus
     }
 
@@ -223,7 +224,7 @@ type alias EmailsModel =
 emptyEmailsModel : EmailsModel
 emptyEmailsModel =
     { input = ""
-    , feedback = Types.emptyFeedback
+    , feedback = Feedback.empty
     , status = Entering
     }
 

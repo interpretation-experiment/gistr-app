@@ -5,8 +5,8 @@ import Dict
 import Json.Decode as JD
 import Json.Decode.Pipeline as Pipeline
 import Maybe.Extra exposing ((?))
-import Set
 import Types
+import Feedback
 
 
 token : JD.Decoder String
@@ -75,38 +75,27 @@ email =
         |> Pipeline.hardcoded False
 
 
-feedback : Dict.Dict String String -> JD.Decoder Types.Feedback
+feedback : Dict.Dict String String -> JD.Decoder Feedback.Feedback
 feedback fields =
+    (JD.dict (JD.tuple1 identity JD.string) |> JD.map (toFeedback fields))
+        `JD.andThen`
+            \feedback ->
+                if Feedback.noKnownErrors feedback then
+                    JD.fail ("Unknown errors: " ++ (Feedback.getUnknown feedback))
+                else
+                    JD.succeed feedback
+
+
+toFeedback : Dict.Dict String String -> Dict.Dict String String -> Feedback.Feedback
+toFeedback fields feedbackItems =
     let
-        uncheckedFeedback =
-            JD.dict (JD.tuple1 identity JD.string)
-                |> JD.map (translateFeedback fields)
+        ( known, unknown ) =
+            Dict.partition (\k v -> Dict.member k fields) feedbackItems
+
+        finishFeedback processed =
+            Feedback.feedback processed (toString unknown)
     in
-        uncheckedFeedback `JD.andThen` (checkFeedback fields)
-
-
-translateFeedback : Dict.Dict String String -> Types.Feedback -> Types.Feedback
-translateFeedback fields feedback =
-    Dict.toList feedback
-        |> List.map (translateItem fields)
-        |> Dict.fromList
-
-
-translateItem : Dict.Dict String String -> ( String, String ) -> ( String, String )
-translateItem fields ( key, value ) =
-    ( (Dict.get key fields) ? key, value )
-
-
-checkFeedback : Dict.Dict String String -> Types.Feedback -> JD.Decoder Types.Feedback
-checkFeedback fields feedback =
-    let
-        isEmpty =
-            Dict.keys feedback
-                |> Set.fromList
-                |> Set.intersect (Set.fromList (Dict.values fields))
-                |> Set.isEmpty
-    in
-        if isEmpty then
-            JD.fail "Unknown error"
-        else
-            JD.succeed feedback
+        Dict.toList known
+            |> List.map (\( k, e ) -> ( (Dict.get k fields) ? k, e ))
+            |> Dict.fromList
+            |> finishFeedback

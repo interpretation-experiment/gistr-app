@@ -1,5 +1,6 @@
 module View.Login exposing (view)
 
+import Feedback
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -61,7 +62,7 @@ form { input, feedback, status } =
                     , Events.onInput (Msg.LoginFormInput << \u -> { input | username = u })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "username" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
@@ -74,10 +75,10 @@ form { input, feedback, status } =
                     , Events.onInput (Msg.LoginFormInput << \p -> { input | password = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (status == Model.Sending)

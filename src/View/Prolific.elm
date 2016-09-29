@@ -1,5 +1,6 @@
 module View.Prolific exposing (view)
 
+import Feedback
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -64,7 +65,7 @@ form { input, feedback } =
                     , Events.onInput Msg.SetProlificFormInput
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 ]
             , Html.div []
                 [ Html.p []

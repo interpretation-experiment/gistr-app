@@ -1,5 +1,6 @@
 module View.Recover exposing (view)
 
+import Feedback
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -70,7 +71,7 @@ form { input, feedback } formStatus =
                     []
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (formStatus == Model.Sending)

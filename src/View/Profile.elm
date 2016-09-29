@@ -1,5 +1,6 @@
 module View.Profile exposing (view)
 
+import Feedback
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -93,7 +94,7 @@ passwordChange { input, feedback, status } =
                     , Events.onInput (Msg.ChangePasswordFormInput << \o -> { input | oldPassword = o })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "oldPassword" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "oldPassword" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
@@ -106,7 +107,7 @@ passwordChange { input, feedback, status } =
                     , Events.onInput (Msg.ChangePasswordFormInput << \p -> { input | password1 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password1" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
@@ -119,10 +120,10 @@ passwordChange { input, feedback, status } =
                     , Events.onInput (Msg.ChangePasswordFormInput << \p -> { input | password2 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password2" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (status == Model.Sending)
@@ -139,7 +140,7 @@ usernameChange { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change username" ]
         , Html.form [ Events.onSubmit (ChangeUsername input) ]
-            [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             , Html.input
                 [ Attributes.id "inputUsername"
                 , Attributes.disabled (status == Model.Sending)
@@ -178,7 +179,7 @@ emails { input, feedback, status } emails' =
             , emailList
             , Html.h2 [] [ Html.text "Add an email address" ]
             , Html.form [ Events.onSubmit (AddEmail input) ]
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.input
                     [ Attributes.id "inputEmail"
                     , Attributes.disabled (status == Model.Sending)

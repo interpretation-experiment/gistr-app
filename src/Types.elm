@@ -1,38 +1,33 @@
 module Types
     exposing
-        ( AuthStatus(..)
-        , Auth
+        ( Auth
+        , AuthStatus(..)
         , Credentials
         , Email
-        , Feedback
-        , Profile
+        , Error(..)
         , PasswordCredentials
+        , Profile
         , RegisterCredentials
         , ResetCredentials
         , ResetTokens
         , Token
         , TreeCounts
         , User
-        , Error(..)
-        , customFeedback
         , emptyCredentials
-        , emptyFeedback
         , emptyPasswordCredentials
         , emptyRegisterCredentials
         , emptyResetCredentials
-        , globalFeedback
-        , updateFeedback
         )
 
 import Date
-import Dict
+import Feedback
 
 
 -- API
 
 
 type Error
-    = ApiFeedback Feedback
+    = ApiFeedback Feedback.Feedback
     | Unrecoverable String
 
 
@@ -195,43 +190,3 @@ type alias PasswordCredentials =
 emptyPasswordCredentials : PasswordCredentials
 emptyPasswordCredentials =
     PasswordCredentials "" "" ""
-
-
-
--- FORMS FEEDBACK
-{- DO: think about changing Feedback into something like:
-   type alias Feedback =
-     { known : Dict.Dict String String
-     , unknown : String
-     }
-   with corresponding helpers to handle it.
--}
-
-
-type alias Feedback =
-    Dict.Dict String String
-
-
-emptyFeedback : Feedback
-emptyFeedback =
-    Dict.empty
-
-
-globalFeedback : String -> Feedback
-globalFeedback value =
-    customFeedback "global" value
-
-
-customFeedback : String -> String -> Feedback
-customFeedback key =
-    Dict.singleton key
-
-
-updateFeedback : String -> Maybe String -> Feedback -> Feedback
-updateFeedback key maybeValue feedback =
-    case maybeValue of
-        Nothing ->
-            feedback
-
-        Just value ->
-            Dict.insert key value feedback

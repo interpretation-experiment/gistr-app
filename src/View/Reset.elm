@@ -1,5 +1,6 @@
 module View.Reset exposing (view)
 
+import Feedback
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -54,7 +55,7 @@ form { input, feedback } tokens formStatus =
                     , Events.onInput (Msg.ResetFormInput << \p -> { input | password1 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password1" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
@@ -67,11 +68,11 @@ form { input, feedback } tokens formStatus =
                     , Events.onInput (Msg.ResetFormInput << \p -> { input | password2 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password2" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
-                , Html.span [] [ Html.text (Helpers.feedbackGet "resetCredentials" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
                     , Attributes.disabled (formStatus == Model.Sending)
