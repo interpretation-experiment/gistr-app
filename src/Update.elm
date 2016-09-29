@@ -19,9 +19,31 @@ import Types
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case (Debug.log "msg" msg) of
+    case msg of
+        Animate _ ->
+            doUpdate msg model
+
+        _ ->
+            let
+                _ =
+                    Debug.log "msg" msg
+            in
+                doUpdate msg model
+
+
+doUpdate : Msg -> Model -> ( Model, Cmd Msg )
+doUpdate msg model =
+    case msg of
         NoOp ->
             model ! []
+
+        Animate msg ->
+            { model
+                | password = Form.animate msg model.password
+                , username = Form.animate msg model.username
+                , emails = Form.animate msg model.emails
+            }
+                ! []
 
         {-
            NAVIGATION
@@ -252,8 +274,16 @@ update msg model =
                           ]
 
         ChangePasswordSuccess auth ->
-            -- TODO saved badge
-            update (LoginSuccess auth) model
+            let
+                emptyInput =
+                    Types.PasswordCredentials "" "" ""
+
+                feedback =
+                    Feedback.globalSuccess model.password.feedback
+            in
+                update
+                    (LoginSuccess auth)
+                    { model | password = Form.succeed emptyInput feedback model.password }
 
         ChangePasswordRecover ->
             Helpers.authenticatedOrIgnore model <|
@@ -306,8 +336,14 @@ update msg model =
                               ]
 
         ChangeUsernameSuccess user ->
-            -- TODO saved badge
-            Helpers.updateUser (Model.emptyForms model) user ! []
+            let
+                feedback =
+                    Feedback.globalSuccess model.username.feedback
+            in
+                Helpers.updateUser
+                    { model | username = Form.succeed "" feedback model.username }
+                    user
+                    ! []
 
         {-
            EMAIL MANAGEMENT
@@ -432,8 +468,15 @@ update msg model =
                           ]
 
         AddEmailSuccess user ->
-            -- TODO: popup notification + saved badge
-            Helpers.updateUser (Model.emptyForms model) user ! []
+            -- TODO: popup notification
+            let
+                feedback =
+                    Feedback.globalSuccess model.emails.feedback
+            in
+                Helpers.updateUser
+                    { model | emails = Form.succeed "" feedback model.emails }
+                    user
+                    ! []
 
 
 

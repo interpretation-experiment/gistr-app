@@ -1,15 +1,17 @@
 module View.Profile exposing (view)
 
+import Animation
 import Feedback
 import Form
 import Helpers
-import Html
-import Html.Attributes as Attributes
-import Html.Events as Events
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Router
+import Strings
 import Types
+import Html
+import Html.Attributes as Attributes
+import Html.Events as Events
 
 
 view : Model -> Router.ProfileRoute -> Html.Html Msg
@@ -130,6 +132,9 @@ passwordChange { input, feedback, status } =
                     , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Update password" ]
+                , Html.span
+                    (Animation.render <| Feedback.getSuccess "global" feedback)
+                    [ Html.text Strings.passwordSaved ]
                 , Helpers.evA "#" Msg.ChangePasswordRecover "I forgot my current password"
                 ]
             ]
@@ -155,6 +160,9 @@ usernameChange { input, feedback, status } =
                 , Attributes.disabled (status == Form.Sending)
                 ]
                 [ Html.text "Update username" ]
+            , Html.span
+                (Animation.render <| Feedback.getSuccess "global" feedback)
+                [ Html.text Strings.usernameSaved ]
             ]
         ]
 
@@ -194,6 +202,9 @@ emails { input, feedback, status } emails' =
                     , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Add" ]
+                , Html.span
+                    (Animation.render <| Feedback.getSuccess "global" feedback)
+                    [ Html.text Strings.emailAdded ]
                 ]
             ]
 

@@ -1,22 +1,27 @@
 module Feedback
     exposing
         ( Feedback
+        , animate
         , empty
         , feedback
         , getError
+        , getSuccess
         , getUnknown
         , globalError
+        , globalSuccess
         , noKnownErrors
+        , successAnimations
         , updateError
         )
 
+import Animation
 import Dict
+import Time
 
 
-type
-    FeedbackItem
-    -- | FeedbackSuccess <some-style-info>
+type FeedbackItem
     = FeedbackError String
+    | FeedbackSuccess Animation.State
 
 
 type Feedback
@@ -49,6 +54,72 @@ updateError key maybeValue (Feedback { known, unknown }) =
         }
 
 
+globalSuccess : Feedback -> Feedback
+globalSuccess currentFeedback =
+    customSuccess "global" currentFeedback
+
+
+customSuccess : String -> Feedback -> Feedback
+customSuccess key currentFeedback =
+    setSuccess key currentFeedback empty
+
+
+setSuccess : String -> Feedback -> Feedback -> Feedback
+setSuccess key currentFeedback (Feedback { known, unknown }) =
+    let
+        success =
+            startSuccessAnimation (getSuccess key currentFeedback)
+    in
+        Feedback
+            { known = Dict.insert key (FeedbackSuccess success) known
+            , unknown = unknown
+            }
+
+
+startSuccessAnimation : Animation.State -> Animation.State
+startSuccessAnimation =
+    Animation.interrupt
+        [ Animation.set [ Animation.display Animation.inline ]
+        , Animation.wait (2 * Time.second)
+        , Animation.set [ Animation.display Animation.none ]
+        ]
+
+
+animate : Animation.Msg -> Feedback -> Feedback
+animate msg (Feedback { known, unknown }) =
+    Feedback
+        { known = Dict.map (\k v -> mapSuccess (Animation.update msg) v) known
+        , unknown = unknown
+        }
+
+
+mapSuccess : (Animation.State -> Animation.State) -> FeedbackItem -> FeedbackItem
+mapSuccess func item =
+    case item of
+        FeedbackError _ ->
+            item
+
+        FeedbackSuccess success ->
+            FeedbackSuccess (func success)
+
+
+successValue : FeedbackItem -> Maybe Animation.State
+successValue item =
+    case item of
+        FeedbackError _ ->
+            Nothing
+
+        FeedbackSuccess success ->
+            Just success
+
+
+successAnimations : Feedback -> List (Animation.State)
+successAnimations (Feedback { known, unknown }) =
+    known
+        |> Dict.values
+        |> List.filterMap successValue
+
+
 feedback : Dict.Dict String String -> String -> Feedback
 feedback errors unknown =
     Feedback
@@ -62,6 +133,9 @@ isError item =
     case item of
         FeedbackError _ ->
             True
+
+        FeedbackSuccess _ ->
+            False
 
 
 noKnownErrors : Feedback -> Bool
@@ -77,8 +151,18 @@ getUnknown (Feedback { unknown }) =
 getError : String -> Feedback -> String
 getError key (Feedback { known }) =
     case Dict.get key known of
-        Nothing ->
-            ""
-
         Just (FeedbackError error) ->
             error
+
+        _ ->
+            ""
+
+
+getSuccess : String -> Feedback -> Animation.State
+getSuccess key (Feedback { known }) =
+    case Dict.get key known of
+        Just (FeedbackSuccess success) ->
+            success
+
+        _ ->
+            Animation.style [ Animation.display Animation.none ]

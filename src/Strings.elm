@@ -1,9 +1,4 @@
-module Strings
-    exposing
-        ( invalidProlific
-        , passwordTooShort
-        , passwordsDontMatch
-        )
+module Strings exposing (..)
 
 
 invalidProlific : String
@@ -19,3 +14,18 @@ passwordTooShort =
 passwordsDontMatch : String
 passwordsDontMatch =
     "The two password don't match"
+
+
+passwordSaved : String
+passwordSaved =
+    "Password saved!"
+
+
+usernameSaved : String
+usernameSaved =
+    "Username saved!"
+
+
+emailAdded : String
+emailAdded =
+    "Email address added!"

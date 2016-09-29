@@ -58,8 +58,14 @@ navigateTo model route =
     let
         authRoute =
             Router.authRedirect model.auth (Debug.log "nav request" route)
+
+        emptyOnChange =
+            if authRoute /= model.route then
+                Model.emptyForms
+            else
+                identity
     in
-        Model.emptyForms { model | route = (Debug.log "nav final" authRoute) }
+        emptyOnChange { model | route = (Debug.log "nav final" authRoute) }
             ! Cmds.cmdsForRoute model authRoute
 
 

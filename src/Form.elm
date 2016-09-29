@@ -2,6 +2,7 @@ module Form
     exposing
         ( Model
         , Status(..)
+        , animate
         , empty
         , fail
         , form
@@ -10,8 +11,10 @@ module Form
         , setInput
         , setStatus
         , succeed
+        , successAnimations
         )
 
+import Animation
 import Feedback
 
 
@@ -52,12 +55,23 @@ fail feedback form =
         |> setStatus Entering
 
 
-succeed : a -> Model a -> Model a
-succeed input form =
+succeed : a -> Feedback.Feedback -> Model a -> Model a
+succeed input feedback form =
     form
         |> setInput input
-        |> setFeedback Feedback.empty
+        |> setFeedback feedback
         |> setStatus Entering
+
+
+animate : Animation.Msg -> Model a -> Model a
+animate msg form =
+    form
+        |> setFeedback (Feedback.animate msg form.feedback)
+
+
+successAnimations : Model a -> List (Animation.State)
+successAnimations { feedback } =
+    Feedback.successAnimations feedback
 
 
 setInput : a -> Model a -> Model a

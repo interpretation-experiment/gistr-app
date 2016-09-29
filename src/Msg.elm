@@ -1,11 +1,13 @@
 module Msg exposing (Msg(..))
 
+import Animation
 import Router
 import Types
 
 
 type Msg
     = NoOp
+    | Animate Animation.Msg
       -- NAVIGATION
     | NavigateTo Router.Route
     | Error Types.Error

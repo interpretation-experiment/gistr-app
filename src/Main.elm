@@ -1,6 +1,8 @@
 module Main exposing (..)
 
+import Animation
 import Dict
+import Form
 import Helpers exposing ((!!))
 import LocalStorage
 import Maybe.Extra exposing ((?))
@@ -74,7 +76,15 @@ localStorageTags =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    LocalStorage.subscribe localStorageTags Msg.NoOp
+    Sub.batch
+        [ LocalStorage.subscribe localStorageTags Msg.NoOp
+        , Animation.subscription Msg.Animate <|
+            List.concat
+                [ Form.successAnimations model.password
+                , Form.successAnimations model.username
+                , Form.successAnimations model.emails
+                ]
+        ]
 
 
 
