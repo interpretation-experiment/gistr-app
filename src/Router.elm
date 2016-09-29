@@ -41,7 +41,7 @@ type Route
 
 
 type ProfileRoute
-    = Tests
+    = Dashboard
     | Settings
     | Emails
     | Confirm String
@@ -117,7 +117,7 @@ urlParser items formatter =
         , format Register (s "register" <?> maybeQ (stringQ "prolific_id"))
         , format Error (s "error")
         , format Prolific (s "register" </> s "prolific")
-        , format (Profile Tests) (s "profile")
+        , format (Profile Dashboard) (s "profile")
         , format Profile (s "profile" </> profileUrlParser)
         ]
         items
@@ -127,7 +127,7 @@ urlParser items formatter =
 profileUrlParser : UrlParser (ProfileRoute -> a) a
 profileUrlParser =
     oneOf
-        [ format Tests (s "tests")
+        [ format Dashboard (s "dashboard")
         , format Settings (s "settings")
         , format Emails (s "emails")
         , format Confirm (s "emails" </> s "confirm" <?> stringQ "key")
@@ -182,8 +182,8 @@ toUrl route =
 toProfileUrl : ProfileRoute -> String
 toProfileUrl profileRoute =
     case profileRoute of
-        Tests ->
-            "/tests"
+        Dashboard ->
+            "/dashboard"
 
         Settings ->
             "/settings"

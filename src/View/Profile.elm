@@ -4,14 +4,15 @@ import Animation
 import Feedback
 import Form
 import Helpers
+import Html
+import Html.Attributes as Attributes
+import Html.Events as Events
+import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Router
 import Strings
 import Types
-import Html
-import Html.Attributes as Attributes
-import Html.Events as Events
 
 
 view : Model -> Router.ProfileRoute -> Html.Html Msg
@@ -56,7 +57,7 @@ header model =
 menu : Router.ProfileRoute -> Html.Html Msg
 menu route =
     Html.ul []
-        [ Html.li [] [ Helpers.navButton (Router.Profile Router.Tests) "Tests" ]
+        [ Html.li [] [ Helpers.navButton (Router.Profile Router.Dashboard) "Dashboard" ]
         , Html.li [] [ Helpers.navButton (Router.Profile Router.Settings) "Settings" ]
         , Html.li [] [ Helpers.navButton (Router.Profile Router.Emails) "Emails" ]
         ]
@@ -65,9 +66,15 @@ menu route =
 body : Model -> Router.ProfileRoute -> Types.User -> Html.Html Msg
 body model route user =
     case route of
-        Router.Tests ->
-            Html.text "Tests"
+        Router.Dashboard ->
+            case user.profile of
+                Just profile ->
+                    dashboard profile
 
+                Nothing ->
+                    Debug.crash "this should never happen"
+
+        -- TODO deal with this
         Router.Settings ->
             Html.div []
                 [ passwordChange model.password
@@ -79,6 +86,63 @@ body model route user =
 
         Router.Confirm key ->
             emailConfirmation model.emailConfirmation key
+
+
+dashboard : Types.Profile -> Html.Html Msg
+dashboard profile =
+    Html.div []
+        [ lifecycle profile
+        , questionnaireSummary profile.questionnaireId
+          -- TODO wordSpanBlock profile
+        ]
+
+
+lifecycle : Types.Profile -> Html.Html Msg
+lifecycle profile =
+    let
+        description preliminary =
+            case preliminary of
+                Lifecycle.ProfilePreliminary (Lifecycle.Questionnaire) ->
+                    [ Html.text Strings.fillQuestionnaire ]
+
+                Lifecycle.ProfilePreliminary (Lifecycle.WordSpan) ->
+                    [ Html.text Strings.testWordSpan ]
+
+                Lifecycle.Training ->
+                    Strings.startExperiment
+    in
+        case Lifecycle.state profile of
+            Lifecycle.Preliminaries remaining ->
+                case List.partition Lifecycle.isProfilePreliminary remaining of
+                    ( head :: tail, _ ) ->
+                        Html.div []
+                            [ Html.text Strings.completeProfile
+                            , Html.ul [] <|
+                                List.map
+                                    (\t -> Html.li [] (description t))
+                                    (head :: tail)
+                            ]
+
+                    ( [], remainingExp ) ->
+                        Html.div [] <|
+                            List.concat <|
+                                List.map (\t -> description t) remainingExp
+
+            Lifecycle.Experiment ->
+                Html.div [] Strings.profileComplete
+
+
+questionnaireSummary : Maybe Int -> Html.Html Msg
+questionnaireSummary maybeId =
+    case maybeId of
+        Nothing ->
+            Html.p []
+                [ Html.text "Questionnaire — Not yet done"
+                , Helpers.navButton (Router.Profile Router.Dashboard) "Fill the questionnaire"
+                ]
+
+        Just _ ->
+            Html.p [] [ Html.text "Questionnaire — Done" ]
 
 
 passwordChange : Form.Model Types.PasswordCredentials -> Html.Html Msg

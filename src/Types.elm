@@ -84,6 +84,8 @@ type alias Profile =
     , trained : Bool
     , reformulationsCount : Int
     , availableTreeCounts : TreeCounts
+    , questionnaireId : Maybe Int
+    , wordSpanId : Maybe Int
     }
 
 
@@ -120,8 +122,8 @@ type alias Email =
    ok    "mothertongue": "english",
        "next_credit_in": 48,
    ok    "prolific_id": null,
-       "questionnaire": null,
-       "questionnaire_done": false,
+   ok    "questionnaire": null,
+   no    "questionnaire_done": false,
    no    "questionnaire_url": null,
    ok    "reformulations_count": 0,
        "sentences": [],
@@ -134,8 +136,8 @@ type alias Email =
    ok    "user": 1,
    no    "user_url": "http://127.0.0.1:8000/api/users/1/",
    ok    "user_username": "sl",
-       "word_span": null,
-       "word_span_done": false,
+   ok    "word_span": null,
+   no    "word_span_done": false,
    no    "word_span_url": null
 
 -}

@@ -42,6 +42,8 @@ profile =
         |> Pipeline.required "trained_reformulations" JD.bool
         |> Pipeline.required "reformulations_count" JD.int
         |> Pipeline.required "available_trees_counts" treeCounts
+        |> Pipeline.required "questionnaire" (Pipeline.nullable JD.int)
+        |> Pipeline.required "word_span" (Pipeline.nullable JD.int)
 
 
 treeCounts : JD.Decoder Types.TreeCounts
