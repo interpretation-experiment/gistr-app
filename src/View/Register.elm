@@ -1,6 +1,7 @@
 module View.Register exposing (view)
 
 import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -30,7 +31,7 @@ body model maybeProlific =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.registerModel maybeProlific
+                    form model.register maybeProlific
 
                 Types.Authenticating ->
                     Helpers.loading
@@ -41,7 +42,7 @@ body model maybeProlific =
         Html.div [] [ inner ]
 
 
-form : Model.RegisterModel -> Maybe String -> Html.Html Msg
+form : Form.Model Types.RegisterCredentials -> Maybe String -> Html.Html Msg
 form { input, feedback, status } maybeProlific =
     Html.div []
         [ prolificLogin maybeProlific
@@ -50,7 +51,7 @@ form { input, feedback, status } maybeProlific =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -64,7 +65,7 @@ form { input, feedback, status } maybeProlific =
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "joey@example.com (optional)"
                     , Attributes.type' "email"
                     , Attributes.value input.email
@@ -77,7 +78,7 @@ form { input, feedback, status } maybeProlific =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
@@ -90,7 +91,7 @@ form { input, feedback, status } maybeProlific =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -103,7 +104,7 @@ form { input, feedback, status } maybeProlific =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Sign up" ]
                 ]

@@ -1,6 +1,7 @@
 module View.Reset exposing (view)
 
 import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -28,18 +29,18 @@ body : Model -> Types.ResetTokens -> Html.Html Msg
 body model tokens =
     let
         inner =
-            case model.resetModel.status of
-                Model.Form formStatus ->
-                    form model.resetModel tokens formStatus
+            case model.reset of
+                Model.Form formModel ->
+                    form formModel tokens
 
-                Model.Sent ->
+                Model.Sent _ ->
                     sent
     in
         Html.div [] [ inner ]
 
 
-form : Model.ResetModel -> Types.ResetTokens -> Model.FormStatus -> Html.Html Msg
-form { input, feedback } tokens formStatus =
+form : Form.Model Types.ResetCredentials -> Types.ResetTokens -> Html.Html Msg
+form { input, feedback, status } tokens =
     Html.div []
         [ Html.h2 [] [ Html.text "Set your new password" ]
         , Html.form [ Events.onSubmit (Msg.Reset input tokens) ]
@@ -47,7 +48,7 @@ form { input, feedback } tokens formStatus =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (formStatus == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
@@ -61,7 +62,7 @@ form { input, feedback } tokens formStatus =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (formStatus == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -75,7 +76,7 @@ form { input, feedback } tokens formStatus =
                 , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (formStatus == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Set new password" ]
                 ]

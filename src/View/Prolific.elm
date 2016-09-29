@@ -1,6 +1,7 @@
 module View.Prolific exposing (view)
 
 import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -30,7 +31,7 @@ body model =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.prolificModel
+                    form model.prolific
 
                 Types.Authenticating ->
                     Helpers.loading
@@ -41,7 +42,7 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Model.ProlificModel -> Html.Html Msg
+form : Form.Model String -> Html.Html Msg
 form { input, feedback } =
     Html.div []
         [ Html.div []

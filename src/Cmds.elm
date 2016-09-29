@@ -14,7 +14,7 @@ cmdsForRoute model route =
         Router.Profile (Router.Confirm key) ->
             authenticatedOrIgnore model <|
                 \auth ->
-                    case model.emailConfirmationModel of
+                    case model.emailConfirmation of
                         Model.SendingConfirmation ->
                             [ Task.perform
                                 Msg.EmailConfirmationFail

@@ -1,22 +1,13 @@
 module Model
     exposing
-        ( ChangePasswordModel
-        , ChangeUsernameModel
-        , EmailConfirmationModel(..)
-        , EmailsModel
-        , FormStatus(..)
-        , LoginModel
+        ( EmailConfirmationModel(..)
         , Model
-        , PageStatus(..)
-        , ProlificModel
-        , RecoverModel
-        , RegisterModel
-        , ResetModel
+        , SendableForm(..)
         , emptyForms
         , initialModel
         )
 
-import Feedback
+import Form
 import Router
 import Types
 
@@ -28,15 +19,15 @@ type alias Model =
     { route : Router.Route
     , auth : Types.AuthStatus
     , error : Maybe Types.Error
-    , loginModel : LoginModel
-    , recoverModel : RecoverModel
-    , resetModel : ResetModel
-    , prolificModel : ProlificModel
-    , registerModel : RegisterModel
-    , emailsModel : EmailsModel
-    , emailConfirmationModel : EmailConfirmationModel
-    , changePasswordModel : ChangePasswordModel
-    , changeUsernameModel : ChangeUsernameModel
+    , login : Form.Model Types.Credentials
+    , recover : SendableForm String String
+    , reset : SendableForm Types.ResetCredentials ()
+    , prolific : Form.Model String
+    , register : Form.Model Types.RegisterCredentials
+    , emails : Form.Model String
+    , emailConfirmation : EmailConfirmationModel
+    , password : Form.Model Types.PasswordCredentials
+    , username : Form.Model String
     }
 
 
@@ -45,15 +36,15 @@ initialModel route =
     { route = route
     , auth = Types.Authenticating
     , error = Nothing
-    , loginModel = emptyLoginModel
-    , recoverModel = emptyRecoverModel
-    , resetModel = emptyResetModel
-    , prolificModel = emptyProlificModel
-    , registerModel = emptyRegisterModel
-    , emailsModel = emptyEmailsModel
-    , emailConfirmationModel = SendingConfirmation
-    , changePasswordModel = emptyChangePasswordModel
-    , changeUsernameModel = emptyChangeUsernameModel
+    , login = Form.empty Types.emptyCredentials
+    , recover = Form (Form.empty "")
+    , reset = Form (Form.empty Types.emptyResetCredentials)
+    , prolific = Form.empty ""
+    , register = Form.empty Types.emptyRegisterCredentials
+    , emails = Form.empty ""
+    , emailConfirmation = SendingConfirmation
+    , password = Form.empty Types.emptyPasswordCredentials
+    , username = Form.empty ""
     }
 
 
@@ -69,164 +60,9 @@ emptyForms model =
         }
 
 
-type FormStatus
-    = Entering
-    | Sending
-
-
-type PageStatus
-    = Form FormStatus
-    | Sent
-
-
-
--- LOGIN
-
-
-type alias LoginModel =
-    { input : Types.Credentials
-    , feedback : Feedback.Feedback
-    , status : FormStatus
-    }
-
-
-emptyLoginModel : LoginModel
-emptyLoginModel =
-    { input = Types.emptyCredentials
-    , feedback = Feedback.empty
-    , status = Entering
-    }
-
-
-
--- RECOVER
-
-
-type alias RecoverModel =
-    { input : String
-    , feedback : Feedback.Feedback
-    , status : PageStatus
-    }
-
-
-emptyRecoverModel : RecoverModel
-emptyRecoverModel =
-    { input = ""
-    , feedback = Feedback.empty
-    , status = Form Entering
-    }
-
-
-
--- RESET
-
-
-type alias ResetModel =
-    { input : Types.ResetCredentials
-    , feedback : Feedback.Feedback
-    , status : PageStatus
-    }
-
-
-emptyResetModel : ResetModel
-emptyResetModel =
-    { input = Types.emptyResetCredentials
-    , feedback = Feedback.empty
-    , status = Form Entering
-    }
-
-
-
--- PROLIFIC
-
-
-type alias ProlificModel =
-    { input : String
-    , feedback : Feedback.Feedback
-    }
-
-
-emptyProlificModel : ProlificModel
-emptyProlificModel =
-    { input = ""
-    , feedback = Feedback.empty
-    }
-
-
-
--- REGISTER
-
-
-type alias RegisterModel =
-    { input : Types.RegisterCredentials
-    , feedback : Feedback.Feedback
-    , status : FormStatus
-    }
-
-
-emptyRegisterModel : RegisterModel
-emptyRegisterModel =
-    { input = Types.emptyRegisterCredentials
-    , feedback = Feedback.empty
-    , status = Entering
-    }
-
-
-
--- PASSWORD
-
-
-type alias ChangePasswordModel =
-    { input : Types.PasswordCredentials
-    , feedback : Feedback.Feedback
-    , status : FormStatus
-    }
-
-
-emptyChangePasswordModel : ChangePasswordModel
-emptyChangePasswordModel =
-    { input = Types.emptyPasswordCredentials
-    , feedback = Feedback.empty
-    , status = Entering
-    }
-
-
-
--- USERNAME
-
-
-type alias ChangeUsernameModel =
-    { input : String
-    , feedback : Feedback.Feedback
-    , status : FormStatus
-    }
-
-
-emptyChangeUsernameModel : ChangeUsernameModel
-emptyChangeUsernameModel =
-    { input = ""
-    , feedback = Feedback.empty
-    , status = Entering
-    }
-
-
-
--- EMAILS
-
-
-type alias EmailsModel =
-    { input : String
-    , feedback : Feedback.Feedback
-    , status : FormStatus
-    }
-
-
-emptyEmailsModel : EmailsModel
-emptyEmailsModel =
-    { input = ""
-    , feedback = Feedback.empty
-    , status = Entering
-    }
+type SendableForm a b
+    = Form (Form.Model a)
+    | Sent b
 
 
 type EmailConfirmationModel

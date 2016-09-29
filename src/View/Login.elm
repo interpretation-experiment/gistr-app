@@ -1,6 +1,7 @@
 module View.Login exposing (view)
 
 import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -30,7 +31,7 @@ body model =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.loginModel
+                    form model.login
 
                 Types.Authenticating ->
                     Helpers.loading
@@ -41,7 +42,7 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Model.LoginModel -> Html.Html Msg
+form : Form.Model Types.Credentials -> Html.Html Msg
 form { input, feedback, status } =
     Html.div []
         [ Html.div []
@@ -54,7 +55,7 @@ form { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -68,7 +69,7 @@ form { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password
@@ -81,7 +82,7 @@ form { input, feedback, status } =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Sign in" ]
                 , Helpers.navA Router.Recover "I forgot my password"

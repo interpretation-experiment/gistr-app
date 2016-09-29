@@ -12,19 +12,13 @@ module Helpers
         , navigateTo
         , notAuthed
         , updateUser
-        , withFeedback
-        , withInput
-        , withStatus
         )
 
 import Cmds
-import Dict
-import Feedback
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
-import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo))
 import Router
@@ -133,25 +127,3 @@ notAuthed =
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
-
-
-
--- FORMS
-
-
-withFeedback :
-    Feedback.Feedback
-    -> { a | feedback : Feedback.Feedback }
-    -> { a | feedback : Feedback.Feedback }
-withFeedback feedback form =
-    { form | feedback = feedback }
-
-
-withInput : b -> { a | input : b } -> { a | input : b }
-withInput input form =
-    { form | input = input }
-
-
-withStatus : b -> { a | status : b } -> { a | status : b }
-withStatus status form =
-    { form | status = status }

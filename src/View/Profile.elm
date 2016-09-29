@@ -1,6 +1,7 @@
 module View.Profile exposing (view)
 
 import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -67,18 +68,18 @@ body model route user =
 
         Router.Settings ->
             Html.div []
-                [ passwordChange model.changePasswordModel
-                , usernameChange model.changeUsernameModel
+                [ passwordChange model.password
+                , usernameChange model.username
                 ]
 
         Router.Emails ->
-            emails model.emailsModel user.emails
+            emails model.emails user.emails
 
         Router.Confirm key ->
-            emailConfirmation model.emailConfirmationModel key
+            emailConfirmation model.emailConfirmation key
 
 
-passwordChange : Model.ChangePasswordModel -> Html.Html Msg
+passwordChange : Form.Model Types.PasswordCredentials -> Html.Html Msg
 passwordChange { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change password" ]
@@ -87,7 +88,7 @@ passwordChange { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputOldPassword" ] [ Html.text "Old password" ]
                 , Html.input
                     [ Attributes.id "inputOldPassword"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "Your old password"
                     , Attributes.type' "password"
                     , Attributes.value input.oldPassword
@@ -100,7 +101,7 @@ passwordChange { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
@@ -113,7 +114,7 @@ passwordChange { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -126,7 +127,7 @@ passwordChange { input, feedback, status } =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Update password" ]
                 , Helpers.evA "#" Msg.ChangePasswordRecover "I forgot my current password"
@@ -135,7 +136,7 @@ passwordChange { input, feedback, status } =
         ]
 
 
-usernameChange : Model.ChangeUsernameModel -> Html.Html Msg
+usernameChange : Form.Model String -> Html.Html Msg
 usernameChange { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change username" ]
@@ -143,7 +144,7 @@ usernameChange { input, feedback, status } =
             [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             , Html.input
                 [ Attributes.id "inputUsername"
-                , Attributes.disabled (status == Model.Sending)
+                , Attributes.disabled (status == Form.Sending)
                 , Attributes.type' "text"
                 , Attributes.value input
                 , Events.onInput ChangeUsernameFormInput
@@ -151,14 +152,14 @@ usernameChange { input, feedback, status } =
                 []
             , Html.button
                 [ Attributes.type' "submit"
-                , Attributes.disabled (status == Model.Sending)
+                , Attributes.disabled (status == Form.Sending)
                 ]
                 [ Html.text "Update username" ]
             ]
         ]
 
 
-emails : Model.EmailsModel -> List Types.Email -> Html.Html Msg
+emails : Form.Model String -> List Types.Email -> Html.Html Msg
 emails { input, feedback, status } emails' =
     let
         emailList =
@@ -182,7 +183,7 @@ emails { input, feedback, status } emails' =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     , Attributes.type' "email"
                     , Attributes.value input
                     , Events.onInput AddEmailFormInput
@@ -190,7 +191,7 @@ emails { input, feedback, status } emails' =
                     []
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Model.Sending)
+                    , Attributes.disabled (status == Form.Sending)
                     ]
                     [ Html.text "Add" ]
                 ]
