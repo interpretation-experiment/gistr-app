@@ -39,7 +39,7 @@ header model =
             case model.auth of
                 Types.Authenticated auth ->
                     Html.div []
-                        [ Html.text "Logged in as "
+                        [ Html.text "Signed in as "
                         , Html.strong [] [ Html.text auth.user.username ]
                         , Helpers.evButton [] Logout "Logout"
                         ]

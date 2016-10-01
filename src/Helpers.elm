@@ -126,10 +126,6 @@ notAuthed =
     Html.p [] [ Html.text "Not signed in" ]
 
 
-
--- TODO: rename to "authed" and use in Profile header
-
-
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
