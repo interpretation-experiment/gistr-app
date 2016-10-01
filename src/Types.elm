@@ -6,6 +6,7 @@ module Types
         , Email
         , Error(..)
         , PasswordCredentials
+        , PreUser
         , Profile
         , RegisterCredentials
         , ResetCredentials
@@ -35,12 +36,22 @@ type Error
 -- USER AND LOGIN
 
 
-type alias User =
+type alias PreUser =
     { id : Int
     , username : String
     , isActive : Bool
     , isStaff : Bool
     , profile : Maybe Profile
+    , emails : List Email
+    }
+
+
+type alias User =
+    { id : Int
+    , username : String
+    , isActive : Bool
+    , isStaff : Bool
+    , profile : Profile
     , emails : List Email
     }
 

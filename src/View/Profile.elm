@@ -67,14 +67,8 @@ body : Model -> Router.ProfileRoute -> Types.User -> Html.Html Msg
 body model route user =
     case route of
         Router.Dashboard ->
-            case user.profile of
-                Just profile ->
-                    dashboard profile
+            dashboard user.profile
 
-                Nothing ->
-                    Debug.crash "this should never happen"
-
-        -- TODO deal with this
         Router.Settings ->
             Html.div []
                 [ passwordChange model.password
@@ -93,7 +87,7 @@ dashboard profile =
     Html.div []
         [ lifecycle profile
         , questionnaireSummary profile.questionnaireId
-          -- TODO wordSpanBlock profile
+        , wordSpanSummary profile.wordSpanId
         ]
 
 
@@ -139,10 +133,25 @@ questionnaireSummary maybeId =
             Html.p []
                 [ Html.text "Questionnaire — Not yet done"
                 , Helpers.navButton (Router.Profile Router.Dashboard) "Fill the questionnaire"
+                  -- TODO set route to questionnaire
                 ]
 
         Just _ ->
             Html.p [] [ Html.text "Questionnaire — Done" ]
+
+
+wordSpanSummary : Maybe Int -> Html.Html Msg
+wordSpanSummary maybeId =
+    case maybeId of
+        Nothing ->
+            Html.p []
+                [ Html.text "Word span test — Not yet done"
+                , Helpers.navButton (Router.Profile Router.Dashboard) "Pass the test"
+                  -- TODO set route to wordSpan
+                ]
+
+        Just _ ->
+            Html.p [] [ Html.text "Word span test — Done" ]
 
 
 passwordChange : Form.Model Types.PasswordCredentials -> Html.Html Msg

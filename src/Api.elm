@@ -1,14 +1,10 @@
 module Api
     exposing
         ( addEmail
-        , authCall
-        , call
         , changePassword
         , confirmEmail
-        , createProfile
         , deleteEmail
         , fetchAuth
-        , fetchUser
         , login
         , logout
         , recover
@@ -116,36 +112,39 @@ fetchUser token =
 
 fetchUserSettingProfile : Maybe String -> Types.Token -> Task.Task Types.Error Types.User
 fetchUserSettingProfile maybeProlific token =
-    fetchUserWithoutProfile token
+    fetchPreUser token
         `Task.andThen`
-            \user ->
-                case user.profile of
-                    Just _ ->
-                        Task.succeed user
+            \preUser ->
+                case preUser.profile of
+                    Just profile ->
+                        Task.succeed { preUser | profile = profile }
 
                     Nothing ->
-                        createProfile maybeProlific { token = token, user = user }
+                        createProfile maybeProlific { token = token, preUser = preUser }
 
 
-fetchUserWithoutProfile : Types.Token -> Task.Task Types.Error Types.User
-fetchUserWithoutProfile token =
+fetchPreUser : Types.Token -> Task.Task Types.Error Types.PreUser
+fetchPreUser token =
     authCall HttpBuilder.get "/users/me/" token
         |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.user)
+            (HttpBuilder.jsonReader Decoders.preUser)
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
 
 
-createProfile : Maybe String -> Types.Auth -> Task.Task Types.Error Types.User
-createProfile maybeProlific { token, user } =
+createProfile :
+    Maybe String
+    -> { token : Types.Token, preUser : Types.PreUser }
+    -> Task.Task Types.Error Types.User
+createProfile maybeProlific { token, preUser } =
     authCall HttpBuilder.post "/profiles/" token
         |> HttpBuilder.withJsonBody (Encoders.newProfile maybeProlific)
         |> HttpBuilder.send
             (HttpBuilder.jsonReader Decoders.profile)
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map (.data >> \p -> { user | profile = Just p })
+        |> Task.map (.data >> \p -> { preUser | profile = p })
 
 
 

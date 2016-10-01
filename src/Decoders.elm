@@ -1,4 +1,13 @@
-module Decoders exposing (token, detail, user, email, profile, feedback)
+module Decoders
+    exposing
+        ( detail
+        , email
+        , feedback
+        , preUser
+        , profile
+        , token
+        , user
+        )
 
 import Date
 import Dict
@@ -19,6 +28,17 @@ detail =
     JD.at [ "detail" ] JD.string
 
 
+preUser : JD.Decoder Types.PreUser
+preUser =
+    Pipeline.decode Types.PreUser
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "username" JD.string
+        |> Pipeline.required "is_active" JD.bool
+        |> Pipeline.required "is_staff" JD.bool
+        |> Pipeline.required "profile" (Pipeline.nullable profile)
+        |> Pipeline.required "emails" (JD.list email)
+
+
 user : JD.Decoder Types.User
 user =
     Pipeline.decode Types.User
@@ -26,7 +46,7 @@ user =
         |> Pipeline.required "username" JD.string
         |> Pipeline.required "is_active" JD.bool
         |> Pipeline.required "is_staff" JD.bool
-        |> Pipeline.required "profile" (Pipeline.nullable profile)
+        |> Pipeline.required "profile" profile
         |> Pipeline.required "emails" (JD.list email)
 
 
