@@ -11,6 +11,7 @@ import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Router
+import Store
 import Strings
 import Types
 
@@ -67,7 +68,7 @@ body : Model -> Router.ProfileRoute -> Types.User -> Html.Html Msg
 body model route user =
     case route of
         Router.Dashboard ->
-            dashboard user.profile
+            dashboard model user.profile
 
         Router.Settings ->
             Html.div []
@@ -82,12 +83,12 @@ body model route user =
             emailConfirmation model.emailConfirmation key
 
 
-dashboard : Types.Profile -> Html.Html Msg
-dashboard profile =
+dashboard : Model -> Types.Profile -> Html.Html Msg
+dashboard model profile =
     Html.div []
         [ lifecycle profile
         , questionnaireSummary profile.questionnaireId
-        , wordSpanSummary profile.wordSpanId
+        , wordSpanSummary profile.wordSpanId model.store
         ]
 
 
@@ -137,11 +138,11 @@ questionnaireSummary maybeId =
                 ]
 
         Just _ ->
-            Html.p [] [ Html.text "Questionnaire — Done" ]
+            Html.p [] [ Html.text "Questionnaire — ✓ Done" ]
 
 
-wordSpanSummary : Maybe Int -> Html.Html Msg
-wordSpanSummary maybeId =
+wordSpanSummary : Maybe Int -> Store.Store -> Html.Html Msg
+wordSpanSummary maybeId store =
     case maybeId of
         Nothing ->
             Html.p []
@@ -150,8 +151,17 @@ wordSpanSummary maybeId =
                   -- TODO set route to wordSpan
                 ]
 
-        Just _ ->
-            Html.p [] [ Html.text "Word span test — Done" ]
+        Just id ->
+            let
+                detail =
+                    case Store.get id store.wordSpans of
+                        Nothing ->
+                            ""
+
+                        Just wordSpan ->
+                            " " ++ (toString wordSpan.span) ++ " words"
+            in
+                Html.p [] [ Html.text ("Word span test — ✓" ++ detail) ]
 
 
 passwordChange : Form.Model Types.PasswordCredentials -> Html.Html Msg

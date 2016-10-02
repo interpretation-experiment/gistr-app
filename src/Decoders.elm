@@ -7,6 +7,7 @@ module Decoders
         , profile
         , token
         , user
+        , wordSpan
         )
 
 import Date
@@ -121,3 +122,13 @@ toFeedback fields feedbackItems =
             |> List.map (\( k, e ) -> ( (Dict.get k fields) ? k, e ))
             |> Dict.fromList
             |> finishFeedback
+
+
+wordSpan : JD.Decoder Types.WordSpan
+wordSpan =
+    Pipeline.decode Types.WordSpan
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "created" date
+        |> Pipeline.required "profile" JD.int
+        |> Pipeline.required "span" JD.int
+        |> Pipeline.required "score" JD.int

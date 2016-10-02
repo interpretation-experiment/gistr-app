@@ -1,15 +1,18 @@
 module Encoders
     exposing
         ( credentials
-        , user
         , email
-        , recoveryEmail
-        , newEmail
         , emailConfirmationKey
+        , newEmail
         , newProfile
-        , resetCredentials
-        , registerCredentials
+        , newWordSpan
         , passwordCredentials
+        , profile
+        , recoveryEmail
+        , registerCredentials
+        , resetCredentials
+        , user
+        , wordSpan
         )
 
 import Json.Encode as JE
@@ -68,6 +71,16 @@ newProfile maybeProlific =
         ]
 
 
+profile : Types.Profile -> JE.Value
+profile profile' =
+    JE.object
+        [ ( "id", JE.int profile'.id )
+        , ( "prolific_id", mapDefault JE.null JE.string profile'.prolificId )
+        , ( "mothertongue", JE.string profile'.mothertongue )
+        , ( "trained_reformulations", JE.bool profile'.trained )
+        ]
+
+
 passwordCredentials : Types.PasswordCredentials -> JE.Value
 passwordCredentials { oldPassword, password1, password2 } =
     JE.object
@@ -98,3 +111,21 @@ emailConfirmationKey : String -> JE.Value
 emailConfirmationKey key =
     JE.object
         [ ( "key", JE.string key ) ]
+
+
+newWordSpan : Types.NewWordSpan -> JE.Value
+newWordSpan wordSpan' =
+    JE.object
+        [ ( "span", JE.int wordSpan'.span )
+        , ( "score", JE.int wordSpan'.score )
+        ]
+
+
+wordSpan : Types.WordSpan -> JE.Value
+wordSpan wordSpan' =
+    JE.object
+        [ ( "id", JE.int wordSpan'.id )
+        , ( "profile", JE.int wordSpan'.profileId )
+        , ( "span", JE.int wordSpan'.span )
+        , ( "score", JE.int wordSpan'.score )
+        ]

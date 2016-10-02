@@ -2,6 +2,7 @@ module Msg exposing (Msg(..))
 
 import Animation
 import Router
+import Store
 import Types
 
 
@@ -65,3 +66,5 @@ type Msg
     | AddEmailFail Types.Error
     | AddEmail String
     | AddEmailSuccess Types.User
+      -- STORE
+    | GotStoreItem Store.Item

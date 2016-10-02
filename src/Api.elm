@@ -4,6 +4,7 @@ module Api
         , changePassword
         , confirmEmail
         , deleteEmail
+        , fetch
         , fetchAuth
         , login
         , logout
@@ -20,6 +21,7 @@ import Dict
 import Encoders
 import Feedback
 import HttpBuilder exposing (RequestBuilder)
+import Store
 import Task
 import Types
 
@@ -379,3 +381,17 @@ confirmEmail key { token } =
                 |> Task.map .data
     in
         confirm `Task.andThen` (always <| fetchUser token)
+
+
+
+-- STORE
+
+
+fetch : Store.TypedStore a b -> Int -> Types.Auth -> Task.Task Types.Error a
+fetch typedStore id { token } =
+    authCall HttpBuilder.get ("/" ++ (Store.endpoint typedStore) ++ "/" ++ (toString id) ++ "/") token
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader (Store.decoder typedStore))
+            HttpBuilder.stringReader
+        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+        |> Task.map .data

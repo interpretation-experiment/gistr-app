@@ -5,6 +5,7 @@ module Types
         , Credentials
         , Email
         , Error(..)
+        , NewWordSpan
         , PasswordCredentials
         , PreUser
         , Profile
@@ -14,6 +15,7 @@ module Types
         , Token
         , TreeCounts
         , User
+        , WordSpan
         , emptyCredentials
         , emptyPasswordCredentials
         , emptyRegisterCredentials
@@ -152,6 +154,24 @@ type alias Email =
    no    "word_span_url": null
 
 -}
+
+
+type alias WordSpan =
+    { id : Int
+    , created : Date.Date
+    , profileId : Int
+    , span : Int
+    , score : Int
+    }
+
+
+type alias NewWordSpan =
+    { span : Int
+    , score : Int
+    }
+
+
+
 -- RESET
 
 

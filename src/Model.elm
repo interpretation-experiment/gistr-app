@@ -9,6 +9,7 @@ module Model
 
 import Form
 import Router
+import Store
 import Types
 
 
@@ -18,6 +19,7 @@ import Types
 type alias Model =
     { route : Router.Route
     , auth : Types.AuthStatus
+    , store : Store.Store
     , error : Maybe Types.Error
     , login : Form.Model Types.Credentials
     , recover : SendableForm String String
@@ -35,6 +37,7 @@ initialModel : Router.Route -> Model
 initialModel route =
     { route = route
     , auth = Types.Authenticating
+    , store = Store.emptyStore
     , error = Nothing
     , login = Form.empty Types.emptyCredentials
     , recover = Form (Form.empty "")
@@ -56,6 +59,7 @@ emptyForms model =
     in
         { emptyModel
             | auth = model.auth
+            , store = model.store
             , error = model.error
         }
 

@@ -1,9 +1,10 @@
 module Cmds exposing (cmdsForRoute)
 
 import Api
-import Msg exposing (Msg)
 import Model exposing (Model)
+import Msg exposing (Msg)
 import Router
+import Store
 import Task
 import Types
 
@@ -24,6 +25,20 @@ cmdsForRoute model route =
 
                         _ ->
                             []
+
+        Router.Profile (Router.Dashboard) ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    case auth.user.profile.wordSpanId of
+                        Nothing ->
+                            []
+
+                        Just id ->
+                            [ Task.perform
+                                Msg.Error
+                                (Msg.GotStoreItem << Store.WordSpan)
+                                (Api.fetch model.store.wordSpans id auth)
+                            ]
 
         _ ->
             []

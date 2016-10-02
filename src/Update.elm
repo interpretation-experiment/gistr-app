@@ -11,6 +11,7 @@ import Msg exposing (Msg(..))
 import Navigation
 import Regex
 import Router
+import Store
 import String
 import Strings
 import Task
@@ -477,6 +478,12 @@ doUpdate msg model =
                     { model | emails = Form.succeed "" feedback model.emails }
                     user
                     ! []
+
+        {-
+           STORE
+        -}
+        GotStoreItem item ->
+            { model | store = Store.set item model.store } ! []
 
 
 
