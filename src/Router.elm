@@ -45,6 +45,8 @@ type ProfileRoute
     | Settings
     | Emails
     | Confirm String
+    | Questionnaire
+    | WordSpan
 
 
 authRedirect : Types.AuthStatus -> Route -> Route
@@ -131,6 +133,8 @@ profileUrlParser =
         , format Settings (s "settings")
         , format Emails (s "emails")
         , format Confirm (s "emails" </> s "confirm" <?> stringQ "key")
+        , format Questionnaire (s "questionanire")
+        , format WordSpan (s "word-span")
         ]
 
 
@@ -193,3 +197,9 @@ toProfileUrl profileRoute =
 
         Confirm key ->
             "/emails/confirm?key=" ++ key
+
+        Questionnaire ->
+            "/questionnaire"
+
+        WordSpan ->
+            "/word-span"

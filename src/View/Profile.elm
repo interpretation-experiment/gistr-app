@@ -14,6 +14,8 @@ import Router
 import Store
 import Strings
 import Types
+import View.Profile.Questionnaire as Questionnaire
+import View.Profile.WordSpan as WordSpan
 
 
 view : Model -> Router.ProfileRoute -> Html.Html Msg
@@ -82,6 +84,12 @@ body model route user =
         Router.Confirm key ->
             emailConfirmation model.emailConfirmation key
 
+        Router.Questionnaire ->
+            Questionnaire.view
+
+        Router.WordSpan ->
+            WordSpan.view
+
 
 dashboard : Model -> Types.Profile -> Html.Html Msg
 dashboard model profile =
@@ -133,8 +141,7 @@ questionnaireSummary maybeId =
         Nothing ->
             Html.p []
                 [ Html.text "Questionnaire — Not yet done"
-                , Helpers.navButton (Router.Profile Router.Dashboard) "Fill the questionnaire"
-                  -- TODO set route to questionnaire
+                , Helpers.navButton (Router.Profile Router.Questionnaire) "Fill the questionnaire"
                 ]
 
         Just _ ->
@@ -147,8 +154,7 @@ wordSpanSummary maybeId store =
         Nothing ->
             Html.p []
                 [ Html.text "Word span test — Not yet done"
-                , Helpers.navButton (Router.Profile Router.Dashboard) "Pass the test"
-                  -- TODO set route to wordSpan
+                , Helpers.navButton (Router.Profile Router.WordSpan) "Pass the test"
                 ]
 
         Just id ->
