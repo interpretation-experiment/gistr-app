@@ -62,7 +62,7 @@ form { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey@example.com"
                     , Attributes.type' "mail"
@@ -75,7 +75,7 @@ form { input, feedback, status } =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Request password reset" ]
                 ]

@@ -2,13 +2,18 @@ module Types
     exposing
         ( Auth
         , AuthStatus(..)
+        , Choice
         , Credentials
         , Email
         , Error(..)
+        , Meta
+        , NewQuestionnaire
         , NewWordSpan
         , PasswordCredentials
         , PreUser
         , Profile
+        , Questionnaire
+        , QuestionnaireForm
         , RegisterCredentials
         , ResetCredentials
         , ResetTokens
@@ -18,6 +23,7 @@ module Types
         , WordSpan
         , emptyCredentials
         , emptyPasswordCredentials
+        , emptyQuestionnaireForm
         , emptyRegisterCredentials
         , emptyResetCredentials
         )
@@ -32,6 +38,26 @@ import Feedback
 type Error
     = ApiFeedback Feedback.Feedback
     | Unrecoverable String
+
+
+type alias Choice =
+    { name : String, label : String }
+
+
+type alias Meta =
+    { targetBranchDepth : Int
+    , targetBranchCount : Int
+    , genderChoices : List Choice
+    , jobTypeChoices : List Choice
+    , experimentWork : Int
+    , trainingWork : Int
+    , treeCost : Int
+    , baseCredit : Int
+    , defaultLanguge : String
+    , supportedLanguages : List Choice
+    , otherLanguage : String
+    , version : String
+    }
 
 
 
@@ -154,6 +180,54 @@ type alias Email =
    no    "word_span_url": null
 
 -}
+
+
+type alias Questionnaire =
+    { id : Int
+    , created : Date.Date
+    , profileId : Int
+    , age : Int
+    , gender : String
+    , informed : Bool
+    , informedHow : String
+    , informedWhat : String
+    , jobType : String
+    , jobFreetext : String
+    }
+
+
+type alias NewQuestionnaire =
+    { age : Int
+    , gender : String
+    , informed : Bool
+    , informedHow : String
+    , informedWhat : String
+    , jobType : String
+    , jobFreetext : String
+    }
+
+
+type alias QuestionnaireForm =
+    { age : String
+    , gender : String
+    , informed : Bool
+    , informedHow : String
+    , informedWhat : String
+    , jobType : String
+    , jobFreetext : String
+    }
+
+
+emptyQuestionnaireForm : QuestionnaireForm
+emptyQuestionnaireForm =
+    { age = ""
+    , gender = ""
+    , informed = False
+    , informedHow = ""
+    , informedWhat = ""
+    , jobType = ""
+    , jobFreetext = ""
+    }
 
 
 type alias WordSpan =

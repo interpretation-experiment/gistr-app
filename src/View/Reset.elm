@@ -48,7 +48,7 @@ form { input, feedback, status } tokens =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
@@ -62,7 +62,7 @@ form { input, feedback, status } tokens =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -76,7 +76,7 @@ form { input, feedback, status } tokens =
                 , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Set new password" ]
                 ]

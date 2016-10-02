@@ -85,7 +85,7 @@ body model route user =
             emailConfirmation model.emailConfirmation key
 
         Router.Questionnaire ->
-            Questionnaire.view
+            Questionnaire.view model
 
         Router.WordSpan ->
             WordSpan.view
@@ -179,7 +179,7 @@ passwordChange { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputOldPassword" ] [ Html.text "Old password" ]
                 , Html.input
                     [ Attributes.id "inputOldPassword"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "Your old password"
                     , Attributes.type' "password"
                     , Attributes.value input.oldPassword
@@ -192,7 +192,7 @@ passwordChange { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
@@ -205,7 +205,7 @@ passwordChange { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
@@ -218,7 +218,7 @@ passwordChange { input, feedback, status } =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Update password" ]
                 , Html.span
@@ -238,7 +238,7 @@ usernameChange { input, feedback, status } =
             [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             , Html.input
                 [ Attributes.id "inputUsername"
-                , Attributes.disabled (status == Form.Sending)
+                , Attributes.disabled (status /= Form.Entering)
                 , Attributes.type' "text"
                 , Attributes.value input
                 , Events.onInput ChangeUsernameFormInput
@@ -246,7 +246,7 @@ usernameChange { input, feedback, status } =
                 []
             , Html.button
                 [ Attributes.type' "submit"
-                , Attributes.disabled (status == Form.Sending)
+                , Attributes.disabled (status /= Form.Entering)
                 ]
                 [ Html.text "Update username" ]
             , Html.span
@@ -280,7 +280,7 @@ emails { input, feedback, status } emails' =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.type' "email"
                     , Attributes.value input
                     , Events.onInput AddEmailFormInput
@@ -288,7 +288,7 @@ emails { input, feedback, status } emails' =
                     []
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Add" ]
                 , Html.span

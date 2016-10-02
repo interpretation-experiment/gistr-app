@@ -133,7 +133,7 @@ profileUrlParser =
         , format Settings (s "settings")
         , format Emails (s "emails")
         , format Confirm (s "emails" </> s "confirm" <?> stringQ "key")
-        , format Questionnaire (s "questionanire")
+        , format Questionnaire (s "questionnaire")
         , format WordSpan (s "word-span")
         ]
 

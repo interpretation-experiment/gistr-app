@@ -3,6 +3,7 @@ module Decoders
         ( detail
         , email
         , feedback
+        , meta
         , preUser
         , profile
         , token
@@ -132,3 +133,27 @@ wordSpan =
         |> Pipeline.required "profile" JD.int
         |> Pipeline.required "span" JD.int
         |> Pipeline.required "score" JD.int
+
+
+choice : JD.Decoder Types.Choice
+choice =
+    Pipeline.decode Types.Choice
+        |> Pipeline.required "name" JD.string
+        |> Pipeline.required "label" JD.string
+
+
+meta : JD.Decoder Types.Meta
+meta =
+    Pipeline.decode Types.Meta
+        |> Pipeline.required "target_branch_depth" JD.int
+        |> Pipeline.required "target_branch_count" JD.int
+        |> Pipeline.required "gender_choices" (JD.list choice)
+        |> Pipeline.required "job_type_choices" (JD.list choice)
+        |> Pipeline.required "experiment_work" JD.int
+        |> Pipeline.required "training_work" JD.int
+        |> Pipeline.required "tree_cost" JD.int
+        |> Pipeline.required "base_credit" JD.int
+        |> Pipeline.required "default_language" JD.string
+        |> Pipeline.required "supported_languages" (JD.list choice)
+        |> Pipeline.required "other_language" JD.string
+        |> Pipeline.required "version" JD.string

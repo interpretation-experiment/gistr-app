@@ -43,6 +43,7 @@ type TypedStore a b
 type alias Store =
     { wordSpans : TypedStore Types.WordSpan Types.NewWordSpan
     , profiles : TypedStore Types.Profile (Maybe String)
+    , meta : Maybe Types.Meta
     }
 
 
@@ -68,6 +69,7 @@ emptyStore =
                 }
             , data = Dict.empty
             }
+    , meta = Nothing
     }
 
 

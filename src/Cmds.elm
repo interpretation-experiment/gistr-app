@@ -12,33 +12,39 @@ import Types
 cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
 cmdsForRoute model route =
     case route of
-        Router.Profile (Router.Confirm key) ->
+        Router.Profile profileRoute ->
             authenticatedOrIgnore model <|
                 \auth ->
-                    case model.emailConfirmation of
-                        Model.SendingConfirmation ->
-                            [ Task.perform
-                                Msg.EmailConfirmationFail
-                                Msg.EmailConfirmationSuccess
-                                (Api.confirmEmail key auth)
-                            ]
+                    case profileRoute of
+                        Router.Confirm key ->
+                            case model.emailConfirmation of
+                                Model.SendingConfirmation ->
+                                    [ Task.perform
+                                        Msg.EmailConfirmationFail
+                                        Msg.EmailConfirmationSuccess
+                                        (Api.confirmEmail key auth)
+                                    ]
+
+                                _ ->
+                                    []
+
+                        Router.Dashboard ->
+                            case auth.user.profile.wordSpanId of
+                                Nothing ->
+                                    []
+
+                                Just id ->
+                                    [ Task.perform
+                                        Msg.Error
+                                        (Msg.GotStoreItem << Store.WordSpan)
+                                        (Api.fetch model.store.wordSpans id auth)
+                                    ]
+
+                        Router.Questionnaire ->
+                            [ fetchMeta model ]
 
                         _ ->
                             []
-
-        Router.Profile (Router.Dashboard) ->
-            authenticatedOrIgnore model <|
-                \auth ->
-                    case auth.user.profile.wordSpanId of
-                        Nothing ->
-                            []
-
-                        Just id ->
-                            [ Task.perform
-                                Msg.Error
-                                (Msg.GotStoreItem << Store.WordSpan)
-                                (Api.fetch model.store.wordSpans id auth)
-                            ]
 
         _ ->
             []
@@ -59,3 +65,13 @@ authenticatedOrIgnore model authFunc =
 
         _ ->
             []
+
+
+fetchMeta : Model -> Cmd Msg
+fetchMeta model =
+    case model.store.meta of
+        Nothing ->
+            Task.perform Msg.Error Msg.GotMeta Api.fetchMeta
+
+        Just _ ->
+            Cmd.none

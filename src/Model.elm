@@ -30,6 +30,7 @@ type alias Model =
     , emailConfirmation : EmailConfirmationModel
     , password : Form.Model Types.PasswordCredentials
     , username : Form.Model String
+    , questionnaire : Form.Model Types.QuestionnaireForm
     }
 
 
@@ -48,6 +49,7 @@ initialModel route =
     , emailConfirmation = SendingConfirmation
     , password = Form.empty Types.emptyPasswordCredentials
     , username = Form.empty ""
+    , questionnaire = Form.empty Types.emptyQuestionnaireForm
     }
 
 

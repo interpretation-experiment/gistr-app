@@ -20,6 +20,7 @@ import Feedback
 
 type Status
     = Entering
+    | Confirming
     | Sending
 
 

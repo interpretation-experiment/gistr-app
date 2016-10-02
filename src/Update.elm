@@ -205,6 +205,7 @@ doUpdate msg model =
             case model.reset of
                 Model.Form form ->
                     let
+                        -- TODO: use elm-validate
                         feedback =
                             Feedback.empty
                                 |> (Feedback.updateError "password1" <|
@@ -480,10 +481,43 @@ doUpdate msg model =
                     ! []
 
         {-
+           QUESTIONNAIRE
+        -}
+        QuestionnaireFormInput input ->
+            { model | questionnaire = Form.input input model.questionnaire } ! []
+
+        QuestionnaireFormConfirm input ->
+            -- TODO: validate with elm-validate
+            Debug.crash "todo"
+
+        QuestionnaireFormCorrect ->
+            { model | questionnaire = Form.setStatus Form.Entering model.questionnaire } ! []
+
+        QuestionnaireFormSubmit input ->
+            -- TODO: api send
+            Debug.crash "todo"
+
+        QuestionnaireFormFail error ->
+            feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    { model | questionnaire = Form.fail feedback model.questionnaire } ! []
+
+        QuestionnaireFormSuccess user ->
+            -- TODO: popup notification
+            Debug.crash "todo"
+
+        {-
            STORE
         -}
         GotStoreItem item ->
             { model | store = Store.set item model.store } ! []
+
+        GotMeta meta ->
+            let
+                store =
+                    model.store
+            in
+                { model | store = { store | meta = Just meta } } ! []
 
 
 

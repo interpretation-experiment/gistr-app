@@ -66,5 +66,13 @@ type Msg
     | AddEmailFail Types.Error
     | AddEmail String
     | AddEmailSuccess Types.User
+      -- QUESTIONNAIRE
+    | QuestionnaireFormInput Types.QuestionnaireForm
+    | QuestionnaireFormConfirm Types.QuestionnaireForm
+    | QuestionnaireFormCorrect
+    | QuestionnaireFormSubmit Types.QuestionnaireForm
+    | QuestionnaireFormFail Types.Error
+    | QuestionnaireFormSuccess Types.User
       -- STORE
     | GotStoreItem Store.Item
+    | GotMeta Types.Meta

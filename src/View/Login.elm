@@ -55,7 +55,7 @@ form { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -69,7 +69,7 @@ form { input, feedback, status } =
                 [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password
@@ -82,7 +82,7 @@ form { input, feedback, status } =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (status == Form.Sending)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Sign in" ]
                 , Helpers.navA Router.Recover "I forgot my password"

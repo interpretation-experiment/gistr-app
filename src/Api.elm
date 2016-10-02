@@ -6,6 +6,7 @@ module Api
         , deleteEmail
         , fetch
         , fetchAuth
+        , fetchMeta
         , login
         , logout
         , recover
@@ -392,6 +393,20 @@ fetch typedStore id { token } =
     authCall HttpBuilder.get ("/" ++ (Store.endpoint typedStore) ++ "/" ++ (toString id) ++ "/") token
         |> HttpBuilder.send
             (HttpBuilder.jsonReader (Store.decoder typedStore))
+            HttpBuilder.stringReader
+        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+        |> Task.map .data
+
+
+
+-- META
+
+
+fetchMeta : Task.Task Types.Error Types.Meta
+fetchMeta =
+    call HttpBuilder.get "/meta/"
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader Decoders.meta)
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
