@@ -5,4 +5,4 @@ import Html
 
 view : Html.Html msg
 view =
-    Html.div [] [ Html.text "Questionnaire" ]
+    Html.div [] [ Html.text "Word Span" ]
