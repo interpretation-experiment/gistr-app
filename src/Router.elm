@@ -39,6 +39,7 @@ type Route
     | Error
     | Prolific
     | Profile ProfileRoute
+    | Experiment
 
 
 type ProfileRoute
@@ -56,6 +57,9 @@ normalize auth route =
         Types.Anonymous ->
             case route of
                 Profile profileRoute ->
+                    Login (Just route)
+
+                Experiment ->
                     Login (Just route)
 
                 _ ->
@@ -128,6 +132,7 @@ urlParser items formatter =
         , format Prolific (s "register" </> s "prolific")
         , format (Profile Dashboard) (s "profile")
         , format Profile (s "profile" </> profileUrlParser)
+        , format Experiment (s "experiment")
         ]
         items
         formatter
@@ -188,6 +193,9 @@ toUrl route =
 
         Profile profileRoute ->
             "/profile" ++ (toProfileUrl profileRoute)
+
+        Experiment ->
+            "/experiment"
 
 
 toProfileUrl : ProfileRoute -> String
