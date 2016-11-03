@@ -30,8 +30,8 @@ view model =
         Router.Recover ->
             View.Recover.view model
 
-        Router.Reset uid token ->
-            View.Reset.view model uid token
+        Router.Reset tokens ->
+            View.Reset.view model tokens
 
         Router.Register maybeProlific ->
             View.Register.view model maybeProlific

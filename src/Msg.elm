@@ -1,34 +1,78 @@
 module Msg exposing (Msg(..))
 
+import Animation
 import Router
+import Store
 import Types
 
 
 type Msg
     = NoOp
+    | Animate Animation.Msg
+      -- NAVIGATION
     | NavigateTo Router.Route
-    | Error String
+    | Error Types.Error
+      -- LOGIN
     | LoginFormInput Types.Credentials
+    | LoginFail Types.Error
     | Login Types.Credentials
-    | LoginFail Types.Feedback
-    | GotToken (Maybe String) Types.Token
+    | LoginSuccess Types.Auth
+      -- LOCAL TOKEN LOGIN
     | GotLocalToken (Maybe Types.Token)
-    | GotUser (Maybe String) Types.Token Types.User
-    | GetUserFail Types.Feedback
-    | Logout Types.Token
+    | LoginLocalTokenFail Types.Error
+      -- LOGOUT
+    | Logout
+    | LogoutFail Types.Error
     | LogoutSuccess
-    | LogoutFail String
-    | ProlificFormInput String
-    | ProlificFormSubmit String
-    | Recover String
+      -- PROLIFIC
+    | SetProlificFormInput String
+    | SetProlific String
+      -- PASSWORD RECOVERY
     | RecoverFormInput String
-    | RecoverFail Types.Feedback
-    | RecoverSuccess
-    | Reset Types.ResetCredentials String String
+    | RecoverFail Types.Error
+    | Recover String
+    | RecoverSuccess String
+      -- PASSWORD RESET
     | ResetFormInput Types.ResetCredentials
-    | ResetFail Types.Feedback
+    | ResetFail Types.Error
+    | Reset Types.ResetCredentials Types.ResetTokens
     | ResetSuccess
-    | Register (Maybe String) Types.RegisterCredentials
+      -- REGISTRATION
     | RegisterFormInput Types.RegisterCredentials
-    | RegisterFail Types.Feedback
-    | CreatedProfile Types.Token Types.User Types.Profile
+    | RegisterFail Types.Error
+    | Register (Maybe String) Types.RegisterCredentials
+      -- PASSWORD MANAGEMENT
+    | ChangePasswordFormInput Types.PasswordCredentials
+    | ChangePasswordFail Types.Error
+    | ChangePassword Types.PasswordCredentials
+    | ChangePasswordSuccess Types.Auth
+    | ChangePasswordRecover
+    | ChangePasswordRecoverSuccess
+      -- USERNAME MANAGEMENT
+    | ChangeUsernameFormInput String
+    | ChangeUsernameFail Types.Error
+    | ChangeUsername String
+    | ChangeUsernameSuccess Types.User
+      -- EMAIL MANAGEMENT
+    | RequestEmailVerification Types.Email
+    | RequestEmailVerificationSuccess Types.Email
+    | EmailConfirmationFail Types.Error
+    | EmailConfirmationSuccess Types.User
+    | PrimaryEmail Types.Email
+    | PrimaryEmailSuccess Types.User
+    | DeleteEmail Types.Email
+    | DeleteEmailSuccess Types.User
+    | AddEmailFormInput String
+    | AddEmailFail Types.Error
+    | AddEmail String
+    | AddEmailSuccess Types.User
+      -- QUESTIONNAIRE
+    | QuestionnaireFormInput Types.QuestionnaireForm
+    | QuestionnaireFormConfirm Types.QuestionnaireForm
+    | QuestionnaireFormCorrect
+    | QuestionnaireFormSubmit Types.QuestionnaireForm
+    | QuestionnaireFormFail Types.Error
+    | QuestionnaireFormSuccess Types.User
+      -- STORE
+    | GotStoreItem Store.Item
+    | GotMeta Types.Meta

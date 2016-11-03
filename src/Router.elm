@@ -2,11 +2,12 @@ module Router
     exposing
         ( ProfileRoute(..)
         , Route(..)
-        , authRedirect
         , locationParser
+        , normalize
         , toUrl
         )
 
+import Maybe.Extra exposing (isJust)
 import Navigation
 import String
 import Types
@@ -33,7 +34,7 @@ type Route
     | About
     | Login (Maybe Route)
     | Recover
-    | Reset String String
+    | Reset Types.ResetTokens
     | Register (Maybe String)
     | Error
     | Prolific
@@ -41,13 +42,16 @@ type Route
 
 
 type ProfileRoute
-    = Tests
+    = Dashboard
     | Settings
     | Emails
+    | Confirm String
+    | Questionnaire
+    | WordSpan
 
 
-authRedirect : Types.Auth -> Route -> Route
-authRedirect auth route =
+normalize : Types.AuthStatus -> Route -> Route
+normalize auth route =
     case auth of
         Types.Anonymous ->
             case route of
@@ -57,7 +61,7 @@ authRedirect auth route =
                 _ ->
                     route
 
-        Types.Authenticated _ _ ->
+        Types.Authenticated { user } ->
             case route of
                 Login _ ->
                     Home
@@ -70,6 +74,12 @@ authRedirect auth route =
 
                 Prolific ->
                     Home
+
+                Profile Questionnaire ->
+                    if isJust user.profile.questionnaireId then
+                        Profile Dashboard
+                    else
+                        route
 
                 _ ->
                     route
@@ -111,12 +121,12 @@ urlParser items formatter =
         , format About (s "about")
         , format Login (s "login" <?> maybeQ (routeQ "next"))
         , format Recover (s "login" </> s "recover")
-        , format Reset
+        , format (\uid token -> Reset (Types.ResetTokens uid token))
             (s "login" </> s "reset" <?> stringQ "uid" <?> stringQ "token")
         , format Register (s "register" <?> maybeQ (stringQ "prolific_id"))
         , format Error (s "error")
         , format Prolific (s "register" </> s "prolific")
-        , format (Profile Tests) (s "profile")
+        , format (Profile Dashboard) (s "profile")
         , format Profile (s "profile" </> profileUrlParser)
         ]
         items
@@ -126,9 +136,12 @@ urlParser items formatter =
 profileUrlParser : UrlParser (ProfileRoute -> a) a
 profileUrlParser =
     oneOf
-        [ format Tests (s "tests")
+        [ format Dashboard (s "dashboard")
         , format Settings (s "settings")
         , format Emails (s "emails")
+        , format Confirm (s "emails" </> s "confirm" <?> stringQ "key")
+        , format Questionnaire (s "questionnaire")
+        , format WordSpan (s "word-span")
         ]
 
 
@@ -156,7 +169,7 @@ toUrl route =
         Recover ->
             "/login/recover"
 
-        Reset uid token ->
+        Reset { uid, token } ->
             "/login/reset?token=" ++ token ++ "&uid=" ++ uid
 
         Register maybeProlific ->
@@ -180,11 +193,20 @@ toUrl route =
 toProfileUrl : ProfileRoute -> String
 toProfileUrl profileRoute =
     case profileRoute of
-        Tests ->
-            "/tests"
+        Dashboard ->
+            "/dashboard"
 
         Settings ->
             "/settings"
 
         Emails ->
             "/emails"
+
+        Confirm key ->
+            "/emails/confirm?key=" ++ key
+
+        Questionnaire ->
+            "/questionnaire"
+
+        WordSpan ->
+            "/word-span"

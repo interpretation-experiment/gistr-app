@@ -1,5 +1,7 @@
 module View.Register exposing (view)
 
+import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -29,19 +31,19 @@ body model maybeProlific =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.registerModel maybeProlific True
+                    form model.register maybeProlific
 
                 Types.Authenticating ->
-                    form model.registerModel maybeProlific False
+                    Helpers.loading
 
-                Types.Authenticated _ user ->
+                Types.Authenticated { user } ->
                     Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
 
-form : Model.RegisterModel -> Maybe String -> Bool -> Html.Html Msg
-form { input, feedback } maybeProlific enabled =
+form : Form.Model Types.RegisterCredentials -> Maybe String -> Html.Html Msg
+form { input, feedback, status } maybeProlific =
     Html.div []
         [ prolificLogin maybeProlific
         , Html.form [ Events.onSubmit (Msg.Register maybeProlific input) ]
@@ -49,7 +51,7 @@ form { input, feedback } maybeProlific enabled =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -57,52 +59,52 @@ form { input, feedback } maybeProlific enabled =
                     , Events.onInput (Msg.RegisterFormInput << \u -> { input | username = u })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "username" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "joey@example.com (optional)"
                     , Attributes.type' "email"
                     , Attributes.value input.email
                     , Events.onInput (Msg.RegisterFormInput << \e -> { input | email = e })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "email" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "email" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
                     , Events.onInput (Msg.RegisterFormInput << \p -> { input | password1 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password1" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
                     , Events.onInput (Msg.RegisterFormInput << \p -> { input | password2 = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password2" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Sign up" ]
                 ]

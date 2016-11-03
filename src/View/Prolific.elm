@@ -1,5 +1,7 @@
 module View.Prolific exposing (view)
 
+import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -29,18 +31,18 @@ body model =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.prolificModel
+                    form model.prolific
 
                 Types.Authenticating ->
                     Helpers.loading
 
-                Types.Authenticated _ user ->
-                    Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+                Types.Authenticated { user } ->
+                    Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
 
-form : Model.ProlificModel -> Html.Html Msg
+form : Form.Model String -> Html.Html Msg
 form { input, feedback } =
     Html.div []
         [ Html.div []
@@ -52,7 +54,7 @@ form { input, feedback } =
             [ Html.text "Before we start, "
             , Html.strong [] [ Html.text "please enter your Prolific Academic ID" ]
             ]
-        , Html.form [ Events.onSubmit (Msg.ProlificFormSubmit input) ]
+        , Html.form [ Events.onSubmit (Msg.SetProlific input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputProlificId" ] [ Html.text "Prolific Academic ID" ]
                 , Html.input
@@ -61,10 +63,10 @@ form { input, feedback } =
                     , Attributes.placeholder "5381d3c8717b341db325eec3"
                     , Attributes.type' "text"
                     , Attributes.value input
-                    , Events.onInput Msg.ProlificFormInput
+                    , Events.onInput Msg.SetProlificFormInput
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 ]
             , Html.div []
                 [ Html.p []

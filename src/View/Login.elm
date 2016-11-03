@@ -1,5 +1,7 @@
 module View.Login exposing (view)
 
+import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -29,19 +31,19 @@ body model =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.loginModel True
+                    form model.login
 
                 Types.Authenticating ->
-                    form model.loginModel False
+                    Helpers.loading
 
-                Types.Authenticated _ user ->
+                Types.Authenticated { user } ->
                     Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
 
-form : Model.LoginModel -> Bool -> Html.Html Msg
-form { input, feedback } enabled =
+form : Form.Model Types.Credentials -> Html.Html Msg
+form { input, feedback, status } =
     Html.div []
         [ Html.div []
             [ Html.text "No account yet? "
@@ -53,7 +55,7 @@ form { input, feedback } enabled =
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
@@ -61,26 +63,26 @@ form { input, feedback } enabled =
                     , Events.onInput (Msg.LoginFormInput << \u -> { input | username = u })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "username" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
                 ]
             , Html.div []
                 [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
                 , Html.input
                     [ Attributes.id "inputPassword"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password
                     , Events.onInput (Msg.LoginFormInput << \p -> { input | password = p })
                     ]
                     []
-                , Html.span [] [ Html.text (Helpers.feedbackGet "password" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "password" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Sign in" ]
                 , Helpers.navA Router.Recover "I forgot my password"

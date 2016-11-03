@@ -1,28 +1,75 @@
 module Types
     exposing
-        ( Auth(..)
+        ( Auth
+        , AuthStatus(..)
+        , Choice
         , Credentials
-        , Feedback
+        , Email
+        , Error(..)
+        , Meta
+        , NewWordSpan
+        , PasswordCredentials
+        , PreUser
         , Profile
+        , QuestionnaireForm
         , RegisterCredentials
         , ResetCredentials
+        , ResetTokens
         , Token
         , TreeCounts
         , User
-        , customFeedback
+        , WordSpan
         , emptyCredentials
-        , emptyFeedback
+        , emptyPasswordCredentials
+        , emptyQuestionnaireForm
         , emptyRegisterCredentials
         , emptyResetCredentials
-        , globalFeedback
-        , updateFeedback
         )
 
 import Date
-import Dict
+import Feedback
+
+
+-- API
+
+
+type Error
+    = ApiFeedback Feedback.Feedback
+    | Unrecoverable String
+
+
+type alias Choice =
+    { name : String, label : String }
+
+
+type alias Meta =
+    { targetBranchDepth : Int
+    , targetBranchCount : Int
+    , genderChoices : List Choice
+    , jobTypeChoices : List Choice
+    , experimentWork : Int
+    , trainingWork : Int
+    , treeCost : Int
+    , baseCredit : Int
+    , defaultLanguge : String
+    , supportedLanguages : List Choice
+    , otherLanguage : String
+    , version : String
+    }
+
 
 
 -- USER AND LOGIN
+
+
+type alias PreUser =
+    { id : Int
+    , username : String
+    , isActive : Bool
+    , isStaff : Bool
+    , profile : Maybe Profile
+    , emails : List Email
+    }
 
 
 type alias User =
@@ -30,7 +77,8 @@ type alias User =
     , username : String
     , isActive : Bool
     , isStaff : Bool
-    , profile : Maybe Profile
+    , profile : Profile
+    , emails : List Email
     }
 
 
@@ -49,10 +97,14 @@ type alias Token =
     String
 
 
-type Auth
+type AuthStatus
     = Anonymous
     | Authenticating
-    | Authenticated Token User
+    | Authenticated Auth
+
+
+type alias Auth =
+    { token : Token, user : User }
 
 
 
@@ -69,12 +121,24 @@ type alias Profile =
     , trained : Bool
     , reformulationsCount : Int
     , availableTreeCounts : TreeCounts
+    , questionnaireId : Maybe Int
+    , wordSpanId : Maybe Int
     }
 
 
 type alias TreeCounts =
     { training : Int
     , experiment : Int
+    }
+
+
+type alias Email =
+    { id : Int
+    , user : Int
+    , email : String
+    , verified : Bool
+    , primary : Bool
+    , transacting : Bool
     }
 
 
@@ -95,8 +159,8 @@ type alias TreeCounts =
    ok    "mothertongue": "english",
        "next_credit_in": 48,
    ok    "prolific_id": null,
-       "questionnaire": null,
-       "questionnaire_done": false,
+   ok    "questionnaire": null,
+   no    "questionnaire_done": false,
    no    "questionnaire_url": null,
    ok    "reformulations_count": 0,
        "sentences": [],
@@ -109,11 +173,52 @@ type alias TreeCounts =
    ok    "user": 1,
    no    "user_url": "http://127.0.0.1:8000/api/users/1/",
    ok    "user_username": "sl",
-       "word_span": null,
-       "word_span_done": false,
+   ok    "word_span": null,
+   no    "word_span_done": false,
    no    "word_span_url": null
 
 -}
+
+
+type alias QuestionnaireForm =
+    { age : String
+    , gender : String
+    , informed : Bool
+    , informedHow : String
+    , informedWhat : String
+    , jobType : String
+    , jobFreetext : String
+    }
+
+
+emptyQuestionnaireForm : QuestionnaireForm
+emptyQuestionnaireForm =
+    { age = ""
+    , gender = ""
+    , informed = False
+    , informedHow = ""
+    , informedWhat = ""
+    , jobType = ""
+    , jobFreetext = ""
+    }
+
+
+type alias WordSpan =
+    { id : Int
+    , created : Date.Date
+    , profileId : Int
+    , span : Int
+    , score : Int
+    }
+
+
+type alias NewWordSpan =
+    { span : Int
+    , score : Int
+    }
+
+
+
 -- RESET
 
 
@@ -126,6 +231,12 @@ type alias ResetCredentials =
 emptyResetCredentials : ResetCredentials
 emptyResetCredentials =
     ResetCredentials "" ""
+
+
+type alias ResetTokens =
+    { uid : String
+    , token : String
+    }
 
 
 
@@ -146,40 +257,16 @@ emptyRegisterCredentials =
 
 
 
--- FORMS FEEDBACK
-{- DO: think about changing Feedback into something like:
-   type alias Feedback =
-     { known : Dict.Dict String String
-     , unknown : String
-     }
-   with corresponding helpers to handle it.
--}
+-- PASSWORD
 
 
-type alias Feedback =
-    Dict.Dict String String
+type alias PasswordCredentials =
+    { oldPassword : String
+    , password1 : String
+    , password2 : String
+    }
 
 
-emptyFeedback : Feedback
-emptyFeedback =
-    Dict.empty
-
-
-globalFeedback : String -> Feedback
-globalFeedback value =
-    customFeedback "global" value
-
-
-customFeedback : String -> String -> Feedback
-customFeedback key =
-    Dict.singleton key
-
-
-updateFeedback : String -> Maybe String -> Feedback -> Feedback
-updateFeedback key maybeValue feedback =
-    case maybeValue of
-        Nothing ->
-            feedback
-
-        Just value ->
-            Dict.insert key value feedback
+emptyPasswordCredentials : PasswordCredentials
+emptyPasswordCredentials =
+    PasswordCredentials "" "" ""

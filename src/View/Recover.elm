@@ -1,5 +1,7 @@
 module View.Recover exposing (view)
 
+import Feedback
+import Form
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -29,27 +31,24 @@ body model =
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    case model.recoverModel.status of
-                        Model.Entering ->
-                            form model.recoverModel True
+                    case model.recover of
+                        Model.Form formModel ->
+                            form formModel
 
-                        Model.Sending ->
-                            form model.recoverModel False
-
-                        Model.Sent ->
-                            sent model.recoverModel
+                        Model.Sent email ->
+                            sent email
 
                 Types.Authenticating ->
                     Helpers.loading
 
-                Types.Authenticated _ user ->
+                Types.Authenticated { user } ->
                     Helpers.alreadyAuthed user
     in
         Html.div [] [ inner ]
 
 
-form : Model.RecoverModel -> Bool -> Html.Html Msg
-form { input, feedback } enabled =
+form : Form.Model String -> Html.Html Msg
+form { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Reset your password" ]
         , Html.p [] [ Html.text "Type in the email address you gave for your account and we'll send you an email with instructions to reset your password." ]
@@ -63,7 +62,7 @@ form { input, feedback } enabled =
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey@example.com"
                     , Attributes.type' "mail"
@@ -73,10 +72,10 @@ form { input, feedback } enabled =
                     []
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Helpers.feedbackGet "global" feedback) ]
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type' "submit"
-                    , Attributes.disabled (not enabled)
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Request password reset" ]
                 ]
@@ -84,13 +83,13 @@ form { input, feedback } enabled =
         ]
 
 
-sent : Model.RecoverModel -> Html.Html Msg
-sent { input } =
+sent : String -> Html.Html Msg
+sent email =
     Html.div []
         [ Html.h2 [] [ Html.text "Check your inbox" ]
         , Html.p []
             [ Html.text "We just sent an email to "
-            , Html.strong [] [ Html.text input ]
+            , Html.strong [] [ Html.text email ]
             , Html.text " with instructions to reset your password. Please follow its instructions."
             ]
         ]

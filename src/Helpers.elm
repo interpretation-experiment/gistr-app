@@ -1,30 +1,33 @@
 module Helpers
     exposing
-        ( alreadyAuthed
+        ( (!!)
+        , alreadyAuthed
+        , authenticatedOrIgnore
         , cmd
         , evA
         , evButton
-        , feedbackGet
+        , ifShorterThan
+        , ifThenValidate
         , loading
         , navA
         , navButton
+        , navigateTo
         , notAuthed
-        , withFeedback
-        , withInput
-        , withStatus
-        , (!!)
+        , updateUser
         )
 
-import Dict
+import Cmds
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
-import Maybe.Extra exposing ((?))
+import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo))
 import Router
+import String
 import Task
 import Types
+import Validate
 
 
 cmd : a -> Cmd a
@@ -32,25 +35,69 @@ cmd msg =
     Task.perform (always msg) (always msg) (Task.succeed ())
 
 
+
+-- UPDATES
+
+
 (!!) : ( model, Cmd msg ) -> List (Cmd msg) -> ( model, Cmd msg )
 (!!) ( model, cmd ) cmds =
     model ! (cmd :: cmds)
+
+
+updateUser :
+    { a | auth : Types.AuthStatus }
+    -> Types.User
+    -> { a | auth : Types.AuthStatus }
+updateUser model user =
+    case model.auth of
+        Types.Authenticated auth ->
+            { model | auth = Types.Authenticated { auth | user = user } }
+
+        _ ->
+            model
+
+
+navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
+navigateTo model route =
+    let
+        authRoute =
+            Router.normalize model.auth (Debug.log "nav request" route)
+
+        emptyOnChange =
+            if authRoute /= model.route then
+                Model.emptyForms
+            else
+                identity
+    in
+        emptyOnChange { model | route = (Debug.log "nav final" authRoute) }
+            ! Cmds.cmdsForRoute model authRoute
+
+
+authenticatedOrIgnore :
+    Model
+    -> (Types.Auth -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+authenticatedOrIgnore model authFunc =
+    case model.auth of
+        Types.Authenticated auth ->
+            authFunc auth
+
+        _ ->
+            model ! []
 
 
 
 -- VIEWS
 
 
-evButton : Msg -> String -> Html.Html Msg
-evButton msg text =
-    Html.button
-        [ Events.onClick msg ]
-        [ Html.text text ]
+evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
+evButton attrs msg text =
+    Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
 
 
 navButton : Router.Route -> String -> Html.Html Msg
 navButton route text =
-    evButton (NavigateTo route) text
+    evButton [] (NavigateTo route) text
 
 
 evA : String -> Msg -> String -> Html.Html Msg
@@ -89,27 +136,17 @@ alreadyAuthed user =
 
 
 
--- FORMS
+-- VALIDATION
 
 
-withFeedback :
-    Types.Feedback
-    -> { a | feedback : Types.Feedback }
-    -> { a | feedback : Types.Feedback }
-withFeedback feedback form =
-    { form | feedback = feedback }
+ifShorterThan : Int -> error -> Validate.Validator error String
+ifShorterThan length error =
+    Validate.ifInvalid (String.length >> (>) length) error
 
 
-withInput : b -> { a | input : b } -> { a | input : b }
-withInput input form =
-    { form | input = input }
-
-
-withStatus : b -> { a | status : b } -> { a | status : b }
-withStatus status form =
-    { form | status = status }
-
-
-feedbackGet : String -> Types.Feedback -> String
-feedbackGet key feedback =
-    Dict.get key feedback ? ""
+ifThenValidate : (subject -> Bool) -> Validate.Validator error subject -> Validate.Validator error subject
+ifThenValidate condition validator subject =
+    if condition subject then
+        validator subject
+    else
+        []

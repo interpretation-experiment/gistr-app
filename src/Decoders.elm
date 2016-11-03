@@ -1,12 +1,23 @@
-module Decoders exposing (token, detail, user, profile, feedback)
+module Decoders
+    exposing
+        ( detail
+        , email
+        , feedback
+        , meta
+        , preUser
+        , profile
+        , token
+        , user
+        , wordSpan
+        )
 
 import Date
 import Dict
 import Json.Decode as JD
 import Json.Decode.Pipeline as Pipeline
 import Maybe.Extra exposing ((?))
-import Set
 import Types
+import Feedback
 
 
 token : JD.Decoder String
@@ -19,6 +30,17 @@ detail =
     JD.at [ "detail" ] JD.string
 
 
+preUser : JD.Decoder Types.PreUser
+preUser =
+    Pipeline.decode Types.PreUser
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "username" JD.string
+        |> Pipeline.required "is_active" JD.bool
+        |> Pipeline.required "is_staff" JD.bool
+        |> Pipeline.required "profile" (Pipeline.nullable profile)
+        |> Pipeline.required "emails" (JD.list email)
+
+
 user : JD.Decoder Types.User
 user =
     Pipeline.decode Types.User
@@ -26,7 +48,8 @@ user =
         |> Pipeline.required "username" JD.string
         |> Pipeline.required "is_active" JD.bool
         |> Pipeline.required "is_staff" JD.bool
-        |> Pipeline.required "profile" (Pipeline.nullable profile)
+        |> Pipeline.required "profile" profile
+        |> Pipeline.required "emails" (JD.list email)
 
 
 profile : JD.Decoder Types.Profile
@@ -41,6 +64,8 @@ profile =
         |> Pipeline.required "trained_reformulations" JD.bool
         |> Pipeline.required "reformulations_count" JD.int
         |> Pipeline.required "available_trees_counts" treeCounts
+        |> Pipeline.required "questionnaire" (Pipeline.nullable JD.int)
+        |> Pipeline.required "word_span" (Pipeline.nullable JD.int)
 
 
 treeCounts : JD.Decoder Types.TreeCounts
@@ -63,38 +88,72 @@ date =
                         JD.succeed date
 
 
-feedback : Dict.Dict String String -> JD.Decoder Types.Feedback
+email : JD.Decoder Types.Email
+email =
+    Pipeline.decode Types.Email
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "user" JD.int
+        |> Pipeline.required "email" JD.string
+        |> Pipeline.required "verified" JD.bool
+        |> Pipeline.required "primary" JD.bool
+        |> Pipeline.hardcoded False
+
+
+feedback : Dict.Dict String String -> JD.Decoder Feedback.Feedback
 feedback fields =
+    (JD.dict (JD.tuple1 identity JD.string) |> JD.map (toFeedback fields))
+        `JD.andThen`
+            \feedback ->
+                if Feedback.noKnownErrors feedback then
+                    JD.fail ("Unknown errors: " ++ (Feedback.getUnknown feedback))
+                else
+                    JD.succeed feedback
+
+
+toFeedback : Dict.Dict String String -> Dict.Dict String String -> Feedback.Feedback
+toFeedback fields feedbackItems =
     let
-        uncheckedFeedback =
-            JD.dict (JD.tuple1 identity JD.string)
-                |> JD.map (translateFeedback fields)
+        ( known, unknown ) =
+            Dict.partition (\k v -> Dict.member k fields) feedbackItems
+
+        finishFeedback processed =
+            Feedback.feedback processed (toString unknown)
     in
-        uncheckedFeedback `JD.andThen` (checkFeedback fields)
+        Dict.toList known
+            |> List.map (\( k, e ) -> ( (Dict.get k fields) ? k, e ))
+            |> Dict.fromList
+            |> finishFeedback
 
 
-translateFeedback : Dict.Dict String String -> Types.Feedback -> Types.Feedback
-translateFeedback fields feedback =
-    Dict.toList feedback
-        |> List.map (translateItem fields)
-        |> Dict.fromList
+wordSpan : JD.Decoder Types.WordSpan
+wordSpan =
+    Pipeline.decode Types.WordSpan
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "created" date
+        |> Pipeline.required "profile" JD.int
+        |> Pipeline.required "span" JD.int
+        |> Pipeline.required "score" JD.int
 
 
-translateItem : Dict.Dict String String -> ( String, String ) -> ( String, String )
-translateItem fields ( key, value ) =
-    ( (Dict.get key fields) ? key, value )
+choice : JD.Decoder Types.Choice
+choice =
+    Pipeline.decode Types.Choice
+        |> Pipeline.required "name" JD.string
+        |> Pipeline.required "label" JD.string
 
 
-checkFeedback : Dict.Dict String String -> Types.Feedback -> JD.Decoder Types.Feedback
-checkFeedback fields feedback =
-    let
-        isEmpty =
-            Dict.keys feedback
-                |> Set.fromList
-                |> Set.intersect (Set.fromList (Dict.values fields))
-                |> Set.isEmpty
-    in
-        if isEmpty then
-            JD.fail "Unknown error"
-        else
-            JD.succeed feedback
+meta : JD.Decoder Types.Meta
+meta =
+    Pipeline.decode Types.Meta
+        |> Pipeline.required "target_branch_depth" JD.int
+        |> Pipeline.required "target_branch_count" JD.int
+        |> Pipeline.required "gender_choices" (JD.list choice)
+        |> Pipeline.required "job_type_choices" (JD.list choice)
+        |> Pipeline.required "experiment_work" JD.int
+        |> Pipeline.required "training_work" JD.int
+        |> Pipeline.required "tree_cost" JD.int
+        |> Pipeline.required "base_credit" JD.int
+        |> Pipeline.required "default_language" JD.string
+        |> Pipeline.required "supported_languages" (JD.list choice)
+        |> Pipeline.required "other_language" JD.string
+        |> Pipeline.required "version" JD.string

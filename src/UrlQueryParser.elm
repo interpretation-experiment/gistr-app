@@ -86,8 +86,8 @@ queryItems query =
             |> List.foldr grow Dict.empty
 
 
-popItem : String -> Items -> Items
-popItem key items =
+removeItem : String -> Items -> Items
+removeItem key items =
     case Dict.get key items of
         Nothing ->
             items
@@ -239,7 +239,7 @@ sQ key =
     \items result ->
         case Dict.get key items of
             Just (value :: rest) ->
-                Ok ( popItem key items, result )
+                Ok ( removeItem key items, result )
 
             _ ->
                 Err (NotFound ("Didn't find query parameter " ++ key))
@@ -307,7 +307,7 @@ customQ tipe stringToSomething key =
                 case stringToSomething value of
                     Ok something ->
                         Ok
-                            ( popItem key items
+                            ( removeItem key items
                             , func something
                             )
 
