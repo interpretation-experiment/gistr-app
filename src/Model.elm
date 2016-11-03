@@ -2,7 +2,7 @@ module Model
     exposing
         ( EmailConfirmationModel(..)
         , Model
-        , SendableForm(..)
+        , FinishableForm(..)
         , emptyForms
         , initialModel
         )
@@ -22,8 +22,8 @@ type alias Model =
     , store : Store.Store
     , error : Maybe Types.Error
     , login : Form.Model Types.Credentials
-    , recover : SendableForm String String
-    , reset : SendableForm Types.ResetCredentials ()
+    , recover : FinishableForm String String
+    , reset : FinishableForm Types.ResetCredentials ()
     , prolific : Form.Model String
     , register : Form.Model Types.RegisterCredentials
     , emails : Form.Model String
@@ -66,7 +66,7 @@ emptyForms model =
         }
 
 
-type SendableForm a b
+type FinishableForm a b
     = Form (Form.Model a)
     | Sent b
 

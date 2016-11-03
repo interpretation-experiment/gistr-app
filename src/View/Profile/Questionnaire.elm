@@ -89,7 +89,7 @@ form { input, feedback, status } meta =
 
         jobOption job =
             Html.option
-                [ Attributes.disabled (status /= Form.Entering)
+                [ Attributes.disabled (job.name == "")
                 , Attributes.value job.name
                 , Attributes.selected (input.jobType == job.name)
                 ]
@@ -105,7 +105,8 @@ form { input, feedback, status } meta =
                     )
 
                 _ ->
-                    ( [ Helpers.evButton [ Attributes.disabled (status /= Form.Confirming) ]
+                    ( [ Helpers.evButton
+                            [ Attributes.disabled (status /= Form.Confirming) ]
                             Msg.QuestionnaireFormCorrect
                             "Correct answers"
                       , Html.button
@@ -169,7 +170,7 @@ form { input, feedback, status } meta =
                     , Attributes.disabled (status /= Form.Entering)
                     , Events.onInput (Msg.QuestionnaireFormInput << \j -> { input | jobType = j })
                     ]
-                    (List.map jobOption meta.jobTypeChoices)
+                    (List.map jobOption ({ name = "", label = Strings.selectPlease } :: meta.jobTypeChoices))
                 , Html.span [] [ Html.text (Feedback.getError "jobType" feedback) ]
                 ]
             , Html.div []

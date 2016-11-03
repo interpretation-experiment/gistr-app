@@ -5,6 +5,7 @@ module Encoders
         , emailConfirmationKey
         , newEmail
         , newProfile
+        , newQuestionnaire
         , newWordSpan
         , passwordCredentials
         , profile
@@ -114,10 +115,10 @@ emailConfirmationKey key =
 
 
 newWordSpan : Types.NewWordSpan -> JE.Value
-newWordSpan wordSpan' =
+newWordSpan wordSpan =
     JE.object
-        [ ( "span", JE.int wordSpan'.span )
-        , ( "score", JE.int wordSpan'.score )
+        [ ( "span", JE.int wordSpan.span )
+        , ( "score", JE.int wordSpan.score )
         ]
 
 
@@ -128,4 +129,17 @@ wordSpan wordSpan' =
         , ( "profile", JE.int wordSpan'.profileId )
         , ( "span", JE.int wordSpan'.span )
         , ( "score", JE.int wordSpan'.score )
+        ]
+
+
+newQuestionnaire : Types.QuestionnaireForm -> JE.Value
+newQuestionnaire questionnaire =
+    JE.object
+        [ ( "age", JE.string questionnaire.age )
+        , ( "gender", JE.string questionnaire.gender )
+        , ( "informed", JE.bool questionnaire.informed )
+        , ( "informed_how", JE.string questionnaire.informedHow )
+        , ( "informed_what", JE.string questionnaire.informedWhat )
+        , ( "job_type", JE.string questionnaire.jobType )
+        , ( "job_freetext", JE.string questionnaire.jobFreetext )
         ]

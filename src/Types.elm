@@ -7,12 +7,10 @@ module Types
         , Email
         , Error(..)
         , Meta
-        , NewQuestionnaire
         , NewWordSpan
         , PasswordCredentials
         , PreUser
         , Profile
-        , Questionnaire
         , QuestionnaireForm
         , RegisterCredentials
         , ResetCredentials
@@ -180,31 +178,6 @@ type alias Email =
    no    "word_span_url": null
 
 -}
-
-
-type alias Questionnaire =
-    { id : Int
-    , created : Date.Date
-    , profileId : Int
-    , age : Int
-    , gender : String
-    , informed : Bool
-    , informedHow : String
-    , informedWhat : String
-    , jobType : String
-    , jobFreetext : String
-    }
-
-
-type alias NewQuestionnaire =
-    { age : Int
-    , gender : String
-    , informed : Bool
-    , informedHow : String
-    , informedWhat : String
-    , jobType : String
-    , jobFreetext : String
-    }
 
 
 type alias QuestionnaireForm =

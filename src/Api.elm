@@ -9,6 +9,7 @@ module Api
         , fetchMeta
         , login
         , logout
+        , postQuestionnaire
         , recover
         , register
         , requestEmailVerification
@@ -410,3 +411,34 @@ fetchMeta =
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
+
+
+
+-- QUESTIONNAIRE
+
+
+postQuestionnaire : Types.QuestionnaireForm -> Types.Auth -> Task.Task Types.Error Types.User
+postQuestionnaire questionnaire { token } =
+    let
+        postQuestionnaire =
+            authCall HttpBuilder.post "/questionnaires/" token
+                |> HttpBuilder.withJsonBody (Encoders.newQuestionnaire questionnaire)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    (HttpBuilder.jsonReader (Decoders.feedback postQuestionnaireFeedbackFields))
+                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
+                |> Task.map .data
+    in
+        postQuestionnaire `Task.andThen` (always <| fetchUser token)
+
+
+postQuestionnaireFeedbackFields : Dict.Dict String String
+postQuestionnaireFeedbackFields =
+    Dict.fromList
+        [ ( "age", "age" )
+        , ( "gender", "gender" )
+        , ( "informed_how", "informedHow" )
+        , ( "informed_what", "informedWhat" )
+        , ( "job_type", "jobType" )
+        , ( "job_freetext", "jobFreetext" )
+        ]

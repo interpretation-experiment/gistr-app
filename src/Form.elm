@@ -3,6 +3,7 @@ module Form
         ( Model
         , Status(..)
         , animate
+        , confirm
         , empty
         , fail
         , form
@@ -47,6 +48,15 @@ input input form =
     form
         |> setInput input
         |> setFeedback Feedback.empty
+        |> setStatus Entering
+
+
+confirm : a -> Model a -> Model a
+confirm input form =
+    form
+        |> setInput input
+        |> setFeedback Feedback.empty
+        |> setStatus Confirming
 
 
 fail : Feedback.Feedback -> Model a -> Model a

@@ -207,9 +207,7 @@ doUpdate msg model =
                 Model.Form form ->
                     let
                         feedback =
-                            [ Validate.ifInvalid
-                                (\c -> String.length c.password1 < 6)
-                                ( "password1", Strings.passwordTooShort )
+                            [ .password1 >> Helpers.ifShorterThan 6 ( "password1", Strings.passwordTooShort )
                             , Validate.ifInvalid
                                 (\c -> c.password1 /= c.password2)
                                 ( "global", Strings.passwordsDontMatch )
@@ -483,15 +481,53 @@ doUpdate msg model =
             { model | questionnaire = Form.input input model.questionnaire } ! []
 
         QuestionnaireFormConfirm input ->
-            -- TODO: validate with elm-validate
-            Debug.crash "todo"
+            let
+                informedValidator =
+                    [ .informedHow >> Helpers.ifShorterThan 5 ( "informedHow", Strings.fiveCharactersPlease )
+                    , .informedWhat >> Helpers.ifShorterThan 5 ( "informedWhat", Strings.fiveCharactersPlease )
+                    ]
+                        |> Validate.all
+
+                feedback =
+                    [ .age >> Validate.ifNotInt ( "age", Strings.intPlease )
+                    , .gender >> Validate.ifBlank ( "gender", Strings.genderPlease )
+                    , Helpers.ifThenValidate .informed informedValidator
+                    , .jobType >> Validate.ifBlank ( "jobType", Strings.jobTypePlease )
+                    , .jobFreetext >> Helpers.ifShorterThan 5 ( "jobFreetext", Strings.fiveCharactersPlease )
+                    ]
+                        |> Validate.all
+                        |> Feedback.fromValidator input
+            in
+                if feedback == Feedback.empty then
+                    { model | questionnaire = Form.confirm input model.questionnaire } ! []
+                else
+                    { model | questionnaire = Form.fail feedback model.questionnaire } ! []
 
         QuestionnaireFormCorrect ->
             { model | questionnaire = Form.setStatus Form.Entering model.questionnaire } ! []
 
         QuestionnaireFormSubmit input ->
-            -- TODO: api send
-            Debug.crash "todo"
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    let
+                        processedInput =
+                            { input
+                                | informedHow =
+                                    if input.informed then
+                                        input.informedHow
+                                    else
+                                        "-----"
+                                , informedWhat =
+                                    if input.informed then
+                                        input.informedWhat
+                                    else
+                                        "-----"
+                            }
+                    in
+                        { model | questionnaire = Form.setStatus Form.Sending model.questionnaire }
+                            ! [ Api.postQuestionnaire processedInput auth
+                                    |> Task.perform QuestionnaireFormFail QuestionnaireFormSuccess
+                              ]
 
         QuestionnaireFormFail error ->
             feedbackOrUnrecoverable error model <|
@@ -500,7 +536,9 @@ doUpdate msg model =
 
         QuestionnaireFormSuccess user ->
             -- TODO: popup notification
-            Debug.crash "todo"
+            update
+                (NavigateTo <| Router.Profile Router.Dashboard)
+                (Helpers.updateUser model user)
 
         {-
            STORE

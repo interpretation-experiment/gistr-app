@@ -6,6 +6,8 @@ module Helpers
         , cmd
         , evA
         , evButton
+        , ifShorterThan
+        , ifThenValidate
         , loading
         , navA
         , navButton
@@ -22,8 +24,10 @@ import Json.Decode as Decode
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo))
 import Router
+import String
 import Task
 import Types
+import Validate
 
 
 cmd : a -> Cmd a
@@ -57,7 +61,7 @@ navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
 navigateTo model route =
     let
         authRoute =
-            Router.authRedirect model.auth (Debug.log "nav request" route)
+            Router.normalize model.auth (Debug.log "nav request" route)
 
         emptyOnChange =
             if authRoute /= model.route then
@@ -88,7 +92,7 @@ authenticatedOrIgnore model authFunc =
 
 evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
 evButton attrs msg text =
-    Html.button ((Events.onClick msg) :: attrs) [ Html.text text ]
+    Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
 
 
 navButton : Router.Route -> String -> Html.Html Msg
@@ -129,3 +133,20 @@ notAuthed =
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+
+
+
+-- VALIDATION
+
+
+ifShorterThan : Int -> error -> Validate.Validator error String
+ifShorterThan length error =
+    Validate.ifInvalid (String.length >> (>) length) error
+
+
+ifThenValidate : (subject -> Bool) -> Validate.Validator error subject -> Validate.Validator error subject
+ifThenValidate condition validator subject =
+    if condition subject then
+        validator subject
+    else
+        []

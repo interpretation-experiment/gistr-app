@@ -22,6 +22,31 @@ passwordsDontMatch =
     "The two password don't match"
 
 
+intPlease : String
+intPlease =
+    "Please enter a number"
+
+
+genderPlease : String
+genderPlease =
+    "Please select a gender"
+
+
+selectPlease : String
+selectPlease =
+    "Please select from the list"
+
+
+jobTypePlease : String
+jobTypePlease =
+    "Please select a profession or main daily activity"
+
+
+fiveCharactersPlease : String
+fiveCharactersPlease =
+    "Please type in at least 5 characters"
+
+
 passwordSaved : String
 passwordSaved =
     "Password saved!"

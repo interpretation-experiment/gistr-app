@@ -2,11 +2,12 @@ module Router
     exposing
         ( ProfileRoute(..)
         , Route(..)
-        , authRedirect
         , locationParser
+        , normalize
         , toUrl
         )
 
+import Maybe.Extra exposing (isJust)
 import Navigation
 import String
 import Types
@@ -49,8 +50,8 @@ type ProfileRoute
     | WordSpan
 
 
-authRedirect : Types.AuthStatus -> Route -> Route
-authRedirect auth route =
+normalize : Types.AuthStatus -> Route -> Route
+normalize auth route =
     case auth of
         Types.Anonymous ->
             case route of
@@ -60,7 +61,7 @@ authRedirect auth route =
                 _ ->
                     route
 
-        Types.Authenticated _ ->
+        Types.Authenticated { user } ->
             case route of
                 Login _ ->
                     Home
@@ -73,6 +74,12 @@ authRedirect auth route =
 
                 Prolific ->
                     Home
+
+                Profile Questionnaire ->
+                    if isJust user.profile.questionnaireId then
+                        Profile Dashboard
+                    else
+                        route
 
                 _ ->
                     route
