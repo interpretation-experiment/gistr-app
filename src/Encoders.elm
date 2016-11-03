@@ -16,7 +16,7 @@ module Encoders
         )
 
 import Json.Encode as JE
-import Maybe.Extra exposing (mapDefault)
+import Maybe.Extra exposing (unwrap)
 import Types
 
 
@@ -66,7 +66,7 @@ registerCredentials credentials =
 newProfile : Maybe String -> JE.Value
 newProfile maybeProlific =
     JE.object
-        [ ( "prolific_id", mapDefault JE.null JE.string maybeProlific )
+        [ ( "prolific_id", unwrap JE.null JE.string maybeProlific )
         , ( "mothertongue", JE.string "english" )
         ]
 
@@ -75,7 +75,7 @@ profile : Types.Profile -> JE.Value
 profile profile' =
     JE.object
         [ ( "id", JE.int profile'.id )
-        , ( "prolific_id", mapDefault JE.null JE.string profile'.prolificId )
+        , ( "prolific_id", unwrap JE.null JE.string profile'.prolificId )
         , ( "mothertongue", JE.string profile'.mothertongue )
         , ( "trained_reformulations", JE.bool profile'.trained )
         ]
