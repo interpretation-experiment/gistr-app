@@ -10,6 +10,7 @@ module Feedback
         , getUnknown
         , globalError
         , globalSuccess
+        , isEmpty
         , noKnownErrors
         , successAnimations
         , updateError
@@ -143,6 +144,11 @@ isError item =
 
         FeedbackSuccess _ ->
             False
+
+
+isEmpty : Feedback -> Bool
+isEmpty feedback =
+    feedback == empty
 
 
 noKnownErrors : Feedback -> Bool

@@ -8,6 +8,7 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
 import Msg exposing (Msg)
+import String
 import Strings
 import Types
 
@@ -89,7 +90,7 @@ form { input, feedback, status } meta =
 
         jobOption job =
             Html.option
-                [ Attributes.disabled (job.name == "")
+                [ Attributes.disabled (String.isEmpty job.name)
                 , Attributes.value job.name
                 , Attributes.selected (input.jobType == job.name)
                 ]

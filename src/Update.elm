@@ -215,7 +215,7 @@ doUpdate msg model =
                                 |> Validate.all
                                 |> Feedback.fromValidator credentials
                     in
-                        if feedback == Feedback.empty then
+                        if Feedback.isEmpty feedback then
                             { model | reset = Model.Form (Form.setStatus Form.Sending form) }
                                 ! [ Api.reset credentials tokens
                                         |> Task.perform ResetFail (always ResetSuccess)
@@ -498,7 +498,7 @@ doUpdate msg model =
                         |> Validate.all
                         |> Feedback.fromValidator input
             in
-                if feedback == Feedback.empty then
+                if Feedback.isEmpty feedback then
                     { model | questionnaire = Form.confirm input model.questionnaire } ! []
                 else
                     { model | questionnaire = Form.fail feedback model.questionnaire } ! []
