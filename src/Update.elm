@@ -16,6 +16,7 @@ import String
 import Strings
 import Task
 import Types
+import Validate
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -205,21 +206,16 @@ doUpdate msg model =
             case model.reset of
                 Model.Form form ->
                     let
-                        -- TODO: use elm-validate
                         feedback =
-                            Feedback.empty
-                                |> (Feedback.updateError "password1" <|
-                                        if String.length credentials.password1 < 6 then
-                                            Just Strings.passwordTooShort
-                                        else
-                                            Nothing
-                                   )
-                                |> (Feedback.updateError "global" <|
-                                        if credentials.password1 /= credentials.password2 then
-                                            Just Strings.passwordsDontMatch
-                                        else
-                                            Nothing
-                                   )
+                            [ Validate.ifInvalid
+                                (\c -> String.length c.password1 < 6)
+                                ( "password1", Strings.passwordTooShort )
+                            , Validate.ifInvalid
+                                (\c -> c.password1 /= c.password2)
+                                ( "global", Strings.passwordsDontMatch )
+                            ]
+                                |> Validate.all
+                                |> Feedback.fromValidator credentials
                     in
                         if feedback == Feedback.empty then
                             { model | reset = Model.Form (Form.setStatus Form.Sending form) }

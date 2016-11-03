@@ -4,6 +4,7 @@ module Feedback
         , animate
         , empty
         , feedback
+        , fromValidator
         , getError
         , getSuccess
         , getUnknown
@@ -17,6 +18,7 @@ module Feedback
 import Animation
 import Dict
 import Time
+import Validate
 
 
 type FeedbackItem
@@ -126,6 +128,11 @@ feedback errors unknown =
         { known = Dict.map (\k e -> FeedbackError e) errors
         , unknown = unknown
         }
+
+
+fromValidator : a -> Validate.Validator ( String, String ) a -> Feedback
+fromValidator subject validator =
+    feedback (validator subject |> Dict.fromList) ""
 
 
 isError : FeedbackItem -> Bool
