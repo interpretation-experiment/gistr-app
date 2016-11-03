@@ -5,4 +5,5 @@ import Html
 
 view : Html.Html msg
 view =
-    Html.div [] [ Html.text "Word Span" ]
+    -- TODO: word span once exp part is done
+    Html.div [] [ Html.text "Word Span, to be done." ]
