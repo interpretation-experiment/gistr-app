@@ -71,7 +71,6 @@ type Msg
     | QuestionnaireFormConfirm Types.QuestionnaireForm
     | QuestionnaireFormCorrect
     | QuestionnaireFormSubmit Types.QuestionnaireForm
-      -- TODO: why do we pass the form input around?
     | QuestionnaireFormFail Types.Error
     | QuestionnaireFormSuccess Types.User
       -- STORE
