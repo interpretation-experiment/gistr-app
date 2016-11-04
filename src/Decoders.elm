@@ -6,7 +6,9 @@ module Decoders
         , meta
         , preUser
         , profile
+        , sentence
         , token
+        , tree
         , user
         , wordSpan
         )
@@ -58,14 +60,16 @@ profile =
         |> Pipeline.required "id" JD.int
         |> Pipeline.required "created" date
         |> Pipeline.required "prolific_id" (Pipeline.nullable JD.string)
-        |> Pipeline.required "user" JD.int
-        |> Pipeline.required "user_username" JD.string
         |> Pipeline.required "mothertongue" JD.string
         |> Pipeline.required "trained_reformulations" JD.bool
-        |> Pipeline.required "reformulations_count" JD.int
-        |> Pipeline.required "available_trees_counts" treeCounts
+        |> Pipeline.required "user" JD.int
         |> Pipeline.required "questionnaire" (Pipeline.nullable JD.int)
         |> Pipeline.required "word_span" (Pipeline.nullable JD.int)
+        |> Pipeline.required "sentences" (JD.list JD.int)
+        |> Pipeline.required "trees" (JD.list JD.int)
+        |> Pipeline.required "user_username" JD.string
+        |> Pipeline.required "reformulations_count" JD.int
+        |> Pipeline.required "available_trees_counts" treeCounts
 
 
 treeCounts : JD.Decoder Types.TreeCounts
@@ -92,10 +96,10 @@ email : JD.Decoder Types.Email
 email =
     Pipeline.decode Types.Email
         |> Pipeline.required "id" JD.int
-        |> Pipeline.required "user" JD.int
         |> Pipeline.required "email" JD.string
         |> Pipeline.required "verified" JD.bool
         |> Pipeline.required "primary" JD.bool
+        |> Pipeline.required "user" JD.int
         |> Pipeline.hardcoded False
 
 
@@ -130,9 +134,9 @@ wordSpan =
     Pipeline.decode Types.WordSpan
         |> Pipeline.required "id" JD.int
         |> Pipeline.required "created" date
-        |> Pipeline.required "profile" JD.int
         |> Pipeline.required "span" JD.int
         |> Pipeline.required "score" JD.int
+        |> Pipeline.required "profile" JD.int
 
 
 choice : JD.Decoder Types.Choice
@@ -157,3 +161,41 @@ meta =
         |> Pipeline.required "supported_languages" (JD.list choice)
         |> Pipeline.required "other_language" JD.string
         |> Pipeline.required "version" JD.string
+
+
+sentence : JD.Decoder Types.Sentence
+sentence =
+    Pipeline.decode Types.Sentence
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "created" date
+        |> Pipeline.required "text" JD.string
+        |> Pipeline.required "language" JD.string
+        |> Pipeline.required "bucket" JD.string
+        |> Pipeline.required "read_time_proportion" JD.float
+        |> Pipeline.required "read_time_allotted" JD.float
+        |> Pipeline.required "write_time_proportion" JD.float
+        |> Pipeline.required "write_time_allotted" JD.float
+        |> Pipeline.required "tree" JD.int
+        |> Pipeline.required "profile" JD.int
+        |> Pipeline.required "parent" (Pipeline.nullable JD.int)
+        |> Pipeline.required "children" (JD.list JD.int)
+        |> Pipeline.required "profile_username" JD.string
+
+
+tree : JD.Decoder Types.Tree
+tree =
+    Pipeline.decode Types.Tree
+        |> Pipeline.required "id" JD.int
+        |> Pipeline.required "root" sentence
+        |> Pipeline.required "sentences" (JD.list JD.int)
+        |> Pipeline.required "profiles" (JD.list JD.int)
+        |> Pipeline.required "network_edges" (JD.list (edge JD.int))
+        |> Pipeline.required "branches_count" JD.int
+        |> Pipeline.required "shortest_branch_depth" JD.int
+
+
+edge : JD.Decoder a -> JD.Decoder (Types.Edge a)
+edge node =
+    Pipeline.decode Types.Edge
+        |> Pipeline.required "source" node
+        |> Pipeline.required "target" node

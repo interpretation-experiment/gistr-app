@@ -12,8 +12,8 @@ type InstructionsState
     | C
 
 
-type SeriesState
-    = Trial TrialState
+type SeriesState a
+    = Trial a TrialState
     | Pause
     | Finished
 
