@@ -12,6 +12,7 @@ import Types
 cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
 cmdsForRoute model route =
     case route of
+        -- TODO: for exp route, get necessary sentences (train/exp) upon opening the route, and show "loading" until loaded. If nothing, show error.
         Router.Profile profileRoute ->
             authenticatedOrIgnore model <|
                 \auth ->

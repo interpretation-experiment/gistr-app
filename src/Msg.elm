@@ -1,6 +1,7 @@
 module Msg exposing (Msg(..))
 
 import Animation
+import Instructions
 import Router
 import Store
 import Types
@@ -76,3 +77,9 @@ type Msg
       -- STORE
     | GotStoreItem Store.Item
     | GotMeta Types.Meta
+      -- REFORMULATIONS EXPERIMENT
+    | ReformulationInstructions Instructions.Msg
+    | ReformulationInstructionsRestart
+    | ReformulationInstructionsQuit Int
+    | ReformulationInstructionsDone
+    | ReformulationExpStart

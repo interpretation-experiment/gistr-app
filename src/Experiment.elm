@@ -1,20 +1,23 @@
-module Experiment exposing (State(..))
+module Experiment
+    exposing
+        ( State(..)
+        , instructionsState
+        )
+
+import Instructions
+
+
+instructionsState : State a b -> Instructions.State a
+instructionsState state =
+    case state of
+        Instructions instructionsState ->
+            instructionsState
+
+        _ ->
+            Instructions.hide
 
 
 type State a b
-    = Instructions a
+    = Instructions (Instructions.State a)
     | Training b
     | Exping b
-
-
-next : b -> State a b -> State a b
-next init state =
-    case state of
-        Instructions _ ->
-            Training init
-
-        Training _ ->
-            Exping init
-
-        Exping _ ->
-            state
