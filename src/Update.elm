@@ -76,25 +76,6 @@ doUpdate msg model =
                 |> processMaybeMsg
 
         {-
-           LOCAL TOKEN LOGIN
-        -}
-        GotLocalToken maybeToken ->
-            case maybeToken of
-                Just token ->
-                    ( model
-                    , Api.fetchAuth token
-                        |> Task.perform
-                            LoginLocalTokenFail
-                            (AuthMsg << AuthMsg.LoginSuccess)
-                    )
-
-                Nothing ->
-                    updateAuth Types.Anonymous model
-
-        LoginLocalTokenFail _ ->
-            updateAuth Types.Anonymous model !! [ LocalStorage.tokenClear ]
-
-        {-
            LOGOUT
         -}
         Logout ->

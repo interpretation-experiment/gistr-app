@@ -16,9 +16,6 @@ type Msg
     | Error Types.Error
       -- AUTH
     | AuthMsg Auth.Msg
-      -- LOCAL TOKEN LOGIN
-    | GotLocalToken (Maybe Types.Token)
-    | LoginLocalTokenFail Types.Error
       -- LOGOUT
     | Logout
     | LogoutFail Types.Error

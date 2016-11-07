@@ -17,6 +17,9 @@ import Types
 update : (Msg -> AppMsg.Msg) -> Msg -> Model -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 update lift msg model =
     case msg of
+        {-
+           LOGIN
+        -}
         LoginFormInput input ->
             ( { model | login = Form.input input model.login }
             , Cmd.none
@@ -50,3 +53,21 @@ update lift msg model =
                 _ ->
                     Helpers.updateAuth (Types.Authenticated auth) model
                         !!! [ LocalStorage.tokenSet auth.token ]
+
+        {-
+           LOCAL TOKEN LOGIN
+        -}
+        GotLocalToken maybeToken ->
+            case maybeToken of
+                Just token ->
+                    ( model
+                    , Api.fetchAuth token
+                        |> Task.perform (lift << LoginLocalTokenFail) (lift << LoginSuccess)
+                    , Nothing
+                    )
+
+                Nothing ->
+                    Helpers.updateAuth Types.Anonymous model
+
+        LoginLocalTokenFail _ ->
+            Helpers.updateAuth Types.Anonymous model !!! [ LocalStorage.tokenClear ]

@@ -9,3 +9,6 @@ type Msg
     | LoginFail Types.Error
     | Login Types.Credentials
     | LoginSuccess Types.Auth
+      -- LOCAL TOKEN LOGIN
+    | GotLocalToken (Maybe Types.Token)
+    | LoginLocalTokenFail Types.Error
