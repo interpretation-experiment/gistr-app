@@ -88,10 +88,12 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
-          -- TODO: only activate this if experiment is shown
-        , Intro.subscription
-            (Msg.ExperimentMsg << ExpMsg.InstructionsMsg << Intro.KeyDown)
-            (ExpModel.instructionsState model.experiment)
+        , if model.route == Router.Experiment then
+            Intro.subscription
+                (Msg.ExperimentMsg << ExpMsg.InstructionsMsg << Intro.KeyDown)
+                (ExpModel.instructionsState model.experiment)
+          else
+            Sub.none
         ]
 
 
