@@ -1,74 +1,75 @@
 module View.Experiment exposing (view)
 
-import Experiment
-import Experiment.Reformulation as Reformulation
+import Experiment.Instructions as Instructions
+import Experiment.Model as ExpModel
+import Experiment.Msg exposing (Msg(..))
 import Helpers
 import Html
-import Instructions
+import Intro
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
 import Router
 
 
-view : Model -> Html.Html Msg
-view model =
-    Html.div [] [ header model.experiment, body model ]
+view : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+view lift model =
+    Html.div [] [ header lift model.experiment, body lift model ]
 
 
-header : Experiment.State Reformulation.Instruction a -> Html.Html Msg
-header experiment =
+header : (Msg -> AppMsg.Msg) -> ExpModel.State a -> Html.Html AppMsg.Msg
+header lift experiment =
     let
         state =
             case experiment of
-                Experiment.Instructions _ ->
+                ExpModel.Instructions _ ->
                     "Instructions"
 
-                Experiment.Training _ ->
+                ExpModel.Training _ ->
                     "Training"
 
-                Experiment.Exping _ ->
+                ExpModel.Exping _ ->
                     "Experiment"
     in
         Html.div []
             [ Helpers.navButton Router.Home "Back"
-            , Instructions.node
-                Reformulation.instructionsViewConfig
-                (Experiment.instructionsState experiment)
-                Reformulation.InstructionTitle
+            , Intro.node
+                (Instructions.viewConfig lift)
+                (ExpModel.instructionsState experiment)
+                Instructions.InstructionTitle
                 Html.h1
                 []
                 [ Html.text ("Experiment — " ++ state) ]
             ]
 
 
-body : Model -> Html.Html Msg
-body model =
+body : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+body lift model =
     case model.experiment of
-        Experiment.Instructions introState ->
-            intro introState
+        ExpModel.Instructions introState ->
+            intro lift introState
 
         _ ->
             Html.div [] []
 
 
-intro : Instructions.State Reformulation.Instruction -> Html.Html Msg
-intro state =
+intro : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Instruction -> Html.Html AppMsg.Msg
+intro lift state =
     Html.p []
-        [ Instructions.node
-            Reformulation.instructionsViewConfig
+        [ Intro.node
+            (Instructions.viewConfig lift)
             state
-            Reformulation.InstructionA
+            Instructions.InstructionA
             Html.p
             []
             [ Html.text "First stuff" ]
-        , Instructions.node
-            Reformulation.instructionsViewConfig
+        , Intro.node
+            (Instructions.viewConfig lift)
             state
-            Reformulation.InstructionB
+            Instructions.InstructionB
             Html.p
             []
             [ Html.text "Second stuff" ]
-        , Helpers.evButton [] Msg.ReformulationInstructionsRestart "Replay instructions"
-        , Helpers.evButton [] Msg.ReformulationExpStart "Start"
-        , Instructions.overlay state
+        , Helpers.evButton [] (lift InstructionsRestart) "Replay instructions"
+        , Helpers.evButton [] (lift Start) "Start"
+        , Intro.overlay state
         ]

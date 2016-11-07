@@ -47,4 +47,4 @@ view model =
             Profile.View.view Msg.ProfileMsg model profileRoute
 
         Router.Experiment ->
-            View.Experiment.view model
+            View.Experiment.view Msg.ExperimentMsg model
