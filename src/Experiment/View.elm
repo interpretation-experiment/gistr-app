@@ -1,4 +1,4 @@
-module View.Experiment exposing (view)
+module Experiment.View exposing (view)
 
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
