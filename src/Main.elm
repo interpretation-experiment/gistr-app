@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Animation
+import Auth.Msg as AuthMsg
 import Dict
 import Experiment
 import Form
@@ -73,7 +74,7 @@ urlUpdate ( newUrl, maybeRoute ) model =
 
 localStorageTags : Dict.Dict String (Maybe String -> Msg)
 localStorageTags =
-    Dict.fromList [ ( LocalStorage.token, Msg.GotLocalToken ) ]
+    Dict.fromList [ ( LocalStorage.token, Msg.AuthMsg << AuthMsg.GotLocalToken ) ]
 
 
 subscriptions : Model -> Sub Msg
@@ -86,6 +87,7 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
+          -- TODO: only activate this if experiment is shown
         , Instructions.subscription
             (Msg.ReformulationInstructions << Instructions.KeyDown)
             (Experiment.instructionsState model.experiment)

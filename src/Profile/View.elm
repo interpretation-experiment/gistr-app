@@ -1,6 +1,7 @@
-module View.Profile exposing (view)
+module Profile.View exposing (view)
 
 import Animation
+import Auth.Msg as AuthMsg
 import Feedback
 import Form
 import Helpers
@@ -9,22 +10,23 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Lifecycle
 import Model exposing (Model)
-import Msg exposing (Msg(..))
+import Msg as AppMsg
+import Profile.Msg exposing (Msg(..))
+import Profile.View.Questionnaire as Questionnaire
+import Profile.View.WordSpan as WordSpan
 import Router
 import Store
 import Strings
 import Types
-import View.Profile.Questionnaire as Questionnaire
-import View.Profile.WordSpan as WordSpan
 
 
-view : Model -> Router.ProfileRoute -> Html.Html Msg
-view model route =
+view : (Msg -> AppMsg.Msg) -> Model -> Router.ProfileRoute -> Html.Html AppMsg.Msg
+view lift model route =
     let
         contents =
             case model.auth of
                 Types.Authenticated { user } ->
-                    [ menu route, body model route user ]
+                    [ menu route, body lift model route user ]
 
                 Types.Authenticating ->
                     [ Helpers.loading ]
@@ -35,7 +37,7 @@ view model route =
         Html.div [] ((header model) :: contents)
 
 
-header : Model -> Html.Html Msg
+header : Model -> Html.Html AppMsg.Msg
 header model =
     let
         logout =
@@ -44,7 +46,7 @@ header model =
                     Html.div []
                         [ Html.text "Signed in as "
                         , Html.strong [] [ Html.text auth.user.username ]
-                        , Helpers.evButton [] Logout "Logout"
+                        , Helpers.evButton [] (AppMsg.AuthMsg AuthMsg.Logout) "Logout"
                         ]
 
                 _ ->
@@ -57,7 +59,7 @@ header model =
             ]
 
 
-menu : Router.ProfileRoute -> Html.Html Msg
+menu : Router.ProfileRoute -> Html.Html AppMsg.Msg
 menu route =
     Html.ul []
         [ Html.li [] [ Helpers.navButton (Router.Profile Router.Dashboard) "Dashboard" ]
@@ -66,32 +68,32 @@ menu route =
         ]
 
 
-body : Model -> Router.ProfileRoute -> Types.User -> Html.Html Msg
-body model route user =
+body : (Msg -> AppMsg.Msg) -> Model -> Router.ProfileRoute -> Types.User -> Html.Html AppMsg.Msg
+body lift model route user =
     case route of
         Router.Dashboard ->
             dashboard model user.profile
 
         Router.Settings ->
             Html.div []
-                [ passwordChange model.password
-                , usernameChange model.username
+                [ passwordChange lift model.password
+                , usernameChange lift model.username
                 ]
 
         Router.Emails ->
-            emails model.emails user.emails
+            emails lift model.emails user.emails
 
         Router.Confirm key ->
             emailConfirmation model.emailConfirmation key
 
         Router.Questionnaire ->
-            Questionnaire.view model
+            Questionnaire.view lift model
 
         Router.WordSpan ->
             WordSpan.view
 
 
-dashboard : Model -> Types.Profile -> Html.Html Msg
+dashboard : Model -> Types.Profile -> Html.Html AppMsg.Msg
 dashboard model profile =
     Html.div []
         [ lifecycle profile
@@ -100,7 +102,7 @@ dashboard model profile =
         ]
 
 
-lifecycle : Types.Profile -> Html.Html Msg
+lifecycle : Types.Profile -> Html.Html AppMsg.Msg
 lifecycle profile =
     let
         description preliminary =
@@ -135,7 +137,7 @@ lifecycle profile =
                 Html.div [] Strings.profileComplete
 
 
-questionnaireSummary : Maybe Int -> Html.Html Msg
+questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg
 questionnaireSummary maybeId =
     case maybeId of
         Nothing ->
@@ -148,7 +150,7 @@ questionnaireSummary maybeId =
             Html.p [] [ Html.text "Questionnaire — ✓ Done" ]
 
 
-wordSpanSummary : Maybe Int -> Store.Store -> Html.Html Msg
+wordSpanSummary : Maybe Int -> Store.Store -> Html.Html AppMsg.Msg
 wordSpanSummary maybeId store =
     case maybeId of
         Nothing ->
@@ -170,11 +172,11 @@ wordSpanSummary maybeId store =
                 Html.p [] [ Html.text ("Word span test — ✓" ++ detail) ]
 
 
-passwordChange : Form.Model Types.PasswordCredentials -> Html.Html Msg
-passwordChange { input, feedback, status } =
+passwordChange : (Msg -> AppMsg.Msg) -> Form.Model Types.PasswordCredentials -> Html.Html AppMsg.Msg
+passwordChange lift { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change password" ]
-        , Html.form [ Events.onSubmit (Msg.ChangePassword input) ]
+        , Html.form [ Events.onSubmit <| lift (ChangePassword input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputOldPassword" ] [ Html.text "Old password" ]
                 , Html.input
@@ -183,7 +185,7 @@ passwordChange { input, feedback, status } =
                     , Attributes.placeholder "Your old password"
                     , Attributes.type' "password"
                     , Attributes.value input.oldPassword
-                    , Events.onInput (Msg.ChangePasswordFormInput << \o -> { input | oldPassword = o })
+                    , Events.onInput <| lift << (ChangePasswordFormInput << \o -> { input | oldPassword = o })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "oldPassword" feedback) ]
@@ -196,7 +198,7 @@ passwordChange { input, feedback, status } =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
-                    , Events.onInput (Msg.ChangePasswordFormInput << \p -> { input | password1 = p })
+                    , Events.onInput <| lift << (ChangePasswordFormInput << \p -> { input | password1 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
@@ -209,7 +211,7 @@ passwordChange { input, feedback, status } =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
-                    , Events.onInput (Msg.ChangePasswordFormInput << \p -> { input | password2 = p })
+                    , Events.onInput <| lift << (ChangePasswordFormInput << \p -> { input | password2 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
@@ -224,24 +226,24 @@ passwordChange { input, feedback, status } =
                 , Html.span
                     (Animation.render <| Feedback.getSuccess "global" feedback)
                     [ Html.text Strings.passwordSaved ]
-                , Helpers.evA "#" Msg.ChangePasswordRecover "I forgot my current password"
+                , Helpers.evA "#" (lift ChangePasswordRecover) "I forgot my current password"
                 ]
             ]
         ]
 
 
-usernameChange : Form.Model String -> Html.Html Msg
-usernameChange { input, feedback, status } =
+usernameChange : (Msg -> AppMsg.Msg) -> Form.Model String -> Html.Html AppMsg.Msg
+usernameChange lift { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change username" ]
-        , Html.form [ Events.onSubmit (ChangeUsername input) ]
+        , Html.form [ Events.onSubmit <| lift (ChangeUsername input) ]
             [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             , Html.input
                 [ Attributes.id "inputUsername"
                 , Attributes.disabled (status /= Form.Entering)
                 , Attributes.type' "text"
                 , Attributes.value input
-                , Events.onInput ChangeUsernameFormInput
+                , Events.onInput (lift << ChangeUsernameFormInput)
                 ]
                 []
             , Html.button
@@ -256,8 +258,8 @@ usernameChange { input, feedback, status } =
         ]
 
 
-emails : Form.Model String -> List Types.Email -> Html.Html Msg
-emails { input, feedback, status } emails' =
+emails : (Msg -> AppMsg.Msg) -> Form.Model String -> List Types.Email -> Html.Html AppMsg.Msg
+emails lift { input, feedback, status } emails' =
     let
         emailList =
             case emails' of
@@ -265,7 +267,7 @@ emails { input, feedback, status } emails' =
                     Html.p [] [ Html.text "You have no emails configured" ]
 
                 _ ->
-                    Html.ul [] (List.map email emails')
+                    Html.ul [] (List.map (email lift) emails')
     in
         Html.div []
             [ Html.h2 [] [ Html.text "Email" ]
@@ -276,14 +278,14 @@ emails { input, feedback, status } emails' =
                 ]
             , emailList
             , Html.h2 [] [ Html.text "Add an email address" ]
-            , Html.form [ Events.onSubmit (AddEmail input) ]
+            , Html.form [ Events.onSubmit <| lift (AddEmail input) ]
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.input
                     [ Attributes.id "inputEmail"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.type' "email"
                     , Attributes.value input
-                    , Events.onInput AddEmailFormInput
+                    , Events.onInput (lift << AddEmailFormInput)
                     ]
                     []
                 , Html.button
@@ -298,8 +300,8 @@ emails { input, feedback, status } emails' =
             ]
 
 
-email : Types.Email -> Html.Html Msg
-email email' =
+email : (Msg -> AppMsg.Msg) -> Types.Email -> Html.Html AppMsg.Msg
+email lift email' =
     let
         disabled =
             Attributes.disabled email'.transacting
@@ -315,12 +317,12 @@ email email' =
                 []
             else
                 [ Html.span [] [ Html.text "Unverified" ]
-                , Helpers.evButton [ disabled ] (RequestEmailVerification email') "Send verification email"
+                , Helpers.evButton [ disabled ] (lift <| RequestEmailVerification email') "Send verification email"
                 ]
 
         setPrimary =
             if email'.verified && (not email'.primary) then
-                [ Helpers.evButton [ disabled ] (PrimaryEmail email') "Set as primary" ]
+                [ Helpers.evButton [ disabled ] (lift <| PrimaryEmail email') "Set as primary" ]
             else
                 []
     in
@@ -329,11 +331,11 @@ email email' =
                 ++ primary
                 ++ verified
                 ++ setPrimary
-                ++ [ Helpers.evButton [ disabled ] (DeleteEmail email') "Delete" ]
+                ++ [ Helpers.evButton [ disabled ] (lift <| DeleteEmail email') "Delete" ]
             )
 
 
-emailConfirmation : Model.EmailConfirmationModel -> String -> Html.Html Msg
+emailConfirmation : Model.EmailConfirmationModel -> String -> Html.Html AppMsg.Msg
 emailConfirmation model key =
     case model of
         Model.SendingConfirmation ->

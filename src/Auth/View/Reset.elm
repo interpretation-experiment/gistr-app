@@ -1,5 +1,6 @@
-module View.Reset exposing (view)
+module Auth.View.Reset exposing (view)
 
+import Auth.Msg exposing (Msg(..))
 import Feedback
 import Form
 import Helpers
@@ -7,17 +8,17 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
 import Router
 import Types
 
 
-view : Model -> Types.ResetTokens -> Html.Html Msg
-view model tokens =
-    Html.div [] [ header, body model tokens ]
+view : (Msg -> AppMsg.Msg) -> Model -> Types.ResetTokens -> Html.Html AppMsg.Msg
+view lift model tokens =
+    Html.div [] [ header, body lift model tokens ]
 
 
-header : Html.Html Msg
+header : Html.Html AppMsg.Msg
 header =
     Html.div []
         [ Helpers.navButton (Router.Login Nothing) "Back"
@@ -25,13 +26,13 @@ header =
         ]
 
 
-body : Model -> Types.ResetTokens -> Html.Html Msg
-body model tokens =
+body : (Msg -> AppMsg.Msg) -> Model -> Types.ResetTokens -> Html.Html AppMsg.Msg
+body lift model tokens =
     let
         inner =
             case model.reset of
                 Model.Form formModel ->
-                    form formModel tokens
+                    form lift formModel tokens
 
                 Model.Sent _ ->
                     sent
@@ -39,11 +40,11 @@ body model tokens =
         Html.div [] [ inner ]
 
 
-form : Form.Model Types.ResetCredentials -> Types.ResetTokens -> Html.Html Msg
-form { input, feedback, status } tokens =
+form : (Msg -> AppMsg.Msg) -> Form.Model Types.ResetCredentials -> Types.ResetTokens -> Html.Html AppMsg.Msg
+form lift { input, feedback, status } tokens =
     Html.div []
         [ Html.h2 [] [ Html.text "Set your new password" ]
-        , Html.form [ Events.onSubmit (Msg.Reset input tokens) ]
+        , Html.form [ Events.onSubmit <| lift (Reset input tokens) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
                 , Html.input
@@ -53,7 +54,7 @@ form { input, feedback, status } tokens =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
-                    , Events.onInput (Msg.ResetFormInput << \p -> { input | password1 = p })
+                    , Events.onInput <| lift << (ResetFormInput << \p -> { input | password1 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
@@ -66,7 +67,7 @@ form { input, feedback, status } tokens =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
-                    , Events.onInput (Msg.ResetFormInput << \p -> { input | password2 = p })
+                    , Events.onInput <| lift << (ResetFormInput << \p -> { input | password2 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
@@ -84,7 +85,7 @@ form { input, feedback, status } tokens =
         ]
 
 
-sent : Html.Html Msg
+sent : Html.Html AppMsg.Msg
 sent =
     Html.div []
         [ Html.h2 [] [ Html.text "Your new password has been saved" ]

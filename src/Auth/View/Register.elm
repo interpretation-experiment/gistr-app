@@ -1,5 +1,6 @@
-module View.Register exposing (view)
+module Auth.View.Register exposing (view)
 
+import Auth.Msg exposing (Msg(..))
 import Feedback
 import Form
 import Helpers
@@ -7,17 +8,17 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
 import Router
 import Types
 
 
-view : Model -> Maybe String -> Html.Html Msg
-view model maybeProlific =
-    Html.div [] [ header, body model maybeProlific ]
+view : (Msg -> AppMsg.Msg) -> Model -> Maybe String -> Html.Html AppMsg.Msg
+view lift model maybeProlific =
+    Html.div [] [ header, body lift model maybeProlific ]
 
 
-header : Html.Html Msg
+header : Html.Html AppMsg.Msg
 header =
     Html.div []
         [ Helpers.navButton Router.Home "Back"
@@ -25,13 +26,13 @@ header =
         ]
 
 
-body : Model -> Maybe String -> Html.Html Msg
-body model maybeProlific =
+body : (Msg -> AppMsg.Msg) -> Model -> Maybe String -> Html.Html AppMsg.Msg
+body lift model maybeProlific =
     let
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.register maybeProlific
+                    form lift model.register maybeProlific
 
                 Types.Authenticating ->
                     Helpers.loading
@@ -42,11 +43,11 @@ body model maybeProlific =
         Html.div [] [ inner ]
 
 
-form : Form.Model Types.RegisterCredentials -> Maybe String -> Html.Html Msg
-form { input, feedback, status } maybeProlific =
+form : (Msg -> AppMsg.Msg) -> Form.Model Types.RegisterCredentials -> Maybe String -> Html.Html AppMsg.Msg
+form lift { input, feedback, status } maybeProlific =
     Html.div []
         [ prolificLogin maybeProlific
-        , Html.form [ Events.onSubmit (Msg.Register maybeProlific input) ]
+        , Html.form [ Events.onSubmit <| lift (Register maybeProlific input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
@@ -56,7 +57,7 @@ form { input, feedback, status } maybeProlific =
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
                     , Attributes.value input.username
-                    , Events.onInput (Msg.RegisterFormInput << \u -> { input | username = u })
+                    , Events.onInput <| lift << (RegisterFormInput << \u -> { input | username = u })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
@@ -69,7 +70,7 @@ form { input, feedback, status } maybeProlific =
                     , Attributes.placeholder "joey@example.com (optional)"
                     , Attributes.type' "email"
                     , Attributes.value input.email
-                    , Events.onInput (Msg.RegisterFormInput << \e -> { input | email = e })
+                    , Events.onInput <| lift << (RegisterFormInput << \e -> { input | email = e })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "email" feedback) ]
@@ -82,7 +83,7 @@ form { input, feedback, status } maybeProlific =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password1
-                    , Events.onInput (Msg.RegisterFormInput << \p -> { input | password1 = p })
+                    , Events.onInput <| lift << (RegisterFormInput << \p -> { input | password1 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
@@ -95,7 +96,7 @@ form { input, feedback, status } maybeProlific =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password2
-                    , Events.onInput (Msg.RegisterFormInput << \p -> { input | password2 = p })
+                    , Events.onInput <| lift << (RegisterFormInput << \p -> { input | password2 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
@@ -112,7 +113,7 @@ form { input, feedback, status } maybeProlific =
         ]
 
 
-prolificLogin : Maybe String -> Html.Html Msg
+prolificLogin : Maybe String -> Html.Html AppMsg.Msg
 prolificLogin maybeProlific =
     case maybeProlific of
         Just prolificId ->

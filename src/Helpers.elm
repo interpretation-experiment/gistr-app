@@ -1,11 +1,13 @@
 module Helpers
     exposing
         ( (!!)
+        , (!!!)
         , alreadyAuthed
         , authenticatedOrIgnore
         , cmd
         , evA
         , evButton
+        , feedbackOrUnrecoverable
         , ifShorterThan
         , ifThenValidate
         , loading
@@ -13,17 +15,20 @@ module Helpers
         , navButton
         , navigateTo
         , notAuthed
+        , updateAuth
+        , updateAuthNav
         , updateUser
         )
 
 import Cmds
+import Feedback
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
 import List.Nonempty as Nonempty
 import Model exposing (Model)
-import Msg exposing (Msg(NavigateTo))
+import Msg exposing (Msg(NavigateTo, Error))
 import Router
 import String
 import Task
@@ -43,6 +48,11 @@ cmd msg =
 (!!) : ( model, Cmd msg ) -> List (Cmd msg) -> ( model, Cmd msg )
 (!!) ( model, cmd ) cmds =
     model ! (cmd :: cmds)
+
+
+(!!!) : ( model, Cmd msg, Maybe msg ) -> List (Cmd msg) -> ( model, Cmd msg, Maybe msg )
+(!!!) ( model, cmd, maybeMsg ) cmds =
+    ( model, Cmd.batch (cmd :: cmds), maybeMsg )
 
 
 updateUser :
@@ -85,6 +95,44 @@ authenticatedOrIgnore model authFunc =
 
         _ ->
             model ! []
+
+
+feedbackOrUnrecoverable :
+    Types.Error
+    -> Model
+    -> (Feedback.Feedback -> ( Model, Cmd Msg, Maybe Msg ))
+    -> ( Model, Cmd Msg, Maybe Msg )
+feedbackOrUnrecoverable error model feedbackFunc =
+    case error of
+        Types.Unrecoverable _ ->
+            ( model, Cmd.none, Just (Error error) )
+
+        Types.ApiFeedback feedback ->
+            feedbackFunc feedback
+
+
+
+-- ROUTING WITH AUTH
+
+
+updateAuth :
+    Types.AuthStatus
+    -> Model
+    -> ( Model, Cmd Msg, Maybe Msg )
+updateAuth authStatus model =
+    ( { model | auth = authStatus }
+    , Cmd.none
+    , Just (NavigateTo model.route)
+    )
+
+
+updateAuthNav :
+    Types.AuthStatus
+    -> Router.Route
+    -> Model
+    -> ( Model, Cmd Msg, Maybe Msg )
+updateAuthNav authStatus route model =
+    updateAuth authStatus { model | route = route }
 
 
 

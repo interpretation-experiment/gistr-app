@@ -3,6 +3,7 @@ module Cmds exposing (cmdsForRoute)
 import Api
 import Model exposing (Model)
 import Msg exposing (Msg)
+import Profile.Msg as ProfileMsg
 import Router
 import Store
 import Task
@@ -21,8 +22,8 @@ cmdsForRoute model route =
                             case model.emailConfirmation of
                                 Model.SendingConfirmation ->
                                     [ Task.perform
-                                        Msg.EmailConfirmationFail
-                                        Msg.EmailConfirmationSuccess
+                                        (Msg.ProfileMsg << ProfileMsg.EmailConfirmationFail)
+                                        (Msg.ProfileMsg << ProfileMsg.EmailConfirmationSuccess)
                                         (Api.confirmEmail key auth)
                                     ]
 

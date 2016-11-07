@@ -1,4 +1,4 @@
-module View.Profile.Questionnaire exposing (view)
+module Profile.View.Questionnaire exposing (view)
 
 import Feedback
 import Form
@@ -7,14 +7,15 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
+import Profile.Msg exposing (Msg(..))
 import String
 import Strings
 import Types
 
 
-view : Model -> Html.Html Msg
-view model =
+view : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+view lift model =
     let
         form' =
             case model.store.meta of
@@ -22,7 +23,7 @@ view model =
                     Helpers.loading
 
                 Just meta ->
-                    form model.questionnaire meta
+                    form lift model.questionnaire meta
     in
         Html.div []
             [ Html.h2 [] [ Html.text "General questionnaire" ]
@@ -31,7 +32,7 @@ view model =
             ]
 
 
-intro : Form.Model Types.QuestionnaireForm -> Html.Html Msg
+intro : Form.Model Types.QuestionnaireForm -> Html.Html AppMsg.Msg
 intro { status } =
     case status of
         Form.Entering ->
@@ -41,8 +42,12 @@ intro { status } =
             Html.div [] Strings.questionnaireCheck
 
 
-form : Form.Model Types.QuestionnaireForm -> Types.Meta -> Html.Html Msg
-form { input, feedback, status } meta =
+form :
+    (Msg -> AppMsg.Msg)
+    -> Form.Model Types.QuestionnaireForm
+    -> Types.Meta
+    -> Html.Html AppMsg.Msg
+form lift { input, feedback, status } meta =
     let
         genderRadio gender =
             Html.label []
@@ -51,10 +56,10 @@ form { input, feedback, status } meta =
                     , Attributes.type' "radio"
                     , Attributes.value gender.name
                     , Attributes.checked (input.gender == gender.name)
-                    , Events.onCheck
-                        (always <|
-                            Msg.QuestionnaireFormInput { input | gender = gender.name }
-                        )
+                    , Events.onCheck <|
+                        always <|
+                            lift <|
+                                QuestionnaireFormInput { input | gender = gender.name }
                     ]
                     []
                 , Html.text gender.label
@@ -69,7 +74,10 @@ form { input, feedback, status } meta =
                         [ Attributes.id "inputInformedHow"
                         , Attributes.disabled (status /= Form.Entering)
                         , Attributes.value input.informedHow
-                        , Events.onInput (Msg.QuestionnaireFormInput << \h -> { input | informedHow = h })
+                        , Events.onInput <|
+                            lift
+                                << QuestionnaireFormInput
+                                << \h -> { input | informedHow = h }
                         ]
                         []
                     , Html.span [] [ Html.text (Feedback.getError "informedHow" feedback) ]
@@ -81,7 +89,10 @@ form { input, feedback, status } meta =
                         [ Attributes.id "inputInformedWhat"
                         , Attributes.disabled (status /= Form.Entering)
                         , Attributes.value input.informedWhat
-                        , Events.onInput (Msg.QuestionnaireFormInput << \w -> { input | informedWhat = w })
+                        , Events.onInput <|
+                            lift
+                                << QuestionnaireFormInput
+                                << \w -> { input | informedWhat = w }
                         ]
                         []
                     , Html.span [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
@@ -102,13 +113,13 @@ form { input, feedback, status } meta =
                     ( [ Html.button [ Attributes.type' "submit" ]
                             [ Html.text "Confirm answers" ]
                       ]
-                    , Msg.QuestionnaireFormConfirm input
+                    , lift <| QuestionnaireFormConfirm input
                     )
 
                 _ ->
                     ( [ Helpers.evButton
                             [ Attributes.disabled (status /= Form.Confirming) ]
-                            Msg.QuestionnaireFormCorrect
+                            (lift QuestionnaireFormCorrect)
                             "Correct answers"
                       , Html.button
                             [ Attributes.type' "submit"
@@ -116,7 +127,7 @@ form { input, feedback, status } meta =
                             ]
                             [ Html.text "Send answers" ]
                       ]
-                    , Msg.QuestionnaireFormSubmit input
+                    , lift <| QuestionnaireFormSubmit input
                     )
     in
         Html.form [ Events.onSubmit submitMsg ]
@@ -129,7 +140,10 @@ form { input, feedback, status } meta =
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.type' "number"
                     , Attributes.value input.age
-                    , Events.onInput (Msg.QuestionnaireFormInput << \a -> { input | age = a })
+                    , Events.onInput <|
+                        lift
+                            << QuestionnaireFormInput
+                            << \a -> { input | age = a }
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "age" feedback) ]
@@ -148,10 +162,10 @@ form { input, feedback, status } meta =
                         , Attributes.type' "checkbox"
                         , Attributes.value "informed"
                         , Attributes.checked input.informed
-                        , Events.onCheck
-                            (Msg.QuestionnaireFormInput
+                        , Events.onCheck <|
+                            lift
+                                << QuestionnaireFormInput
                                 << \i -> { input | informed = i, informedHow = "", informedWhat = "" }
-                            )
                         ]
                         []
                     , Html.text Strings.questionnaireInformed
@@ -169,7 +183,10 @@ form { input, feedback, status } meta =
                 , Html.select
                     [ Attributes.id "inputJobType"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Events.onInput (Msg.QuestionnaireFormInput << \j -> { input | jobType = j })
+                    , Events.onInput <|
+                        lift
+                            << QuestionnaireFormInput
+                            << \j -> { input | jobType = j }
                     ]
                     (List.map jobOption ({ name = "", label = Strings.selectPlease } :: meta.jobTypeChoices))
                 , Html.span [] [ Html.text (Feedback.getError "jobType" feedback) ]
@@ -181,7 +198,10 @@ form { input, feedback, status } meta =
                     [ Attributes.id "inputJobFreetext"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.value input.jobFreetext
-                    , Events.onInput (Msg.QuestionnaireFormInput << \t -> { input | jobFreetext = t })
+                    , Events.onInput <|
+                        lift
+                            << QuestionnaireFormInput
+                            << \t -> { input | jobFreetext = t }
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]

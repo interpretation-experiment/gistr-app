@@ -1,5 +1,6 @@
-module View.Recover exposing (view)
+module Auth.View.Recover exposing (view)
 
+import Auth.Msg exposing (Msg(..))
 import Feedback
 import Form
 import Helpers
@@ -7,17 +8,17 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
 import Router
 import Types
 
 
-view : Model -> Html.Html Msg
-view model =
-    Html.div [] [ header, body model ]
+view : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+view lift model =
+    Html.div [] [ header, body lift model ]
 
 
-header : Html.Html Msg
+header : Html.Html AppMsg.Msg
 header =
     Html.div []
         [ Helpers.navButton (Router.Login Nothing) "Back"
@@ -25,15 +26,15 @@ header =
         ]
 
 
-body : Model -> Html.Html Msg
-body model =
+body : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+body lift model =
     let
         inner =
             case model.auth of
                 Types.Anonymous ->
                     case model.recover of
                         Model.Form formModel ->
-                            form formModel
+                            form lift formModel
 
                         Model.Sent email ->
                             sent email
@@ -47,8 +48,8 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Form.Model String -> Html.Html Msg
-form { input, feedback, status } =
+form : (Msg -> AppMsg.Msg) -> Form.Model String -> Html.Html AppMsg.Msg
+form lift { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Reset your password" ]
         , Html.p [] [ Html.text "Type in the email address you gave for your account and we'll send you an email with instructions to reset your password." ]
@@ -57,7 +58,7 @@ form { input, feedback, status } =
             , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "contacting the developers" ]
             , Html.text "."
             ]
-        , Html.form [ Events.onSubmit (Msg.Recover input) ]
+        , Html.form [ Events.onSubmit <| lift (Recover input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
                 , Html.input
@@ -67,7 +68,7 @@ form { input, feedback, status } =
                     , Attributes.placeholder "joey@example.com"
                     , Attributes.type' "mail"
                     , Attributes.value input
-                    , Events.onInput Msg.RecoverFormInput
+                    , Events.onInput (lift << RecoverFormInput)
                     ]
                     []
                 ]
@@ -83,7 +84,7 @@ form { input, feedback, status } =
         ]
 
 
-sent : String -> Html.Html Msg
+sent : String -> Html.Html AppMsg.Msg
 sent email =
     Html.div []
         [ Html.h2 [] [ Html.text "Check your inbox" ]

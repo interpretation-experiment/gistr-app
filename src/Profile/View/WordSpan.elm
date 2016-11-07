@@ -1,4 +1,4 @@
-module View.Profile.WordSpan exposing (view)
+module Profile.View.WordSpan exposing (view)
 
 import Html
 
