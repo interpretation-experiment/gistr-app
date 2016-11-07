@@ -76,41 +76,6 @@ doUpdate msg model =
                 |> processMaybeMsg
 
         {-
-           PASSWORD RECOVERY
-        -}
-        RecoverFormInput input ->
-            case model.recover of
-                Model.Form form ->
-                    { model | recover = Model.Form (Form.input input form) } ! []
-
-                Model.Sent _ ->
-                    model ! []
-
-        RecoverFail error ->
-            feedbackOrUnrecoverable error model <|
-                \feedback ->
-                    case model.recover of
-                        Model.Form form ->
-                            { model | recover = Model.Form (Form.fail feedback form) } ! []
-
-                        Model.Sent _ ->
-                            model ! []
-
-        Recover email ->
-            case model.recover of
-                Model.Form form ->
-                    { model | recover = Model.Form (Form.setStatus Form.Sending form) }
-                        ! [ Api.recover email
-                                |> Task.perform RecoverFail (always <| RecoverSuccess email)
-                          ]
-
-                Model.Sent _ ->
-                    model ! []
-
-        RecoverSuccess email ->
-            { model | recover = Model.Sent email } ! []
-
-        {-
            PASSWORD RESET
         -}
         ResetFormInput input ->

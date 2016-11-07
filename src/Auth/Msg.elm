@@ -19,3 +19,8 @@ type Msg
       -- PROLIFIC
     | SetProlificFormInput String
     | SetProlific String
+      -- PASSWORD RECOVERY
+    | RecoverFormInput String
+    | RecoverFail Types.Error
+    | Recover String
+    | RecoverSuccess String

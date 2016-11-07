@@ -83,13 +83,17 @@ update lift msg model =
                 Types.Authenticated auth ->
                     Helpers.updateAuth Types.Authenticating model
                         !!! [ Api.logout auth
-                                |> Task.perform (lift << LogoutFail)
+                                |> Task.perform
+                                    (lift << LogoutFail)
                                     (always <| lift LogoutSuccess)
                             , LocalStorage.tokenClear
                             ]
 
                 _ ->
-                    ( model, Cmd.none, Nothing )
+                    ( model
+                    , Cmd.none
+                    , Nothing
+                    )
 
         LogoutFail error ->
             let
@@ -130,3 +134,59 @@ update lift msg model =
                     , Cmd.none
                     , Nothing
                     )
+
+        {-
+           PASSWORD RECOVERY
+        -}
+        RecoverFormInput input ->
+            case model.recover of
+                Model.Form form ->
+                    ( { model | recover = Model.Form (Form.input input form) }
+                    , Cmd.none
+                    , Nothing
+                    )
+
+                Model.Sent _ ->
+                    ( model
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        RecoverFail error ->
+            Helpers.feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    case model.recover of
+                        Model.Form form ->
+                            ( { model | recover = Model.Form (Form.fail feedback form) }
+                            , Cmd.none
+                            , Nothing
+                            )
+
+                        Model.Sent _ ->
+                            ( model
+                            , Cmd.none
+                            , Nothing
+                            )
+
+        Recover email ->
+            case model.recover of
+                Model.Form form ->
+                    ( { model | recover = Model.Form (Form.setStatus Form.Sending form) }
+                    , Api.recover email
+                        |> Task.perform
+                            (lift << RecoverFail)
+                            (always <| lift <| RecoverSuccess email)
+                    , Nothing
+                    )
+
+                Model.Sent _ ->
+                    ( model
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        RecoverSuccess email ->
+            ( { model | recover = Model.Sent email }
+            , Cmd.none
+            , Nothing
+            )

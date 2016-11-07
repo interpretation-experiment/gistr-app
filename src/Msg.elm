@@ -16,11 +16,6 @@ type Msg
     | Error Types.Error
       -- AUTH
     | AuthMsg Auth.Msg
-      -- PASSWORD RECOVERY
-    | RecoverFormInput String
-    | RecoverFail Types.Error
-    | Recover String
-    | RecoverSuccess String
       -- PASSWORD RESET
     | ResetFormInput Types.ResetCredentials
     | ResetFail Types.Error
