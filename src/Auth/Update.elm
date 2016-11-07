@@ -4,7 +4,7 @@ import Api
 import Auth.Msg exposing (Msg(..))
 import Form
 import Helpers
-import Helpers exposing ((!!))
+import Helpers exposing ((!!!))
 import LocalStorage
 import Maybe.Extra exposing ((?))
 import Model exposing (Model)
@@ -12,35 +12,41 @@ import Msg as AppMsg
 import Router
 import Task
 import Types
-import Wiring exposing (UpdateConfig)
 
 
-update : UpdateConfig Msg -> Msg -> Model -> ( Model, Cmd AppMsg.Msg )
-update { lift, appUpdate } msg model =
+update : (Msg -> AppMsg.Msg) -> Msg -> Model -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+update lift msg model =
     case msg of
         LoginFormInput input ->
-            { model | login = Form.input input model.login } ! []
+            ( { model | login = Form.input input model.login }
+            , Cmd.none
+            , Nothing
+            )
 
         LoginFail error ->
-            Helpers.feedbackOrUnrecoverable appUpdate error model <|
+            Helpers.feedbackOrUnrecoverable error model <|
                 \feedback ->
-                    { model | login = Form.fail feedback model.login } ! []
+                    ( { model | login = Form.fail feedback model.login }
+                    , Cmd.none
+                    , Nothing
+                    )
 
         Login credentials ->
-            { model | login = Form.setStatus Form.Sending model.login }
-                ! [ Api.login credentials
-                        |> Task.perform (lift << LoginFail) (lift << LoginSuccess)
-                  ]
+            ( { model | login = Form.setStatus Form.Sending model.login }
+            , Api.login credentials
+                |> Task.perform (lift << LoginFail) (lift << LoginSuccess)
+            , Nothing
+            )
 
         LoginSuccess auth ->
             case model.route of
                 Router.Login maybeNext ->
-                    Helpers.updateAuthNav appUpdate
+                    Helpers.updateAuthNav
                         (Types.Authenticated auth)
                         (maybeNext ? Router.Home)
                         model
-                        !! [ LocalStorage.tokenSet auth.token ]
+                        !!! [ LocalStorage.tokenSet auth.token ]
 
                 _ ->
-                    Helpers.updateAuth appUpdate (Types.Authenticated auth) model
-                        !! [ LocalStorage.tokenSet auth.token ]
+                    Helpers.updateAuth (Types.Authenticated auth) model
+                        !!! [ LocalStorage.tokenSet auth.token ]

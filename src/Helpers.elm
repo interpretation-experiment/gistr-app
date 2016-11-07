@@ -1,6 +1,7 @@
 module Helpers
     exposing
         ( (!!)
+        , (!!!)
         , alreadyAuthed
         , authenticatedOrIgnore
         , cmd
@@ -49,6 +50,11 @@ cmd msg =
     model ! (cmd :: cmds)
 
 
+(!!!) : ( model, Cmd msg, Maybe msg ) -> List (Cmd msg) -> ( model, Cmd msg, Maybe msg )
+(!!!) ( model, cmd, maybeMsg ) cmds =
+    ( model, Cmd.batch (cmd :: cmds), maybeMsg )
+
+
 updateUser :
     { a | auth : Types.AuthStatus }
     -> Types.User
@@ -92,15 +98,14 @@ authenticatedOrIgnore model authFunc =
 
 
 feedbackOrUnrecoverable :
-    (Msg -> Model -> ( Model, Cmd Msg ))
-    -> Types.Error
+    Types.Error
     -> Model
-    -> (Feedback.Feedback -> ( Model, Cmd Msg ))
-    -> ( Model, Cmd Msg )
-feedbackOrUnrecoverable update error model feedbackFunc =
+    -> (Feedback.Feedback -> ( Model, Cmd Msg, Maybe Msg ))
+    -> ( Model, Cmd Msg, Maybe Msg )
+feedbackOrUnrecoverable error model feedbackFunc =
     case error of
         Types.Unrecoverable _ ->
-            update (Error error) model
+            ( model, Cmd.none, Just (Error error) )
 
         Types.ApiFeedback feedback ->
             feedbackFunc feedback
@@ -111,22 +116,23 @@ feedbackOrUnrecoverable update error model feedbackFunc =
 
 
 updateAuth :
-    (Msg -> Model -> ( Model, Cmd Msg ))
-    -> Types.AuthStatus
+    Types.AuthStatus
     -> Model
-    -> ( Model, Cmd Msg )
-updateAuth update authStatus model =
-    update (NavigateTo model.route) { model | auth = authStatus }
+    -> ( Model, Cmd Msg, Maybe Msg )
+updateAuth authStatus model =
+    ( { model | auth = authStatus }
+    , Cmd.none
+    , Just (NavigateTo model.route)
+    )
 
 
 updateAuthNav :
-    (Msg -> Model -> ( Model, Cmd Msg ))
-    -> Types.AuthStatus
+    Types.AuthStatus
     -> Router.Route
     -> Model
-    -> ( Model, Cmd Msg )
-updateAuthNav update authStatus route model =
-    updateAuth update authStatus { model | route = route }
+    -> ( Model, Cmd Msg, Maybe Msg )
+updateAuthNav authStatus route model =
+    updateAuth authStatus { model | route = route }
 
 
 

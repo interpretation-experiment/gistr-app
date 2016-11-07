@@ -72,7 +72,8 @@ doUpdate msg model =
            AUTH
         -}
         AuthMsg msg ->
-            AuthUpdate.update { lift = AuthMsg, appUpdate = update } msg model
+            AuthUpdate.update AuthMsg msg model
+                |> processMaybeMsg
 
         {-
            LOCAL TOKEN LOGIN
@@ -613,6 +614,16 @@ updateAuthNav authStatus route model =
 
 
 -- UPDATE HELPERS
+
+
+processMaybeMsg : ( Model, Cmd Msg, Maybe Msg ) -> ( Model, Cmd Msg )
+processMaybeMsg ( model, cmd, maybeMsg ) =
+    case maybeMsg of
+        Nothing ->
+            ( model, cmd )
+
+        Just msg ->
+            update msg model !! [ cmd ]
 
 
 feedbackOrUnrecoverable :
