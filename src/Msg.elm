@@ -16,11 +16,6 @@ type Msg
     | Error Types.Error
       -- AUTH
     | AuthMsg Auth.Msg
-      -- PASSWORD RESET
-    | ResetFormInput Types.ResetCredentials
-    | ResetFail Types.Error
-    | Reset Types.ResetCredentials Types.ResetTokens
-    | ResetSuccess
       -- REGISTRATION
     | RegisterFormInput Types.RegisterCredentials
     | RegisterFail Types.Error

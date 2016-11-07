@@ -76,54 +76,6 @@ doUpdate msg model =
                 |> processMaybeMsg
 
         {-
-           PASSWORD RESET
-        -}
-        ResetFormInput input ->
-            case model.reset of
-                Model.Form form ->
-                    { model | reset = Model.Form (Form.input input form) } ! []
-
-                Model.Sent _ ->
-                    model ! []
-
-        ResetFail error ->
-            feedbackOrUnrecoverable error model <|
-                \feedback ->
-                    case model.reset of
-                        Model.Form form ->
-                            { model | reset = Model.Form (Form.fail feedback form) } ! []
-
-                        Model.Sent _ ->
-                            model ! []
-
-        Reset credentials tokens ->
-            case model.reset of
-                Model.Form form ->
-                    let
-                        feedback =
-                            [ .password1 >> Helpers.ifShorterThan 6 ( "password1", Strings.passwordTooShort )
-                            , Validate.ifInvalid
-                                (\c -> c.password1 /= c.password2)
-                                ( "global", Strings.passwordsDontMatch )
-                            ]
-                                |> Validate.all
-                                |> Feedback.fromValidator credentials
-                    in
-                        if Feedback.isEmpty feedback then
-                            { model | reset = Model.Form (Form.setStatus Form.Sending form) }
-                                ! [ Api.reset credentials tokens
-                                        |> Task.perform ResetFail (always ResetSuccess)
-                                  ]
-                        else
-                            update (ResetFail <| Types.ApiFeedback feedback) model
-
-                Model.Sent _ ->
-                    model ! []
-
-        ResetSuccess ->
-            update (AuthMsg AuthMsg.Logout) { model | reset = Model.Sent () }
-
-        {-
            REGISTRATION
         -}
         RegisterFormInput input ->

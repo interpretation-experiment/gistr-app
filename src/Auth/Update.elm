@@ -15,6 +15,7 @@ import Router
 import Strings
 import Task
 import Types
+import Validate
 
 
 update : (Msg -> AppMsg.Msg) -> Msg -> Model -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
@@ -175,7 +176,7 @@ update lift msg model =
                     , Api.recover email
                         |> Task.perform
                             (lift << RecoverFail)
-                            (always <| lift <| RecoverSuccess email)
+                            (always <| lift (RecoverSuccess email))
                     , Nothing
                     )
 
@@ -190,3 +191,69 @@ update lift msg model =
             , Cmd.none
             , Nothing
             )
+
+        {-
+           PASSWORD RESET
+        -}
+        ResetFormInput input ->
+            case model.reset of
+                Model.Form form ->
+                    ( { model | reset = Model.Form (Form.input input form) }
+                    , Cmd.none
+                    , Nothing
+                    )
+
+                Model.Sent _ ->
+                    ( model
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        ResetFail error ->
+            Helpers.feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    case model.reset of
+                        Model.Form form ->
+                            ( { model | reset = Model.Form (Form.fail feedback form) }
+                            , Cmd.none
+                            , Nothing
+                            )
+
+                        Model.Sent _ ->
+                            ( model
+                            , Cmd.none
+                            , Nothing
+                            )
+
+        Reset credentials tokens ->
+            case model.reset of
+                Model.Form form ->
+                    let
+                        feedback =
+                            [ .password1 >> Helpers.ifShorterThan 6 ( "password1", Strings.passwordTooShort )
+                            , Validate.ifInvalid
+                                (\c -> c.password1 /= c.password2)
+                                ( "global", Strings.passwordsDontMatch )
+                            ]
+                                |> Validate.all
+                                |> Feedback.fromValidator credentials
+                    in
+                        if Feedback.isEmpty feedback then
+                            ( { model | reset = Model.Form (Form.setStatus Form.Sending form) }
+                            , Api.reset credentials tokens
+                                |> Task.perform
+                                    (lift << ResetFail)
+                                    (always <| lift ResetSuccess)
+                            , Nothing
+                            )
+                        else
+                            update lift (ResetFail <| Types.ApiFeedback feedback) model
+
+                Model.Sent _ ->
+                    ( model
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        ResetSuccess ->
+            update lift Logout { model | reset = Model.Sent () }

@@ -29,10 +29,10 @@ view model =
             View.Login.view Msg.AuthMsg model
 
         Router.Recover ->
-            View.Recover.view model
+            View.Recover.view Msg.AuthMsg model
 
         Router.Reset tokens ->
-            View.Reset.view model tokens
+            View.Reset.view Msg.AuthMsg model tokens
 
         Router.Register maybeProlific ->
             View.Register.view model maybeProlific

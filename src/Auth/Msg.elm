@@ -24,3 +24,8 @@ type Msg
     | RecoverFail Types.Error
     | Recover String
     | RecoverSuccess String
+      -- PASSWORD RESET
+    | ResetFormInput Types.ResetCredentials
+    | ResetFail Types.Error
+    | Reset Types.ResetCredentials Types.ResetTokens
+    | ResetSuccess
