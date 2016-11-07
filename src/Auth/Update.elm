@@ -4,7 +4,6 @@ import Api
 import Auth.Msg exposing (Msg(..))
 import Feedback
 import Form
-import Helpers
 import Helpers exposing ((!!!))
 import LocalStorage
 import Maybe.Extra exposing ((?))

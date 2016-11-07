@@ -1,30 +1,20 @@
 module Update exposing (update)
 
-import Api
 import Auth.Msg as AuthMsg
 import Auth.Update as AuthUpdate
 import Experiment
 import Experiment.Reformulation as Reformulation
-import Feedback
 import Form
 import Helpers exposing ((!!))
 import Instructions
 import List.Nonempty as Nonempty
-import LocalStorage
-import Maybe.Extra exposing ((?), or)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
 import Profile.Msg as ProfileMsg
 import Profile.Update as ProfileUpdate
-import Regex
 import Router
 import Store
-import String
-import Strings
-import Task
-import Types
-import Validate
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -163,17 +153,3 @@ processMaybeMsg ( model, cmd, maybeMsg ) =
 
         Just msg ->
             update msg model !! [ cmd ]
-
-
-feedbackOrUnrecoverable :
-    Types.Error
-    -> Model
-    -> (Feedback.Feedback -> ( Model, Cmd Msg ))
-    -> ( Model, Cmd Msg )
-feedbackOrUnrecoverable error model feedbackFunc =
-    case error of
-        Types.Unrecoverable _ ->
-            update (Error error) model
-
-        Types.ApiFeedback feedback ->
-            feedbackFunc feedback
