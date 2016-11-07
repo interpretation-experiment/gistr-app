@@ -16,10 +16,6 @@ type Msg
     | Error Types.Error
       -- AUTH
     | AuthMsg Auth.Msg
-      -- LOGOUT
-    | Logout
-    | LogoutFail Types.Error
-    | LogoutSuccess
       -- PROLIFIC
     | SetProlificFormInput String
     | SetProlific String

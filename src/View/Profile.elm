@@ -1,6 +1,7 @@
 module View.Profile exposing (view)
 
 import Animation
+import Auth.Msg as AuthMsg
 import Feedback
 import Form
 import Helpers
@@ -44,7 +45,7 @@ header model =
                     Html.div []
                         [ Html.text "Signed in as "
                         , Html.strong [] [ Html.text auth.user.username ]
-                        , Helpers.evButton [] Logout "Logout"
+                        , Helpers.evButton [] (AuthMsg AuthMsg.Logout) "Logout"
                         ]
 
                 _ ->

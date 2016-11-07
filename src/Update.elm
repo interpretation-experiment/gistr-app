@@ -76,33 +76,6 @@ doUpdate msg model =
                 |> processMaybeMsg
 
         {-
-           LOGOUT
-        -}
-        Logout ->
-            Helpers.authenticatedOrIgnore model <|
-                \auth ->
-                    updateAuth Types.Authenticating model
-                        !! [ Api.logout auth
-                                |> Task.perform LogoutFail (always LogoutSuccess)
-                           , LocalStorage.tokenClear
-                           ]
-
-        LogoutFail error ->
-            let
-                _ =
-                    Debug.log "error logging user out" (toString error)
-            in
-                update LogoutSuccess model
-
-        LogoutSuccess ->
-            case model.route of
-                Router.Reset _ ->
-                    updateAuth Types.Anonymous model
-
-                _ ->
-                    updateAuthNav Types.Anonymous Router.Home model
-
-        {-
            PROLIFIC
         -}
         SetProlificFormInput input ->
@@ -199,11 +172,7 @@ doUpdate msg model =
                     model ! []
 
         ResetSuccess ->
-            let
-                model' =
-                    { model | reset = Model.Sent () }
-            in
-                Helpers.authenticatedOrIgnore model' (\_ -> update Logout model')
+            update (AuthMsg AuthMsg.Logout) { model | reset = Model.Sent () }
 
         {-
            REGISTRATION
@@ -577,20 +546,6 @@ doUpdate msg model =
                         (Reformulation.Trial () Reformulation.Reading)
             }
                 ! []
-
-
-
--- ROUTING WITH AUTH
-
-
-updateAuth : Types.AuthStatus -> Model -> ( Model, Cmd Msg )
-updateAuth authStatus model =
-    update (NavigateTo model.route) { model | auth = authStatus }
-
-
-updateAuthNav : Types.AuthStatus -> Router.Route -> Model -> ( Model, Cmd Msg )
-updateAuthNav authStatus route model =
-    updateAuth authStatus { model | route = route }
 
 
 

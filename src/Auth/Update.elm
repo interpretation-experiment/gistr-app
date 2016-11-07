@@ -71,3 +71,34 @@ update lift msg model =
 
         LoginLocalTokenFail _ ->
             Helpers.updateAuth Types.Anonymous model !!! [ LocalStorage.tokenClear ]
+
+        {-
+           LOGOUT
+        -}
+        Logout ->
+            case model.auth of
+                Types.Authenticated auth ->
+                    Helpers.updateAuth Types.Authenticating model
+                        !!! [ Api.logout auth
+                                |> Task.perform (lift << LogoutFail)
+                                    (always <| lift LogoutSuccess)
+                            , LocalStorage.tokenClear
+                            ]
+
+                _ ->
+                    ( model, Cmd.none, Nothing )
+
+        LogoutFail error ->
+            let
+                _ =
+                    Debug.log "error logging user out" (toString error)
+            in
+                update lift LogoutSuccess model
+
+        LogoutSuccess ->
+            case model.route of
+                Router.Reset _ ->
+                    Helpers.updateAuth Types.Anonymous model
+
+                _ ->
+                    Helpers.updateAuthNav Types.Anonymous Router.Home model
