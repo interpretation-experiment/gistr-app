@@ -6,6 +6,7 @@ module Helpers
         , cmd
         , evA
         , evButton
+        , feedbackOrUnrecoverable
         , ifShorterThan
         , ifThenValidate
         , loading
@@ -13,17 +14,20 @@ module Helpers
         , navButton
         , navigateTo
         , notAuthed
+        , updateAuth
+        , updateAuthNav
         , updateUser
         )
 
 import Cmds
+import Feedback
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
 import List.Nonempty as Nonempty
 import Model exposing (Model)
-import Msg exposing (Msg(NavigateTo))
+import Msg exposing (Msg(NavigateTo, Error))
 import Router
 import String
 import Task
@@ -85,6 +89,44 @@ authenticatedOrIgnore model authFunc =
 
         _ ->
             model ! []
+
+
+feedbackOrUnrecoverable :
+    (Msg -> Model -> ( Model, Cmd Msg ))
+    -> Types.Error
+    -> Model
+    -> (Feedback.Feedback -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+feedbackOrUnrecoverable update error model feedbackFunc =
+    case error of
+        Types.Unrecoverable _ ->
+            update (Error error) model
+
+        Types.ApiFeedback feedback ->
+            feedbackFunc feedback
+
+
+
+-- ROUTING WITH AUTH
+
+
+updateAuth :
+    (Msg -> Model -> ( Model, Cmd Msg ))
+    -> Types.AuthStatus
+    -> Model
+    -> ( Model, Cmd Msg )
+updateAuth update authStatus model =
+    update (NavigateTo model.route) { model | auth = authStatus }
+
+
+updateAuthNav :
+    (Msg -> Model -> ( Model, Cmd Msg ))
+    -> Types.AuthStatus
+    -> Router.Route
+    -> Model
+    -> ( Model, Cmd Msg )
+updateAuthNav update authStatus route model =
+    updateAuth update authStatus { model | route = route }
 
 
 

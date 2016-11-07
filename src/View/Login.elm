@@ -1,5 +1,6 @@
 module View.Login exposing (view)
 
+import Auth.Msg as AuthMsg
 import Feedback
 import Form
 import Helpers
@@ -8,12 +9,11 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
 import Msg exposing (Msg)
-import Msg.Auth as MsgAuth
 import Router
 import Types
 
 
-view : (MsgAuth.Msg -> Msg) -> Model -> Html.Html Msg
+view : (AuthMsg.Msg -> Msg) -> Model -> Html.Html Msg
 view lift model =
     Html.div [] [ header, body lift model ]
 
@@ -26,7 +26,7 @@ header =
         ]
 
 
-body : (MsgAuth.Msg -> Msg) -> Model -> Html.Html Msg
+body : (AuthMsg.Msg -> Msg) -> Model -> Html.Html Msg
 body lift model =
     let
         inner =
@@ -43,7 +43,7 @@ body lift model =
         Html.div [] [ inner ]
 
 
-form : (MsgAuth.Msg -> Msg) -> Form.Model Types.Credentials -> Html.Html Msg
+form : (AuthMsg.Msg -> Msg) -> Form.Model Types.Credentials -> Html.Html Msg
 form lift { input, feedback, status } =
     Html.div []
         [ Html.div []
@@ -51,7 +51,7 @@ form lift { input, feedback, status } =
             , Helpers.navA (Router.Register Nothing) "Sign up"
             , Html.text "!"
             ]
-        , Html.form [ Events.onSubmit (lift <| MsgAuth.Login input) ]
+        , Html.form [ Events.onSubmit (lift <| AuthMsg.Login input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
                 , Html.input
@@ -61,7 +61,7 @@ form lift { input, feedback, status } =
                     , Attributes.placeholder "joey"
                     , Attributes.type' "text"
                     , Attributes.value input.username
-                    , Events.onInput (lift << MsgAuth.LoginFormInput << \u -> { input | username = u })
+                    , Events.onInput (lift << AuthMsg.LoginFormInput << \u -> { input | username = u })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
@@ -74,7 +74,7 @@ form lift { input, feedback, status } =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type' "password"
                     , Attributes.value input.password
-                    , Events.onInput (lift << MsgAuth.LoginFormInput << \p -> { input | password = p })
+                    , Events.onInput (lift << AuthMsg.LoginFormInput << \p -> { input | password = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password" feedback) ]

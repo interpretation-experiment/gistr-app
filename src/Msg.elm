@@ -1,8 +1,8 @@
 module Msg exposing (Msg(..))
 
 import Animation
+import Auth.Msg as Auth
 import Instructions
-import Msg.Auth as Auth
 import Router
 import Store
 import Types

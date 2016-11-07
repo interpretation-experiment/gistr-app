@@ -1,4 +1,4 @@
-module Msg.Auth exposing (Msg(..))
+module Auth.Msg exposing (Msg(..))
 
 import Types
 
