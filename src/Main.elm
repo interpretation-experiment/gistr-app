@@ -86,6 +86,7 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
+          -- TODO: only activate this if experiment is shown
         , Instructions.subscription
             (Msg.ReformulationInstructions << Instructions.KeyDown)
             (Experiment.instructionsState model.experiment)
