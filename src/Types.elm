@@ -4,9 +4,11 @@ module Types
         , AuthStatus(..)
         , Choice
         , Credentials
+        , Edge
         , Email
         , Error(..)
         , Meta
+        , NewSentence
         , NewWordSpan
         , PasswordCredentials
         , PreUser
@@ -15,7 +17,9 @@ module Types
         , RegisterCredentials
         , ResetCredentials
         , ResetTokens
+        , Sentence
         , Token
+        , Tree
         , TreeCounts
         , User
         , WordSpan
@@ -63,21 +67,27 @@ type alias Meta =
 
 
 type alias PreUser =
-    { id : Int
-    , username : String
+    { -- IMMUTABLE
+      id : Int
+    , -- PROPER
+      username : String
     , isActive : Bool
     , isStaff : Bool
-    , profile : Maybe Profile
+    , -- RELATIONSHIPS
+      profile : Maybe Profile
     , emails : List Email
     }
 
 
 type alias User =
-    { id : Int
-    , username : String
+    { -- IMMUTABLE
+      id : Int
+    , -- PROPER
+      username : String
     , isActive : Bool
     , isStaff : Bool
-    , profile : Profile
+    , -- RELATIONSHIPS
+      profile : Profile
     , emails : List Email
     }
 
@@ -109,20 +119,61 @@ type alias Auth =
 
 
 -- PROFILE
+{- Example profile:
+
+   ✓    "available_trees_counts": {
+   ✓        "experiment": 0,
+            "game": 0,
+   ✓        "training": 0
+       },
+   ✓    "created": "2016-09-23T11:19:11.901445Z",
+   ✓    "id": 1,
+        "introduced_exp_home": true,
+        "introduced_exp_play": false,
+        "introduced_play_home": false,
+        "introduced_play_play": false,
+   ✓    "mothertongue": "english",
+        "next_credit_in": 48,
+   ✓    "prolific_id": null,
+   ✓    "questionnaire": null,
+   ✗    "questionnaire_done": false,
+   ✗    "questionnaire_url": null,
+   ✓    "reformulations_count": 0,
+   ✓    "sentences": [],
+   ✗    "sentences_count": 0,
+        "suggestion_credit": 0,
+   ✓    "trained_reformulations": false,
+   ✓    "trees": [],
+   ✗    "trees_count": 0,
+   ✗    "url": "http://127.0.0.1:8000/api/profiles/1/",
+   ✓    "user": 1,
+   ✗    "user_url": "http://127.0.0.1:8000/api/users/1/",
+   ✓    "user_username": "sl",
+   ✓    "word_span": null,
+   ✗    "word_span_done": false,
+   ✗    "word_span_url": null
+
+-}
 
 
 type alias Profile =
-    { id : Int
+    { -- IMMUTABLE
+      id : Int
     , created : Date.Date
-    , prolificId : Maybe String
-    , userId : Int
-    , userUsername : String
+    , -- PROPER
+      prolificId : Maybe String
     , mothertongue : String
     , trained : Bool
-    , reformulationsCount : Int
-    , availableTreeCounts : TreeCounts
+    , -- RELATIONSHIPS
+      userId : Int
     , questionnaireId : Maybe Int
     , wordSpanId : Maybe Int
+    , sentencesIds : List Int
+    , treesIds : List Int
+    , -- COMPUTED
+      userUsername : String
+    , reformulationsCount : Int
+    , availableTreeCounts : TreeCounts
     }
 
 
@@ -133,55 +184,40 @@ type alias TreeCounts =
 
 
 type alias Email =
-    { id : Int
-    , user : Int
-    , email : String
+    { -- IMMUTABLE
+      id : Int
+    , -- PROPER
+      email : String
     , verified : Bool
     , primary : Bool
-    , transacting : Bool
+    , -- RELATIONSHIPS
+      userId : Int
+    , -- LOCAL
+      transacting : Bool
     }
 
 
+type alias WordSpan =
+    { -- IMMUTABLE
+      id : Int
+    , created : Date.Date
+    , -- PROPER
+      span : Int
+    , score : Int
+    , -- RELATIONSHIPS
+      profileId : Int
+    }
 
-{- Typical profile:
 
-   ok    "available_trees_counts": {
-   ok        "experiment": 0,
-           "game": 0,
-   ok        "training": 0
-       },
-   ok    "created": "2016-09-23T11:19:11.901445Z",
-   ok    "id": 1,
-       "introduced_exp_home": true,
-       "introduced_exp_play": false,
-       "introduced_play_home": false,
-       "introduced_play_play": false,
-   ok    "mothertongue": "english",
-       "next_credit_in": 48,
-   ok    "prolific_id": null,
-   ok    "questionnaire": null,
-   no    "questionnaire_done": false,
-   no    "questionnaire_url": null,
-   ok    "reformulations_count": 0,
-       "sentences": [],
-       "sentences_count": 0,
-       "suggestion_credit": 0,
-   ok    "trained_reformulations": false,
-       "trees": [],
-       "trees_count": 0,
-   no    "url": "http://127.0.0.1:8000/api/profiles/1/",
-   ok    "user": 1,
-   no    "user_url": "http://127.0.0.1:8000/api/users/1/",
-   ok    "user_username": "sl",
-   ok    "word_span": null,
-   no    "word_span_done": false,
-   no    "word_span_url": null
-
--}
+type alias NewWordSpan =
+    { span : Int
+    , score : Int
+    }
 
 
 type alias QuestionnaireForm =
-    { age : String
+    { -- PROPER
+      age : String
     , gender : String
     , informed : Bool
     , informedHow : String
@@ -203,18 +239,67 @@ emptyQuestionnaireForm =
     }
 
 
-type alias WordSpan =
-    { id : Int
+
+-- SENTENCE
+
+
+type alias Sentence =
+    { -- IMMUTABLE
+      id : Int
     , created : Date.Date
+    , -- PROPER
+      text : String
+    , language : String
+    , bucket : String
+    , readTimeProportion : Float
+    , readTimeAllotted : Float
+    , writeTimeProportion : Float
+    , writeTimeAllotted : Float
+    , -- RELATIONSHIPS
+      treeId : Int
     , profileId : Int
-    , span : Int
-    , score : Int
+    , parentId : Maybe Int
+    , childrenIds : List Int
+    , -- COMPUTED
+      profileUsername : String
     }
 
 
-type alias NewWordSpan =
-    { span : Int
-    , score : Int
+type alias NewSentence =
+    { -- PROPER
+      text : String
+    , language : String
+    , bucket : String
+    , readTimeProportion : Float
+    , readTimeAllotted : Float
+    , writeTimeProportion : Float
+    , writeTimeAllotted : Float
+    , -- RELATIONSHIPS
+      parentId : Maybe Int
+    }
+
+
+
+-- TREE
+
+
+type alias Tree =
+    { -- IMMUTABLE
+      id : Int
+    , -- RELATIONSHIPS
+      root : Sentence
+    , sentencesIds : List Int
+    , profilesIds : List Int
+    , networkEdges : List (Edge Int)
+    , -- COMPUTED
+      branchesCount : Int
+    , shortestBranchDepth : Int
+    }
+
+
+type alias Edge a =
+    { source : a
+    , target : a
     }
 
 

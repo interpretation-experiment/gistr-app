@@ -2,8 +2,10 @@ module Main exposing (..)
 
 import Animation
 import Dict
+import Experiment
 import Form
 import Helpers exposing ((!!))
+import Instructions
 import LocalStorage
 import Maybe.Extra exposing ((?))
 import Model exposing (Model)
@@ -84,6 +86,9 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
+        , Instructions.subscription
+            (Msg.ReformulationInstructions << Instructions.KeyDown)
+            (Experiment.instructionsState model.experiment)
         ]
 
 

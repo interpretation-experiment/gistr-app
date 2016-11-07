@@ -21,6 +21,7 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
+import List.Nonempty as Nonempty
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo))
 import Router

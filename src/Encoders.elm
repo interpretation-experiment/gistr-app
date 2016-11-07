@@ -6,6 +6,7 @@ module Encoders
         , newEmail
         , newProfile
         , newQuestionnaire
+        , newSentence
         , newWordSpan
         , passwordCredentials
         , profile
@@ -13,7 +14,6 @@ module Encoders
         , registerCredentials
         , resetCredentials
         , user
-        , wordSpan
         )
 
 import Json.Encode as JE
@@ -32,8 +32,7 @@ credentials credentials' =
 user : Types.User -> JE.Value
 user user' =
     JE.object
-        [ ( "id", JE.int user'.id )
-        , ( "username", JE.string user'.username )
+        [ ( "username", JE.string user'.username )
         , ( "is_active", JE.bool user'.isActive )
         , ( "is_staff", JE.bool user'.isStaff )
         ]
@@ -75,8 +74,7 @@ newProfile maybeProlific =
 profile : Types.Profile -> JE.Value
 profile profile' =
     JE.object
-        [ ( "id", JE.int profile'.id )
-        , ( "prolific_id", unwrap JE.null JE.string profile'.prolificId )
+        [ ( "prolific_id", unwrap JE.null JE.string profile'.prolificId )
         , ( "mothertongue", JE.string profile'.mothertongue )
         , ( "trained_reformulations", JE.bool profile'.trained )
         ]
@@ -100,9 +98,7 @@ newEmail email =
 email : Types.Email -> JE.Value
 email email' =
     JE.object
-        [ ( "id", JE.int email'.id )
-        , ( "user", JE.int email'.id )
-        , ( "email", JE.string email'.email )
+        [ ( "email", JE.string email'.email )
         , ( "verified", JE.bool email'.verified )
         , ( "primary", JE.bool email'.primary )
         ]
@@ -122,16 +118,6 @@ newWordSpan wordSpan =
         ]
 
 
-wordSpan : Types.WordSpan -> JE.Value
-wordSpan wordSpan' =
-    JE.object
-        [ ( "id", JE.int wordSpan'.id )
-        , ( "profile", JE.int wordSpan'.profileId )
-        , ( "span", JE.int wordSpan'.span )
-        , ( "score", JE.int wordSpan'.score )
-        ]
-
-
 newQuestionnaire : Types.QuestionnaireForm -> JE.Value
 newQuestionnaire questionnaire =
     JE.object
@@ -142,4 +128,18 @@ newQuestionnaire questionnaire =
         , ( "informed_what", JE.string questionnaire.informedWhat )
         , ( "job_type", JE.string questionnaire.jobType )
         , ( "job_freetext", JE.string questionnaire.jobFreetext )
+        ]
+
+
+newSentence : Types.NewSentence -> JE.Value
+newSentence sentence =
+    JE.object
+        [ ( "text", JE.string sentence.text )
+        , ( "language", JE.string sentence.language )
+        , ( "bucket", JE.string sentence.bucket )
+        , ( "read_time_proportion", JE.float sentence.readTimeProportion )
+        , ( "read_time_allotted", JE.float sentence.readTimeAllotted )
+        , ( "write_time_proportion", JE.float sentence.writeTimeProportion )
+        , ( "write_time_allotted", JE.float sentence.writeTimeAllotted )
+        , ( "parent", unwrap JE.null JE.int sentence.parentId )
         ]

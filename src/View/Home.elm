@@ -36,6 +36,7 @@ body model =
                 [ Html.p [] [ Html.text ("Howdy, " ++ user.username) ]
                 , Html.div []
                     [ Helpers.navButton Router.About "About"
+                    , Helpers.navButton Router.Experiment "Pass the experiment"
                     , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
                     ]
                 ]

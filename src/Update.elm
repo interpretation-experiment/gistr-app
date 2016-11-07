@@ -1,9 +1,13 @@
 module Update exposing (update)
 
 import Api
+import Experiment
+import Experiment.Reformulation as Reformulation
 import Feedback
 import Form
 import Helpers exposing ((!!))
+import Instructions
+import List.Nonempty as Nonempty
 import LocalStorage
 import Maybe.Extra exposing ((?), or)
 import Model exposing (Model)
@@ -552,6 +556,59 @@ doUpdate msg model =
                     model.store
             in
                 { model | store = { store | meta = Just meta } } ! []
+
+        {-
+           REFORMULATIONS EXPERIMENT
+        -}
+        ReformulationInstructions msg ->
+            case model.experiment of
+                Experiment.Instructions state ->
+                    let
+                        ( newState, maybeOut ) =
+                            Instructions.update
+                                Reformulation.instructionsUpdateConfig
+                                msg
+                                state
+
+                        newModel =
+                            { model | experiment = Experiment.Instructions newState }
+                    in
+                        case maybeOut of
+                            Nothing ->
+                                newModel ! []
+
+                            Just outMsg ->
+                                update outMsg newModel
+
+                _ ->
+                    model ! []
+
+        ReformulationInstructionsRestart ->
+            { model
+                | experiment =
+                    Experiment.Instructions
+                        (Instructions.start Reformulation.instructionsOrder)
+            }
+                ! []
+
+        ReformulationInstructionsQuit index ->
+            if index + 1 == Nonempty.length Reformulation.instructionsOrder then
+                update ReformulationInstructionsDone model
+            else
+                { model | experiment = Experiment.Instructions Instructions.hide } ! []
+
+        ReformulationInstructionsDone ->
+            -- TODO: set intro read
+            { model | experiment = Experiment.Instructions Instructions.hide } ! []
+
+        ReformulationExpStart ->
+            -- TODO: if trained, do exp directly, if not, do training
+            { model
+                | experiment =
+                    Experiment.Training
+                        (Reformulation.Trial () Reformulation.Reading)
+            }
+                ! []
 
 
 

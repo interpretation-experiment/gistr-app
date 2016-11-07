@@ -43,6 +43,8 @@ type TypedStore a b
 type alias Store =
     { wordSpans : TypedStore Types.WordSpan Types.NewWordSpan
     , profiles : TypedStore Types.Profile (Maybe String)
+    , sentences : TypedStore Types.Sentence Types.NewSentence
+    , trees : TypedStore Types.Tree ()
     , meta : Maybe Types.Meta
     }
 
@@ -54,7 +56,7 @@ emptyStore =
             { endpoint = "word-spans"
             , converter =
                 { newEncoder = Encoders.newWordSpan
-                , encoder = Encoders.wordSpan
+                , encoder = always JE.null
                 , decoder = Decoders.wordSpan
                 }
             , data = Dict.empty
@@ -66,6 +68,26 @@ emptyStore =
                 { newEncoder = Encoders.newProfile
                 , encoder = Encoders.profile
                 , decoder = Decoders.profile
+                }
+            , data = Dict.empty
+            }
+    , sentences =
+        TypedStore
+            { endpoint = "sentences"
+            , converter =
+                { newEncoder = Encoders.newSentence
+                , encoder = always JE.null
+                , decoder = Decoders.sentence
+                }
+            , data = Dict.empty
+            }
+    , trees =
+        TypedStore
+            { endpoint = "trees"
+            , converter =
+                { newEncoder = always JE.null
+                , encoder = always JE.null
+                , decoder = Decoders.tree
                 }
             , data = Dict.empty
             }
