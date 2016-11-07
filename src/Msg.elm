@@ -16,10 +16,6 @@ type Msg
     | Error Types.Error
       -- AUTH
     | AuthMsg Auth.Msg
-      -- REGISTRATION
-    | RegisterFormInput Types.RegisterCredentials
-    | RegisterFail Types.Error
-    | Register (Maybe String) Types.RegisterCredentials
       -- PASSWORD MANAGEMENT
     | ChangePasswordFormInput Types.PasswordCredentials
     | ChangePasswordFail Types.Error

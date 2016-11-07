@@ -25,6 +25,9 @@ view model =
         Router.About ->
             View.About.view model
 
+        Router.Error ->
+            View.Error.view model
+
         Router.Login _ ->
             View.Login.view Msg.AuthMsg model
 
@@ -35,10 +38,7 @@ view model =
             View.Reset.view Msg.AuthMsg model tokens
 
         Router.Register maybeProlific ->
-            View.Register.view model maybeProlific
-
-        Router.Error ->
-            View.Error.view model
+            View.Register.view Msg.AuthMsg model maybeProlific
 
         Router.Prolific ->
             View.Prolific.view Msg.AuthMsg model

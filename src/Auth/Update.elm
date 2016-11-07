@@ -257,3 +257,27 @@ update lift msg model =
 
         ResetSuccess ->
             update lift Logout { model | reset = Model.Sent () }
+
+        {-
+           REGISTRATION
+        -}
+        RegisterFormInput input ->
+            ( { model | register = Form.input input model.register }
+            , Cmd.none
+            , Nothing
+            )
+
+        RegisterFail error ->
+            Helpers.feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    ( { model | register = Form.fail feedback model.register }
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        Register maybeProlific credentials ->
+            ( { model | register = Form.setStatus Form.Sending model.register }
+            , Api.register maybeProlific credentials
+                |> Task.perform (lift << RegisterFail) (lift << LoginSuccess)
+            , Nothing
+            )

@@ -76,23 +76,6 @@ doUpdate msg model =
                 |> processMaybeMsg
 
         {-
-           REGISTRATION
-        -}
-        RegisterFormInput input ->
-            { model | register = Form.input input model.register } ! []
-
-        RegisterFail error ->
-            feedbackOrUnrecoverable error model <|
-                \feedback ->
-                    { model | register = Form.fail feedback model.register } ! []
-
-        Register maybeProlific credentials ->
-            { model | register = Form.setStatus Form.Sending model.register }
-                ! [ Api.register maybeProlific credentials
-                        |> Task.perform RegisterFail (AuthMsg << AuthMsg.LoginSuccess)
-                  ]
-
-        {-
            PASSWORD MANAGEMENT
         -}
         ChangePasswordFormInput input ->

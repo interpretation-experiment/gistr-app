@@ -29,3 +29,7 @@ type Msg
     | ResetFail Types.Error
     | Reset Types.ResetCredentials Types.ResetTokens
     | ResetSuccess
+      -- REGISTRATION
+    | RegisterFormInput Types.RegisterCredentials
+    | RegisterFail Types.Error
+    | Register (Maybe String) Types.RegisterCredentials
