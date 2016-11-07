@@ -16,3 +16,6 @@ type Msg
     | Logout
     | LogoutFail Types.Error
     | LogoutSuccess
+      -- PROLIFIC
+    | SetProlificFormInput String
+    | SetProlific String

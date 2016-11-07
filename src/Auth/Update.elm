@@ -2,6 +2,7 @@ module Auth.Update exposing (update)
 
 import Api
 import Auth.Msg exposing (Msg(..))
+import Feedback
 import Form
 import Helpers
 import Helpers exposing ((!!!))
@@ -9,7 +10,9 @@ import LocalStorage
 import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg as AppMsg
+import Regex
 import Router
+import Strings
 import Task
 import Types
 
@@ -102,3 +105,28 @@ update lift msg model =
 
                 _ ->
                     Helpers.updateAuthNav Types.Anonymous Router.Home model
+
+        {-
+           PROLIFIC
+        -}
+        SetProlificFormInput input ->
+            ( { model | prolific = Form.input input model.prolific }
+            , Cmd.none
+            , Nothing
+            )
+
+        SetProlific prolificId ->
+            if Regex.contains (Regex.regex "^[a-z0-9]+$") prolificId then
+                ( model
+                , Cmd.none
+                , Just <| AppMsg.NavigateTo <| Router.Register <| Just prolificId
+                )
+            else
+                let
+                    invalid =
+                        Feedback.globalError Strings.invalidProlific
+                in
+                    ( { model | prolific = Form.fail invalid model.prolific }
+                    , Cmd.none
+                    , Nothing
+                    )

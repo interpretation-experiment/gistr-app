@@ -76,22 +76,6 @@ doUpdate msg model =
                 |> processMaybeMsg
 
         {-
-           PROLIFIC
-        -}
-        SetProlificFormInput input ->
-            { model | prolific = Form.input input model.prolific } ! []
-
-        SetProlific prolificId ->
-            if Regex.contains (Regex.regex "^[a-z0-9]+$") prolificId then
-                update (NavigateTo <| Router.Register <| Just prolificId) model
-            else
-                let
-                    invalid =
-                        Feedback.globalError Strings.invalidProlific
-                in
-                    { model | prolific = Form.fail invalid model.prolific } ! []
-
-        {-
            PASSWORD RECOVERY
         -}
         RecoverFormInput input ->

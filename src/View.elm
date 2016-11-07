@@ -41,7 +41,7 @@ view model =
             View.Error.view model
 
         Router.Prolific ->
-            View.Prolific.view model
+            View.Prolific.view Msg.AuthMsg model
 
         Router.Profile profileRoute ->
             View.Profile.view model profileRoute

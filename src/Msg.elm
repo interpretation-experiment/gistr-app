@@ -16,9 +16,6 @@ type Msg
     | Error Types.Error
       -- AUTH
     | AuthMsg Auth.Msg
-      -- PROLIFIC
-    | SetProlificFormInput String
-    | SetProlific String
       -- PASSWORD RECOVERY
     | RecoverFormInput String
     | RecoverFail Types.Error

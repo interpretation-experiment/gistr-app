@@ -1,5 +1,6 @@
 module View.Prolific exposing (view)
 
+import Auth.Msg exposing (Msg(..))
 import Feedback
 import Form
 import Helpers
@@ -7,17 +8,17 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
 import Router
 import Types
 
 
-view : Model -> Html.Html Msg
-view model =
-    Html.div [] [ header, body model ]
+view : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+view lift model =
+    Html.div [] [ header, body lift model ]
 
 
-header : Html.Html Msg
+header : Html.Html AppMsg.Msg
 header =
     Html.div []
         [ Helpers.navButton (Router.Register Nothing) "Back"
@@ -25,13 +26,13 @@ header =
         ]
 
 
-body : Model -> Html.Html Msg
-body model =
+body : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+body lift model =
     let
         inner =
             case model.auth of
                 Types.Anonymous ->
-                    form model.prolific
+                    form lift model.prolific
 
                 Types.Authenticating ->
                     Helpers.loading
@@ -42,8 +43,8 @@ body model =
         Html.div [] [ inner ]
 
 
-form : Form.Model String -> Html.Html Msg
-form { input, feedback } =
+form : (Msg -> AppMsg.Msg) -> Form.Model String -> Html.Html AppMsg.Msg
+form lift { input, feedback } =
     Html.div []
         [ Html.div []
             [ Html.text "Not a Prolific Academic participant? "
@@ -54,7 +55,7 @@ form { input, feedback } =
             [ Html.text "Before we start, "
             , Html.strong [] [ Html.text "please enter your Prolific Academic ID" ]
             ]
-        , Html.form [ Events.onSubmit (Msg.SetProlific input) ]
+        , Html.form [ Events.onSubmit (lift <| SetProlific input) ]
             [ Html.div []
                 [ Html.label [ Attributes.for "inputProlificId" ] [ Html.text "Prolific Academic ID" ]
                 , Html.input
@@ -63,7 +64,7 @@ form { input, feedback } =
                     , Attributes.placeholder "5381d3c8717b341db325eec3"
                     , Attributes.type' "text"
                     , Attributes.value input
-                    , Events.onInput Msg.SetProlificFormInput
+                    , Events.onInput (lift << SetProlificFormInput)
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
