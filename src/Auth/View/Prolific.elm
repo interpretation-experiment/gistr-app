@@ -1,4 +1,4 @@
-module View.Prolific exposing (view)
+module Auth.View.Prolific exposing (view)
 
 import Auth.Msg exposing (Msg(..))
 import Feedback

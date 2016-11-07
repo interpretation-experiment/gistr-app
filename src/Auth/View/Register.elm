@@ -1,4 +1,4 @@
-module View.Register exposing (view)
+module Auth.View.Register exposing (view)
 
 import Auth.Msg exposing (Msg(..))
 import Feedback

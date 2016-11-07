@@ -1,4 +1,4 @@
-module View.Recover exposing (view)
+module Auth.View.Recover exposing (view)
 
 import Auth.Msg exposing (Msg(..))
 import Feedback

@@ -1,4 +1,4 @@
-module View.Reset exposing (view)
+module Auth.View.Reset exposing (view)
 
 import Auth.Msg exposing (Msg(..))
 import Feedback
