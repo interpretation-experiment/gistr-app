@@ -12,6 +12,7 @@ import LocalStorage
 import Maybe.Extra exposing ((?), or)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Msg.Auth as MsgAuth
 import Navigation
 import Regex
 import Router
@@ -69,19 +70,23 @@ doUpdate msg model =
         {-
            LOGIN
         -}
-        LoginFormInput input ->
+        AuthMsg (MsgAuth.LoginFormInput input) ->
             { model | login = Form.input input model.login } ! []
 
-        LoginFail error ->
+        AuthMsg (MsgAuth.LoginFail error) ->
             feedbackOrUnrecoverable error model <|
                 \feedback ->
                     { model | login = Form.fail feedback model.login } ! []
 
-        Login credentials ->
+        AuthMsg (MsgAuth.Login credentials) ->
             { model | login = Form.setStatus Form.Sending model.login }
-                ! [ Api.login credentials |> Task.perform LoginFail LoginSuccess ]
+                ! [ Api.login credentials
+                        |> Task.perform
+                            (AuthMsg << MsgAuth.LoginFail)
+                            (AuthMsg << MsgAuth.LoginSuccess)
+                  ]
 
-        LoginSuccess auth ->
+        AuthMsg (MsgAuth.LoginSuccess auth) ->
             case model.route of
                 Router.Login maybeNext ->
                     updateAuthNav (Types.Authenticated auth) (maybeNext ? Router.Home) model
@@ -98,7 +103,10 @@ doUpdate msg model =
             case maybeToken of
                 Just token ->
                     ( model
-                    , Api.fetchAuth token |> Task.perform LoginLocalTokenFail LoginSuccess
+                    , Api.fetchAuth token
+                        |> Task.perform
+                            LoginLocalTokenFail
+                            (AuthMsg << MsgAuth.LoginSuccess)
                     )
 
                 Nothing ->
@@ -251,7 +259,7 @@ doUpdate msg model =
         Register maybeProlific credentials ->
             { model | register = Form.setStatus Form.Sending model.register }
                 ! [ Api.register maybeProlific credentials
-                        |> Task.perform RegisterFail LoginSuccess
+                        |> Task.perform RegisterFail (AuthMsg << MsgAuth.LoginSuccess)
                   ]
 
         {-
@@ -282,7 +290,7 @@ doUpdate msg model =
                     Feedback.globalSuccess model.password.feedback
             in
                 update
-                    (LoginSuccess auth)
+                    (AuthMsg <| MsgAuth.LoginSuccess auth)
                     { model | password = Form.succeed emptyInput feedback model.password }
 
         ChangePasswordRecover ->

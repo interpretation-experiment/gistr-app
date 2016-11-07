@@ -26,7 +26,7 @@ view model =
             View.About.view model
 
         Router.Login _ ->
-            View.Login.view model
+            View.Login.view Msg.AuthMsg model
 
         Router.Recover ->
             View.Recover.view model

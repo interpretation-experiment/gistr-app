@@ -2,6 +2,7 @@ module Msg exposing (Msg(..))
 
 import Animation
 import Instructions
+import Msg.Auth as Auth
 import Router
 import Store
 import Types
@@ -13,11 +14,8 @@ type Msg
       -- NAVIGATION
     | NavigateTo Router.Route
     | Error Types.Error
-      -- LOGIN
-    | LoginFormInput Types.Credentials
-    | LoginFail Types.Error
-    | Login Types.Credentials
-    | LoginSuccess Types.Auth
+      -- AUTH
+    | AuthMsg Auth.Msg
       -- LOCAL TOKEN LOGIN
     | GotLocalToken (Maybe Types.Token)
     | LoginLocalTokenFail Types.Error
