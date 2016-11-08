@@ -4,10 +4,11 @@ import Intro
 
 
 type Msg
-    = -- INSTRUCTIONS
+    = -- Run (List a)
+      -- INSTRUCTIONS
       InstructionsMsg Intro.Msg
-    | InstructionsRestart
+    | InstructionsStart
     | InstructionsQuit Int
     | InstructionsDone
-      -- EXPERIMENT
-    | Start
+      -- TRIAL
+    | StartTrial

@@ -19,55 +19,100 @@ update :
 update lift auth msg model =
     case msg of
         InstructionsMsg msg ->
-            case model.experiment of
-                ExpModel.Instructions state ->
+            updateRunningInstructionsOrIgnore model <|
+                \state ->
                     let
                         ( newState, maybeOut ) =
                             Intro.update (Instructions.updateConfig lift) msg state
-
-                        newModel =
-                            { model | experiment = ExpModel.Instructions newState }
                     in
-                        ( newModel
+                        ( newState
                         , Cmd.none
                         , maybeOut
                         )
 
-                _ ->
-                    ( model
+        InstructionsStart ->
+            -- TODO: differentiate training and exp, and set intro path accordingly
+            updateRunningOrIgnore model <|
+                \running ->
+                    ( { running
+                        | state = ExpModel.Instructions (Intro.start Instructions.order)
+                      }
                     , Cmd.none
                     , Nothing
                     )
-
-        InstructionsRestart ->
-            ( { model
-                | experiment = ExpModel.Instructions (Intro.start Instructions.order)
-              }
-            , Cmd.none
-            , Nothing
-            )
 
         InstructionsQuit index ->
             if index + 1 == Nonempty.length Instructions.order then
                 update lift auth InstructionsDone model
             else
-                ( { model | experiment = ExpModel.Instructions Intro.hide }
-                , Cmd.none
-                , Nothing
-                )
+                updateRunningInstructionsOrIgnore model <|
+                    \state ->
+                        ( Intro.hide
+                        , Cmd.none
+                        , Nothing
+                        )
 
         InstructionsDone ->
-            -- TODO: set intro read
-            ( { model | experiment = ExpModel.Instructions Intro.hide }
+            updateRunningInstructionsOrIgnore model <|
+                \state ->
+                    ( Intro.hide
+                      -- TODO: set intro read
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        StartTrial ->
+            -- TODO: load sentence or use preLoaded
+            Debug.crash "todo"
+
+
+updateRunningOrIgnore :
+    Model
+    -> (ExpModel.RunningModel ()
+        -> ( ExpModel.RunningModel (), Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+       )
+    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+updateRunningOrIgnore model updater =
+    case model.experiment of
+        ExpModel.Running running ->
+            let
+                ( newRunning, cmd, maybeOut ) =
+                    updater running
+            in
+                ( { model | experiment = ExpModel.Running newRunning }
+                , cmd
+                , maybeOut
+                )
+
+        _ ->
+            ( model
             , Cmd.none
             , Nothing
             )
 
-        Start ->
-            -- TODO: if trained, do exp directly, if not, do training
-            ( { model
-                | experiment = ExpModel.Training (ExpModel.Trial () ExpModel.Reading)
-              }
-            , Cmd.none
-            , Nothing
-            )
+
+updateRunningInstructionsOrIgnore :
+    Model
+    -> (Intro.State Instructions.Node
+        -> ( Intro.State Instructions.Node, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+       )
+    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+updateRunningInstructionsOrIgnore model updater =
+    updateRunningOrIgnore model <|
+        \running ->
+            case running.state of
+                ExpModel.Instructions state ->
+                    let
+                        ( newState, cmd, maybeOut ) =
+                            updater state
+                    in
+                        ( { running | state = ExpModel.Instructions newState }
+                        , cmd
+                        , maybeOut
+                        )
+
+                _ ->
+                    ( running
+                    , Cmd.none
+                    , Nothing
+                    )

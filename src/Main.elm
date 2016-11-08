@@ -88,12 +88,9 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
-        , if model.route == Router.Experiment then
-            Intro.subscription
-                (Msg.ExperimentMsg << ExpMsg.InstructionsMsg << Intro.KeyDown)
-                (ExpModel.instructionsState model.experiment)
-          else
-            Sub.none
+        , Intro.subscription
+            (Msg.ExperimentMsg << ExpMsg.InstructionsMsg << Intro.KeyDown)
+            (ExpModel.instructionsState model.experiment)
         ]
 
 

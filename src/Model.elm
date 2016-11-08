@@ -34,7 +34,7 @@ type alias Model =
     , password : Form.Model Types.PasswordCredentials
     , username : Form.Model String
     , questionnaire : Form.Model Types.QuestionnaireForm
-    , experiment : ExpModel.State ()
+    , experiment : ExpModel.Model ()
     }
 
 
@@ -54,7 +54,7 @@ initialModel route =
     , password = Form.empty Types.emptyPasswordCredentials
     , username = Form.empty ""
     , questionnaire = Form.empty Types.emptyQuestionnaireForm
-    , experiment = ExpModel.Instructions (Intro.start ExpInstructions.order)
+    , experiment = ExpModel.initialModel
     }
 
 

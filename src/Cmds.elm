@@ -13,7 +13,11 @@ import Types
 cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
 cmdsForRoute model route =
     case route of
-        -- TODO: for exp route, get necessary sentences (train/exp) upon opening the route, and show "loading" until loaded. If nothing, show error.
+        {-
+           TODO: for exp route:
+           - get necessary sentences (train/exp) upon opening the route, and show "loading" until loaded. If nothing, or not enough to finish current sequence, show error
+           - Start instructions if not introduced
+        -}
         Router.Profile profileRoute ->
             authenticatedOrIgnore model <|
                 \auth ->
@@ -47,6 +51,11 @@ cmdsForRoute model route =
 
                         _ ->
                             []
+
+        Router.Experiment ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    [ fetchMeta model ]
 
         _ ->
             []
