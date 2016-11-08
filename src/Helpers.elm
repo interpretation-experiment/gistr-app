@@ -15,6 +15,7 @@ module Helpers
         , navButton
         , navigateTo
         , notAuthed
+        , shuffle
         , updateAuth
         , updateAuthNav
         , updateUser
@@ -26,9 +27,12 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
+import List
+import List.Extra exposing (splitAt)
 import List.Nonempty as Nonempty
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo, Error))
+import Random
 import Router
 import String
 import Task
@@ -199,3 +203,40 @@ ifThenValidate condition validator subject =
         validator subject
     else
         []
+
+
+
+-- MISC
+
+
+shuffle : Random.Seed -> List a -> List a
+shuffle seed list =
+    shuffleHelp ( list, seed ) |> fst
+
+
+shuffleHelp : ( List a, Random.Seed ) -> ( List a, Random.Seed )
+shuffleHelp ( list, seed ) =
+    case list of
+        [] ->
+            ( [], seed )
+
+        head :: [] ->
+            ( [ head ], seed )
+
+        head :: rest ->
+            let
+                ( shuffledRest, newSeed ) =
+                    shuffleHelp ( rest, seed )
+
+                ( j, finalSeed ) =
+                    Random.step (Random.int 0 (List.length rest)) newSeed
+
+                finalList =
+                    case splitAt j shuffledRest of
+                        ( left, target :: right ) ->
+                            left ++ (head :: right) ++ [ target ]
+
+                        ( left, [] ) ->
+                            left ++ [ head ]
+            in
+                ( finalList, finalSeed )

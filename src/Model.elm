@@ -34,7 +34,7 @@ type alias Model =
     , password : Form.Model Types.PasswordCredentials
     , username : Form.Model String
     , questionnaire : Form.Model Types.QuestionnaireForm
-    , experiment : ExpModel.Model ()
+    , experiment : ExpModel.Model
     }
 
 

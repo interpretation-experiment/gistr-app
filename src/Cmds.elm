@@ -1,23 +1,21 @@
 module Cmds exposing (cmdsForRoute)
 
 import Api
+import Experiment.Msg as ExperimentMsg
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Profile.Msg as ProfileMsg
+import Random
 import Router
 import Store
 import Task
+import Time
 import Types
 
 
 cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
 cmdsForRoute model route =
     case route of
-        {-
-           TODO: for exp route:
-           - get necessary sentences (train/exp) upon opening the route, and show "loading" until loaded. If nothing, or not enough to finish current sequence, show error
-           - Start instructions if not introduced
-        -}
         Router.Profile profileRoute ->
             authenticatedOrIgnore model <|
                 \auth ->
@@ -47,15 +45,20 @@ cmdsForRoute model route =
                                     ]
 
                         Router.Questionnaire ->
-                            [ fetchMeta model ]
+                            [ Task.perform Msg.Error Msg.GotMeta (fetchMeta model) ]
 
                         _ ->
                             []
 
         Router.Experiment ->
-            authenticatedOrIgnore model <|
-                \auth ->
-                    [ fetchMeta model ]
+            let
+                getSeed =
+                    Time.now
+                        |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
+            in
+                [ Task.map2 ExperimentMsg.PreloadTraining (fetchMeta model) getSeed
+                    |> Task.perform Msg.Error Msg.ExperimentMsg
+                ]
 
         _ ->
             []
@@ -78,11 +81,11 @@ authenticatedOrIgnore model authFunc =
             []
 
 
-fetchMeta : Model -> Cmd Msg
+fetchMeta : Model -> Task.Task Types.Error Types.Meta
 fetchMeta model =
     case model.store.meta of
         Nothing ->
-            Task.perform Msg.Error Msg.GotMeta Api.fetchMeta
+            Api.fetchMeta
 
-        Just _ ->
-            Cmd.none
+        Just meta ->
+            Task.succeed meta

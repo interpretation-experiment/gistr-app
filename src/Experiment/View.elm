@@ -31,7 +31,7 @@ view lift model =
         Html.div [] contents
 
 
-header : (Msg -> AppMsg.Msg) -> Types.Profile -> ExpModel.Model a -> Html.Html AppMsg.Msg
+header : (Msg -> AppMsg.Msg) -> Types.Profile -> ExpModel.Model -> Html.Html AppMsg.Msg
 header lift profile model =
     let
         title =
@@ -56,7 +56,7 @@ body :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
     -> Maybe Types.Meta
-    -> ExpModel.Model a
+    -> ExpModel.Model
     -> Html.Html AppMsg.Msg
 body lift profile meta model =
     case meta of

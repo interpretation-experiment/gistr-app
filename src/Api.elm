@@ -6,6 +6,7 @@ module Api
         , deleteEmail
         , fetch
         , fetchAuth
+        , fetchMany
         , fetchMeta
         , login
         , logout
@@ -24,6 +25,7 @@ import Encoders
 import Feedback
 import HttpBuilder exposing (RequestBuilder)
 import Store
+import String
 import Task
 import Types
 
@@ -397,6 +399,51 @@ fetch typedStore id { token } =
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
+
+
+type alias Query =
+    List ( String, String )
+
+
+type alias PageQuery =
+    { pageSize : Int
+    , page : Int
+    }
+
+
+fetchMany :
+    Store.TypedStore a b
+    -> Query
+    -> Maybe PageQuery
+    -> Types.Auth
+    -> Task.Task Types.Error (Types.Page a)
+fetchMany typedStore query maybePageQuery { token } =
+    let
+        queryString =
+            query
+                |> List.map (\( k, v ) -> k ++ "=" ++ v)
+                |> String.join "&"
+
+        queryWithPage =
+            case maybePageQuery of
+                Nothing ->
+                    queryString
+
+                Just pageQuery ->
+                    queryString
+                        ++ "&page_size="
+                        ++ (toString pageQuery.pageSize)
+                        ++ "&page="
+                        ++ (toString pageQuery.page)
+    in
+        authCall HttpBuilder.get
+            ("/" ++ (Store.endpoint typedStore) ++ "/?" ++ queryWithPage)
+            token
+            |> HttpBuilder.send
+                (HttpBuilder.jsonReader (Decoders.page <| Store.decoder typedStore))
+                HttpBuilder.stringReader
+            |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+            |> Task.map .data
 
 
 

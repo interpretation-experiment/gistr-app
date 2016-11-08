@@ -10,6 +10,7 @@ module Types
         , Meta
         , NewSentence
         , NewWordSpan
+        , Page
         , PasswordCredentials
         , PreUser
         , Profile
@@ -59,6 +60,12 @@ type alias Meta =
     , supportedLanguages : List Choice
     , otherLanguage : String
     , version : String
+    }
+
+
+type alias Page a =
+    { totalItems : Int
+    , items : List a
     }
 
 
@@ -128,8 +135,8 @@ type alias Auth =
        },
    ✓    "created": "2016-09-23T11:19:11.901445Z",
    ✓    "id": 1,
-        "introduced_exp_home": true,
-        "introduced_exp_play": false,
+   ✓    "introduced_exp_home": true,
+   ✓    "introduced_exp_play": false,
         "introduced_play_home": false,
         "introduced_play_play": false,
    ✓    "mothertongue": "english",
@@ -164,6 +171,8 @@ type alias Profile =
       prolificId : Maybe String
     , mothertongue : String
     , trained : Bool
+    , introducedExpHome : Bool
+    , introducedExpPlay : Bool
     , -- RELATIONSHIPS
       userId : Int
     , questionnaireId : Maybe Int

@@ -4,6 +4,7 @@ module Decoders
         , email
         , feedback
         , meta
+        , page
         , preUser
         , profile
         , sentence
@@ -62,6 +63,8 @@ profile =
         |> Pipeline.required "prolific_id" (Pipeline.nullable JD.string)
         |> Pipeline.required "mothertongue" JD.string
         |> Pipeline.required "trained_reformulations" JD.bool
+        |> Pipeline.required "introduced_exp_home" JD.bool
+        |> Pipeline.required "introduced_exp_play" JD.bool
         |> Pipeline.required "user" JD.int
         |> Pipeline.required "questionnaire" (Pipeline.nullable JD.int)
         |> Pipeline.required "word_span" (Pipeline.nullable JD.int)
@@ -137,6 +140,13 @@ wordSpan =
         |> Pipeline.required "span" JD.int
         |> Pipeline.required "score" JD.int
         |> Pipeline.required "profile" JD.int
+
+
+page : JD.Decoder a -> JD.Decoder (Types.Page a)
+page item =
+    Pipeline.decode Types.Page
+        |> Pipeline.required "count" JD.int
+        |> Pipeline.required "results" (JD.list item)
 
 
 choice : JD.Decoder Types.Choice

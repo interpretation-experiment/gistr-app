@@ -1,12 +1,16 @@
 module Experiment.Msg exposing (Msg(..))
 
 import Intro
+import Random
+import Types
 
 
 type Msg
-    = -- Run (List a)
+    = PreloadTraining Types.Meta Random.Seed
+    | Run (List Types.Sentence)
+    | Error
       -- INSTRUCTIONS
-      InstructionsMsg Intro.Msg
+    | InstructionsMsg Intro.Msg
     | InstructionsStart
     | InstructionsQuit Int
     | InstructionsDone

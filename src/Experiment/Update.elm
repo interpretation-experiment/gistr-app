@@ -1,12 +1,18 @@
 module Experiment.Update exposing (update)
 
+import Api
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Helpers
 import Intro
+import List
 import List.Nonempty as Nonempty
 import Model exposing (Model)
 import Msg as AppMsg
+import Random
+import String
+import Task
 import Types
 
 
@@ -18,6 +24,73 @@ update :
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 update lift auth msg model =
     case msg of
+        PreloadTraining meta seed ->
+            let
+                cmd =
+                    if auth.user.profile.trained then
+                        Cmd.none
+                    else
+                        let
+                            mothertongue =
+                                auth.user.profile.mothertongue
+
+                            isOthertongue =
+                                mothertongue == meta.otherLanguage
+
+                            rootLanguage =
+                                if isOthertongue then
+                                    meta.otherLanguage
+                                else
+                                    mothertongue
+
+                            fetchTrees =
+                                Api.fetchMany
+                                    model.store.trees
+                                    [ ( "root_language", rootLanguage )
+                                    , ( "with_other_mothertongue"
+                                      , String.toLower <| toString isOthertongue
+                                      )
+                                    , ( "without_other_mothertongue"
+                                      , String.toLower <| toString <| not isOthertongue
+                                      )
+                                    , ( "sample", toString meta.trainingWork )
+                                    ]
+                                    Nothing
+                                    auth
+
+                            toSentences treePage =
+                                treePage.items
+                                    |> List.map .root
+                                    |> Helpers.shuffle seed
+                        in
+                            fetchTrees
+                                |> Task.map toSentences
+                                |> Task.perform AppMsg.Error (lift << Run)
+            in
+                ( model
+                , cmd
+                , Just <| AppMsg.GotMeta meta
+                )
+
+        Run sentences ->
+            let
+                newModel =
+                    { model | experiment = ExpModel.initialRunningModel sentences }
+            in
+                if not auth.user.profile.introducedExpPlay then
+                    update lift auth InstructionsStart newModel
+                else
+                    ( newModel
+                    , Cmd.none
+                    , Nothing
+                    )
+
+        Error ->
+            ( { model | experiment = ExpModel.Error }
+            , Cmd.none
+            , Nothing
+            )
+
         InstructionsMsg msg ->
             updateRunningInstructionsOrIgnore model <|
                 \state ->
@@ -66,10 +139,14 @@ update lift auth msg model =
             Debug.crash "todo"
 
 
+
+-- HELPERS
+
+
 updateRunningOrIgnore :
     Model
-    -> (ExpModel.RunningModel ()
-        -> ( ExpModel.RunningModel (), Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> (ExpModel.RunningModel
+        -> ( ExpModel.RunningModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
        )
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningOrIgnore model updater =
