@@ -72,5 +72,5 @@ preliminariesRemaining : Types.Profile -> List Preliminary
 preliminariesRemaining =
     Validate.all
         [ testsRemaining >> List.map ProfilePreliminary
-        , Validate.ifInvalid .trained Training
+        , Validate.ifInvalid (not << .trained) Training
         ]
