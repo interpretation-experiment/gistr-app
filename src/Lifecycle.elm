@@ -4,6 +4,7 @@ module Lifecycle
         , State(..)
         , Test(..)
         , isProfilePreliminary
+        , mustTrainExperiment
         , state
         , testsRemaining
         )
@@ -52,6 +53,11 @@ state profile =
 
         remaining ->
             Preliminaries remaining
+
+
+mustTrainExperiment : Types.Profile -> Bool
+mustTrainExperiment profile =
+    List.member Training (preliminariesRemaining profile)
 
 
 testsRemaining : Types.Profile -> List Test

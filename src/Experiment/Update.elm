@@ -6,6 +6,7 @@ import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
 import Helpers
 import Intro
+import Lifecycle
 import List
 import List.Nonempty as Nonempty
 import Model exposing (Model)
@@ -26,46 +27,48 @@ update lift auth msg model =
     case msg of
         PreloadTraining meta seed ->
             let
-                cmd =
-                    if auth.user.profile.trained then
-                        Cmd.none
+                mothertongue =
+                    auth.user.profile.mothertongue
+
+                isOthertongue =
+                    mothertongue == meta.otherLanguage
+
+                rootLanguage =
+                    if isOthertongue then
+                        meta.otherLanguage
                     else
-                        let
-                            mothertongue =
-                                auth.user.profile.mothertongue
+                        mothertongue
 
-                            isOthertongue =
-                                mothertongue == meta.otherLanguage
+                fetchTrees =
+                    Api.fetchMany
+                        model.store.trees
+                        [ ( "root_language", rootLanguage )
+                        , ( "with_other_mothertongue"
+                          , String.toLower <| toString isOthertongue
+                          )
+                        , ( "without_other_mothertongue"
+                          , String.toLower <| toString <| not isOthertongue
+                          )
+                        , ( "sample", toString meta.trainingWork )
+                        ]
+                        Nothing
+                        auth
 
-                            rootLanguage =
-                                if isOthertongue then
-                                    meta.otherLanguage
-                                else
-                                    mothertongue
+                toSentences treePage =
+                    treePage.items
+                        |> List.map .root
+                        |> Helpers.shuffle seed
 
-                            fetchTrees =
-                                Api.fetchMany
-                                    model.store.trees
-                                    [ ( "root_language", rootLanguage )
-                                    , ( "with_other_mothertongue"
-                                      , String.toLower <| toString isOthertongue
-                                      )
-                                    , ( "without_other_mothertongue"
-                                      , String.toLower <| toString <| not isOthertongue
-                                      )
-                                    , ( "sample", toString meta.trainingWork )
-                                    ]
-                                    Nothing
-                                    auth
+                fetchForTraining =
+                    fetchTrees
+                        |> Task.map toSentences
+                        |> Task.perform AppMsg.Error (lift << Run)
 
-                            toSentences treePage =
-                                treePage.items
-                                    |> List.map .root
-                                    |> Helpers.shuffle seed
-                        in
-                            fetchTrees
-                                |> Task.map toSentences
-                                |> Task.perform AppMsg.Error (lift << Run)
+                cmd =
+                    if Lifecycle.mustTrainExperiment auth.user.profile then
+                        fetchForTraining
+                    else
+                        Cmd.none
             in
                 ( model
                 , cmd

@@ -6,6 +6,7 @@ import Experiment.Msg exposing (Msg(..))
 import Helpers
 import Html
 import Intro
+import Lifecycle
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
@@ -35,7 +36,7 @@ header : (Msg -> AppMsg.Msg) -> Types.Profile -> ExpModel.Model -> Html.Html App
 header lift profile model =
     let
         title =
-            if not profile.trained then
+            if Lifecycle.mustTrainExperiment profile then
                 "Experiment — Training"
             else
                 "Experiment"
@@ -59,44 +60,55 @@ body :
     -> ExpModel.Model
     -> Html.Html AppMsg.Msg
 body lift profile meta model =
-    case meta of
-        Nothing ->
-            Helpers.loading
+    let
+        expView =
+            case model of
+                ExpModel.InitialLoading ->
+                    Helpers.loading
 
-        Just meta ->
-            if
-                (not profile.trained
-                    && (profile.availableTreeCounts.training < meta.trainingWork)
-                )
-            then
-                Html.div [] [ Html.text "TODO: error" ]
-            else if
-                (profile.trained
-                    && (profile.availableTreeCounts.experiment < meta.experimentWork)
-                )
-            then
-                Html.div [] [ Html.text "TODO: error" ]
-            else
-                case model of
-                    ExpModel.InitialLoading ->
-                        Helpers.loading
+                ExpModel.Running runningState ->
+                    case runningState.state of
+                        ExpModel.Instructions introState ->
+                            instructions lift introState
 
-                    ExpModel.Running runningState ->
-                        case runningState.state of
-                            ExpModel.Instructions introState ->
-                                instructions lift introState
+                        ExpModel.Trial _ _ ->
+                            Html.div [] [ Html.text "TODO: trial" ]
 
-                            ExpModel.Trial _ _ ->
-                                Html.div [] [ Html.text "TODO: trial" ]
+                        ExpModel.Pause ->
+                            Html.div [] [ Html.text "TODO: pause" ]
 
-                            ExpModel.Pause ->
-                                Html.div [] [ Html.text "TODO: pause" ]
+                        ExpModel.Finished ->
+                            Html.div [] [ Html.text "TODO: finished" ]
 
-                            ExpModel.Finished ->
-                                Html.div [] [ Html.text "TODO: finished" ]
+                ExpModel.Error ->
+                    Html.div [] [ Html.text "TODO: not enough sentences error" ]
 
-                    ExpModel.Error ->
-                        Html.div [] [ Html.text "TODO: error" ]
+        finishProfileView =
+            Html.div [] [ Html.text "TODO: go finish your profile" ]
+
+        uncompletableView =
+            Html.div [] [ Html.text "TODO: state uncompletable error" ]
+    in
+        case meta of
+            Nothing ->
+                Helpers.loading
+
+            Just meta ->
+                case Lifecycle.state profile of
+                    Lifecycle.Experiment ->
+                        if meta.experimentWork > profile.availableTreeCounts.experiment then
+                            uncompletableView
+                        else
+                            expView
+
+                    Lifecycle.Preliminaries preliminaries ->
+                        if List.member Lifecycle.Training preliminaries then
+                            if meta.trainingWork > profile.availableTreeCounts.training then
+                                uncompletableView
+                            else
+                                expView
+                        else
+                            finishProfileView
 
 
 instructions : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Node -> Html.Html AppMsg.Msg
