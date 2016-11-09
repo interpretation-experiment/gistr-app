@@ -6,6 +6,7 @@ module Lifecycle
         , isProfilePreliminary
         , mustTrainExperiment
         , state
+        , stateIsCompletable
         , testsRemaining
         )
 
@@ -58,6 +59,16 @@ state profile =
 mustTrainExperiment : Types.Profile -> Bool
 mustTrainExperiment profile =
     List.member Training (preliminariesRemaining profile)
+
+
+stateIsCompletable : Types.Meta -> Types.Profile -> Bool
+stateIsCompletable meta profile =
+    case state profile of
+        Experiment ->
+            meta.experimentWork <= profile.availableTreeCounts.experiment
+
+        Preliminaries _ ->
+            meta.trainingWork <= profile.availableTreeCounts.training
 
 
 testsRemaining : Types.Profile -> List Test

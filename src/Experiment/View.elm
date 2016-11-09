@@ -19,7 +19,7 @@ view lift model =
         contents =
             case model.auth of
                 Types.Authenticated { user } ->
-                    [ header lift user.profile model.experiment
+                    [ header lift user.profile model.store.meta model.experiment
                     , body lift user.profile model.store.meta model.experiment
                     ]
 
@@ -32,20 +32,36 @@ view lift model =
         Html.div [] contents
 
 
-header : (Msg -> AppMsg.Msg) -> Types.Profile -> ExpModel.Model -> Html.Html AppMsg.Msg
-header lift profile model =
+header :
+    (Msg -> AppMsg.Msg)
+    -> Types.Profile
+    -> Maybe Types.Meta
+    -> ExpModel.Model
+    -> Html.Html AppMsg.Msg
+header lift profile meta model =
     let
         title =
             if Lifecycle.mustTrainExperiment profile then
                 "Experiment — Training"
             else
                 "Experiment"
+
+        instructionsState =
+            case meta of
+                Nothing ->
+                    Intro.hide
+
+                Just meta ->
+                    if Lifecycle.stateIsCompletable meta profile then
+                        ExpModel.instructionsState model
+                    else
+                        Intro.hide
     in
         Html.div []
             [ Helpers.navButton Router.Home "Back"
             , Intro.node
                 (Instructions.viewConfig lift)
-                (ExpModel.instructionsState model)
+                instructionsState
                 Instructions.Title
                 Html.h1
                 []
