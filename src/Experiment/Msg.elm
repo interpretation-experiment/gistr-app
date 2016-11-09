@@ -18,3 +18,5 @@ type Msg
       -- TRIAL
     | StartTrial
     | TrialRead Types.Sentence
+    | TrialTask
+    | TrialWrite

@@ -4,6 +4,7 @@ import Api
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Form
 import Helpers
 import Intro
 import Lifecycle
@@ -244,6 +245,44 @@ update lift auth msg model =
                     , Cmd.none
                     , Nothing
                     )
+
+        TrialTask ->
+            updateRunningOrIgnore model <|
+                \running ->
+                    case running.state of
+                        ExpModel.Trial sentence _ ->
+                            ( { running | state = ExpModel.Trial sentence ExpModel.Tasking }
+                              -- TODO: start tasking timer
+                            , Cmd.none
+                            , Nothing
+                            )
+
+                        _ ->
+                            ( running
+                            , Cmd.none
+                            , Nothing
+                            )
+
+        TrialWrite ->
+            updateRunningOrIgnore model <|
+                \running ->
+                    case running.state of
+                        ExpModel.Trial sentence _ ->
+                            ( { running
+                                | state =
+                                    ExpModel.Trial sentence <|
+                                        ExpModel.Writing (Form.empty ())
+                              }
+                              -- TODO: start writing timer
+                            , Cmd.none
+                            , Nothing
+                            )
+
+                        _ ->
+                            ( running
+                            , Cmd.none
+                            , Nothing
+                            )
 
 
 
