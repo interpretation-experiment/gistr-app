@@ -105,36 +105,33 @@ dashboard model profile =
 lifecycle : Types.Profile -> Html.Html AppMsg.Msg
 lifecycle profile =
     let
-        description preliminary =
-            case preliminary of
-                Lifecycle.ProfilePreliminary (Lifecycle.Questionnaire) ->
+        description test =
+            case test of
+                Lifecycle.Questionnaire ->
                     [ Html.text Strings.fillQuestionnaire ]
 
-                Lifecycle.ProfilePreliminary (Lifecycle.WordSpan) ->
+                Lifecycle.WordSpan ->
                     [ Html.text Strings.testWordSpan ]
 
-                Lifecycle.Training ->
-                    Strings.startExperiment
+        describeTests tests =
+            Html.div []
+                [ Html.text Strings.completeProfile
+                , Html.ul [] <|
+                    List.map (\t -> Html.li [] (description t)) tests
+                ]
     in
         case Lifecycle.state profile of
-            Lifecycle.Preliminaries remaining ->
-                case List.partition Lifecycle.isProfilePreliminary remaining of
-                    ( head :: tail, _ ) ->
-                        Html.div []
-                            [ Html.text Strings.completeProfile
-                            , Html.ul [] <|
-                                List.map
-                                    (\t -> Html.li [] (description t))
-                                    (head :: tail)
-                            ]
+            Lifecycle.Training tests ->
+                if List.length tests == 0 then
+                    Html.div [] Strings.startTraining
+                else
+                    describeTests tests
 
-                    ( [], remainingExp ) ->
-                        Html.div [] <|
-                            List.concat <|
-                                List.map (\t -> description t) remainingExp
-
-            Lifecycle.Experiment ->
-                Html.div [] Strings.profileComplete
+            Lifecycle.Experiment tests ->
+                if List.length tests == 0 then
+                    Html.div [] Strings.profileComplete
+                else
+                    describeTests tests
 
 
 questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg

@@ -49,6 +49,7 @@ update lift auth msg model =
                         , ( "without_other_mothertongue"
                           , String.toLower <| toString <| not isOthertongue
                           )
+                        , ( "root_bucket", Lifecycle.bucket auth.user.profile )
                         , ( "sample", toString meta.trainingWork )
                         ]
                         Nothing
@@ -65,10 +66,12 @@ update lift auth msg model =
                         |> Task.perform AppMsg.Error (lift << Run)
 
                 cmd =
-                    if Lifecycle.mustTrainExperiment auth.user.profile then
-                        fetchForTraining
-                    else
-                        Cmd.none
+                    case Lifecycle.state auth.user.profile of
+                        Lifecycle.Training _ ->
+                            fetchForTraining
+
+                        Lifecycle.Experiment _ ->
+                            Cmd.none
             in
                 ( model
                 , cmd

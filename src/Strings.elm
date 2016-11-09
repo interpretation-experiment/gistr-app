@@ -72,8 +72,8 @@ testWordSpan =
     "Test your word span below"
 
 
-startExperiment : List (Html.Html Msg)
-startExperiment =
+startTraining : List (Html.Html Msg)
+startTraining =
     [ Html.text "Start the experiment "
       -- TODO: set to Router.Exp
     , Helpers.navA Router.Home "right now"

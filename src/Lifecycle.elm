@@ -1,10 +1,8 @@
 module Lifecycle
     exposing
-        ( Preliminary(..)
-        , State(..)
+        ( State(..)
         , Test(..)
-        , isProfilePreliminary
-        , mustTrainExperiment
+        , bucket
         , state
         , stateIsCompletable
         , testsRemaining
@@ -15,8 +13,8 @@ import Validate
 
 
 type State
-    = Preliminaries (List Preliminary)
-    | Experiment
+    = Training (List Test)
+    | Experiment (List Test)
 
 
 
@@ -31,44 +29,36 @@ type Test
     | WordSpan
 
 
-type Preliminary
-    = ProfilePreliminary Test
-    | Training
-
-
-isProfilePreliminary : Preliminary -> Bool
-isProfilePreliminary preliminary =
-    case preliminary of
-        ProfilePreliminary _ ->
-            True
-
-        Training ->
-            False
-
-
 state : Types.Profile -> State
 state profile =
-    case preliminariesRemaining profile of
-        [] ->
-            Experiment
+    let
+        tests =
+            testsRemaining profile
+    in
+        if not profile.trained then
+            Training tests
+        else
+            Experiment tests
 
-        remaining ->
-            Preliminaries remaining
 
+bucket : Types.Profile -> String
+bucket profile =
+    case state profile of
+        Training _ ->
+            "training"
 
-mustTrainExperiment : Types.Profile -> Bool
-mustTrainExperiment profile =
-    List.member Training (preliminariesRemaining profile)
+        Experiment _ ->
+            "experiment"
 
 
 stateIsCompletable : Types.Meta -> Types.Profile -> Bool
 stateIsCompletable meta profile =
     case state profile of
-        Experiment ->
-            meta.experimentWork <= profile.availableTreeCounts.experiment
-
-        Preliminaries _ ->
+        Training _ ->
             meta.trainingWork <= profile.availableTreeCounts.training
+
+        Experiment _ ->
+            meta.experimentWork <= profile.availableTreeCounts.experiment
 
 
 testsRemaining : Types.Profile -> List Test
@@ -76,12 +66,4 @@ testsRemaining =
     Validate.all
         [ .questionnaireId >> Validate.ifNothing Questionnaire
         , .wordSpanId >> Validate.ifNothing WordSpan
-        ]
-
-
-preliminariesRemaining : Types.Profile -> List Preliminary
-preliminariesRemaining =
-    Validate.all
-        [ testsRemaining >> List.map ProfilePreliminary
-        , Validate.ifInvalid (not << .trained) Training
         ]

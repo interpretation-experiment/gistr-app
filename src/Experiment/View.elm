@@ -41,10 +41,12 @@ header :
 header lift profile meta model =
     let
         title =
-            if Lifecycle.mustTrainExperiment profile then
-                "Experiment — Training"
-            else
-                "Experiment"
+            case Lifecycle.state profile of
+                Lifecycle.Training _ ->
+                    "Experiment — Training"
+
+                Lifecycle.Experiment _ ->
+                    "Experiment"
 
         instructionsState =
             case meta of
@@ -111,20 +113,20 @@ body lift profile meta model =
 
             Just meta ->
                 case Lifecycle.state profile of
-                    Lifecycle.Experiment ->
-                        if meta.experimentWork > profile.availableTreeCounts.experiment then
-                            uncompletableView
-                        else
-                            expView
-
-                    Lifecycle.Preliminaries preliminaries ->
-                        if List.member Lifecycle.Training preliminaries then
-                            if meta.trainingWork > profile.availableTreeCounts.training then
-                                uncompletableView
-                            else
+                    Lifecycle.Experiment tests ->
+                        if List.length tests == 0 then
+                            if Lifecycle.stateIsCompletable meta profile then
                                 expView
+                            else
+                                uncompletableView
                         else
                             finishProfileView
+
+                    Lifecycle.Training _ ->
+                        if Lifecycle.stateIsCompletable meta profile then
+                            expView
+                        else
+                            uncompletableView
 
 
 instructions : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Node -> Html.Html AppMsg.Msg
