@@ -18,6 +18,7 @@ module Helpers
         , shuffle
         , updateAuth
         , updateAuthNav
+        , updateProfile
         , updateUser
         )
 
@@ -67,6 +68,26 @@ updateUser model user =
     case model.auth of
         Types.Authenticated auth ->
             { model | auth = Types.Authenticated { auth | user = user } }
+
+        _ ->
+            model
+
+
+updateProfile :
+    { a | auth : Types.AuthStatus }
+    -> Types.Profile
+    -> { a | auth : Types.AuthStatus }
+updateProfile model profile =
+    case model.auth of
+        Types.Authenticated auth ->
+            let
+                user =
+                    auth.user
+
+                newUser =
+                    { user | profile = profile }
+            in
+                { model | auth = Types.Authenticated { auth | user = newUser } }
 
         _ ->
             model

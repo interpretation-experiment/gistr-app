@@ -94,6 +94,15 @@ update lift auth msg model =
             , Nothing
             )
 
+        UpdateProfile profile ->
+            ( Helpers.updateProfile model profile
+            , Cmd.none
+            , Nothing
+            )
+
+        {-
+           INSTRUCTIONS
+        -}
         InstructionsMsg msg ->
             updateRunningInstructionsOrIgnore model <|
                 \state ->
@@ -129,14 +138,24 @@ update lift auth msg model =
                         )
 
         InstructionsDone ->
-            updateRunningInstructionsOrIgnore model <|
-                \state ->
-                    ( Intro.hide
-                      -- TODO: set intro read
-                    , Cmd.none
-                    , Nothing
-                    )
+            let
+                profile =
+                    auth.user.profile
 
+                updateProfile =
+                    Api.updateProfile { profile | introducedExpPlay = True } auth
+                        |> Task.perform AppMsg.Error (lift << UpdateProfile)
+            in
+                updateRunningInstructionsOrIgnore model <|
+                    \state ->
+                        ( Intro.hide
+                        , updateProfile
+                        , Nothing
+                        )
+
+        {-
+           TRIAL
+        -}
         StartTrial ->
             -- TODO: load sentence or use preLoaded
             Debug.crash "todo"

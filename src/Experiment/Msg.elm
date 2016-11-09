@@ -9,6 +9,7 @@ type Msg
     = PreloadTraining Types.Meta Random.Seed
     | Run (List Types.Sentence)
     | Error
+    | UpdateProfile Types.Profile
       -- INSTRUCTIONS
     | InstructionsMsg Intro.Msg
     | InstructionsStart

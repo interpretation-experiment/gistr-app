@@ -16,6 +16,7 @@ module Api
         , requestEmailVerification
         , reset
         , updateEmail
+        , updateProfile
         , updateUser
         )
 
@@ -153,6 +154,34 @@ createProfile maybeProlific { token, preUser } =
         |> Task.map (.data >> \p -> { preUser | profile = p })
 
 
+updateUser : Types.User -> Types.Auth -> Task.Task Types.Error Types.User
+updateUser user { token } =
+    authCall HttpBuilder.put ("/users/" ++ (toString user.id) ++ "/") token
+        |> HttpBuilder.withJsonBody (Encoders.user user)
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader Decoders.user)
+            (HttpBuilder.jsonReader (Decoders.feedback usernameChangeFeedbackFields))
+        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
+        |> Task.map .data
+
+
+usernameChangeFeedbackFields : Dict.Dict String String
+usernameChangeFeedbackFields =
+    Dict.fromList
+        [ ( "username", "global" ) ]
+
+
+updateProfile : Types.Profile -> Types.Auth -> Task.Task Types.Error Types.Profile
+updateProfile profile { token } =
+    authCall HttpBuilder.put ("/profiles/" ++ (toString profile.id) ++ "/") token
+        |> HttpBuilder.withJsonBody (Encoders.profile profile)
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader Decoders.profile)
+            HttpBuilder.stringReader
+        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+        |> Task.map .data
+
+
 
 -- REGISTER
 
@@ -252,27 +281,6 @@ translateResetFeedback feedback =
             )
         )
         feedback
-
-
-
--- USER
-
-
-updateUser : Types.User -> Types.Auth -> Task.Task Types.Error Types.User
-updateUser user { token } =
-    authCall HttpBuilder.put ("/users/" ++ (toString user.id) ++ "/") token
-        |> HttpBuilder.withJsonBody (Encoders.user user)
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.user)
-            (HttpBuilder.jsonReader (Decoders.feedback usernameChangeFeedbackFields))
-        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-        |> Task.map .data
-
-
-usernameChangeFeedbackFields : Dict.Dict String String
-usernameChangeFeedbackFields =
-    Dict.fromList
-        [ ( "username", "global" ) ]
 
 
 
@@ -393,7 +401,14 @@ confirmEmail key { token } =
 
 fetch : Store.TypedStore a b -> Int -> Types.Auth -> Task.Task Types.Error a
 fetch typedStore id { token } =
-    authCall HttpBuilder.get ("/" ++ (Store.endpoint typedStore) ++ "/" ++ (toString id) ++ "/") token
+    authCall HttpBuilder.get
+        ("/"
+            ++ (Store.endpoint typedStore)
+            ++ "/"
+            ++ (toString id)
+            ++ "/"
+        )
+        token
         |> HttpBuilder.send
             (HttpBuilder.jsonReader (Store.decoder typedStore))
             HttpBuilder.stringReader
