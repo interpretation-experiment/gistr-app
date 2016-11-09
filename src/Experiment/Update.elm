@@ -60,15 +60,12 @@ update lift auth msg model =
                         |> List.map .root
                         |> Helpers.shuffle seed
 
-                fetchForTraining =
-                    fetchTrees
-                        |> Task.map toSentences
-                        |> Task.perform AppMsg.Error (lift << Run)
-
                 cmd =
                     case Lifecycle.state auth.user.profile of
                         Lifecycle.Training _ ->
-                            fetchForTraining
+                            fetchTrees
+                                |> Task.map toSentences
+                                |> Task.perform AppMsg.Error (lift << Run)
 
                         Lifecycle.Experiment _ ->
                             Cmd.none
@@ -152,7 +149,10 @@ update lift auth msg model =
                 updateRunningInstructionsOrIgnore model <|
                     \state ->
                         ( Intro.hide
-                        , updateProfile
+                        , if not profile.introducedExpPlay then
+                            updateProfile
+                          else
+                            Cmd.none
                         , Nothing
                         )
 
@@ -160,8 +160,90 @@ update lift auth msg model =
            TRIAL
         -}
         StartTrial ->
-            -- TODO: load sentence or use preLoaded
-            Debug.crash "todo"
+            let
+                mothertongue =
+                    auth.user.profile.mothertongue
+
+                isOthertongue =
+                    mothertongue == auth.meta.otherLanguage
+
+                rootLanguage =
+                    if isOthertongue then
+                        auth.meta.otherLanguage
+                    else
+                        mothertongue
+
+                unshapedFilter =
+                    [ ( "root_language", rootLanguage )
+                    , ( "with_other_mothertongue"
+                      , String.toLower <| toString isOthertongue
+                      )
+                    , ( "without_other_mothertongue"
+                      , String.toLower <| toString <| not isOthertongue
+                      )
+                    , ( "root_bucket", Lifecycle.bucket auth.user.profile )
+                    , ( "untouched_by_profile", toString auth.user.profile.id )
+                    , ( "sample", toString 1 )
+                    ]
+
+                shapedFilter =
+                    unshapedFilter
+                        ++ [ ( "branches_count_lte"
+                             , toString auth.meta.targetBranchCount
+                             )
+                           , ( "shortest_branch_depth_lte"
+                             , toString auth.meta.targetBranchDepth
+                             )
+                           ]
+
+                fetchUnshapedTree =
+                    Api.fetchMany model.store.trees unshapedFilter Nothing auth
+                        `Task.andThen`
+                            \page ->
+                                case page.items of
+                                    tree :: _ ->
+                                        Task.succeed tree
+
+                                    [] ->
+                                        Types.Unrecoverable "Found no suitable tree for profile"
+                                            |> Task.fail
+
+                fetchTree =
+                    Api.fetchMany model.store.trees shapedFilter Nothing auth
+                        `Task.andThen`
+                            \page ->
+                                case page.items of
+                                    tree :: _ ->
+                                        Task.succeed tree
+
+                                    [] ->
+                                        fetchUnshapedTree
+            in
+                updateRunningOrIgnore model <|
+                    \running ->
+                        case running.preLoaded of
+                            [] ->
+                                ( { running | loadingNext = True }
+                                , fetchTree
+                                    |> Task.map .root
+                                    |> Task.perform AppMsg.Error (lift << TrialRead)
+                                , Nothing
+                                )
+
+                            sentence :: rest ->
+                                ( { running | preLoaded = rest, loadingNext = False }
+                                , Cmd.none
+                                , Just <| lift <| TrialRead sentence
+                                )
+
+        TrialRead sentence ->
+            updateRunningOrIgnore model <|
+                \running ->
+                    ( { running | state = ExpModel.Trial sentence ExpModel.Reading }
+                      -- TODO: start reading timer
+                    , Cmd.none
+                    , Nothing
+                    )
 
 
 

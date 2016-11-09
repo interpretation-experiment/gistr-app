@@ -17,3 +17,4 @@ type Msg
     | InstructionsDone
       -- TRIAL
     | StartTrial
+    | TrialRead Types.Sentence
