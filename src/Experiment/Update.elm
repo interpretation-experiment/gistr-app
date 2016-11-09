@@ -25,17 +25,17 @@ update :
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 update lift auth msg model =
     case msg of
-        PreloadTraining meta seed ->
+        PreloadTraining seed ->
             let
                 mothertongue =
                     auth.user.profile.mothertongue
 
                 isOthertongue =
-                    mothertongue == meta.otherLanguage
+                    mothertongue == auth.meta.otherLanguage
 
                 rootLanguage =
                     if isOthertongue then
-                        meta.otherLanguage
+                        auth.meta.otherLanguage
                     else
                         mothertongue
 
@@ -50,7 +50,7 @@ update lift auth msg model =
                           , String.toLower <| toString <| not isOthertongue
                           )
                         , ( "root_bucket", Lifecycle.bucket auth.user.profile )
-                        , ( "sample", toString meta.trainingWork )
+                        , ( "sample", toString auth.meta.trainingWork )
                         ]
                         Nothing
                         auth
@@ -75,7 +75,7 @@ update lift auth msg model =
             in
                 ( model
                 , cmd
-                , Just <| AppMsg.GotMeta meta
+                , Nothing
                 )
 
         Run sentences ->

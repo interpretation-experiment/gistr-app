@@ -61,13 +61,6 @@ doUpdate msg model =
         GotStoreItem item ->
             { model | store = Store.set item model.store } ! []
 
-        GotMeta meta ->
-            let
-                store =
-                    model.store
-            in
-                { model | store = { store | meta = Just meta } } ! []
-
         {-
            AUTH
         -}

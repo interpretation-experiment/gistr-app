@@ -121,7 +121,7 @@ type AuthStatus
 
 
 type alias Auth =
-    { token : Token, user : User }
+    { token : Token, user : User, meta : Meta }
 
 
 

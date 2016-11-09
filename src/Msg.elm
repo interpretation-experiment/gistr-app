@@ -17,7 +17,6 @@ type Msg
     | Error Types.Error
       -- STORE
     | GotStoreItem Store.Item
-    | GotMeta Types.Meta
       -- AUTH
     | AuthMsg Auth.Msg
       -- PROFILE

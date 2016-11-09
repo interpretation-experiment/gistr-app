@@ -18,9 +18,9 @@ view lift model =
     let
         contents =
             case model.auth of
-                Types.Authenticated { user } ->
-                    [ header lift user.profile model.store.meta model.experiment
-                    , body lift user.profile model.store.meta model.experiment
+                Types.Authenticated { user, meta } ->
+                    [ header lift user.profile meta model.experiment
+                    , body lift user.profile meta model.experiment
                     ]
 
                 Types.Authenticating ->
@@ -35,7 +35,7 @@ view lift model =
 header :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
-    -> Maybe Types.Meta
+    -> Types.Meta
     -> ExpModel.Model
     -> Html.Html AppMsg.Msg
 header lift profile meta model =
@@ -49,15 +49,10 @@ header lift profile meta model =
                     "Experiment"
 
         instructionsState =
-            case meta of
-                Nothing ->
-                    Intro.hide
-
-                Just meta ->
-                    if Lifecycle.stateIsCompletable meta profile then
-                        ExpModel.instructionsState model
-                    else
-                        Intro.hide
+            if Lifecycle.stateIsCompletable meta profile then
+                ExpModel.instructionsState model
+            else
+                Intro.hide
     in
         Html.div []
             [ Helpers.navButton Router.Home "Back"
@@ -74,7 +69,7 @@ header lift profile meta model =
 body :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
-    -> Maybe Types.Meta
+    -> Types.Meta
     -> ExpModel.Model
     -> Html.Html AppMsg.Msg
 body lift profile meta model =
@@ -107,26 +102,21 @@ body lift profile meta model =
         uncompletableView =
             Html.div [] [ Html.text "TODO: state uncompletable error" ]
     in
-        case meta of
-            Nothing ->
-                Helpers.loading
+        case Lifecycle.state profile of
+            Lifecycle.Experiment tests ->
+                if List.length tests == 0 then
+                    if Lifecycle.stateIsCompletable meta profile then
+                        expView
+                    else
+                        uncompletableView
+                else
+                    finishProfileView
 
-            Just meta ->
-                case Lifecycle.state profile of
-                    Lifecycle.Experiment tests ->
-                        if List.length tests == 0 then
-                            if Lifecycle.stateIsCompletable meta profile then
-                                expView
-                            else
-                                uncompletableView
-                        else
-                            finishProfileView
-
-                    Lifecycle.Training _ ->
-                        if Lifecycle.stateIsCompletable meta profile then
-                            expView
-                        else
-                            uncompletableView
+            Lifecycle.Training _ ->
+                if Lifecycle.stateIsCompletable meta profile then
+                    expView
+                else
+                    uncompletableView
 
 
 instructions : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Node -> Html.Html AppMsg.Msg

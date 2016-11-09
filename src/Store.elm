@@ -45,7 +45,6 @@ type alias Store =
     , profiles : TypedStore Types.Profile (Maybe String)
     , sentences : TypedStore Types.Sentence Types.NewSentence
     , trees : TypedStore Types.Tree ()
-    , meta : Maybe Types.Meta
     }
 
 
@@ -91,7 +90,6 @@ emptyStore =
                 }
             , data = Dict.empty
             }
-    , meta = Nothing
     }
 
 

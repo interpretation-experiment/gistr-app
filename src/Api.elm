@@ -109,7 +109,7 @@ fetchAuth token =
 
 fetchAuthSettingProfile : Maybe String -> Types.Token -> Task.Task Types.Error Types.Auth
 fetchAuthSettingProfile maybeProlific token =
-    Types.Auth token `Task.map` (fetchUserSettingProfile maybeProlific token)
+    Task.map2 (Types.Auth token) (fetchUserSettingProfile maybeProlific token) fetchMeta
 
 
 fetchUser : Types.Token -> Task.Task Types.Error Types.User

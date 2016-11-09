@@ -6,7 +6,7 @@ import Types
 
 
 type Msg
-    = PreloadTraining Types.Meta Random.Seed
+    = PreloadTraining Random.Seed
     | Run (List Types.Sentence)
     | Error
     | UpdateProfile Types.Profile

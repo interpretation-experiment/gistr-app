@@ -25,8 +25,8 @@ view lift model route =
     let
         contents =
             case model.auth of
-                Types.Authenticated { user } ->
-                    [ menu route, body lift model route user ]
+                Types.Authenticated auth ->
+                    [ menu route, body lift model route auth ]
 
                 Types.Authenticating ->
                     [ Helpers.loading ]
@@ -68,11 +68,16 @@ menu route =
         ]
 
 
-body : (Msg -> AppMsg.Msg) -> Model -> Router.ProfileRoute -> Types.User -> Html.Html AppMsg.Msg
-body lift model route user =
+body :
+    (Msg -> AppMsg.Msg)
+    -> Model
+    -> Router.ProfileRoute
+    -> Types.Auth
+    -> Html.Html AppMsg.Msg
+body lift model route auth =
     case route of
         Router.Dashboard ->
-            dashboard model user.profile
+            dashboard model auth.user.profile
 
         Router.Settings ->
             Html.div []
@@ -81,13 +86,13 @@ body lift model route user =
                 ]
 
         Router.Emails ->
-            emails lift model.emails user.emails
+            emails lift model.emails auth.user.emails
 
         Router.Confirm key ->
             emailConfirmation model.emailConfirmation key
 
         Router.Questionnaire ->
-            Questionnaire.view lift model
+            Questionnaire.view lift model auth.meta
 
         Router.WordSpan ->
             WordSpan.view

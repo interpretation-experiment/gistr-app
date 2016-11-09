@@ -44,21 +44,16 @@ cmdsForRoute model route =
                                         (Api.fetch model.store.wordSpans id auth)
                                     ]
 
-                        Router.Questionnaire ->
-                            [ Task.perform Msg.Error Msg.GotMeta (fetchMeta model) ]
-
                         _ ->
                             []
 
         Router.Experiment ->
-            let
-                getSeed =
-                    Time.now
-                        |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
-            in
-                [ Task.map2 ExperimentMsg.PreloadTraining (fetchMeta model) getSeed
-                    |> Task.perform Msg.Error Msg.ExperimentMsg
-                ]
+            [ Time.now
+                |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
+                |> Task.perform
+                    Msg.Error
+                    (Msg.ExperimentMsg << ExperimentMsg.PreloadTraining)
+            ]
 
         _ ->
             []
@@ -79,13 +74,3 @@ authenticatedOrIgnore model authFunc =
 
         _ ->
             []
-
-
-fetchMeta : Model -> Task.Task Types.Error Types.Meta
-fetchMeta model =
-    case model.store.meta of
-        Nothing ->
-            Api.fetchMeta
-
-        Just meta ->
-            Task.succeed meta
