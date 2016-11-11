@@ -1,5 +1,6 @@
 module Experiment.Subscription exposing (subscription)
 
+import Clock
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
 import Helpers
@@ -13,22 +14,15 @@ import Types
 subscription : (Msg -> msg) -> Model -> Sub msg
 subscription lift model =
     let
-        countWords =
-            List.length << String.words << .text
-
         trialTimer =
             runningTrialOrNone model <|
                 \meta sentence state ->
                     case state of
-                        ExpModel.Reading ->
-                            Time.every
-                                (toFloat (countWords sentence * meta.readFactor)
-                                    * Time.second
-                                )
-                                (always <| lift TrialTask)
+                        ExpModel.Reading clock ->
+                            Clock.subscription (lift << ClockMsg) clock
 
-                        ExpModel.Tasking ->
-                            Time.every (2 * Time.second) (always <| lift TrialWrite)
+                        ExpModel.Tasking clock ->
+                            Clock.subscription (lift << ClockMsg) clock
 
                         ExpModel.Writing _ ->
                             -- TODO: timer to Msg.TrialTimeout

@@ -16,6 +16,7 @@ module Helpers
         , navButton
         , navigateTo
         , notAuthed
+        , readTime
         , runningOr
         , shuffle
         , updateAuth
@@ -40,6 +41,7 @@ import Random
 import Router
 import String
 import Task
+import Time
 import Types
 import Validate
 
@@ -272,3 +274,8 @@ shuffleHelp ( list, seed ) =
                             left ++ [ head ]
             in
                 ( finalList, finalSeed )
+
+
+readTime : { a | readFactor : Int } -> { b | text : String } -> Time.Time
+readTime { readFactor } { text } =
+    toFloat (List.length (String.words text) * readFactor) * Time.second

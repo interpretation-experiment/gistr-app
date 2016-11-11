@@ -1,5 +1,6 @@
 module Experiment.Msg exposing (Msg(..))
 
+import Clock
 import Intro
 import Random
 import Types
@@ -10,6 +11,7 @@ type Msg
     | Run (List Types.Sentence)
     | Error
     | UpdateProfile Types.Profile
+    | ClockMsg Clock.Msg
       -- INSTRUCTIONS
     | InstructionsMsg Intro.Msg
     | InstructionsStart

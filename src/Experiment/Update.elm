@@ -1,6 +1,7 @@
 module Experiment.Update exposing (update)
 
 import Api
+import Clock
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
@@ -15,6 +16,7 @@ import Msg as AppMsg
 import Random
 import String
 import Task
+import Time
 import Types
 
 
@@ -101,6 +103,37 @@ update lift auth msg model =
             , Nothing
             )
 
+        ClockMsg msg ->
+            updateRunningTrialOrIgnore model <|
+                \state ->
+                    case state of
+                        ExpModel.Reading clock ->
+                            let
+                                ( newClock, maybeOut ) =
+                                    Clock.update (lift TrialTask) msg clock
+                            in
+                                ( ExpModel.Reading newClock
+                                , Cmd.none
+                                , maybeOut
+                                )
+
+                        ExpModel.Tasking clock ->
+                            let
+                                ( newClock, maybeOut ) =
+                                    Clock.update (lift TrialWrite) msg clock
+                            in
+                                ( ExpModel.Tasking newClock
+                                , Cmd.none
+                                , maybeOut
+                                )
+
+                        ExpModel.Writing form ->
+                            -- TODO: timer to Msg.TrialTimeout
+                            ( ExpModel.Writing form
+                            , Cmd.none
+                            , Nothing
+                            )
+
         {-
            INSTRUCTIONS
         -}
@@ -119,7 +152,7 @@ update lift auth msg model =
         InstructionsStart ->
             -- TODO: differentiate training and exp, and set intro path accordingly
             updateRunningOrIgnore model <|
-                \running ->
+                \_ running ->
                     ( { running
                         | state = ExpModel.Instructions (Intro.start Instructions.order)
                       }
@@ -221,7 +254,7 @@ update lift auth msg model =
                                         fetchUnshapedTree
             in
                 updateRunningOrIgnore model <|
-                    \running ->
+                    \_ running ->
                         case running.preLoaded of
                             [] ->
                                 ( { running | loadingNext = True }
@@ -239,33 +272,28 @@ update lift auth msg model =
 
         TrialRead sentence ->
             updateRunningOrIgnore model <|
-                \running ->
-                    ( { running | state = ExpModel.Trial sentence ExpModel.Reading }
-                      -- TODO: start reading timer
+                \auth running ->
+                    let
+                        reading =
+                            Clock.init (Helpers.readTime auth.meta sentence)
+                                |> ExpModel.Reading
+                    in
+                        ( { running | state = ExpModel.Trial sentence reading }
+                        , Cmd.none
+                        , Nothing
+                        )
+
+        TrialTask ->
+            updateRunningTrialOrIgnore model <|
+                \_ ->
+                    ( ExpModel.Tasking (Clock.init <| 2 * Time.second)
                     , Cmd.none
                     , Nothing
                     )
 
-        TrialTask ->
-            updateRunningOrIgnore model <|
-                \running ->
-                    case running.state of
-                        ExpModel.Trial sentence _ ->
-                            ( { running | state = ExpModel.Trial sentence ExpModel.Tasking }
-                              -- TODO: start tasking timer
-                            , Cmd.none
-                            , Nothing
-                            )
-
-                        _ ->
-                            ( running
-                            , Cmd.none
-                            , Nothing
-                            )
-
         TrialWrite ->
             updateRunningOrIgnore model <|
-                \running ->
+                \_ running ->
                     case running.state of
                         ExpModel.Trial sentence _ ->
                             ( { running
@@ -291,21 +319,24 @@ update lift auth msg model =
 
 updateRunningOrIgnore :
     Model
-    -> (ExpModel.RunningModel
+    -> (Types.Auth
+        -> ExpModel.RunningModel
         -> ( ExpModel.RunningModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
        )
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningOrIgnore model updater =
-    Helpers.runningOr model ( model, Cmd.none, Nothing ) <|
-        \running ->
-            let
-                ( newRunning, cmd, maybeOut ) =
-                    updater running
-            in
-                ( { model | experiment = ExpModel.Running newRunning }
-                , cmd
-                , maybeOut
-                )
+    Helpers.authenticatedOr model ( model, Cmd.none, Nothing ) <|
+        \auth ->
+            Helpers.runningOr model ( model, Cmd.none, Nothing ) <|
+                \running ->
+                    let
+                        ( newRunning, cmd, maybeOut ) =
+                            updater auth running
+                    in
+                        ( { model | experiment = ExpModel.Running newRunning }
+                        , cmd
+                        , maybeOut
+                        )
 
 
 updateRunningInstructionsOrIgnore :
@@ -316,7 +347,7 @@ updateRunningInstructionsOrIgnore :
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningInstructionsOrIgnore model updater =
     updateRunningOrIgnore model <|
-        \running ->
+        \_ running ->
             case running.state of
                 ExpModel.Instructions state ->
                     let
@@ -324,6 +355,31 @@ updateRunningInstructionsOrIgnore model updater =
                             updater state
                     in
                         ( { running | state = ExpModel.Instructions newState }
+                        , cmd
+                        , maybeOut
+                        )
+
+                _ ->
+                    ( running
+                    , Cmd.none
+                    , Nothing
+                    )
+
+
+updateRunningTrialOrIgnore :
+    Model
+    -> (ExpModel.TrialState -> ( ExpModel.TrialState, Cmd AppMsg.Msg, Maybe AppMsg.Msg ))
+    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+updateRunningTrialOrIgnore model updater =
+    updateRunningOrIgnore model <|
+        \_ running ->
+            case running.state of
+                ExpModel.Trial sentence state ->
+                    let
+                        ( newState, cmd, maybeOut ) =
+                            updater state
+                    in
+                        ( { running | state = ExpModel.Trial sentence newState }
                         , cmd
                         , maybeOut
                         )

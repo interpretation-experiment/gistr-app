@@ -1,5 +1,6 @@
 module Experiment.View exposing (view)
 
+import Clock
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
@@ -121,7 +122,7 @@ body lift profile meta model =
 
 instructions : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Node -> Html.Html AppMsg.Msg
 instructions lift state =
-    Html.p []
+    Html.div []
         [ Intro.node
             (Instructions.viewConfig lift)
             state
@@ -145,14 +146,18 @@ instructions lift state =
 trial : Types.Sentence -> ExpModel.TrialState -> Html.Html AppMsg.Msg
 trial sentence state =
     case state of
-        ExpModel.Reading ->
+        ExpModel.Reading clock ->
             Html.div []
                 [ Html.text "TODO: read"
                 , Html.p [] [ Html.text sentence.text ]
+                , Clock.view clock
                 ]
 
-        ExpModel.Tasking ->
-            Html.div [] [ Html.text "TODO: tasking" ]
+        ExpModel.Tasking clock ->
+            Html.div []
+                [ Html.text "TODO: tasking"
+                , Clock.view clock
+                ]
 
         ExpModel.Writing form ->
             Html.div [] [ Html.text "TODO: writing" ]

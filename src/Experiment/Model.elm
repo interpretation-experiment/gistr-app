@@ -9,6 +9,7 @@ module Experiment.Model
         , instructionsState
         )
 
+import Clock
 import Experiment.Instructions as Instructions
 import Form
 import Intro
@@ -65,6 +66,6 @@ type State
 
 
 type TrialState
-    = Reading
-    | Tasking
+    = Reading Clock.Model
+    | Tasking Clock.Model
     | Writing (Form.Model ())
