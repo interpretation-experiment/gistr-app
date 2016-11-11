@@ -5,6 +5,7 @@ import Auth.Msg as AuthMsg
 import Dict
 import Experiment.Model as ExpModel
 import Experiment.Msg as ExpMsg
+import Experiment.Subscription as ExpSub
 import Form
 import Helpers exposing ((!!))
 import Intro
@@ -88,9 +89,7 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
-        , Intro.subscription
-            (Msg.ExperimentMsg << ExpMsg.InstructionsMsg << Intro.KeyDown)
-            (ExpModel.instructionsState model.experiment)
+        , ExpSub.subscription Msg.ExperimentMsg model
         ]
 
 

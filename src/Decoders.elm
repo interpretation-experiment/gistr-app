@@ -161,6 +161,14 @@ meta =
     Pipeline.decode Types.Meta
         |> Pipeline.required "target_branch_depth" JD.int
         |> Pipeline.required "target_branch_count" JD.int
+        |> -- branchProbability. TODO: move to backend
+           Pipeline.hardcoded 0.8
+        |> -- readFactor. TODO: move to backend
+           Pipeline.hardcoded 1
+        |> -- writeFactor. TODO: move to backend
+           Pipeline.hardcoded 5
+        |> -- minTokens. TODO: move to backend
+           Pipeline.hardcoded 10
         |> Pipeline.required "gender_choices" (JD.list choice)
         |> Pipeline.required "job_type_choices" (JD.list choice)
         |> Pipeline.required "experiment_work" JD.int

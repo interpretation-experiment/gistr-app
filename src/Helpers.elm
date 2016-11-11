@@ -3,6 +3,7 @@ module Helpers
         ( (!!)
         , (!!!)
         , alreadyAuthed
+        , authenticatedOr
         , authenticatedOrIgnore
         , cmd
         , evA
@@ -15,6 +16,7 @@ module Helpers
         , navButton
         , navigateTo
         , notAuthed
+        , runningOr
         , shuffle
         , updateAuth
         , updateAuthNav
@@ -23,6 +25,7 @@ module Helpers
         )
 
 import Cmds
+import Experiment.Model as ExpModel
 import Feedback
 import Html
 import Html.Attributes as Attributes
@@ -60,17 +63,33 @@ cmd msg =
     ( model, Cmd.batch (cmd :: cmds), maybeMsg )
 
 
+authenticatedOr : { a | auth : Types.AuthStatus } -> b -> (Types.Auth -> b) -> b
+authenticatedOr model default authFunc =
+    case model.auth of
+        Types.Authenticated auth ->
+            authFunc auth
+
+        _ ->
+            default
+
+
+runningOr : { a | experiment : ExpModel.Model } -> b -> (ExpModel.RunningModel -> b) -> b
+runningOr model default runningFunc =
+    case model.experiment of
+        ExpModel.Running running ->
+            runningFunc running
+
+        _ ->
+            default
+
+
 updateUser :
     { a | auth : Types.AuthStatus }
     -> Types.User
     -> { a | auth : Types.AuthStatus }
 updateUser model user =
-    case model.auth of
-        Types.Authenticated auth ->
-            { model | auth = Types.Authenticated { auth | user = user } }
-
-        _ ->
-            model
+    authenticatedOr model model <|
+        \auth -> { model | auth = Types.Authenticated { auth | user = user } }
 
 
 updateProfile :
@@ -78,8 +97,8 @@ updateProfile :
     -> Types.Profile
     -> { a | auth : Types.AuthStatus }
 updateProfile model profile =
-    case model.auth of
-        Types.Authenticated auth ->
+    authenticatedOr model model <|
+        \auth ->
             let
                 user =
                     auth.user
@@ -88,9 +107,6 @@ updateProfile model profile =
                     { user | profile = profile }
             in
                 { model | auth = Types.Authenticated { auth | user = newUser } }
-
-        _ ->
-            model
 
 
 navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
@@ -114,12 +130,7 @@ authenticatedOrIgnore :
     -> (Types.Auth -> ( Model, Cmd Msg ))
     -> ( Model, Cmd Msg )
 authenticatedOrIgnore model authFunc =
-    case model.auth of
-        Types.Authenticated auth ->
-            authFunc auth
-
-        _ ->
-            model ! []
+    authenticatedOr model (model ! []) authFunc
 
 
 feedbackOrUnrecoverable :

@@ -48,18 +48,28 @@ type alias Choice =
 
 
 type alias Meta =
-    { targetBranchDepth : Int
+    { -- BRANCH SHAPING
+      targetBranchDepth : Int
     , targetBranchCount : Int
-    , genderChoices : List Choice
+    , branchProbability : Float
+    , -- READ-WRITE PARAMETERS
+      readFactor : Int
+    , writeFactor : Int
+    , minTokens : Int
+    , -- FORM PARAMETERS
+      genderChoices : List Choice
     , jobTypeChoices : List Choice
-    , experimentWork : Int
+    , -- EXPERIMENT COSTS
+      experimentWork : Int
     , trainingWork : Int
     , treeCost : Int
     , baseCredit : Int
-    , defaultLanguge : String
+    , -- LANGUAGES
+      defaultLanguge : String
     , supportedLanguages : List Choice
     , otherLanguage : String
-    , version : String
+    , -- SERVER VERSION
+      version : String
     }
 
 

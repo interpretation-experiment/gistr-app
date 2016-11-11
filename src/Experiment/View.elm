@@ -84,8 +84,8 @@ body lift profile meta model =
                         ExpModel.Instructions introState ->
                             instructions lift introState
 
-                        ExpModel.Trial _ _ ->
-                            Html.div [] [ Html.text "TODO: trial" ]
+                        ExpModel.Trial sentence state ->
+                            trial sentence state
 
                         ExpModel.Pause ->
                             Html.div [] [ Html.text "TODO: pause" ]
@@ -140,3 +140,19 @@ instructions lift state =
         , Helpers.evButton [] (lift StartTrial) "Start"
         , Intro.overlay state
         ]
+
+
+trial : Types.Sentence -> ExpModel.TrialState -> Html.Html AppMsg.Msg
+trial sentence state =
+    case state of
+        ExpModel.Reading ->
+            Html.div []
+                [ Html.text "TODO: read"
+                , Html.p [] [ Html.text sentence.text ]
+                ]
+
+        ExpModel.Tasking ->
+            Html.div [] [ Html.text "TODO: tasking" ]
+
+        ExpModel.Writing form ->
+            Html.div [] [ Html.text "TODO: writing" ]

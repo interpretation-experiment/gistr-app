@@ -296,8 +296,8 @@ updateRunningOrIgnore :
        )
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningOrIgnore model updater =
-    case model.experiment of
-        ExpModel.Running running ->
+    Helpers.runningOr model ( model, Cmd.none, Nothing ) <|
+        \running ->
             let
                 ( newRunning, cmd, maybeOut ) =
                     updater running
@@ -306,12 +306,6 @@ updateRunningOrIgnore model updater =
                 , cmd
                 , maybeOut
                 )
-
-        _ ->
-            ( model
-            , Cmd.none
-            , Nothing
-            )
 
 
 updateRunningInstructionsOrIgnore :
