@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import Auth.Update as AuthUpdate
+import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
 import Form
 import Helpers exposing ((!!))
@@ -16,6 +17,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Animate _ ->
+            doUpdate msg model
+
+        ExperimentMsg (ExpMsg.ClockMsg _) ->
             doUpdate msg model
 
         _ ->
