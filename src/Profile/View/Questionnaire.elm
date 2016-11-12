@@ -29,7 +29,10 @@ intro { status } =
         Form.Entering ->
             Html.div [] (List.map (\p -> Html.p [] [ Html.text p ]) Strings.questionnaireIntro)
 
-        _ ->
+        Form.Confirming ->
+            Html.div [] Strings.questionnaireCheck
+
+        Form.Sending ->
             Html.div [] Strings.questionnaireCheck
 
 

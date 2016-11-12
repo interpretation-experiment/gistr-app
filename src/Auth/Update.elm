@@ -79,8 +79,8 @@ update lift msg model =
            LOGOUT
         -}
         Logout ->
-            case model.auth of
-                Types.Authenticated auth ->
+            Helpers.authenticatedOr model ( model, Cmd.none, Nothing ) <|
+                \auth ->
                     Helpers.updateAuth Types.Authenticating model
                         !!! [ Api.logout auth
                                 |> Task.perform
@@ -88,12 +88,6 @@ update lift msg model =
                                     (always <| lift LogoutSuccess)
                             , LocalStorage.tokenClear
                             ]
-
-                _ ->
-                    ( model
-                    , Cmd.none
-                    , Nothing
-                    )
 
         LogoutFail error ->
             let
