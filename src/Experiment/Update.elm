@@ -101,7 +101,7 @@ update lift auth msg model =
                         , ( "without_other_mothertongue"
                           , String.toLower <| toString <| not isOthertongue
                           )
-                        , ( "root_bucket", Lifecycle.bucket auth.user.profile )
+                        , ( "root_bucket", Lifecycle.bucket auth.meta auth.user.profile )
                         , ( "sample", toString auth.meta.trainingWork )
                         ]
                         Nothing
@@ -112,7 +112,7 @@ update lift auth msg model =
                         |> List.map .root
                         |> Helpers.shuffle seed
             in
-                case Lifecycle.state auth.user.profile of
+                case Lifecycle.state auth.meta auth.user.profile of
                     Lifecycle.Training _ ->
                         ( model
                         , fetchTrees
@@ -123,6 +123,12 @@ update lift auth msg model =
 
                     Lifecycle.Experiment _ ->
                         update lift auth (Run []) model
+
+                    Lifecycle.Done ->
+                        ( model
+                        , Cmd.none
+                        , Nothing
+                        )
 
         Run sentences ->
             -- TODO: if in training and not enough sentences, move to Error
@@ -225,7 +231,7 @@ update lift auth msg model =
                     , ( "without_other_mothertongue"
                       , String.toLower <| toString <| not isOthertongue
                       )
-                    , ( "root_bucket", Lifecycle.bucket auth.user.profile )
+                    , ( "root_bucket", Lifecycle.bucket auth.meta auth.user.profile )
                     , ( "untouched_by_profile", toString auth.user.profile.id )
                     , ( "sample", toString 1 )
                     ]

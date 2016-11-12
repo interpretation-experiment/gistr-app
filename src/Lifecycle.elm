@@ -15,13 +15,7 @@ import Validate
 type State
     = Training (List Test)
     | Experiment (List Test)
-
-
-
-{-
-   ...
-   | Finished
--}
+    | Done
 
 
 type Test
@@ -29,36 +23,47 @@ type Test
     | WordSpan
 
 
-state : Types.Profile -> State
-state profile =
+state : Types.Meta -> Types.Profile -> State
+state meta profile =
     let
         tests =
             testsRemaining profile
     in
-        if not profile.trained then
-            Training tests
-        else
-            Experiment tests
+        case ( profile.trained, profile.reformulationsCount >= meta.experimentWork ) of
+            ( False, _ ) ->
+                Training tests
+
+            ( True, False ) ->
+                Experiment tests
+
+            ( True, True ) ->
+                Done
 
 
-bucket : Types.Profile -> String
-bucket profile =
-    case state profile of
+bucket : Types.Meta -> Types.Profile -> String
+bucket meta profile =
+    case state meta profile of
         Training _ ->
             "training"
 
         Experiment _ ->
             "experiment"
 
+        Done ->
+            "game"
+
 
 stateIsCompletable : Types.Meta -> Types.Profile -> Bool
 stateIsCompletable meta profile =
-    case state profile of
+    case state meta profile of
         Training _ ->
             meta.trainingWork <= profile.availableTreeCounts.training
 
         Experiment _ ->
             meta.experimentWork <= profile.availableTreeCounts.experiment
+
+        Done ->
+            True
 
 
 testsRemaining : Types.Profile -> List Test

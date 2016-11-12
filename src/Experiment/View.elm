@@ -42,12 +42,15 @@ header :
 header lift profile meta model =
     let
         title =
-            case Lifecycle.state profile of
+            case Lifecycle.state meta profile of
                 Lifecycle.Training _ ->
                     "Experiment — Training"
 
                 Lifecycle.Experiment _ ->
                     "Experiment"
+
+                Lifecycle.Done ->
+                    "Experiment — Done"
 
         instructionsState =
             if Lifecycle.stateIsCompletable meta profile then
@@ -104,7 +107,7 @@ body lift profile meta model =
         uncompletableView =
             Html.div [] [ Html.text "TODO: state uncompletable error" ]
     in
-        case Lifecycle.state profile of
+        case Lifecycle.state meta profile of
             Lifecycle.Experiment tests ->
                 if List.length tests == 0 then
                     if Lifecycle.stateIsCompletable meta profile then
@@ -119,6 +122,9 @@ body lift profile meta model =
                     expView
                 else
                     uncompletableView
+
+            Lifecycle.Done ->
+                expView
 
 
 instructions : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Node -> Html.Html AppMsg.Msg

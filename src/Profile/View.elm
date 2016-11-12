@@ -77,7 +77,7 @@ body :
 body lift model route auth =
     case route of
         Router.Dashboard ->
-            dashboard model auth.user.profile
+            dashboard model auth.meta auth.user.profile
 
         Router.Settings ->
             Html.div []
@@ -98,17 +98,17 @@ body lift model route auth =
             WordSpan.view
 
 
-dashboard : Model -> Types.Profile -> Html.Html AppMsg.Msg
-dashboard model profile =
+dashboard : Model -> Types.Meta -> Types.Profile -> Html.Html AppMsg.Msg
+dashboard model meta profile =
     Html.div []
-        [ lifecycle profile
+        [ lifecycle meta profile
         , questionnaireSummary profile.questionnaireId
         , wordSpanSummary profile.wordSpanId model.store
         ]
 
 
-lifecycle : Types.Profile -> Html.Html AppMsg.Msg
-lifecycle profile =
+lifecycle : Types.Meta -> Types.Profile -> Html.Html AppMsg.Msg
+lifecycle meta profile =
     let
         description test =
             case test of
@@ -125,7 +125,7 @@ lifecycle profile =
                     List.map (\t -> Html.li [] (description t)) tests
                 ]
     in
-        case Lifecycle.state profile of
+        case Lifecycle.state meta profile of
             Lifecycle.Training tests ->
                 if List.length tests == 0 then
                     Html.div [] Strings.startTraining
@@ -137,6 +137,10 @@ lifecycle profile =
                     Html.div [] Strings.profileComplete
                 else
                     describeTests tests
+
+            Lifecycle.Done ->
+                -- TODO
+                Html.div [] [ Html.text "TODO: exp done! Show completion code if we have a prolific id. Show stats and point to profile/tree exploration." ]
 
 
 questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg
