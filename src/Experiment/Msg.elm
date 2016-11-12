@@ -7,11 +7,12 @@ import Types
 
 
 type Msg
-    = PreloadTraining Random.Seed
+    = UpdateProfile Types.Profile
+    | ClockMsg Clock.Msg
+      -- EXPERIMENT STATE
+    | Preload Random.Seed
     | Run (List Types.Sentence)
     | Error
-    | UpdateProfile Types.Profile
-    | ClockMsg Clock.Msg
       -- INSTRUCTIONS
     | InstructionsMsg Intro.Msg
     | InstructionsStart
@@ -23,8 +24,9 @@ type Msg
     | TrialTask
     | TrialWrite
     | TrialTimeout
-      -- TRIAL WRITING
     | WriteInput String
     | WriteFail Types.Error
     | WriteSubmit String
     | TrialSuccess Types.Profile
+      -- OTHER RUN STATE
+    | Pause

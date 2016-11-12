@@ -77,7 +77,8 @@ body lift profile meta model =
     let
         expView =
             case model of
-                ExpModel.InitialLoading ->
+                ExpModel.Init ->
+                    -- TODO: if in done with prolific academic code, show code
                     Helpers.loading
 
                 ExpModel.Running runningState ->

@@ -28,7 +28,56 @@ update :
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 update lift auth msg model =
     case msg of
-        PreloadTraining seed ->
+        UpdateProfile profile ->
+            ( Helpers.updateProfile model profile
+            , Cmd.none
+            , Nothing
+            )
+
+        ClockMsg msg ->
+            updateRunningTrialOrIgnore model <|
+                \_ _ state ->
+                    case state of
+                        ExpModel.Reading clock ->
+                            let
+                                ( newClock, maybeOut ) =
+                                    Clock.update (lift TrialTask) msg clock
+                            in
+                                ( ExpModel.Reading newClock
+                                , Cmd.none
+                                , maybeOut
+                                )
+
+                        ExpModel.Tasking clock ->
+                            let
+                                ( newClock, maybeOut ) =
+                                    Clock.update (lift TrialWrite) msg clock
+                            in
+                                ( ExpModel.Tasking newClock
+                                , Cmd.none
+                                , maybeOut
+                                )
+
+                        ExpModel.Writing clock form ->
+                            let
+                                ( newClock, maybeOut ) =
+                                    Clock.update (lift TrialTimeout) msg clock
+                            in
+                                ( ExpModel.Writing newClock form
+                                , Cmd.none
+                                , maybeOut
+                                )
+
+                        ExpModel.Timeout ->
+                            ( state
+                            , Cmd.none
+                            , Nothing
+                            )
+
+        {-
+           EXPERIMENT STATE
+        -}
+        Preload seed ->
             let
                 mothertongue =
                     auth.user.profile.mothertongue
@@ -94,52 +143,6 @@ update lift auth msg model =
             , Cmd.none
             , Nothing
             )
-
-        UpdateProfile profile ->
-            ( Helpers.updateProfile model profile
-            , Cmd.none
-            , Nothing
-            )
-
-        ClockMsg msg ->
-            updateRunningTrialOrIgnore model <|
-                \_ _ state ->
-                    case state of
-                        ExpModel.Reading clock ->
-                            let
-                                ( newClock, maybeOut ) =
-                                    Clock.update (lift TrialTask) msg clock
-                            in
-                                ( ExpModel.Reading newClock
-                                , Cmd.none
-                                , maybeOut
-                                )
-
-                        ExpModel.Tasking clock ->
-                            let
-                                ( newClock, maybeOut ) =
-                                    Clock.update (lift TrialWrite) msg clock
-                            in
-                                ( ExpModel.Tasking newClock
-                                , Cmd.none
-                                , maybeOut
-                                )
-
-                        ExpModel.Writing clock form ->
-                            let
-                                ( newClock, maybeOut ) =
-                                    Clock.update (lift TrialTimeout) msg clock
-                            in
-                                ( ExpModel.Writing newClock form
-                                , Cmd.none
-                                , maybeOut
-                                )
-
-                        ExpModel.Timeout ->
-                            ( state
-                            , Cmd.none
-                            , Nothing
-                            )
 
         {-
            INSTRUCTIONS
@@ -320,9 +323,6 @@ update lift auth msg model =
                     , Nothing
                     )
 
-        {-
-           TRIAL WRITING
-        -}
         WriteInput input ->
             -- TODO: set input
             Debug.crash "todo"
@@ -349,7 +349,14 @@ update lift auth msg model =
             -- get previous profile lifecycle
             -- update profile
             -- if lifecycle has changed, JustFinished
-            -- if not, LoadTrial
+            -- if not, LoadTrial or Pause
+            Debug.crash "todo"
+
+        {-
+           OTHER RUN STATE
+        -}
+        Pause ->
+            -- TODO
             Debug.crash "todo"
 
 

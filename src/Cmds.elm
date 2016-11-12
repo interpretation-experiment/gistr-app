@@ -52,7 +52,7 @@ cmdsForRoute model route =
                 |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
                 |> Task.perform
                     Msg.Error
-                    (Msg.ExperimentMsg << ExperimentMsg.PreloadTraining)
+                    (Msg.ExperimentMsg << ExperimentMsg.Preload)
             ]
 
         _ ->

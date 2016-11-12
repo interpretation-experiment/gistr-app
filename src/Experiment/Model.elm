@@ -33,12 +33,12 @@ instructionsState model =
 
 initialModel : Model
 initialModel =
-    InitialLoading
+    Init
 
 
 type Model
     = -- Loading training sentences and server meta information
-      InitialLoading
+      Init
     | Running RunningModel
       -- If a sentence sampling doesn't return what's needed. If profile
       -- signals there aren't enough sentences to finish the current sequence,
