@@ -59,10 +59,10 @@ type alias RunningModel =
 
 
 type State
-    = Instructions (Intro.State Instructions.Node)
+    = JustFinished
+    | Instructions (Intro.State Instructions.Node)
     | Trial Types.Sentence TrialState
     | Pause
-    | Finished
 
 
 type TrialState

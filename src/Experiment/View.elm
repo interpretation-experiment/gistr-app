@@ -82,6 +82,9 @@ body lift profile meta model =
 
                 ExpModel.Running runningState ->
                     case runningState.state of
+                        ExpModel.JustFinished ->
+                            Html.div [] [ Html.text "TODO: just finished previous run" ]
+
                         ExpModel.Instructions introState ->
                             instructions lift introState
 
@@ -90,9 +93,6 @@ body lift profile meta model =
 
                         ExpModel.Pause ->
                             Html.div [] [ Html.text "TODO: pause" ]
-
-                        ExpModel.Finished ->
-                            Html.div [] [ Html.text "TODO: finished" ]
 
                 ExpModel.Error ->
                     Html.div [] [ Html.text "TODO: not enough sentences error" ]
@@ -138,7 +138,7 @@ instructions lift state =
             []
             [ Html.text "Second stuff" ]
         , Helpers.evButton [] (lift InstructionsStart) "Replay instructions"
-        , Helpers.evButton [] (lift StartTrial) "Start"
+        , Helpers.evButton [] (lift LoadTrial) "Start"
         , Intro.overlay state
         ]
 

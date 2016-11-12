@@ -18,8 +18,13 @@ type Msg
     | InstructionsQuit Int
     | InstructionsDone
       -- TRIAL
-    | StartTrial
-    | TrialRead Types.Sentence
+    | LoadTrial
+    | LoadedTrial Types.Sentence
     | TrialTask
     | TrialWrite
     | TrialTimeout
+      -- TRIAL WRITING
+    | WriteInput String
+    | WriteFail Types.Error
+    | WriteSubmit String
+    | TrialSuccess Types.Profile

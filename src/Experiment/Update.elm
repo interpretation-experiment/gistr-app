@@ -62,23 +62,21 @@ update lift auth msg model =
                     treePage.items
                         |> List.map .root
                         |> Helpers.shuffle seed
-
-                cmd =
-                    case Lifecycle.state auth.user.profile of
-                        Lifecycle.Training _ ->
-                            fetchTrees
-                                |> Task.map toSentences
-                                |> Task.perform AppMsg.Error (lift << Run)
-
-                        Lifecycle.Experiment _ ->
-                            Cmd.none
             in
-                ( model
-                , cmd
-                , Nothing
-                )
+                case Lifecycle.state auth.user.profile of
+                    Lifecycle.Training _ ->
+                        ( model
+                        , fetchTrees
+                            |> Task.map toSentences
+                            |> Task.perform AppMsg.Error (lift << Run)
+                        , Nothing
+                        )
+
+                    Lifecycle.Experiment _ ->
+                        update lift auth (Run []) model
 
         Run sentences ->
+            -- TODO: if in training and not enough sentences, move to Error
             let
                 newModel =
                     { model | experiment = ExpModel.initialRunningModel sentences }
@@ -202,7 +200,7 @@ update lift auth msg model =
         {-
            TRIAL
         -}
-        StartTrial ->
+        LoadTrial ->
             let
                 mothertongue =
                     auth.user.profile.mothertongue
@@ -248,7 +246,8 @@ update lift auth msg model =
                                         Task.succeed tree
 
                                     [] ->
-                                        Types.Unrecoverable "Found no suitable tree for profile"
+                                        Types.Unrecoverable
+                                            "Found no suitable tree for profile"
                                             |> Task.fail
 
                 fetchTree =
@@ -269,17 +268,17 @@ update lift auth msg model =
                                 ( { running | loadingNext = True }
                                 , fetchTree
                                     |> Task.map .root
-                                    |> Task.perform AppMsg.Error (lift << TrialRead)
+                                    |> Task.perform AppMsg.Error (lift << LoadedTrial)
                                 , Nothing
                                 )
 
                             sentence :: rest ->
                                 ( { running | preLoaded = rest, loadingNext = False }
                                 , Cmd.none
-                                , Just <| lift <| TrialRead sentence
+                                , Just <| lift <| LoadedTrial sentence
                                 )
 
-        TrialRead sentence ->
+        LoadedTrial sentence ->
             updateRunningOrIgnore model <|
                 \auth running ->
                     let
@@ -287,7 +286,10 @@ update lift auth msg model =
                             Clock.init (Helpers.readTime auth.meta sentence)
                                 |> ExpModel.Reading
                     in
-                        ( { running | state = ExpModel.Trial sentence reading }
+                        ( { running
+                            | state = ExpModel.Trial sentence reading
+                            , loadingNext = False
+                          }
                         , Cmd.none
                         , Nothing
                         )
@@ -317,6 +319,38 @@ update lift auth msg model =
                     , Cmd.none
                     , Nothing
                     )
+
+        {-
+           TRIAL WRITING
+        -}
+        WriteInput input ->
+            -- TODO: set input
+            Debug.crash "todo"
+
+        WriteFail error ->
+            -- TODO
+            -- if feedback, set it and resume clock
+            -- otherwise, move to error
+            Debug.crash "todo"
+
+        WriteSubmit input ->
+            -- TODO
+            -- validate if enough words
+            --   if not, Fail with feedback
+            --   if yes, pause clock and:
+            --     submit if not in training, getting back profile
+            --     if in training:
+            --       if sentences left, TrialSuccess directly with same profile
+            --       if nothing left, save trained in profile, getting back profile in TrialSuccess
+            Debug.crash "todo"
+
+        TrialSuccess profile ->
+            -- TODO
+            -- get previous profile lifecycle
+            -- update profile
+            -- if lifecycle has changed, JustFinished
+            -- if not, LoadTrial
+            Debug.crash "todo"
 
 
 
