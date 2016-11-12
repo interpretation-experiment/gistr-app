@@ -23,6 +23,7 @@ module Helpers
         , updateAuthNav
         , updateProfile
         , updateUser
+        , writeTime
         )
 
 import Cmds
@@ -279,3 +280,8 @@ shuffleHelp ( list, seed ) =
 readTime : { a | readFactor : Int } -> { b | text : String } -> Time.Time
 readTime { readFactor } { text } =
     toFloat (List.length (String.words text) * readFactor) * Time.second
+
+
+writeTime : { a | writeFactor : Int } -> { b | text : String } -> Time.Time
+writeTime { writeFactor } { text } =
+    toFloat (List.length (String.words text) * writeFactor) * Time.second

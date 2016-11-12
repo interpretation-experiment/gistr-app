@@ -159,5 +159,11 @@ trial sentence state =
                 , Clock.view clock
                 ]
 
-        ExpModel.Writing form ->
-            Html.div [] [ Html.text "TODO: writing" ]
+        ExpModel.Writing clock form ->
+            Html.div []
+                [ Html.text "TODO: writing"
+                , Clock.view clock
+                ]
+
+        ExpModel.Timeout ->
+            Html.div [] [ Html.text "TODO: timeout" ]

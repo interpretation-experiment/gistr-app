@@ -22,3 +22,4 @@ type Msg
     | TrialRead Types.Sentence
     | TrialTask
     | TrialWrite
+    | TrialTimeout

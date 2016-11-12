@@ -24,8 +24,10 @@ subscription lift model =
                         ExpModel.Tasking clock ->
                             Clock.subscription (lift << ClockMsg) clock
 
-                        ExpModel.Writing _ ->
-                            -- TODO: timer to Msg.TrialTimeout
+                        ExpModel.Writing clock _ ->
+                            Clock.subscription (lift << ClockMsg) clock
+
+                        ExpModel.Timeout ->
                             Sub.none
     in
         Sub.batch

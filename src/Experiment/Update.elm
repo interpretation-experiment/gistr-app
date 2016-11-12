@@ -105,7 +105,7 @@ update lift auth msg model =
 
         ClockMsg msg ->
             updateRunningTrialOrIgnore model <|
-                \state ->
+                \_ _ state ->
                     case state of
                         ExpModel.Reading clock ->
                             let
@@ -127,9 +127,18 @@ update lift auth msg model =
                                 , maybeOut
                                 )
 
-                        ExpModel.Writing form ->
-                            -- TODO: timer to Msg.TrialTimeout
-                            ( ExpModel.Writing form
+                        ExpModel.Writing clock form ->
+                            let
+                                ( newClock, maybeOut ) =
+                                    Clock.update (lift TrialTimeout) msg clock
+                            in
+                                ( ExpModel.Writing newClock form
+                                , Cmd.none
+                                , maybeOut
+                                )
+
+                        ExpModel.Timeout ->
+                            ( state
                             , Cmd.none
                             , Nothing
                             )
@@ -285,32 +294,29 @@ update lift auth msg model =
 
         TrialTask ->
             updateRunningTrialOrIgnore model <|
-                \_ ->
+                \_ _ _ ->
                     ( ExpModel.Tasking (Clock.init <| 2 * Time.second)
                     , Cmd.none
                     , Nothing
                     )
 
         TrialWrite ->
-            updateRunningOrIgnore model <|
-                \_ running ->
-                    case running.state of
-                        ExpModel.Trial sentence _ ->
-                            ( { running
-                                | state =
-                                    ExpModel.Trial sentence <|
-                                        ExpModel.Writing (Form.empty ())
-                              }
-                              -- TODO: start writing timer
-                            , Cmd.none
-                            , Nothing
-                            )
+            updateRunningTrialOrIgnore model <|
+                \auth sentence _ ->
+                    ( ExpModel.Writing
+                        (Clock.init <| Helpers.writeTime auth.meta sentence)
+                        (Form.empty ())
+                    , Cmd.none
+                    , Nothing
+                    )
 
-                        _ ->
-                            ( running
-                            , Cmd.none
-                            , Nothing
-                            )
+        TrialTimeout ->
+            updateRunningTrialOrIgnore model <|
+                \_ _ _ ->
+                    ( ExpModel.Timeout
+                    , Cmd.none
+                    , Nothing
+                    )
 
 
 
@@ -368,16 +374,20 @@ updateRunningInstructionsOrIgnore model updater =
 
 updateRunningTrialOrIgnore :
     Model
-    -> (ExpModel.TrialState -> ( ExpModel.TrialState, Cmd AppMsg.Msg, Maybe AppMsg.Msg ))
+    -> (Types.Auth
+        -> Types.Sentence
+        -> ExpModel.TrialState
+        -> ( ExpModel.TrialState, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+       )
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningTrialOrIgnore model updater =
     updateRunningOrIgnore model <|
-        \_ running ->
+        \auth running ->
             case running.state of
                 ExpModel.Trial sentence state ->
                     let
                         ( newState, cmd, maybeOut ) =
-                            updater state
+                            updater auth sentence state
                     in
                         ( { running | state = ExpModel.Trial sentence newState }
                         , cmd
