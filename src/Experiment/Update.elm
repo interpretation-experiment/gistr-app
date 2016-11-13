@@ -131,18 +131,42 @@ update lift auth msg model =
                         )
 
         Run sentences ->
-            -- TODO: if in training and not enough sentences, move to Error
             let
-                newModel =
+                runningModel =
                     { model | experiment = ExpModel.initialRunningModel sentences }
+
+                ( newModel, cmd, outMsg ) =
+                    if not auth.user.profile.introducedExpPlay then
+                        update lift auth InstructionsStart runningModel
+                    else
+                        ( runningModel
+                        , Cmd.none
+                        , Nothing
+                        )
             in
-                if not auth.user.profile.introducedExpPlay then
-                    update lift auth InstructionsStart newModel
-                else
-                    ( newModel
-                    , Cmd.none
-                    , Nothing
-                    )
+                case Lifecycle.state auth.meta auth.user.profile of
+                    -- If in training and not enough sentences to finish it, move to Error
+                    Lifecycle.Training _ ->
+                        if List.length sentences < auth.meta.trainingWork then
+                            update lift auth Error model
+                        else
+                            ( newModel
+                            , cmd
+                            , outMsg
+                            )
+
+                    Lifecycle.Experiment _ ->
+                        ( newModel
+                        , cmd
+                        , outMsg
+                        )
+
+                    Lifecycle.Done ->
+                        -- Ignore if the experiment is done
+                        ( model
+                        , Cmd.none
+                        , Nothing
+                        )
 
         Error ->
             ( { model | experiment = ExpModel.Error }
