@@ -75,16 +75,14 @@ testWordSpan =
 startTraining : List (Html.Html Msg)
 startTraining =
     [ Html.text "Start the experiment "
-      -- TODO: set to Router.Exp
-    , Helpers.navA Router.Home "right now"
+    , Helpers.navA Router.Experiment "right now"
     ]
 
 
 profileComplete : List (Html.Html Msg)
 profileComplete =
     [ Html.text "Your profile is complete, you can keep going with "
-      -- TODO: set to Router.Exp
-    , Helpers.navA Router.Home "the experiment"
+    , Helpers.navA Router.Experiment "the experiment"
     ]
 
 
