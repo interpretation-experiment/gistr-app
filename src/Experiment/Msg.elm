@@ -7,12 +7,9 @@ import Types
 
 
 type Msg
-    = UpdateProfile Types.Profile
+    = NoOp
+    | UpdateProfile Types.Profile
     | ClockMsg Clock.Msg
-      -- EXPERIMENT STATE
-    | Preload Random.Seed
-    | Run (List Types.Sentence)
-    | Error
       -- INSTRUCTIONS
     | InstructionsMsg Intro.Msg
     | InstructionsStart
@@ -20,13 +17,12 @@ type Msg
     | InstructionsDone
       -- TRIAL
     | LoadTrial
-    | LoadedTrial Types.Sentence
+    | LoadedTrial ( List Types.Sentence, Types.Sentence )
     | TrialTask
     | TrialWrite
     | TrialTimeout
+    | TrialPause
     | WriteInput String
     | WriteFail Types.Error
     | WriteSubmit String
     | TrialSuccess Types.Profile
-      -- OTHER RUN STATE
-    | Pause

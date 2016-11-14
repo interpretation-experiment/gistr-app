@@ -18,8 +18,8 @@ module Helpers
         , navigateTo
         , notAuthed
         , readTime
-        , runningOr
         , shuffle
+        , trialOr
         , updateAuth
         , updateAuthNav
         , updateProfile
@@ -77,11 +77,11 @@ authenticatedOr model default authFunc =
             default
 
 
-runningOr : { a | experiment : ExpModel.Model } -> b -> (ExpModel.RunningModel -> b) -> b
-runningOr model default runningFunc =
-    case model.experiment of
-        ExpModel.Running running ->
-            runningFunc running
+trialOr : { a | experiment : ExpModel.Model } -> b -> (ExpModel.TrialModel -> b) -> b
+trialOr model default trialFunc =
+    case model.experiment.state of
+        ExpModel.Trial trial ->
+            trialFunc trial
 
         _ ->
             default

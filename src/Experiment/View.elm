@@ -83,27 +83,15 @@ body :
 body lift profile meta model =
     let
         expView =
-            case model of
-                ExpModel.Init ->
-                    -- TODO: if in done with prolific academic code, show code
-                    Helpers.loading
+            case model.state of
+                ExpModel.JustFinished ->
+                    Html.div [] [ Html.text "TODO: just finished previous run" ]
 
-                ExpModel.Running runningState ->
-                    case runningState.state of
-                        ExpModel.JustFinished ->
-                            Html.div [] [ Html.text "TODO: just finished previous run" ]
+                ExpModel.Instructions introState ->
+                    instructions lift model.loadingNext introState
 
-                        ExpModel.Instructions introState ->
-                            instructions lift introState
-
-                        ExpModel.Trial sentence state ->
-                            trial lift sentence state
-
-                        ExpModel.Pause ->
-                            Html.div [] [ Html.text "TODO: pause" ]
-
-                ExpModel.Error ->
-                    Html.div [] [ Html.text "TODO: not enough sentences error" ]
+                ExpModel.Trial trialModel ->
+                    trial lift model.loadingNext trialModel
 
         finishProfileView =
             Html.div [] [ Html.text "TODO: go finish your profile" ]
@@ -128,11 +116,15 @@ body lift profile meta model =
                     uncompletableView
 
             Lifecycle.Done ->
-                expView
+                Html.div [] [ Html.text "TODO: exp done" ]
 
 
-instructions : (Msg -> AppMsg.Msg) -> Intro.State Instructions.Node -> Html.Html AppMsg.Msg
-instructions lift state =
+instructions :
+    (Msg -> AppMsg.Msg)
+    -> Bool
+    -> Intro.State Instructions.Node
+    -> Html.Html AppMsg.Msg
+instructions lift loading state =
     Html.div []
         [ Intro.node
             (Instructions.viewConfig lift)
@@ -148,47 +140,57 @@ instructions lift state =
             Html.p
             []
             [ Html.text "Second stuff" ]
-        , Helpers.evButton [] (lift InstructionsStart) "Replay instructions"
-        , Helpers.evButton [] (lift LoadTrial) "Start"
+        , Helpers.evButton
+            [ Attributes.disabled loading ]
+            (lift InstructionsStart)
+            "Replay instructions"
+        , Helpers.evButton
+            [ Attributes.disabled loading ]
+            (lift LoadTrial)
+            "Start"
         , Intro.overlay state
         ]
 
 
-trial : (Msg -> AppMsg.Msg) -> Types.Sentence -> ExpModel.TrialState -> Html.Html AppMsg.Msg
-trial lift sentence state =
-    case state of
-        ExpModel.Reading clock ->
-            -- TODO
+trial : (Msg -> AppMsg.Msg) -> Bool -> ExpModel.TrialModel -> Html.Html AppMsg.Msg
+trial lift loading trialModel =
+    case trialModel.state of
+        ExpModel.Reading ->
             Html.div []
                 [ Html.text "Read"
-                , Html.p [] [ Html.text sentence.text ]
-                , Clock.view clock
+                , Html.p [] [ Html.text trialModel.current.text ]
+                , Clock.view trialModel.clock
                 ]
 
-        ExpModel.Tasking clock ->
-            -- TODO
+        ExpModel.Tasking ->
             Html.div []
                 [ Html.text "Tasking"
-                , Clock.view clock
+                , Clock.view trialModel.clock
                 ]
 
-        ExpModel.Writing clock form ->
-            write lift sentence clock form
+        ExpModel.Writing form ->
+            write lift loading trialModel form
 
         ExpModel.Timeout ->
             Html.div []
                 [ Html.text "TODO: timeout"
-                , Helpers.evButton [] (lift LoadTrial) "Next"
+                , Helpers.evButton [ Attributes.disabled loading ] (lift LoadTrial) "Next"
+                ]
+
+        ExpModel.Pause ->
+            Html.div []
+                [ Html.text "TODO: pause"
+                , Helpers.evButton [ Attributes.disabled loading ] (lift LoadTrial) "Next"
                 ]
 
 
 write :
     (Msg -> AppMsg.Msg)
-    -> Types.Sentence
-    -> Clock.Model
+    -> Bool
+    -> ExpModel.TrialModel
     -> Form.Model String
     -> Html.Html AppMsg.Msg
-write lift sentence clock { input, feedback, status } =
+write lift loading trialModel { input, feedback, status } =
     Html.div []
         [ Html.text "Write"
         , Html.form [ Events.onSubmit (lift <| WriteSubmit input) ]
@@ -198,14 +200,17 @@ write lift sentence clock { input, feedback, status } =
                     [ Attributes.id "inputText"
                     , Attributes.autofocus True
                     , Attributes.value input
+                    , Attributes.disabled (loading || (status /= Form.Entering))
                     , Events.onInput (lift << WriteInput)
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 ]
             , Html.button
-                [ Attributes.type' "submit" ]
+                [ Attributes.type' "submit"
+                , Attributes.disabled (loading || (status /= Form.Entering))
+                ]
                 [ Html.text "Send" ]
             ]
-        , Clock.view clock
+        , Clock.view trialModel.clock
         ]

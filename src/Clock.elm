@@ -2,6 +2,7 @@ module Clock
     exposing
         ( Model
         , Msg
+        , disabled
         , init
         , pause
         , progress
@@ -38,6 +39,14 @@ init duration =
     Model
         { status = Init
         , duration = duration
+        }
+
+
+disabled : Model
+disabled =
+    Model
+        { status = Finished
+        , duration = 1
         }
 
 

@@ -15,19 +15,22 @@ subscription : (Msg -> msg) -> Model -> Sub msg
 subscription lift model =
     let
         trialTimer =
-            runningTrialOrNone model <|
-                \meta sentence state ->
-                    case state of
-                        ExpModel.Reading clock ->
-                            Clock.subscription (lift << ClockMsg) clock
+            Helpers.trialOr model Sub.none <|
+                \trial ->
+                    case trial.state of
+                        ExpModel.Reading ->
+                            Clock.subscription (lift << ClockMsg) trial.clock
 
-                        ExpModel.Tasking clock ->
-                            Clock.subscription (lift << ClockMsg) clock
+                        ExpModel.Tasking ->
+                            Clock.subscription (lift << ClockMsg) trial.clock
 
-                        ExpModel.Writing clock _ ->
-                            Clock.subscription (lift << ClockMsg) clock
+                        ExpModel.Writing _ ->
+                            Clock.subscription (lift << ClockMsg) trial.clock
 
                         ExpModel.Timeout ->
+                            Sub.none
+
+                        ExpModel.Pause ->
                             Sub.none
     in
         Sub.batch
@@ -36,20 +39,3 @@ subscription lift model =
                 (ExpModel.instructionsState model.experiment)
             , trialTimer
             ]
-
-
-runningTrialOrNone :
-    { a | experiment : ExpModel.Model, auth : Types.AuthStatus }
-    -> (Types.Meta -> Types.Sentence -> ExpModel.TrialState -> Sub msg)
-    -> Sub msg
-runningTrialOrNone model sub =
-    Helpers.authenticatedOr model Sub.none <|
-        \auth ->
-            Helpers.runningOr model Sub.none <|
-                \running ->
-                    case running.state of
-                        ExpModel.Trial sentence state ->
-                            sub auth.meta sentence state
-
-                        _ ->
-                            Sub.none

@@ -2,14 +2,13 @@ module Cmds exposing (cmdsForRoute)
 
 import Api
 import Experiment.Msg as ExperimentMsg
+import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Profile.Msg as ProfileMsg
-import Random
 import Router
 import Store
 import Task
-import Time
 import Types
 
 
@@ -48,12 +47,20 @@ cmdsForRoute model route =
                             []
 
         Router.Experiment ->
-            [ Time.now
-                |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
-                |> Task.perform
-                    Msg.Error
-                    (Msg.ExperimentMsg << ExperimentMsg.Preload)
-            ]
+            authenticatedOrIgnore model <|
+                \auth ->
+                    if
+                        (not auth.user.profile.introducedExpPlay
+                            && Lifecycle.stateIsCompletable auth.meta auth.user.profile
+                        )
+                    then
+                        [ Task.perform
+                            (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
+                            (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
+                            (Task.succeed ())
+                        ]
+                    else
+                        []
 
         _ ->
             []

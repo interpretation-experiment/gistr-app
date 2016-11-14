@@ -1,12 +1,14 @@
 module Experiment.Model
     exposing
-        ( Model(..)
-        , RunningModel
+        ( Model
         , State(..)
+        , TrialModel
         , TrialState(..)
         , initialModel
-        , initialRunningModel
         , instructionsState
+        , setLoading
+        , setState
+        , trial
         )
 
 import Clock
@@ -16,44 +18,15 @@ import Intro
 import Types
 
 
-instructionsState : Model -> Intro.State Instructions.Node
-instructionsState model =
-    case model of
-        Running runningModel ->
-            case runningModel.state of
-                Instructions state ->
-                    state
-
-                _ ->
-                    Intro.hide
-
-        _ ->
-            Intro.hide
-
-
 initialModel : Model
 initialModel =
-    Init
+    { loadingNext = False
+    , state = Instructions Intro.hide
+    }
 
 
-type Model
-    = -- Loading training sentences and server meta information
-      Init
-    | Running RunningModel
-      -- If a sentence sampling doesn't return what's needed. If profile
-      -- signals there aren't enough sentences to finish the current sequence,
-      -- the view shows it (it's different from this Error).
-    | Error
-
-
-initialRunningModel : List Types.Sentence -> Model
-initialRunningModel sentences =
-    Running <| RunningModel sentences False (Instructions Intro.hide)
-
-
-type alias RunningModel =
-    { preLoaded : List Types.Sentence
-    , loadingNext : Bool
+type alias Model =
+    { loadingNext : Bool
     , state : State
     }
 
@@ -61,12 +34,61 @@ type alias RunningModel =
 type State
     = JustFinished
     | Instructions (Intro.State Instructions.Node)
-    | Trial Types.Sentence TrialState
-    | Pause
+    | Trial TrialModel
+
+
+type alias TrialModel =
+    { preLoaded : List Types.Sentence
+    , streak : Int
+    , current : Types.Sentence
+    , clock : Clock.Model
+    , state : TrialState
+    }
 
 
 type TrialState
-    = Reading Clock.Model
-    | Tasking Clock.Model
-    | Writing Clock.Model (Form.Model String)
+    = Reading
+    | Tasking
+    | Writing (Form.Model String)
     | Timeout
+    | Pause
+
+
+
+-- HELPERS
+
+
+instructionsState : Model -> Intro.State Instructions.Node
+instructionsState model =
+    case model.state of
+        Instructions state ->
+            state
+
+        _ ->
+            Intro.hide
+
+
+setLoading : Bool -> Model -> Model
+setLoading loading model =
+    { model | loadingNext = loading }
+
+
+setState : State -> Model -> Model
+setState state model =
+    { model | state = state }
+
+
+trial : List Types.Sentence -> Types.Sentence -> Clock.Model -> Model
+trial preLoaded current clock =
+    let
+        trialState =
+            { preLoaded = preLoaded
+            , streak = 0
+            , current = current
+            , clock = clock
+            , state = Reading
+            }
+    in
+        { loadingNext = False
+        , state = Trial trialState
+        }
