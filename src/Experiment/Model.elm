@@ -78,17 +78,11 @@ setState state model =
     { model | state = state }
 
 
-trial : List Types.Sentence -> Types.Sentence -> Clock.Model -> Model
+trial : List Types.Sentence -> Types.Sentence -> Clock.Model -> TrialModel
 trial preLoaded current clock =
-    let
-        trialState =
-            { preLoaded = preLoaded
-            , streak = 0
-            , current = current
-            , clock = clock
-            , state = Reading
-            }
-    in
-        { loadingNext = False
-        , state = Trial trialState
-        }
+    { preLoaded = preLoaded
+    , streak = 0
+    , current = current
+    , clock = clock
+    , state = Reading
+    }

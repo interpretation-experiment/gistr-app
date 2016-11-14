@@ -56,6 +56,7 @@ type alias Meta =
       readFactor : Int
     , writeFactor : Int
     , minTokens : Int
+    , pausePeriod : Int
     , -- FORM PARAMETERS
       genderChoices : List Choice
     , jobTypeChoices : List Choice

@@ -101,7 +101,7 @@ update lift auth msg model =
                 )
 
         InstructionsQuit index ->
-            if index + 1 == Nonempty.length Instructions.order then
+            if Nonempty.length Instructions.order == index + 1 then
                 update lift auth InstructionsDone model
             else
                 updateInstructionsOrIgnore model <|
@@ -287,16 +287,34 @@ update lift auth msg model =
                         )
 
         LoadedTrial ( preLoaded, current ) ->
-            ( { model
-                | experiment =
-                    ExpModel.trial
-                        preLoaded
-                        current
-                        (Clock.init <| Helpers.readTime auth.meta current)
-              }
-            , Cmd.none
-            , Nothing
-            )
+            let
+                newTrial =
+                    case model.experiment.state of
+                        ExpModel.Trial trial ->
+                            -- Update current trial
+                            { trial
+                                | preLoaded = preLoaded
+                                , current = current
+                                , clock = (Clock.init <| Helpers.readTime auth.meta current)
+                                , state = ExpModel.Reading
+                            }
+
+                        _ ->
+                            -- Create a new trial
+                            ExpModel.trial
+                                preLoaded
+                                current
+                                (Clock.init <| Helpers.readTime auth.meta current)
+            in
+                ( { model
+                    | experiment =
+                        model.experiment
+                            |> ExpModel.setLoading False
+                            |> ExpModel.setState (ExpModel.Trial newTrial)
+                  }
+                , Cmd.none
+                , Nothing
+                )
 
         TrialTask ->
             updateTrialOrIgnore model <|
@@ -414,19 +432,18 @@ update lift auth msg model =
                 inputValid trial form =
                     case Lifecycle.state auth.meta profile of
                         Lifecycle.Training _ ->
-                            -- TODO: use a running.streak variable instead
-                            if List.length trial.preLoaded > 0 then
-                                -- Move directly to next training trial
-                                ( trialState trial form
-                                , Cmd.none
-                                , Just <| lift (TrialSuccess profile)
-                                )
-                            else
+                            if trial.streak + 1 == auth.meta.trainingWork then
                                 -- Save our newly trained status
                                 ( trialState trial form
                                 , Api.updateProfile { profile | trained = True } auth
                                     |> Task.perform AppMsg.Error (lift << TrialSuccess)
                                 , Nothing
+                                )
+                            else
+                                -- Move directly to next training trial
+                                ( trialState trial form
+                                , Cmd.none
+                                , Just <| lift (TrialSuccess profile)
                                 )
 
                         Lifecycle.Experiment _ ->
@@ -470,31 +487,51 @@ update lift auth msg model =
             -- if lifecycle has changed, JustFinished
             -- if not, LoadTrial or Pause
             let
-                previousState =
+                stateChanged =
                     Lifecycle.state auth.meta auth.user.profile
+                        /= Lifecycle.state auth.meta profile
 
-                currentState =
-                    Lifecycle.state auth.meta profile
-
-                updatedProfileModel =
+                profileModel =
                     Helpers.updateProfile model profile
+
+                next trial =
+                    if trial.streak % auth.meta.pausePeriod == 0 then
+                        TrialPause
+                    else
+                        LoadTrial
             in
-                if previousState /= currentState then
-                    ( { updatedProfileModel
-                        | experiment =
-                            ExpModel.setState
-                                ExpModel.JustFinished
-                                model.experiment
-                      }
-                    , Cmd.none
-                    , Nothing
-                    )
-                else
-                    -- TODO: or pause once we have running.streak
-                    ( updatedProfileModel
-                    , Cmd.none
-                    , Just <| lift LoadTrial
-                    )
+                case model.experiment.state of
+                    ExpModel.Trial trial ->
+                        if stateChanged then
+                            ( { profileModel
+                                | experiment =
+                                    ExpModel.setState
+                                        ExpModel.JustFinished
+                                        model.experiment
+                              }
+                            , Cmd.none
+                            , Nothing
+                            )
+                        else
+                            let
+                                newTrial =
+                                    { trial | streak = trial.streak + 1 }
+
+                                newModel =
+                                    { profileModel
+                                        | experiment =
+                                            ExpModel.setState
+                                                (ExpModel.Trial newTrial)
+                                                profileModel.experiment
+                                    }
+                            in
+                                update lift auth (next newTrial) newModel
+
+                    _ ->
+                        ( model
+                        , Cmd.none
+                        , Nothing
+                        )
 
 
 
@@ -503,9 +540,7 @@ update lift auth msg model =
 
 updateTrialOrIgnore :
     Model
-    -> (ExpModel.TrialModel
-        -> ( ExpModel.TrialModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
-       )
+    -> (ExpModel.TrialModel -> ( ExpModel.TrialModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg ))
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateTrialOrIgnore model updater =
     Helpers.trialOr model ( model, Cmd.none, Nothing ) <|
