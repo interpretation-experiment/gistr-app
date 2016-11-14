@@ -368,9 +368,9 @@ update lift auth msg model =
                     , Nothing
                     )
 
-        QuestionnaireFormSuccess user ->
+        QuestionnaireFormSuccess profile ->
             -- TODO: popup notification
-            ( Helpers.updateUser model user
+            ( Helpers.updateProfile model profile
             , Cmd.none
             , Just <| AppMsg.NavigateTo <| Router.Profile Router.Dashboard
             )

@@ -11,6 +11,7 @@ module Api
         , login
         , logout
         , postQuestionnaire
+        , postSentence
         , recover
         , register
         , requestEmailVerification
@@ -461,6 +462,21 @@ fetchMany typedStore query maybePageQuery { token } =
             |> Task.map .data
 
 
+postSentence : Types.NewSentence -> Types.Auth -> Task.Task Types.Error Types.Profile
+postSentence sentence { token } =
+    let
+        postSentence =
+            authCall HttpBuilder.post "/sentences/" token
+                |> HttpBuilder.withJsonBody (Encoders.newSentence sentence)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    HttpBuilder.stringReader
+                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+                |> Task.map .data
+    in
+        postSentence `Task.andThen` (always <| Task.map .profile <| fetchUser token)
+
+
 
 -- META
 
@@ -479,7 +495,7 @@ fetchMeta =
 -- QUESTIONNAIRE
 
 
-postQuestionnaire : Types.QuestionnaireForm -> Types.Auth -> Task.Task Types.Error Types.User
+postQuestionnaire : Types.QuestionnaireForm -> Types.Auth -> Task.Task Types.Error Types.Profile
 postQuestionnaire questionnaire { token } =
     let
         postQuestionnaire =
@@ -491,7 +507,7 @@ postQuestionnaire questionnaire { token } =
                 |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
                 |> Task.map .data
     in
-        postQuestionnaire `Task.andThen` (always <| fetchUser token)
+        postQuestionnaire `Task.andThen` (always <| Task.map .profile <| fetchUser token)
 
 
 postQuestionnaireFeedbackFields : Dict.Dict String String

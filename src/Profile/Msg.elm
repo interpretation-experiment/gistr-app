@@ -35,4 +35,4 @@ type Msg
     | QuestionnaireFormCorrect
     | QuestionnaireFormSubmit Types.QuestionnaireForm
     | QuestionnaireFormFail Types.Error
-    | QuestionnaireFormSuccess Types.User
+    | QuestionnaireFormSuccess Types.Profile
