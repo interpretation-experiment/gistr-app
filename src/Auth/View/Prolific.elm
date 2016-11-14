@@ -75,8 +75,7 @@ form lift { input, feedback } =
                     , Html.strong [] [ Html.text "Simply follow the steps presented to get started with the experiment." ]
                     ]
                 , Html.button
-                    [ Attributes.type' "submit"
-                    ]
+                    [ Attributes.type' "submit" ]
                     [ Html.text "Go to registration" ]
                 ]
             ]

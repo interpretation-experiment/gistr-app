@@ -77,6 +77,8 @@ profile profile' =
         [ ( "prolific_id", unwrap JE.null JE.string profile'.prolificId )
         , ( "mothertongue", JE.string profile'.mothertongue )
         , ( "trained_reformulations", JE.bool profile'.trained )
+        , ( "introduced_exp_home", JE.bool profile'.introducedExpHome )
+        , ( "introduced_exp_play", JE.bool profile'.introducedExpPlay )
         ]
 
 

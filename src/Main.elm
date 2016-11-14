@@ -3,10 +3,12 @@ module Main exposing (..)
 import Animation
 import Auth.Msg as AuthMsg
 import Dict
-import Experiment
+import Experiment.Model as ExpModel
+import Experiment.Msg as ExpMsg
+import Experiment.Subscription as ExpSub
 import Form
 import Helpers exposing ((!!))
-import Instructions
+import Intro
 import LocalStorage
 import Maybe.Extra exposing ((?))
 import Model exposing (Model)
@@ -87,10 +89,7 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
-          -- TODO: only activate this if experiment is shown
-        , Instructions.subscription
-            (Msg.ReformulationInstructions << Instructions.KeyDown)
-            (Experiment.instructionsState model.experiment)
+        , ExpSub.subscription Msg.ExperimentMsg model
         ]
 
 

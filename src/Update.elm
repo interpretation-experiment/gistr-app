@@ -1,17 +1,13 @@
 module Update exposing (update)
 
-import Auth.Msg as AuthMsg
 import Auth.Update as AuthUpdate
-import Experiment
-import Experiment.Reformulation as Reformulation
+import Experiment.Msg as ExpMsg
+import Experiment.Update as ExperimentUpdate
 import Form
 import Helpers exposing ((!!))
-import Instructions
-import List.Nonempty as Nonempty
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
-import Profile.Msg as ProfileMsg
 import Profile.Update as ProfileUpdate
 import Router
 import Store
@@ -21,6 +17,9 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Animate _ ->
+            doUpdate msg model
+
+        ExperimentMsg (ExpMsg.ClockMsg _) ->
             doUpdate msg model
 
         _ ->
@@ -61,6 +60,12 @@ doUpdate msg model =
                 ! [ Navigation.newUrl (Router.toUrl Router.Error) ]
 
         {-
+           STORE
+        -}
+        GotStoreItem item ->
+            { model | store = Store.set item model.store } ! []
+
+        {-
            AUTH
         -}
         AuthMsg msg ->
@@ -75,70 +80,12 @@ doUpdate msg model =
                     (ProfileUpdate.update ProfileMsg auth msg model |> processMaybeMsg)
 
         {-
-           STORE
+           EXPERIMENT
         -}
-        GotStoreItem item ->
-            { model | store = Store.set item model.store } ! []
-
-        GotMeta meta ->
-            let
-                store =
-                    model.store
-            in
-                { model | store = { store | meta = Just meta } } ! []
-
-        {-
-           REFORMULATIONS EXPERIMENT
-        -}
-        ReformulationInstructions msg ->
-            case model.experiment of
-                Experiment.Instructions state ->
-                    let
-                        ( newState, maybeOut ) =
-                            Instructions.update
-                                Reformulation.instructionsUpdateConfig
-                                msg
-                                state
-
-                        newModel =
-                            { model | experiment = Experiment.Instructions newState }
-                    in
-                        case maybeOut of
-                            Nothing ->
-                                newModel ! []
-
-                            Just outMsg ->
-                                update outMsg newModel
-
-                _ ->
-                    model ! []
-
-        ReformulationInstructionsRestart ->
-            { model
-                | experiment =
-                    Experiment.Instructions
-                        (Instructions.start Reformulation.instructionsOrder)
-            }
-                ! []
-
-        ReformulationInstructionsQuit index ->
-            if index + 1 == Nonempty.length Reformulation.instructionsOrder then
-                update ReformulationInstructionsDone model
-            else
-                { model | experiment = Experiment.Instructions Instructions.hide } ! []
-
-        ReformulationInstructionsDone ->
-            -- TODO: set intro read
-            { model | experiment = Experiment.Instructions Instructions.hide } ! []
-
-        ReformulationExpStart ->
-            -- TODO: if trained, do exp directly, if not, do training
-            { model
-                | experiment =
-                    Experiment.Training
-                        (Reformulation.Trial () Reformulation.Reading)
-            }
-                ! []
+        ExperimentMsg msg ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    (ExperimentUpdate.update ExperimentMsg auth msg model |> processMaybeMsg)
 
 
 

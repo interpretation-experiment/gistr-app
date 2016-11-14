@@ -25,8 +25,8 @@ view lift model route =
     let
         contents =
             case model.auth of
-                Types.Authenticated { user } ->
-                    [ menu route, body lift model route user ]
+                Types.Authenticated auth ->
+                    [ menu route, body lift model route auth ]
 
                 Types.Authenticating ->
                     [ Helpers.loading ]
@@ -68,11 +68,16 @@ menu route =
         ]
 
 
-body : (Msg -> AppMsg.Msg) -> Model -> Router.ProfileRoute -> Types.User -> Html.Html AppMsg.Msg
-body lift model route user =
+body :
+    (Msg -> AppMsg.Msg)
+    -> Model
+    -> Router.ProfileRoute
+    -> Types.Auth
+    -> Html.Html AppMsg.Msg
+body lift model route auth =
     case route of
         Router.Dashboard ->
-            dashboard model user.profile
+            dashboard model auth.meta auth.user.profile
 
         Router.Settings ->
             Html.div []
@@ -81,60 +86,61 @@ body lift model route user =
                 ]
 
         Router.Emails ->
-            emails lift model.emails user.emails
+            emails lift model.emails auth.user.emails
 
         Router.Confirm key ->
             emailConfirmation model.emailConfirmation key
 
         Router.Questionnaire ->
-            Questionnaire.view lift model
+            Questionnaire.view lift model auth.meta
 
         Router.WordSpan ->
             WordSpan.view
 
 
-dashboard : Model -> Types.Profile -> Html.Html AppMsg.Msg
-dashboard model profile =
+dashboard : Model -> Types.Meta -> Types.Profile -> Html.Html AppMsg.Msg
+dashboard model meta profile =
     Html.div []
-        [ lifecycle profile
+        [ lifecycle meta profile
         , questionnaireSummary profile.questionnaireId
         , wordSpanSummary profile.wordSpanId model.store
         ]
 
 
-lifecycle : Types.Profile -> Html.Html AppMsg.Msg
-lifecycle profile =
+lifecycle : Types.Meta -> Types.Profile -> Html.Html AppMsg.Msg
+lifecycle meta profile =
     let
-        description preliminary =
-            case preliminary of
-                Lifecycle.ProfilePreliminary (Lifecycle.Questionnaire) ->
+        description test =
+            case test of
+                Lifecycle.Questionnaire ->
                     [ Html.text Strings.fillQuestionnaire ]
 
-                Lifecycle.ProfilePreliminary (Lifecycle.WordSpan) ->
+                Lifecycle.WordSpan ->
                     [ Html.text Strings.testWordSpan ]
 
-                Lifecycle.Training ->
-                    Strings.startExperiment
+        describeTests tests =
+            Html.div []
+                [ Html.text Strings.completeProfile
+                , Html.ul [] <|
+                    List.map (\t -> Html.li [] (description t)) tests
+                ]
     in
-        case Lifecycle.state profile of
-            Lifecycle.Preliminaries remaining ->
-                case List.partition Lifecycle.isProfilePreliminary remaining of
-                    ( head :: tail, _ ) ->
-                        Html.div []
-                            [ Html.text Strings.completeProfile
-                            , Html.ul [] <|
-                                List.map
-                                    (\t -> Html.li [] (description t))
-                                    (head :: tail)
-                            ]
+        case Lifecycle.state meta profile of
+            Lifecycle.Training tests ->
+                if List.length tests == 0 then
+                    Html.div [] Strings.startTraining
+                else
+                    describeTests tests
 
-                    ( [], remainingExp ) ->
-                        Html.div [] <|
-                            List.concat <|
-                                List.map (\t -> description t) remainingExp
+            Lifecycle.Experiment tests ->
+                if List.length tests == 0 then
+                    Html.div [] Strings.profileComplete
+                else
+                    describeTests tests
 
-            Lifecycle.Experiment ->
-                Html.div [] Strings.profileComplete
+            Lifecycle.Done ->
+                -- TODO
+                Html.div [] [ Html.text "TODO: exp done! Show completion code if we have a prolific id. Show stats and point to profile/tree exploration." ]
 
 
 questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg

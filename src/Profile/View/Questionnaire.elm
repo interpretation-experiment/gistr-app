@@ -14,22 +14,13 @@ import Strings
 import Types
 
 
-view : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
-view lift model =
-    let
-        form' =
-            case model.store.meta of
-                Nothing ->
-                    Helpers.loading
-
-                Just meta ->
-                    form lift model.questionnaire meta
-    in
-        Html.div []
-            [ Html.h2 [] [ Html.text "General questionnaire" ]
-            , intro model.questionnaire
-            , form'
-            ]
+view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> Html.Html AppMsg.Msg
+view lift model meta =
+    Html.div []
+        [ Html.h2 [] [ Html.text "General questionnaire" ]
+        , intro model.questionnaire
+        , form lift model.questionnaire meta
+        ]
 
 
 intro : Form.Model Types.QuestionnaireForm -> Html.Html AppMsg.Msg
@@ -38,7 +29,10 @@ intro { status } =
         Form.Entering ->
             Html.div [] (List.map (\p -> Html.p [] [ Html.text p ]) Strings.questionnaireIntro)
 
-        _ ->
+        Form.Confirming ->
+            Html.div [] Strings.questionnaireCheck
+
+        Form.Sending ->
             Html.div [] Strings.questionnaireCheck
 
 

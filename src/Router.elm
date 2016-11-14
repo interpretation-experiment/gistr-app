@@ -56,36 +56,86 @@ normalize auth route =
     case auth of
         Types.Anonymous ->
             case route of
+                Home ->
+                    route
+
+                About ->
+                    route
+
+                Login _ ->
+                    route
+
+                Recover ->
+                    route
+
+                Reset _ ->
+                    route
+
+                Register _ ->
+                    route
+
+                Error ->
+                    route
+
+                Prolific ->
+                    route
+
                 Profile profileRoute ->
                     Login (Just route)
 
                 Experiment ->
                     Login (Just route)
 
-                _ ->
-                    route
-
         Types.Authenticated { user } ->
             case route of
+                Home ->
+                    route
+
+                About ->
+                    route
+
                 Login _ ->
                     Home
 
                 Recover ->
                     Profile Settings
 
+                Reset _ ->
+                    route
+
                 Register _ ->
                     Home
+
+                Error ->
+                    route
 
                 Prolific ->
                     Home
 
-                Profile Questionnaire ->
-                    if isJust user.profile.questionnaireId then
-                        Profile Dashboard
-                    else
-                        route
+                Profile profileRoute ->
+                    case profileRoute of
+                        Dashboard ->
+                            route
 
-                _ ->
+                        Settings ->
+                            route
+
+                        Emails ->
+                            route
+
+                        Confirm _ ->
+                            route
+
+                        Questionnaire ->
+                            if isJust user.profile.questionnaireId then
+                                Profile Dashboard
+                            else
+                                route
+
+                        WordSpan ->
+                            route
+
+                Experiment ->
                     route
 
         Types.Authenticating ->

@@ -1,6 +1,8 @@
 module Cmds exposing (cmdsForRoute)
 
 import Api
+import Experiment.Msg as ExperimentMsg
+import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Profile.Msg as ProfileMsg
@@ -13,7 +15,6 @@ import Types
 cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
 cmdsForRoute model route =
     case route of
-        -- TODO: for exp route, get necessary sentences (train/exp) upon opening the route, and show "loading" until loaded. If nothing, show error.
         Router.Profile profileRoute ->
             authenticatedOrIgnore model <|
                 \auth ->
@@ -42,11 +43,24 @@ cmdsForRoute model route =
                                         (Api.fetch model.store.wordSpans id auth)
                                     ]
 
-                        Router.Questionnaire ->
-                            [ fetchMeta model ]
-
                         _ ->
                             []
+
+        Router.Experiment ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    if
+                        (not auth.user.profile.introducedExpPlay
+                            && Lifecycle.stateIsCompletable auth.meta auth.user.profile
+                        )
+                    then
+                        [ Task.perform
+                            (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
+                            (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
+                            (Task.succeed ())
+                        ]
+                    else
+                        []
 
         _ ->
             []
@@ -67,13 +81,3 @@ authenticatedOrIgnore model authFunc =
 
         _ ->
             []
-
-
-fetchMeta : Model -> Cmd Msg
-fetchMeta model =
-    case model.store.meta of
-        Nothing ->
-            Task.perform Msg.Error Msg.GotMeta Api.fetchMeta
-
-        Just _ ->
-            Cmd.none

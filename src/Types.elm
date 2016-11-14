@@ -10,6 +10,7 @@ module Types
         , Meta
         , NewSentence
         , NewWordSpan
+        , Page
         , PasswordCredentials
         , PreUser
         , Profile
@@ -47,18 +48,35 @@ type alias Choice =
 
 
 type alias Meta =
-    { targetBranchDepth : Int
+    { -- BRANCH SHAPING
+      targetBranchDepth : Int
     , targetBranchCount : Int
-    , genderChoices : List Choice
+    , branchProbability : Float
+    , -- READ-WRITE PARAMETERS
+      readFactor : Int
+    , writeFactor : Int
+    , minTokens : Int
+    , pausePeriod : Int
+    , -- FORM PARAMETERS
+      genderChoices : List Choice
     , jobTypeChoices : List Choice
-    , experimentWork : Int
+    , -- EXPERIMENT COSTS
+      experimentWork : Int
     , trainingWork : Int
     , treeCost : Int
     , baseCredit : Int
-    , defaultLanguge : String
+    , -- LANGUAGES
+      defaultLanguge : String
     , supportedLanguages : List Choice
     , otherLanguage : String
-    , version : String
+    , -- SERVER VERSION
+      version : String
+    }
+
+
+type alias Page a =
+    { totalItems : Int
+    , items : List a
     }
 
 
@@ -114,7 +132,7 @@ type AuthStatus
 
 
 type alias Auth =
-    { token : Token, user : User }
+    { token : Token, user : User, meta : Meta }
 
 
 
@@ -128,8 +146,8 @@ type alias Auth =
        },
    ✓    "created": "2016-09-23T11:19:11.901445Z",
    ✓    "id": 1,
-        "introduced_exp_home": true,
-        "introduced_exp_play": false,
+   ✓    "introduced_exp_home": true,
+   ✓    "introduced_exp_play": false,
         "introduced_play_home": false,
         "introduced_play_play": false,
    ✓    "mothertongue": "english",
@@ -164,6 +182,8 @@ type alias Profile =
       prolificId : Maybe String
     , mothertongue : String
     , trained : Bool
+    , introducedExpHome : Bool
+    , introducedExpPlay : Bool
     , -- RELATIONSHIPS
       userId : Int
     , questionnaireId : Maybe Int

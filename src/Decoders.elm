@@ -4,6 +4,7 @@ module Decoders
         , email
         , feedback
         , meta
+        , page
         , preUser
         , profile
         , sentence
@@ -62,6 +63,8 @@ profile =
         |> Pipeline.required "prolific_id" (Pipeline.nullable JD.string)
         |> Pipeline.required "mothertongue" JD.string
         |> Pipeline.required "trained_reformulations" JD.bool
+        |> Pipeline.required "introduced_exp_home" JD.bool
+        |> Pipeline.required "introduced_exp_play" JD.bool
         |> Pipeline.required "user" JD.int
         |> Pipeline.required "questionnaire" (Pipeline.nullable JD.int)
         |> Pipeline.required "word_span" (Pipeline.nullable JD.int)
@@ -139,6 +142,13 @@ wordSpan =
         |> Pipeline.required "profile" JD.int
 
 
+page : JD.Decoder a -> JD.Decoder (Types.Page a)
+page item =
+    Pipeline.decode Types.Page
+        |> Pipeline.required "count" JD.int
+        |> Pipeline.required "results" (JD.list item)
+
+
 choice : JD.Decoder Types.Choice
 choice =
     Pipeline.decode Types.Choice
@@ -151,6 +161,16 @@ meta =
     Pipeline.decode Types.Meta
         |> Pipeline.required "target_branch_depth" JD.int
         |> Pipeline.required "target_branch_count" JD.int
+        |> -- branchProbability. TODO: move to backend
+           Pipeline.hardcoded 0.8
+        |> -- readFactor. TODO: move to backend
+           Pipeline.hardcoded 1
+        |> -- writeFactor. TODO: move to backend
+           Pipeline.hardcoded 5
+        |> -- minTokens. TODO: move to backend
+           Pipeline.hardcoded 10
+        |> -- pausePeriod. TODO: move to backend
+           Pipeline.hardcoded 10
         |> Pipeline.required "gender_choices" (JD.list choice)
         |> Pipeline.required "job_type_choices" (JD.list choice)
         |> Pipeline.required "experiment_work" JD.int

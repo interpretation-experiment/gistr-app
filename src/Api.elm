@@ -6,15 +6,18 @@ module Api
         , deleteEmail
         , fetch
         , fetchAuth
+        , fetchMany
         , fetchMeta
         , login
         , logout
         , postQuestionnaire
+        , postSentence
         , recover
         , register
         , requestEmailVerification
         , reset
         , updateEmail
+        , updateProfile
         , updateUser
         )
 
@@ -24,6 +27,7 @@ import Encoders
 import Feedback
 import HttpBuilder exposing (RequestBuilder)
 import Store
+import String
 import Task
 import Types
 
@@ -106,7 +110,7 @@ fetchAuth token =
 
 fetchAuthSettingProfile : Maybe String -> Types.Token -> Task.Task Types.Error Types.Auth
 fetchAuthSettingProfile maybeProlific token =
-    Types.Auth token `Task.map` (fetchUserSettingProfile maybeProlific token)
+    Task.map2 (Types.Auth token) (fetchUserSettingProfile maybeProlific token) fetchMeta
 
 
 fetchUser : Types.Token -> Task.Task Types.Error Types.User
@@ -149,6 +153,34 @@ createProfile maybeProlific { token, preUser } =
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map (.data >> \p -> { preUser | profile = p })
+
+
+updateUser : Types.User -> Types.Auth -> Task.Task Types.Error Types.User
+updateUser user { token } =
+    authCall HttpBuilder.put ("/users/" ++ (toString user.id) ++ "/") token
+        |> HttpBuilder.withJsonBody (Encoders.user user)
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader Decoders.user)
+            (HttpBuilder.jsonReader (Decoders.feedback usernameChangeFeedbackFields))
+        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
+        |> Task.map .data
+
+
+usernameChangeFeedbackFields : Dict.Dict String String
+usernameChangeFeedbackFields =
+    Dict.fromList
+        [ ( "username", "global" ) ]
+
+
+updateProfile : Types.Profile -> Types.Auth -> Task.Task Types.Error Types.Profile
+updateProfile profile { token } =
+    authCall HttpBuilder.put ("/profiles/" ++ (toString profile.id) ++ "/") token
+        |> HttpBuilder.withJsonBody (Encoders.profile profile)
+        |> HttpBuilder.send
+            (HttpBuilder.jsonReader Decoders.profile)
+            HttpBuilder.stringReader
+        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+        |> Task.map .data
 
 
 
@@ -250,27 +282,6 @@ translateResetFeedback feedback =
             )
         )
         feedback
-
-
-
--- USER
-
-
-updateUser : Types.User -> Types.Auth -> Task.Task Types.Error Types.User
-updateUser user { token } =
-    authCall HttpBuilder.put ("/users/" ++ (toString user.id) ++ "/") token
-        |> HttpBuilder.withJsonBody (Encoders.user user)
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.user)
-            (HttpBuilder.jsonReader (Decoders.feedback usernameChangeFeedbackFields))
-        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-        |> Task.map .data
-
-
-usernameChangeFeedbackFields : Dict.Dict String String
-usernameChangeFeedbackFields =
-    Dict.fromList
-        [ ( "username", "global" ) ]
 
 
 
@@ -391,12 +402,79 @@ confirmEmail key { token } =
 
 fetch : Store.TypedStore a b -> Int -> Types.Auth -> Task.Task Types.Error a
 fetch typedStore id { token } =
-    authCall HttpBuilder.get ("/" ++ (Store.endpoint typedStore) ++ "/" ++ (toString id) ++ "/") token
+    authCall HttpBuilder.get
+        ("/"
+            ++ (Store.endpoint typedStore)
+            ++ "/"
+            ++ (toString id)
+            ++ "/"
+        )
+        token
         |> HttpBuilder.send
             (HttpBuilder.jsonReader (Store.decoder typedStore))
             HttpBuilder.stringReader
         |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
         |> Task.map .data
+
+
+type alias Query =
+    List ( String, String )
+
+
+type alias PageQuery =
+    { pageSize : Int
+    , page : Int
+    }
+
+
+fetchMany :
+    Store.TypedStore a b
+    -> Query
+    -> Maybe PageQuery
+    -> Types.Auth
+    -> Task.Task Types.Error (Types.Page a)
+fetchMany typedStore query maybePageQuery { token } =
+    let
+        queryString =
+            query
+                |> List.map (\( k, v ) -> k ++ "=" ++ v)
+                |> String.join "&"
+
+        queryWithPage =
+            case maybePageQuery of
+                Nothing ->
+                    queryString
+
+                Just pageQuery ->
+                    queryString
+                        ++ "&page_size="
+                        ++ (toString pageQuery.pageSize)
+                        ++ "&page="
+                        ++ (toString pageQuery.page)
+    in
+        authCall HttpBuilder.get
+            ("/" ++ (Store.endpoint typedStore) ++ "/?" ++ queryWithPage)
+            token
+            |> HttpBuilder.send
+                (HttpBuilder.jsonReader (Decoders.page <| Store.decoder typedStore))
+                HttpBuilder.stringReader
+            |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+            |> Task.map .data
+
+
+postSentence : Types.NewSentence -> Types.Auth -> Task.Task Types.Error Types.Profile
+postSentence sentence { token } =
+    let
+        postSentence =
+            authCall HttpBuilder.post "/sentences/" token
+                |> HttpBuilder.withJsonBody (Encoders.newSentence sentence)
+                |> HttpBuilder.send
+                    (always (Ok ()))
+                    HttpBuilder.stringReader
+                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
+                |> Task.map .data
+    in
+        postSentence `Task.andThen` (always <| Task.map .profile <| fetchUser token)
 
 
 
@@ -417,7 +495,7 @@ fetchMeta =
 -- QUESTIONNAIRE
 
 
-postQuestionnaire : Types.QuestionnaireForm -> Types.Auth -> Task.Task Types.Error Types.User
+postQuestionnaire : Types.QuestionnaireForm -> Types.Auth -> Task.Task Types.Error Types.Profile
 postQuestionnaire questionnaire { token } =
     let
         postQuestionnaire =
@@ -429,7 +507,7 @@ postQuestionnaire questionnaire { token } =
                 |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
                 |> Task.map .data
     in
-        postQuestionnaire `Task.andThen` (always <| fetchUser token)
+        postQuestionnaire `Task.andThen` (always <| Task.map .profile <| fetchUser token)
 
 
 postQuestionnaireFeedbackFields : Dict.Dict String String

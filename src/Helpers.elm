@@ -3,35 +3,47 @@ module Helpers
         ( (!!)
         , (!!!)
         , alreadyAuthed
+        , authenticatedOr
         , authenticatedOrIgnore
         , cmd
         , evA
         , evButton
         , feedbackOrUnrecoverable
         , ifShorterThan
+        , ifShorterThanWords
         , ifThenValidate
         , loading
         , navA
         , navButton
         , navigateTo
         , notAuthed
+        , readTime
+        , shuffle
+        , trialOr
         , updateAuth
         , updateAuthNav
+        , updateProfile
         , updateUser
+        , writeTime
         )
 
 import Cmds
+import Experiment.Model as ExpModel
 import Feedback
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Decode
+import List
+import List.Extra exposing (splitAt)
 import List.Nonempty as Nonempty
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo, Error))
+import Random
 import Router
 import String
 import Task
+import Time
 import Types
 import Validate
 
@@ -55,17 +67,50 @@ cmd msg =
     ( model, Cmd.batch (cmd :: cmds), maybeMsg )
 
 
+authenticatedOr : { a | auth : Types.AuthStatus } -> b -> (Types.Auth -> b) -> b
+authenticatedOr model default authFunc =
+    case model.auth of
+        Types.Authenticated auth ->
+            authFunc auth
+
+        _ ->
+            default
+
+
+trialOr : { a | experiment : ExpModel.Model } -> b -> (ExpModel.TrialModel -> b) -> b
+trialOr model default trialFunc =
+    case model.experiment.state of
+        ExpModel.Trial trial ->
+            trialFunc trial
+
+        _ ->
+            default
+
+
 updateUser :
     { a | auth : Types.AuthStatus }
     -> Types.User
     -> { a | auth : Types.AuthStatus }
 updateUser model user =
-    case model.auth of
-        Types.Authenticated auth ->
-            { model | auth = Types.Authenticated { auth | user = user } }
+    authenticatedOr model model <|
+        \auth -> { model | auth = Types.Authenticated { auth | user = user } }
 
-        _ ->
-            model
+
+updateProfile :
+    { a | auth : Types.AuthStatus }
+    -> Types.Profile
+    -> { a | auth : Types.AuthStatus }
+updateProfile model profile =
+    authenticatedOr model model <|
+        \auth ->
+            let
+                user =
+                    auth.user
+
+                newUser =
+                    { user | profile = profile }
+            in
+                { model | auth = Types.Authenticated { auth | user = newUser } }
 
 
 navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
@@ -89,12 +134,7 @@ authenticatedOrIgnore :
     -> (Types.Auth -> ( Model, Cmd Msg ))
     -> ( Model, Cmd Msg )
 authenticatedOrIgnore model authFunc =
-    case model.auth of
-        Types.Authenticated auth ->
-            authFunc auth
-
-        _ ->
-            model ! []
+    authenticatedOr model (model ! []) authFunc
 
 
 feedbackOrUnrecoverable :
@@ -193,9 +233,61 @@ ifShorterThan length error =
     Validate.ifInvalid (String.length >> (>) length) error
 
 
+ifShorterThanWords : Int -> error -> Validate.Validator error String
+ifShorterThanWords length error =
+    Validate.ifInvalid (String.words >> List.length >> (>) length) error
+
+
 ifThenValidate : (subject -> Bool) -> Validate.Validator error subject -> Validate.Validator error subject
 ifThenValidate condition validator subject =
     if condition subject then
         validator subject
     else
         []
+
+
+
+-- MISC
+
+
+shuffle : Random.Seed -> List a -> List a
+shuffle seed list =
+    shuffleHelp ( list, seed ) |> fst
+
+
+shuffleHelp : ( List a, Random.Seed ) -> ( List a, Random.Seed )
+shuffleHelp ( list, seed ) =
+    case list of
+        [] ->
+            ( [], seed )
+
+        head :: [] ->
+            ( [ head ], seed )
+
+        head :: rest ->
+            let
+                ( shuffledRest, newSeed ) =
+                    shuffleHelp ( rest, seed )
+
+                ( j, finalSeed ) =
+                    Random.step (Random.int 0 (List.length rest)) newSeed
+
+                finalList =
+                    case splitAt j shuffledRest of
+                        ( left, target :: right ) ->
+                            left ++ (head :: right) ++ [ target ]
+
+                        ( left, [] ) ->
+                            left ++ [ head ]
+            in
+                ( finalList, finalSeed )
+
+
+readTime : { a | readFactor : Int } -> { b | text : String } -> Time.Time
+readTime { readFactor } { text } =
+    toFloat (List.length (String.words text) * readFactor) * Time.second
+
+
+writeTime : { a | writeFactor : Int } -> { b | text : String } -> Time.Time
+writeTime { writeFactor } { text } =
+    toFloat (List.length (String.words text) * writeFactor) * Time.second

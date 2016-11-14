@@ -167,7 +167,10 @@ getError key (Feedback { known }) =
         Just (FeedbackError error) ->
             error
 
-        _ ->
+        Just (FeedbackSuccess _) ->
+            ""
+
+        Nothing ->
             ""
 
 
@@ -177,5 +180,8 @@ getSuccess key (Feedback { known }) =
         Just (FeedbackSuccess success) ->
             success
 
-        _ ->
+        Just (FeedbackError _) ->
+            Animation.style [ Animation.display Animation.none ]
+
+        Nothing ->
             Animation.style [ Animation.display Animation.none ]

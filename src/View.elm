@@ -5,6 +5,7 @@ import Auth.View.Prolific
 import Auth.View.Recover
 import Auth.View.Register
 import Auth.View.Reset
+import Experiment.View
 import Html
 import Model exposing (Model)
 import Msg exposing (Msg)
@@ -12,7 +13,6 @@ import Profile.View
 import Router
 import View.About
 import View.Error
-import View.Experiment
 import View.Home
 
 
@@ -47,4 +47,4 @@ view model =
             Profile.View.view Msg.ProfileMsg model profileRoute
 
         Router.Experiment ->
-            View.Experiment.view model
+            Experiment.View.view Msg.ExperimentMsg model
