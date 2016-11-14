@@ -170,7 +170,7 @@ meta =
         |> -- minTokens. TODO: move to backend
            Pipeline.hardcoded 10
         |> -- pausePeriod. TODO: move to backend
-           Pipeline.hardcoded 2
+           Pipeline.hardcoded 10
         |> Pipeline.required "gender_choices" (JD.list choice)
         |> Pipeline.required "job_type_choices" (JD.list choice)
         |> Pipeline.required "experiment_work" JD.int
