@@ -5,6 +5,7 @@ import Clock
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Feedback
 import Form
 import Helpers
 import Intro
@@ -15,9 +16,11 @@ import Model exposing (Model)
 import Msg as AppMsg
 import Random
 import String
+import Strings
 import Task
 import Time
 import Types
+import Validate
 
 
 update :
@@ -36,7 +39,7 @@ update lift auth msg model =
 
         ClockMsg msg ->
             updateRunningTrialOrIgnore model <|
-                \_ _ state ->
+                \_ state ->
                     case state of
                         ExpModel.Reading clock ->
                             let
@@ -192,7 +195,7 @@ update lift auth msg model =
         InstructionsStart ->
             -- TODO: differentiate training and exp, and set intro path accordingly
             updateRunningOrIgnore model <|
-                \_ running ->
+                \running ->
                     ( { running
                         | state = ExpModel.Instructions (Intro.start Instructions.order)
                       }
@@ -295,7 +298,7 @@ update lift auth msg model =
                                         fetchUnshapedTree
             in
                 updateRunningOrIgnore model <|
-                    \_ running ->
+                    \running ->
                         case running.preLoaded of
                             [] ->
                                 ( { running | loadingNext = True }
@@ -313,7 +316,7 @@ update lift auth msg model =
 
         LoadedTrial sentence ->
             updateRunningOrIgnore model <|
-                \auth running ->
+                \running ->
                     let
                         reading =
                             Clock.init (Helpers.readTime auth.meta sentence)
@@ -329,7 +332,7 @@ update lift auth msg model =
 
         TrialTask ->
             updateRunningTrialOrIgnore model <|
-                \_ _ _ ->
+                \_ _ ->
                     ( ExpModel.Tasking (Clock.init <| 2 * Time.second)
                     , Cmd.none
                     , Nothing
@@ -337,50 +340,189 @@ update lift auth msg model =
 
         TrialWrite ->
             updateRunningTrialOrIgnore model <|
-                \auth sentence _ ->
+                \sentence _ ->
                     ( ExpModel.Writing
                         (Clock.init <| Helpers.writeTime auth.meta sentence)
-                        (Form.empty ())
+                        (Form.empty "")
                     , Cmd.none
                     , Nothing
                     )
 
         TrialTimeout ->
             updateRunningTrialOrIgnore model <|
-                \_ _ _ ->
+                \_ _ ->
                     ( ExpModel.Timeout
                     , Cmd.none
                     , Nothing
                     )
 
         WriteInput input ->
-            -- TODO: set input
-            Debug.crash "todo"
+            updateRunningTrialOrIgnore model <|
+                \_ state ->
+                    case state of
+                        ExpModel.Writing clock form ->
+                            ( ExpModel.Writing clock (Form.input input form)
+                            , Cmd.none
+                            , Nothing
+                            )
+
+                        _ ->
+                            ( state
+                            , Cmd.none
+                            , Nothing
+                            )
 
         WriteFail error ->
-            -- TODO
-            -- if feedback, set it and resume clock
-            -- otherwise, move to error
-            Debug.crash "todo"
+            Helpers.feedbackOrUnrecoverable error model <|
+                \feedback ->
+                    updateRunningTrialOrIgnore model <|
+                        \_ state ->
+                            case state of
+                                ExpModel.Writing clock form ->
+                                    ( ExpModel.Writing
+                                        (Clock.resume clock)
+                                        (Form.fail feedback form)
+                                    , Cmd.none
+                                    , Nothing
+                                    )
+
+                                _ ->
+                                    ( state
+                                    , Cmd.none
+                                    , Nothing
+                                    )
 
         WriteSubmit input ->
-            -- TODO
             -- validate if enough words
             --   if not, Fail with feedback
             --   if yes, pause clock and:
-            --     submit if not in training, getting back profile
             --     if in training:
             --       if sentences left, TrialSuccess directly with same profile
             --       if nothing left, save trained in profile, getting back profile in TrialSuccess
-            Debug.crash "todo"
+            --     submit if not in training, getting back profile
+            let
+                profile =
+                    auth.user.profile
+
+                feedback =
+                    [ Helpers.ifShorterThanWords auth.meta.minTokens
+                        ( "global", Strings.sentenceTooShort auth.meta.minTokens )
+                    ]
+                        |> Validate.all
+                        |> Feedback.fromValidator input
+
+                newSentence sentence clock =
+                    { text = input
+                    , language = sentence.language
+                    , bucket = sentence.bucket
+                    , readTimeProportion = 1
+                    , readTimeAllotted = Helpers.readTime auth.meta sentence
+                    , writeTimeProportion = Clock.progress clock
+                    , writeTimeAllotted = Helpers.writeTime auth.meta sentence
+                    , parentId = Just sentence.id
+                    }
+
+                runningState running sentence clock form =
+                    { running
+                        | state =
+                            ExpModel.Trial sentence <|
+                                ExpModel.Writing
+                                    (Clock.pause clock)
+                                    (Form.setStatus Form.Sending form)
+                    }
+
+                inputValid running sentence clock form =
+                    case Lifecycle.state auth.meta profile of
+                        Lifecycle.Training _ ->
+                            -- TODO: use a running.streak variable instead
+                            if List.length running.preLoaded > 0 then
+                                -- Move directly to next training trial
+                                ( runningState running sentence clock form
+                                , Cmd.none
+                                , Just <| lift (TrialSuccess profile)
+                                )
+                            else
+                                -- Save our newly trained status
+                                ( runningState running sentence clock form
+                                , Api.updateProfile { profile | trained = True } auth
+                                    |> Task.perform AppMsg.Error (lift << TrialSuccess)
+                                , Nothing
+                                )
+
+                        Lifecycle.Experiment _ ->
+                            -- Post the new sentence
+                            ( runningState running sentence clock form
+                            , Api.postSentence (newSentence sentence clock) auth
+                                |> Task.perform AppMsg.Error (lift << TrialSuccess)
+                            , Nothing
+                            )
+
+                        Lifecycle.Done ->
+                            ( running
+                            , Cmd.none
+                            , Nothing
+                            )
+
+                inputInvalid running =
+                    ( running
+                    , Cmd.none
+                    , Just <| lift <| WriteFail (Types.ApiFeedback feedback)
+                    )
+            in
+                updateRunningOrIgnore model <|
+                    \running ->
+                        case running.state of
+                            ExpModel.Trial sentence trialState ->
+                                case trialState of
+                                    ExpModel.Writing clock form ->
+                                        if Feedback.isEmpty feedback then
+                                            inputValid running sentence clock form
+                                        else
+                                            inputInvalid running
+
+                                    _ ->
+                                        ( running
+                                        , Cmd.none
+                                        , Nothing
+                                        )
+
+                            _ ->
+                                ( running
+                                , Cmd.none
+                                , Nothing
+                                )
 
         TrialSuccess profile ->
-            -- TODO
             -- get previous profile lifecycle
             -- update profile
             -- if lifecycle has changed, JustFinished
             -- if not, LoadTrial or Pause
-            Debug.crash "todo"
+            let
+                previousProfile =
+                    auth.user.profile
+
+                previousState =
+                    Lifecycle.state auth.meta previousProfile
+
+                currentState =
+                    Lifecycle.state auth.meta profile
+
+                profileUpdatedModel =
+                    Helpers.updateProfile model profile
+            in
+                updateRunningOrIgnore profileUpdatedModel <|
+                    \running ->
+                        if previousState /= currentState then
+                            ( { running | state = ExpModel.JustFinished }
+                            , Cmd.none
+                            , Nothing
+                            )
+                        else
+                            -- TODO: or pause once we have running.streak
+                            ( running
+                            , Cmd.none
+                            , Just <| lift LoadTrial
+                            )
 
         {-
            OTHER RUN STATE
@@ -396,24 +538,21 @@ update lift auth msg model =
 
 updateRunningOrIgnore :
     Model
-    -> (Types.Auth
-        -> ExpModel.RunningModel
+    -> (ExpModel.RunningModel
         -> ( ExpModel.RunningModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
        )
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningOrIgnore model updater =
-    Helpers.authenticatedOr model ( model, Cmd.none, Nothing ) <|
-        \auth ->
-            Helpers.runningOr model ( model, Cmd.none, Nothing ) <|
-                \running ->
-                    let
-                        ( newRunning, cmd, maybeOut ) =
-                            updater auth running
-                    in
-                        ( { model | experiment = ExpModel.Running newRunning }
-                        , cmd
-                        , maybeOut
-                        )
+    Helpers.runningOr model ( model, Cmd.none, Nothing ) <|
+        \running ->
+            let
+                ( newRunning, cmd, maybeOut ) =
+                    updater running
+            in
+                ( { model | experiment = ExpModel.Running newRunning }
+                , cmd
+                , maybeOut
+                )
 
 
 updateRunningInstructionsOrIgnore :
@@ -424,7 +563,7 @@ updateRunningInstructionsOrIgnore :
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningInstructionsOrIgnore model updater =
     updateRunningOrIgnore model <|
-        \_ running ->
+        \running ->
             case running.state of
                 ExpModel.Instructions state ->
                     let
@@ -445,20 +584,19 @@ updateRunningInstructionsOrIgnore model updater =
 
 updateRunningTrialOrIgnore :
     Model
-    -> (Types.Auth
-        -> Types.Sentence
+    -> (Types.Sentence
         -> ExpModel.TrialState
         -> ( ExpModel.TrialState, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
        )
     -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
 updateRunningTrialOrIgnore model updater =
     updateRunningOrIgnore model <|
-        \auth running ->
+        \running ->
             case running.state of
                 ExpModel.Trial sentence state ->
                     let
                         ( newState, cmd, maybeOut ) =
-                            updater auth sentence state
+                            updater sentence state
                     in
                         ( { running | state = ExpModel.Trial sentence newState }
                         , cmd

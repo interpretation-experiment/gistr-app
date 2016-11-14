@@ -3,6 +3,9 @@ module Clock
         ( Model
         , Msg
         , init
+        , pause
+        , progress
+        , resume
         , subscription
         , update
         , view
@@ -18,6 +21,8 @@ import Time
 type Status
     = Init
     | Running Time.Time Time.Time
+    | Paused Time.Time
+    | Resuming Time.Time
     | Finished
 
 
@@ -36,6 +41,44 @@ init duration =
         }
 
 
+pause : Model -> Model
+pause (Model model) =
+    case model.status of
+        Init ->
+            Model model
+
+        Running start current ->
+            Model { model | status = Paused (current - start) }
+
+        Paused _ ->
+            Model model
+
+        Resuming elapsed ->
+            Model { model | status = Paused elapsed }
+
+        Finished ->
+            Model model
+
+
+resume : Model -> Model
+resume (Model model) =
+    case model.status of
+        Init ->
+            Model model
+
+        Running _ _ ->
+            Model model
+
+        Paused elapsed ->
+            Model { model | status = Resuming elapsed }
+
+        Resuming _ ->
+            Model model
+
+        Finished ->
+            Model model
+
+
 type Msg
     = Tick Time.Time
 
@@ -43,22 +86,35 @@ type Msg
 update : a -> Msg -> Model -> ( Model, Maybe a )
 update endMsg msg (Model model) =
     case msg of
-        Tick time ->
+        Tick now ->
             case model.status of
                 Init ->
-                    ( Model { model | status = Running time time }
+                    ( Model { model | status = Running now now }
                     , Nothing
                     )
 
                 Running start _ ->
-                    if time < start + model.duration then
-                        ( Model { model | status = Running start time }
+                    if now < start + model.duration then
+                        ( Model { model | status = Running start now }
                         , Nothing
                         )
                     else
                         ( Model { model | status = Finished }
                         , Just endMsg
                         )
+
+                Paused _ ->
+                    ( Model model
+                    , Nothing
+                    )
+
+                Resuming elapsed ->
+                    -- Elapsed is always computed as (current - start), which
+                    -- is always < duration, so no need to check if we've
+                    -- finished the duration
+                    ( Model { model | status = Running (now - elapsed) now }
+                    , Nothing
+                    )
 
                 Finished ->
                     ( Model model
@@ -75,6 +131,12 @@ subscription lift (Model model) =
         Running _ _ ->
             AnimationFrame.times (lift << Tick)
 
+        Paused _ ->
+            Sub.none
+
+        Resuming _ ->
+            AnimationFrame.times (lift << Tick)
+
         Finished ->
             Sub.none
 
@@ -87,6 +149,12 @@ progress (Model model) =
 
         Running start current ->
             (current - start) / model.duration
+
+        Paused elapsed ->
+            elapsed / model.duration
+
+        Resuming elapsed ->
+            elapsed / model.duration
 
         Finished ->
             1

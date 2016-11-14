@@ -10,6 +10,7 @@ module Helpers
         , evButton
         , feedbackOrUnrecoverable
         , ifShorterThan
+        , ifShorterThanWords
         , ifThenValidate
         , loading
         , navA
@@ -230,6 +231,11 @@ alreadyAuthed user =
 ifShorterThan : Int -> error -> Validate.Validator error String
 ifShorterThan length error =
     Validate.ifInvalid (String.length >> (>) length) error
+
+
+ifShorterThanWords : Int -> error -> Validate.Validator error String
+ifShorterThanWords length error =
+    Validate.ifInvalid (String.words >> List.length >> (>) length) error
 
 
 ifThenValidate : (subject -> Bool) -> Validate.Validator error subject -> Validate.Validator error subject

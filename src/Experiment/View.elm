@@ -4,8 +4,12 @@ import Clock
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Feedback
+import Form
 import Helpers
 import Html
+import Html.Attributes as Attributes
+import Html.Events as Events
 import Intro
 import Lifecycle
 import Model exposing (Model)
@@ -93,7 +97,7 @@ body lift profile meta model =
                             instructions lift introState
 
                         ExpModel.Trial sentence state ->
-                            trial sentence state
+                            trial lift sentence state
 
                         ExpModel.Pause ->
                             Html.div [] [ Html.text "TODO: pause" ]
@@ -150,27 +154,58 @@ instructions lift state =
         ]
 
 
-trial : Types.Sentence -> ExpModel.TrialState -> Html.Html AppMsg.Msg
-trial sentence state =
+trial : (Msg -> AppMsg.Msg) -> Types.Sentence -> ExpModel.TrialState -> Html.Html AppMsg.Msg
+trial lift sentence state =
     case state of
         ExpModel.Reading clock ->
+            -- TODO
             Html.div []
-                [ Html.text "TODO: read"
+                [ Html.text "Read"
                 , Html.p [] [ Html.text sentence.text ]
                 , Clock.view clock
                 ]
 
         ExpModel.Tasking clock ->
+            -- TODO
             Html.div []
-                [ Html.text "TODO: tasking"
+                [ Html.text "Tasking"
                 , Clock.view clock
                 ]
 
         ExpModel.Writing clock form ->
-            Html.div []
-                [ Html.text "TODO: writing"
-                , Clock.view clock
-                ]
+            write lift sentence clock form
 
         ExpModel.Timeout ->
-            Html.div [] [ Html.text "TODO: timeout" ]
+            Html.div []
+                [ Html.text "TODO: timeout"
+                , Helpers.evButton [] (lift LoadTrial) "Next"
+                ]
+
+
+write :
+    (Msg -> AppMsg.Msg)
+    -> Types.Sentence
+    -> Clock.Model
+    -> Form.Model String
+    -> Html.Html AppMsg.Msg
+write lift sentence clock { input, feedback, status } =
+    Html.div []
+        [ Html.text "Write"
+        , Html.form [ Events.onSubmit (lift <| WriteSubmit input) ]
+            [ Html.div []
+                [ Html.label [ Attributes.for "inputText" ] [ Html.text "Write:" ]
+                , Html.textarea
+                    [ Attributes.id "inputText"
+                    , Attributes.autofocus True
+                    , Attributes.value input
+                    , Events.onInput (lift << WriteInput)
+                    ]
+                    []
+                , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+                ]
+            , Html.button
+                [ Attributes.type' "submit" ]
+                [ Html.text "Send" ]
+            ]
+        , Clock.view clock
+        ]

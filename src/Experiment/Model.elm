@@ -68,5 +68,5 @@ type State
 type TrialState
     = Reading Clock.Model
     | Tasking Clock.Model
-    | Writing Clock.Model (Form.Model ())
+    | Writing Clock.Model (Form.Model String)
     | Timeout

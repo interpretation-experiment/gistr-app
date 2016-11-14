@@ -148,3 +148,8 @@ questionnaireComment =
     , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "contact us" ]
     , Html.text "!"
     ]
+
+
+sentenceTooShort : Int -> String
+sentenceTooShort minTokens =
+    "Please type a longer sentence (at least " ++ toString minTokens ++ " words)"
