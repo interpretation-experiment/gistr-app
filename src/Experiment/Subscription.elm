@@ -35,7 +35,7 @@ subscription lift model =
     in
         Sub.batch
             [ Intro.subscription
-                (lift << InstructionsMsg << Intro.KeyDown)
+                (lift << InstructionsMsg)
                 (ExpModel.instructionsState model.experiment)
             , trialTimer
             ]
