@@ -14,6 +14,7 @@ import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
+import Notification
 import Router
 import Update
 import View
@@ -90,6 +91,7 @@ subscriptions model =
                 , Form.successAnimations model.emails
                 ]
         , ExpSub.subscription Msg.ExperimentMsg model
+        , Notification.subscription Msg.Notify model.notifications
         ]
 
 

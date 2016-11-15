@@ -8,6 +8,7 @@ import Helpers exposing ((!!))
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
+import Notification
 import Profile.Update as ProfileUpdate
 import Router
 import Store
@@ -20,6 +21,9 @@ update msg model =
             doUpdate msg model
 
         ExperimentMsg (ExpMsg.ClockMsg _) ->
+            doUpdate msg model
+
+        Notify (Notification.Animate _) ->
             doUpdate msg model
 
         _ ->
@@ -43,6 +47,15 @@ doUpdate msg model =
                 , emails = Form.animate msg model.emails
             }
                 ! []
+
+        Notify msg ->
+            let
+                ( notifications, cmd ) =
+                    Notification.update Notify msg model.notifications
+            in
+                ( { model | notifications = notifications }
+                , cmd
+                )
 
         {-
            NAVIGATION

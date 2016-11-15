@@ -9,6 +9,7 @@ import Experiment.View
 import Html
 import Model exposing (Model)
 import Msg exposing (Msg)
+import Notification
 import Profile.View
 import Router
 import View.About
@@ -16,8 +17,21 @@ import View.Error
 import View.Home
 
 
+notificationConfig : Notification.ViewConfig String Msg
+notificationConfig =
+    Notification.viewConfig Msg.Notify (\s -> Html.p [] [ Html.text s ])
+
+
 view : Model -> Html.Html Msg
 view model =
+    Html.div []
+        [ Notification.view notificationConfig model.notifications
+        , routeView model
+        ]
+
+
+routeView : Model -> Html.Html Msg
+routeView model =
     case model.route of
         Router.Home ->
             View.Home.view model
