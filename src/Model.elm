@@ -11,6 +11,7 @@ import Experiment.Instructions as ExpInstructions
 import Experiment.Model as ExpModel
 import Form
 import Intro
+import Notification
 import Router
 import Store
 import Types
@@ -24,6 +25,7 @@ type alias Model =
     , auth : Types.AuthStatus
     , store : Store.Store
     , error : Maybe Types.Error
+    , notifications : Notification.Model String
     , login : Form.Model Types.Credentials
     , recover : FinishableForm String String
     , reset : FinishableForm Types.ResetCredentials ()
@@ -44,6 +46,7 @@ initialModel route =
     , auth = Types.Authenticating
     , store = Store.emptyStore
     , error = Nothing
+    , notifications = Notification.empty
     , login = Form.empty Types.emptyCredentials
     , recover = Form (Form.empty "")
     , reset = Form (Form.empty Types.emptyResetCredentials)
@@ -68,6 +71,7 @@ emptyForms model =
             | auth = model.auth
             , store = model.store
             , error = model.error
+            , notifications = model.notifications
         }
 
 

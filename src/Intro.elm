@@ -1,6 +1,6 @@
 module Intro
     exposing
-        ( Msg(KeyDown)
+        ( Msg
         , State
         , UpdateConfig
         , ViewConfig
@@ -200,10 +200,10 @@ update (UpdateConfig config) msg state =
 -- SUBSCRIPTION
 
 
-subscription : (KeyCode -> msg) -> State id -> Sub msg
-subscription toMsg state =
+subscription : (Msg -> msg) -> State id -> Sub msg
+subscription lift state =
     if isRunning state then
-        Keyboard.downs toMsg
+        Keyboard.downs (lift << KeyDown)
     else
         Sub.none
 
