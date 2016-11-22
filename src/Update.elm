@@ -62,10 +62,10 @@ doUpdate msg model =
         -}
         NavigateTo route ->
             let
-                ( model', cmd ) =
+                ( newModel, cmd ) =
                     Helpers.navigateTo model route
             in
-                model' ! [ cmd, Navigation.newUrl (Router.toUrl model'.route) ]
+                newModel ! [ cmd, Navigation.newUrl (Router.toUrl newModel.route) ]
 
         Error error ->
             -- Don't use `udpate (NavigateTo ...)` here so as not to lose the form inputs

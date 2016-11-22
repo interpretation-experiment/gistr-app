@@ -47,7 +47,7 @@ form lift { input, feedback, status } meta =
             Html.label []
                 [ Html.input
                     [ Attributes.disabled (status /= Form.Entering)
-                    , Attributes.type' "radio"
+                    , Attributes.type_ "radio"
                     , Attributes.value gender.name
                     , Attributes.checked (input.gender == gender.name)
                     , Events.onCheck <|
@@ -104,7 +104,7 @@ form lift { input, feedback, status } meta =
         ( submitButtons, submitMsg ) =
             case status of
                 Form.Entering ->
-                    ( [ Html.button [ Attributes.type' "submit" ]
+                    ( [ Html.button [ Attributes.type_ "submit" ]
                             [ Html.text "Confirm answers" ]
                       ]
                     , lift <| QuestionnaireFormConfirm input
@@ -116,7 +116,7 @@ form lift { input, feedback, status } meta =
                             (lift QuestionnaireFormCorrect)
                             "Correct answers"
                       , Html.button
-                            [ Attributes.type' "submit"
+                            [ Attributes.type_ "submit"
                             , Attributes.disabled (status /= Form.Confirming)
                             ]
                             [ Html.text "Send answers" ]
@@ -132,7 +132,7 @@ form lift { input, feedback, status } meta =
                 , Html.input
                     [ Attributes.id "inputAge"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.type' "number"
+                    , Attributes.type_ "number"
                     , Attributes.value input.age
                     , Events.onInput <|
                         lift
@@ -153,7 +153,7 @@ form lift { input, feedback, status } meta =
                     [ Html.input
                         [ Attributes.id "inputInformed"
                         , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.type' "checkbox"
+                        , Attributes.type_ "checkbox"
                         , Attributes.value "informed"
                         , Attributes.checked input.informed
                         , Events.onCheck <|
