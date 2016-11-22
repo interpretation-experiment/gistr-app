@@ -40,7 +40,7 @@ preUser =
         |> Pipeline.required "username" JD.string
         |> Pipeline.required "is_active" JD.bool
         |> Pipeline.required "is_staff" JD.bool
-        |> Pipeline.required "profile" (JD.maybe profile)
+        |> Pipeline.required "profile" (JD.nullable profile)
         |> Pipeline.required "emails" (JD.list email)
 
 
@@ -60,14 +60,14 @@ profile =
     Pipeline.decode Types.Profile
         |> Pipeline.required "id" JD.int
         |> Pipeline.required "created" date
-        |> Pipeline.required "prolific_id" (JD.maybe JD.string)
+        |> Pipeline.required "prolific_id" (JD.nullable JD.string)
         |> Pipeline.required "mothertongue" JD.string
         |> Pipeline.required "trained_reformulations" JD.bool
         |> Pipeline.required "introduced_exp_home" JD.bool
         |> Pipeline.required "introduced_exp_play" JD.bool
         |> Pipeline.required "user" JD.int
-        |> Pipeline.required "questionnaire" (JD.maybe JD.int)
-        |> Pipeline.required "word_span" (JD.maybe JD.int)
+        |> Pipeline.required "questionnaire" (JD.nullable JD.int)
+        |> Pipeline.required "word_span" (JD.nullable JD.int)
         |> Pipeline.required "sentences" (JD.list JD.int)
         |> Pipeline.required "trees" (JD.list JD.int)
         |> Pipeline.required "user_username" JD.string
@@ -202,7 +202,7 @@ sentence =
         |> Pipeline.required "write_time_allotted" JD.float
         |> Pipeline.required "tree" JD.int
         |> Pipeline.required "profile" JD.int
-        |> Pipeline.required "parent" (JD.maybe JD.int)
+        |> Pipeline.required "parent" (JD.nullable JD.int)
         |> Pipeline.required "children" (JD.list JD.int)
         |> Pipeline.required "profile_username" JD.string
 
