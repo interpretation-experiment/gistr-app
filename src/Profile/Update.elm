@@ -237,7 +237,7 @@ update lift auth msg model =
                             )
             in
                 ( Helpers.updateUser model { user | emails = emails }
-                , (fixPrimary `Task.andThen` (always <| Api.deleteEmail email auth))
+                , Task.sequence [ fixPrimary, Api.deleteEmail email auth ]
                     |> Task.perform AppMsg.Error (lift << DeleteEmailSuccess)
                 , Nothing
                 )

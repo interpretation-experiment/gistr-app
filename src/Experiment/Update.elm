@@ -194,29 +194,25 @@ update lift auth msg model =
                     Task.map2 Helpers.shuffle seed fetchSeveralSentences
 
                 -- SINGLE-SENTENCE FETCHING TASKS
+                firstRootOr default page =
+                    case page.items of
+                        tree :: _ ->
+                            Task.succeed tree.root
+
+                        [] ->
+                            default
+
                 fetchUnshapedSingleSentence =
                     Api.fetchMany model.store.trees unshapedSingleFilter Nothing auth
-                        `Task.andThen`
-                            \page ->
-                                case page.items of
-                                    tree :: _ ->
-                                        Task.succeed tree.root
-
-                                    [] ->
-                                        Types.Unrecoverable
-                                            "Found no suitable tree for profile"
-                                            |> Task.fail
+                        |> Task.andThen
+                            (firstRootOr <|
+                                Task.fail <|
+                                    Types.Unrecoverable "Found no suitable tree for profile"
+                            )
 
                 fetchSingleSentence =
                     Api.fetchMany model.store.trees shapedSingleFilter Nothing auth
-                        `Task.andThen`
-                            \page ->
-                                case page.items of
-                                    tree :: _ ->
-                                        Task.succeed tree.root
-
-                                    [] ->
-                                        fetchUnshapedSingleSentence
+                        |> Task.andThen (firstRootOr fetchUnshapedSingleSentence)
 
                 -- LOADING AND PRELOADING HELPERS
                 selectPreloaded preLoaded =
@@ -229,7 +225,7 @@ update lift auth msg model =
 
                 preloadAndSelect =
                     fetchRandomizedSentences
-                        `Task.andThen` (selectPreloaded >> Task.fromResult)
+                        |> Task.andThen (selectPreloaded >> Task.fromResult)
                         |> Task.perform AppMsg.Error (lift << LoadedTrial)
 
                 loadSingle =

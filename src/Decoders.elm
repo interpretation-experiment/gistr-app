@@ -84,15 +84,17 @@ treeCounts =
 
 date : JD.Decoder Date.Date
 date =
-    JD.string
-        `JD.andThen`
-            \str ->
-                case Date.fromString str of
-                    Err err ->
-                        JD.fail err
+    let
+        fromString string =
+            case Date.fromString string of
+                Err err ->
+                    JD.fail err
 
-                    Ok date ->
-                        JD.succeed date
+                Ok date ->
+                    JD.succeed date
+    in
+        JD.string
+            |> JD.andThen fromString
 
 
 email : JD.Decoder Types.Email
@@ -108,13 +110,16 @@ email =
 
 feedback : Dict.Dict String String -> JD.Decoder Feedback.Feedback
 feedback fields =
-    (JD.dict (JD.tuple1 identity JD.string) |> JD.map (toFeedback fields))
-        `JD.andThen`
-            \feedback ->
-                if Feedback.noKnownErrors feedback then
-                    JD.fail ("Unknown errors: " ++ (Feedback.getUnknown feedback))
-                else
-                    JD.succeed feedback
+    let
+        checkKnown feedback =
+            if Feedback.noKnownErrors feedback then
+                JD.fail ("Unknown errors: " ++ (Feedback.getUnknown feedback))
+            else
+                JD.succeed feedback
+    in
+        JD.dict (JD.tuple1 identity JD.string)
+            |> JD.map (toFeedback fields)
+            |> JD.andThen checkKnown
 
 
 toFeedback : Dict.Dict String String -> Dict.Dict String String -> Feedback.Feedback
