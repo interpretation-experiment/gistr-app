@@ -8,7 +8,7 @@ module Helpers
         , cmd
         , evA
         , evButton
-        , feedbackOrUnrecoverable
+        , extractFeedback
         , ifShorterThan
         , ifShorterThanWords
         , ifThenValidate
@@ -18,6 +18,7 @@ module Helpers
         , navigateTo
         , notAuthed
         , readTime
+        , resultToTask
         , shuffle
         , trialOr
         , updateAuth
@@ -28,12 +29,14 @@ module Helpers
         )
 
 import Cmds
+import Decoders
 import Experiment.Model as ExpModel
 import Feedback
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Json.Decode as Decode
+import Http
+import Json.Decode as JD
 import List
 import List.Extra exposing (splitAt)
 import List.Nonempty as Nonempty
@@ -50,7 +53,7 @@ import Validate
 
 cmd : a -> Cmd a
 cmd msg =
-    Task.perform (always msg) (always msg) (Task.succeed ())
+    Task.perform (always msg) (Task.succeed ())
 
 
 
@@ -137,18 +140,29 @@ authenticatedOrIgnore model authFunc =
     authenticatedOr model (model ! []) authFunc
 
 
-feedbackOrUnrecoverable :
+extractFeedback :
     Types.Error
     -> Model
+    -> List ( String, String )
     -> (Feedback.Feedback -> ( Model, Cmd Msg, Maybe Msg ))
     -> ( Model, Cmd Msg, Maybe Msg )
-feedbackOrUnrecoverable error model feedbackFunc =
+extractFeedback error model fields feedbackFunc =
     case error of
-        Types.Unrecoverable _ ->
-            ( model, Cmd.none, Just (Error error) )
+        Types.HttpError httpError ->
+            case httpError of
+                Http.BadStatus response ->
+                    case JD.decodeString (Decoders.feedback fields) response.body of
+                        Ok feedback ->
+                            feedbackFunc feedback
 
-        Types.ApiFeedback feedback ->
-            feedbackFunc feedback
+                        Err _ ->
+                            ( model, Cmd.none, Just <| Error <| error )
+
+                _ ->
+                    ( model, Cmd.none, Just <| Error <| error )
+
+        Types.Unrecoverable _ ->
+            ( model, Cmd.none, Just <| Error <| error )
 
 
 
@@ -206,7 +220,7 @@ onClickMsg msg =
     Events.onWithOptions
         "click"
         { stopPropagation = True, preventDefault = True }
-        (msg |> Decode.succeed)
+        (msg |> JD.succeed)
 
 
 loading : Html.Html msg
@@ -252,7 +266,7 @@ ifThenValidate condition validator subject =
 
 shuffle : Random.Seed -> List a -> List a
 shuffle seed list =
-    shuffleHelp ( list, seed ) |> fst
+    shuffleHelp ( list, seed ) |> Tuple.first
 
 
 shuffleHelp : ( List a, Random.Seed ) -> ( List a, Random.Seed )
@@ -291,3 +305,13 @@ readTime { readFactor } { text } =
 writeTime : { a | writeFactor : Int } -> { b | text : String } -> Time.Time
 writeTime { writeFactor } { text } =
     toFloat (List.length (String.words text) * writeFactor) * Time.second
+
+
+resultToTask : Result a b -> Task.Task a b
+resultToTask result =
+    case result of
+        Ok value ->
+            Task.succeed value
+
+        Err error ->
+            Task.fail error

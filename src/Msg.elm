@@ -1,12 +1,12 @@
 module Msg exposing (Msg(..))
 
 import Animation
+import Api
 import Auth.Msg as Auth
 import Experiment.Msg as Experiment
 import Notification
 import Profile.Msg as Profile
 import Router
-import Store
 import Types
 
 
@@ -19,7 +19,7 @@ type Msg
     | NavigateTo Router.Route
     | Error Types.Error
       -- STORE
-    | GotStoreItem Store.Item
+    | WordSpanResult (Api.Result Types.WordSpan)
       -- AUTH
     | AuthMsg Auth.Msg
       -- PROFILE

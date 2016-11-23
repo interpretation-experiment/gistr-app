@@ -168,7 +168,7 @@ wordSpanSummary maybeId store =
         Just id ->
             let
                 detail =
-                    case Store.get id store.wordSpans of
+                    case store.wordSpan of
                         Nothing ->
                             ""
 
@@ -323,7 +323,7 @@ email lift email_ =
                 []
             else
                 [ Html.span [] [ Html.text "Unverified" ]
-                , Helpers.evButton [ disabled ] (lift <| RequestEmailVerification email_) "Send verification email"
+                , Helpers.evButton [ disabled ] (lift <| VerifyEmail email_) "Send verification email"
                 ]
 
         setPrimary =

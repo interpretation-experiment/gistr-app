@@ -1,7 +1,6 @@
 module Api.Calls
     exposing
-        ( ApiTask
-        , andThen
+        ( Task
         , deleteEmail
         , getMeta
         , getPreUser
@@ -12,8 +11,6 @@ module Api.Calls
         , getTree
         , getTrees
         , getWordSpan
-        , map
-        , map2
         , postEmail
         , postEmailConfirm
         , postEmailVerify
@@ -29,12 +26,10 @@ module Api.Calls
         , putEmail
         , putProfile
         , putUser
-        , succeed
         )
 
 import Decoders
 import Encoders
-import Feedback
 import Http
 import HttpBuilder exposing (RequestBuilder)
 import Json.Decode as JD
@@ -56,37 +51,8 @@ baseUrl =
 -- CALL BUILDING
 
 
-type alias ApiTask a =
-    Task.Task Http.Error (Result Feedback.Feedback a)
-
-
-succeed : a -> ApiTask a
-succeed =
-    Task.succeed << Ok
-
-
-andThen : (a -> ApiTask b) -> ApiTask a -> ApiTask b
-andThen thenTask task =
-    let
-        okNext result =
-            case result of
-                Ok value ->
-                    thenTask value
-
-                Err error ->
-                    Task.succeed (Err error)
-    in
-        task |> Task.andThen okNext
-
-
-map : (a -> b) -> ApiTask a -> ApiTask b
-map func =
-    Task.map (Result.map func)
-
-
-map2 : (a -> b -> c) -> ApiTask a -> ApiTask b -> ApiTask c
-map2 func =
-    Task.map2 (Result.map2 func)
+type alias Task a =
+    Task.Task Types.Error a
 
 
 expectNothing : Http.Expect ()
@@ -122,28 +88,12 @@ builder { method, path, query, token, expect } =
         |> HttpBuilder.withExpect expect
 
 
-extractFeedback : List ( String, String ) -> Http.Error -> ApiTask a
-extractFeedback fields error =
-    case error of
-        Http.BadStatus response ->
-            case JD.decodeString (Decoders.feedback fields) response.body of
-                Ok feedback ->
-                    Task.succeed (Err feedback)
-
-                Err _ ->
-                    Task.fail error
-
-        _ ->
-            Task.fail error
-
-
-finalize : List ( String, String ) -> RequestBuilder a -> ApiTask a
-finalize feedback builder =
+toTask : RequestBuilder a -> Task a
+toTask builder =
     builder
         |> HttpBuilder.toRequest
         |> Http.toTask
-        |> Task.map Ok
-        |> Task.onError (extractFeedback feedback)
+        |> Task.mapError Types.HttpError
 
 
 get :
@@ -152,7 +102,7 @@ get :
     , token : Maybe Types.Token
     , expect : Http.Expect a
     }
-    -> ApiTask a
+    -> Task a
 get { path, query, token, expect } =
     builder
         { method = HttpBuilder.get
@@ -161,7 +111,7 @@ get { path, query, token, expect } =
         , token = token
         , expect = expect
         }
-        |> finalize []
+        |> toTask
 
 
 post :
@@ -170,10 +120,9 @@ post :
     , token : Maybe Types.Token
     , body : Maybe JE.Value
     , expect : Http.Expect a
-    , feedback : List ( String, String )
     }
-    -> ApiTask a
-post { path, query, token, body, expect, feedback } =
+    -> Task a
+post { path, query, token, body, expect } =
     builder
         { method = HttpBuilder.post
         , path = path
@@ -182,7 +131,7 @@ post { path, query, token, body, expect, feedback } =
         , expect = expect
         }
         |> unwrap identity HttpBuilder.withJsonBody body
-        |> finalize feedback
+        |> toTask
 
 
 put :
@@ -191,10 +140,9 @@ put :
     , token : Maybe Types.Token
     , body : Maybe JE.Value
     , expect : Http.Expect a
-    , feedback : List ( String, String )
     }
-    -> ApiTask a
-put { path, query, token, body, expect, feedback } =
+    -> Task a
+put { path, query, token, body, expect } =
     builder
         { method = HttpBuilder.put
         , path = path
@@ -203,7 +151,7 @@ put { path, query, token, body, expect, feedback } =
         , expect = expect
         }
         |> unwrap identity HttpBuilder.withJsonBody body
-        |> finalize feedback
+        |> toTask
 
 
 delete :
@@ -212,7 +160,7 @@ delete :
     , token : Maybe Types.Token
     , expect : Http.Expect a
     }
-    -> ApiTask a
+    -> Task a
 delete { path, query, token, expect } =
     builder
         { method = HttpBuilder.delete
@@ -221,14 +169,14 @@ delete { path, query, token, expect } =
         , token = token
         , expect = expect
         }
-        |> finalize []
+        |> toTask
 
 
 
 -- TOKEN
 
 
-postLogin : Types.Credentials -> ApiTask Types.Token
+postLogin : Types.Credentials -> Task Types.Token
 postLogin credentials =
     post
         { path = "/rest-auth/login/"
@@ -236,15 +184,10 @@ postLogin credentials =
         , token = Nothing
         , body = Just <| Encoders.credentials credentials
         , expect = Http.expectJson Decoders.token
-        , feedback =
-            [ ( "username", "username" )
-            , ( "password", "password" )
-            , ( "non_field_errors", "global" )
-            ]
         }
 
 
-postRegister : Types.RegisterCredentials -> ApiTask Types.Token
+postRegister : Types.RegisterCredentials -> Task Types.Token
 postRegister credentials =
     post
         { path = "/rest-auth/registration/"
@@ -252,17 +195,10 @@ postRegister credentials =
         , token = Nothing
         , body = Just <| Encoders.registerCredentials credentials
         , expect = Http.expectJson Decoders.token
-        , feedback =
-            [ ( "username", "username" )
-            , ( "email", "email" )
-            , ( "password1", "password1" )
-            , ( "password2", "password2" )
-            , ( "__all__", "global" )
-            ]
         }
 
 
-postLogout : Types.Auth -> ApiTask ()
+postLogout : Types.Auth -> Task ()
 postLogout { token } =
     post
         { path = "/rest-auth/logout/"
@@ -270,7 +206,6 @@ postLogout { token } =
         , token = Just token
         , body = Nothing
         , expect = expectNothing
-        , feedback = []
         }
 
 
@@ -278,7 +213,7 @@ postLogout { token } =
 -- PASSWORD
 
 
-postRecovery : String -> ApiTask ()
+postRecovery : String -> Task ()
 postRecovery email =
     post
         { path = "/rest-auth/password/reset/"
@@ -286,37 +221,21 @@ postRecovery email =
         , token = Nothing
         , body = Just <| Encoders.recoveryEmail email
         , expect = expectNothing
-        , feedback = [ ( "email", "global" ) ]
         }
 
 
-postReset : Types.ResetTokens -> Types.ResetCredentials -> ApiTask ()
+postReset : Types.ResetTokens -> Types.ResetCredentials -> Task ()
 postReset tokens credentials =
-    let
-        transpose =
-            -- TODO: move to Strings.elm
-            "There was a problem. Did you use the"
-                ++ " last password-reset link you received?"
-                |> Just
-                |> Feedback.updateError "resetCredentials"
-    in
-        post
-            { path = "/rest-auth/password/reset/confirm/"
-            , query = []
-            , token = Nothing
-            , body = Just <| Encoders.resetCredentials credentials tokens
-            , expect = expectNothing
-            , feedback =
-                [ ( "new_password1", "password1" )
-                , ( "new_password2", "password2" )
-                , ( "token", "resetCredentials" )
-                , ( "uid", "resetCredentials" )
-                ]
-            }
-            |> Task.map (Result.mapError transpose)
+    post
+        { path = "/rest-auth/password/reset/confirm/"
+        , query = []
+        , token = Nothing
+        , body = Just <| Encoders.resetCredentials credentials tokens
+        , expect = expectNothing
+        }
 
 
-postPassword : Types.Auth -> Types.PasswordCredentials -> ApiTask ()
+postPassword : Types.Auth -> Types.PasswordCredentials -> Task ()
 postPassword { token } credentials =
     post
         { path = "/rest-auth/password/change/"
@@ -324,11 +243,6 @@ postPassword { token } credentials =
         , token = Just token
         , body = Just <| Encoders.passwordCredentials credentials
         , expect = expectNothing
-        , feedback =
-            [ ( "old_password", "oldPassword" )
-            , ( "new_password1", "password1" )
-            , ( "new_password2", "password2" )
-            ]
         }
 
 
@@ -336,7 +250,7 @@ postPassword { token } credentials =
 -- USER
 
 
-getPreUser : Types.Token -> ApiTask Types.PreUser
+getPreUser : Types.Token -> Task Types.PreUser
 getPreUser token =
     get
         { path = "/users/me/"
@@ -346,7 +260,7 @@ getPreUser token =
         }
 
 
-putUser : Types.Auth -> Types.User -> ApiTask Types.User
+putUser : Types.Auth -> Types.User -> Task Types.User
 putUser { token } user =
     put
         { path = "/users/" ++ (toString user.id) ++ "/"
@@ -354,7 +268,6 @@ putUser { token } user =
         , token = Just token
         , body = Just <| Encoders.user user
         , expect = Http.expectJson Decoders.user
-        , feedback = [ ( "username", "global" ) ]
         }
 
 
@@ -362,7 +275,7 @@ putUser { token } user =
 -- PROFILE
 
 
-getProfile : Types.Auth -> Int -> ApiTask Types.Profile
+getProfile : Types.Auth -> Int -> Task Types.Profile
 getProfile { token } id =
     get
         { path = "/profiles/" ++ (toString id) ++ "/"
@@ -376,7 +289,7 @@ getProfiles :
     Types.Auth
     -> Maybe { pageSize : Int, page : Int }
     -> List ( String, String )
-    -> ApiTask (Types.Page Types.Profile)
+    -> Task (Types.Page Types.Profile)
 getProfiles { token } maybePage query =
     get
         { path = "/profiles/"
@@ -389,7 +302,7 @@ getProfiles { token } maybePage query =
 postProfile :
     { token : Types.Token, preUser : Types.PreUser }
     -> Maybe String
-    -> ApiTask Types.Profile
+    -> Task Types.Profile
 postProfile { token, preUser } maybeProlific =
     post
         { path = "/profiles/"
@@ -397,11 +310,10 @@ postProfile { token, preUser } maybeProlific =
         , token = Just token
         , body = Just <| Encoders.newProfile maybeProlific
         , expect = Http.expectJson Decoders.profile
-        , feedback = []
         }
 
 
-putProfile : Types.Auth -> Types.Profile -> ApiTask Types.Profile
+putProfile : Types.Auth -> Types.Profile -> Task Types.Profile
 putProfile { token } profile =
     put
         { path = "/profiles/" ++ (toString profile.id) ++ "/"
@@ -409,7 +321,6 @@ putProfile { token } profile =
         , token = Just token
         , body = Just <| Encoders.profile profile
         , expect = Http.expectJson Decoders.profile
-        , feedback = []
         }
 
 
@@ -417,7 +328,7 @@ putProfile { token } profile =
 -- META
 
 
-getMeta : ApiTask Types.Meta
+getMeta : Task Types.Meta
 getMeta =
     get
         { path = "/meta/"
@@ -431,7 +342,7 @@ getMeta =
 -- EMAIL
 
 
-postEmail : Types.Auth -> String -> ApiTask ()
+postEmail : Types.Auth -> String -> Task ()
 postEmail { token } email =
     post
         { path = "/emails/"
@@ -439,11 +350,10 @@ postEmail { token } email =
         , token = Just token
         , body = Just <| Encoders.newEmail email
         , expect = expectNothing
-        , feedback = [ ( "email", "global" ) ]
         }
 
 
-putEmail : Types.Auth -> Types.Email -> ApiTask ()
+putEmail : Types.Auth -> Types.Email -> Task ()
 putEmail { token } email =
     put
         { path = "/emails/" ++ (toString email.id) ++ "/"
@@ -451,11 +361,10 @@ putEmail { token } email =
         , token = Just token
         , body = Just <| Encoders.email email
         , expect = expectNothing
-        , feedback = []
         }
 
 
-deleteEmail : Types.Auth -> Types.Email -> ApiTask ()
+deleteEmail : Types.Auth -> Types.Email -> Task ()
 deleteEmail { token } email =
     delete
         { path = "/emails/" ++ (toString email.id) ++ "/"
@@ -465,7 +374,7 @@ deleteEmail { token } email =
         }
 
 
-postEmailVerify : Types.Auth -> Types.Email -> ApiTask ()
+postEmailVerify : Types.Auth -> Types.Email -> Task ()
 postEmailVerify { token } email =
     post
         { path = "/emails/" ++ (toString email.id) ++ "/verify/"
@@ -473,11 +382,10 @@ postEmailVerify { token } email =
         , token = Just token
         , body = Nothing
         , expect = expectNothing
-        , feedback = []
         }
 
 
-postEmailConfirm : Types.Auth -> String -> ApiTask ()
+postEmailConfirm : Types.Auth -> String -> Task ()
 postEmailConfirm { token } key =
     post
         { path = "/rest-auth/registration/verify-email/"
@@ -485,7 +393,6 @@ postEmailConfirm { token } key =
         , token = Just token
         , body = Just <| Encoders.emailConfirmationKey key
         , expect = expectNothing
-        , feedback = [ ( "detail", "global" ) ]
         }
 
 
@@ -493,7 +400,7 @@ postEmailConfirm { token } key =
 -- QUESTIONNAIRE
 
 
-postQuestionnaire : Types.Auth -> Types.QuestionnaireForm -> ApiTask ()
+postQuestionnaire : Types.Auth -> Types.QuestionnaireForm -> Task ()
 postQuestionnaire { token } questionnaire =
     post
         { path = "/questionnaires/"
@@ -501,14 +408,6 @@ postQuestionnaire { token } questionnaire =
         , token = Just token
         , body = Just <| Encoders.newQuestionnaire questionnaire
         , expect = expectNothing
-        , feedback =
-            [ ( "age", "age" )
-            , ( "gender", "gender" )
-            , ( "informed_how", "informedHow" )
-            , ( "informed_what", "informedWhat" )
-            , ( "job_type", "jobType" )
-            , ( "job_freetext", "jobFreetext" )
-            ]
         }
 
 
@@ -516,7 +415,7 @@ postQuestionnaire { token } questionnaire =
 -- WORD SPAN
 
 
-getWordSpan : Types.Auth -> Int -> ApiTask Types.WordSpan
+getWordSpan : Types.Auth -> Int -> Task Types.WordSpan
 getWordSpan { token } id =
     get
         { path = "/word-spans/" ++ (toString id) ++ "/"
@@ -530,7 +429,7 @@ getWordSpan { token } id =
 -- SENTENCE
 
 
-getSentence : Types.Auth -> Int -> ApiTask Types.Sentence
+getSentence : Types.Auth -> Int -> Task Types.Sentence
 getSentence { token } id =
     get
         { path = "/sentences/" ++ (toString id) ++ "/"
@@ -544,7 +443,7 @@ getSentences :
     Types.Auth
     -> Maybe { pageSize : Int, page : Int }
     -> List ( String, String )
-    -> ApiTask (Types.Page Types.Sentence)
+    -> Task (Types.Page Types.Sentence)
 getSentences { token } maybePage query =
     get
         { path = "/sentences/"
@@ -554,7 +453,7 @@ getSentences { token } maybePage query =
         }
 
 
-postSentence : Types.Auth -> Types.NewSentence -> ApiTask ()
+postSentence : Types.Auth -> Types.NewSentence -> Task ()
 postSentence { token } sentence =
     post
         { path = "/sentences/"
@@ -562,7 +461,6 @@ postSentence { token } sentence =
         , token = Just token
         , body = Just <| Encoders.newSentence sentence
         , expect = expectNothing
-        , feedback = []
         }
 
 
@@ -570,7 +468,7 @@ postSentence { token } sentence =
 -- TREE
 
 
-getTree : Types.Auth -> Int -> ApiTask Types.Tree
+getTree : Types.Auth -> Int -> Task Types.Tree
 getTree { token } id =
     get
         { path = "/trees/" ++ (toString id) ++ "/"
@@ -584,7 +482,7 @@ getTrees :
     Types.Auth
     -> Maybe { pageSize : Int, page : Int }
     -> List ( String, String )
-    -> ApiTask (Types.Page Types.Tree)
+    -> Task (Types.Page Types.Tree)
 getTrees { token } maybePage query =
     get
         { path = "/trees/"

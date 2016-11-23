@@ -1,6 +1,7 @@
 module Api
     exposing
-        ( addEmail
+        ( Result
+        , addEmail
         , changePassword
         , confirmEmail
         , deleteEmail
@@ -24,58 +25,64 @@ module Api
         )
 
 import Api.Calls as Calls
-import Api.Calls exposing (ApiTask)
+import Http
+import Task
 import Types
+
+
+type alias Result a =
+    Result.Result Types.Error a
+
 
 
 -- AUTH
 
 
-getSelf : Types.Token -> ApiTask Types.User
+getSelf : Types.Token -> Calls.Task Types.User
 getSelf token =
     getSelfSettingProfile token Nothing
 
 
-getSelfSettingProfile : Types.Token -> Maybe String -> ApiTask Types.User
+getSelfSettingProfile : Types.Token -> Maybe String -> Calls.Task Types.User
 getSelfSettingProfile token maybeProlific =
     let
         finalize preUser =
             case preUser.profile of
                 Just profile ->
-                    Calls.succeed { preUser | profile = profile }
+                    Task.succeed { preUser | profile = profile }
 
                 Nothing ->
                     Calls.postProfile { token = token, preUser = preUser } maybeProlific
-                        |> Calls.map (\profile -> { preUser | profile = profile })
+                        |> Task.map (\profile -> { preUser | profile = profile })
     in
-        Calls.getPreUser token |> Calls.andThen finalize
+        Calls.getPreUser token |> Task.andThen finalize
 
 
-getAuth : Types.Token -> ApiTask Types.Auth
+getAuth : Types.Token -> Calls.Task Types.Auth
 getAuth token =
     getAuthSettingProfile token Nothing
 
 
-getAuthSettingProfile : Types.Token -> Maybe String -> ApiTask Types.Auth
+getAuthSettingProfile : Types.Token -> Maybe String -> Calls.Task Types.Auth
 getAuthSettingProfile token maybeProlific =
-    Calls.map2 (Types.Auth token)
+    Task.map2 (Types.Auth token)
         (getSelfSettingProfile token maybeProlific)
         Calls.getMeta
 
 
-login : Types.Credentials -> ApiTask Types.Auth
+login : Types.Credentials -> Calls.Task Types.Auth
 login credentials =
     Calls.postLogin credentials
-        |> Calls.andThen getAuth
+        |> Task.andThen getAuth
 
 
-register : Types.RegisterCredentials -> Maybe String -> ApiTask Types.Auth
+register : Types.RegisterCredentials -> Maybe String -> Calls.Task Types.Auth
 register credentials maybeProlific =
     Calls.postRegister credentials
-        |> Calls.andThen (\token -> getAuthSettingProfile token maybeProlific)
+        |> Task.andThen (\token -> getAuthSettingProfile token maybeProlific)
 
 
-logout : Types.Auth -> ApiTask ()
+logout : Types.Auth -> Calls.Task ()
 logout =
     Calls.postLogout
 
@@ -84,32 +91,32 @@ logout =
 -- PASSWORD
 
 
-recover : String -> ApiTask ()
+recover : String -> Calls.Task ()
 recover =
     Calls.postRecovery
 
 
-reset : Types.ResetTokens -> Types.ResetCredentials -> ApiTask ()
+reset : Types.ResetTokens -> Types.ResetCredentials -> Calls.Task ()
 reset =
     Calls.postReset
 
 
-changePassword : Types.Auth -> Types.PasswordCredentials -> ApiTask Types.Auth
+changePassword : Types.Auth -> Types.PasswordCredentials -> Calls.Task Types.Auth
 changePassword auth credentials =
     let
         loginCredentials =
             { username = auth.user.username, password = credentials.password1 }
     in
         Calls.postPassword auth credentials
-            |> Calls.andThen (always <| Calls.postLogout auth)
-            |> Calls.andThen (always <| login loginCredentials)
+            |> Task.andThen (always <| Calls.postLogout auth)
+            |> Task.andThen (always <| login loginCredentials)
 
 
 
 -- USER
 
 
-updateUser : Types.Auth -> Types.User -> ApiTask Types.User
+updateUser : Types.Auth -> Types.User -> Calls.Task Types.User
 updateUser =
     Calls.putUser
 
@@ -118,7 +125,7 @@ updateUser =
 -- PROFILE
 
 
-updateProfile : Types.Auth -> Types.Profile -> ApiTask Types.Profile
+updateProfile : Types.Auth -> Types.Profile -> Calls.Task Types.Profile
 updateProfile =
     Calls.putProfile
 
@@ -127,50 +134,50 @@ updateProfile =
 -- EMAIL
 
 
-addEmail : Types.Auth -> String -> ApiTask Types.User
+addEmail : Types.Auth -> String -> Calls.Task Types.User
 addEmail auth email =
     Calls.postEmail auth email
-        |> Calls.andThen (always <| getSelf auth.token)
+        |> Task.andThen (always <| getSelf auth.token)
 
 
-updateEmail : Types.Auth -> Types.Email -> ApiTask Types.User
+updateEmail : Types.Auth -> Types.Email -> Calls.Task Types.User
 updateEmail auth email =
     Calls.putEmail auth email
-        |> Calls.andThen (always <| getSelf auth.token)
+        |> Task.andThen (always <| getSelf auth.token)
 
 
-deleteEmail : Types.Auth -> Types.Email -> ApiTask Types.User
+deleteEmail : Types.Auth -> Types.Email -> Calls.Task Types.User
 deleteEmail auth email =
     Calls.deleteEmail auth email
-        |> Calls.andThen (always <| getSelf auth.token)
+        |> Task.andThen (always <| getSelf auth.token)
 
 
-verifyEmail : Types.Auth -> Types.Email -> ApiTask ()
+verifyEmail : Types.Auth -> Types.Email -> Calls.Task ()
 verifyEmail =
     Calls.postEmailVerify
 
 
-confirmEmail : Types.Auth -> String -> ApiTask Types.User
+confirmEmail : Types.Auth -> String -> Calls.Task Types.User
 confirmEmail auth key =
     Calls.postEmailConfirm auth key
-        |> Calls.andThen (always <| getSelf auth.token)
+        |> Task.andThen (always <| getSelf auth.token)
 
 
 
 -- QUESTIONNAIRE
 
 
-postQuestionnaire : Types.Auth -> Types.QuestionnaireForm -> ApiTask Types.Profile
+postQuestionnaire : Types.Auth -> Types.QuestionnaireForm -> Calls.Task Types.Profile
 postQuestionnaire auth questionnaire =
     Calls.postQuestionnaire auth questionnaire
-        |> Calls.andThen (always <| Calls.map .profile <| getSelf auth.token)
+        |> Task.andThen (always <| Task.map .profile <| getSelf auth.token)
 
 
 
 -- WORD SPAN
 
 
-getWordSpan : Types.Auth -> Int -> ApiTask Types.WordSpan
+getWordSpan : Types.Auth -> Int -> Calls.Task Types.WordSpan
 getWordSpan =
     Calls.getWordSpan
 
@@ -179,7 +186,7 @@ getWordSpan =
 -- SENTENCE
 
 
-getSentence : Types.Auth -> Int -> ApiTask Types.Sentence
+getSentence : Types.Auth -> Int -> Calls.Task Types.Sentence
 getSentence =
     Calls.getSentence
 
@@ -188,22 +195,22 @@ getSentences :
     Types.Auth
     -> Maybe { pageSize : Int, page : Int }
     -> List ( String, String )
-    -> ApiTask (Types.Page Types.Sentence)
+    -> Calls.Task (Types.Page Types.Sentence)
 getSentences =
     Calls.getSentences
 
 
-postSentence : Types.Auth -> Types.NewSentence -> ApiTask Types.Profile
+postSentence : Types.Auth -> Types.NewSentence -> Calls.Task Types.Profile
 postSentence auth sentence =
     Calls.postSentence auth sentence
-        |> Calls.andThen (always <| Calls.map .profile <| getSelf auth.token)
+        |> Task.andThen (always <| Task.map .profile <| getSelf auth.token)
 
 
 
 -- TREE
 
 
-getTree : Types.Auth -> Int -> ApiTask Types.Tree
+getTree : Types.Auth -> Int -> Calls.Task Types.Tree
 getTree =
     Calls.getTree
 
@@ -212,6 +219,6 @@ getTrees :
     Types.Auth
     -> Maybe { pageSize : Int, page : Int }
     -> List ( String, String )
-    -> ApiTask (Types.Page Types.Tree)
+    -> Calls.Task (Types.Page Types.Tree)
 getTrees =
     Calls.getTrees

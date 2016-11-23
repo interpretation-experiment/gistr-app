@@ -48,6 +48,9 @@ doUpdate msg model =
             }
                 ! []
 
+        {-
+           NOTIFICATIONS
+        -}
         Notify msg ->
             let
                 ( notifications, cmd ) =
@@ -75,8 +78,18 @@ doUpdate msg model =
         {-
            STORE
         -}
-        GotStoreItem item ->
-            { model | store = Store.set item model.store } ! []
+        WordSpanResult (Ok wordSpan) ->
+            let
+                store =
+                    model.store
+
+                newStore =
+                    { store | wordSpan = Just wordSpan }
+            in
+                { model | store = newStore } ! []
+
+        WordSpanResult (Err error) ->
+            update (Error error) model
 
         {-
            AUTH
