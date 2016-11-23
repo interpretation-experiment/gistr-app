@@ -134,6 +134,7 @@ update lift auth msg model =
            TRIAL
         -}
         LoadTrial ->
+            -- TODO: select branch in tree, not root
             let
                 -- LANGUAGE VARIABLES
                 mothertongue =
