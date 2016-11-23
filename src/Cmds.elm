@@ -1,4 +1,4 @@
-module Cmds exposing (cmdsForRoute)
+module Cmds exposing (cmdsForModel)
 
 import Api
 import Experiment.Msg as ExperimentMsg
@@ -7,44 +7,35 @@ import Model exposing (Model)
 import Msg exposing (Msg)
 import Profile.Msg as ProfileMsg
 import Router
-import Store
 import Task
 import Types
 
 
-cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
-cmdsForRoute model route =
-    case route of
-        Router.Profile profileRoute ->
+cmdsForModel : Model -> List (Cmd Msg)
+cmdsForModel model =
+    case model.route of
+        Router.Profile (Router.Confirm key) ->
             authenticatedOrIgnore model <|
                 \auth ->
-                    case profileRoute of
-                        Router.Confirm key ->
-                            case model.emailConfirmation of
-                                Model.SendingConfirmation ->
-                                    [ Task.perform
-                                        (Msg.ProfileMsg << ProfileMsg.EmailConfirmationFail)
-                                        (Msg.ProfileMsg << ProfileMsg.EmailConfirmationSuccess)
-                                        (Api.confirmEmail key auth)
-                                    ]
-
-                                _ ->
-                                    []
-
-                        Router.Dashboard ->
-                            case auth.user.profile.wordSpanId of
-                                Nothing ->
-                                    []
-
-                                Just id ->
-                                    [ Task.perform
-                                        Msg.Error
-                                        (Msg.GotStoreItem << Store.WordSpan)
-                                        (Api.fetch model.store.wordSpans id auth)
-                                    ]
+                    case model.emailConfirmation of
+                        Model.SendingConfirmation ->
+                            [ Task.attempt
+                                (Msg.ProfileMsg << ProfileMsg.ConfirmEmailResult)
+                                (Api.confirmEmail auth key)
+                            ]
 
                         _ ->
                             []
+
+        Router.Profile (Router.Dashboard) ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    case auth.user.profile.wordSpanId of
+                        Nothing ->
+                            []
+
+                        Just id ->
+                            [ Task.attempt Msg.WordSpanResult (Api.getWordSpan auth id) ]
 
         Router.Experiment ->
             authenticatedOrIgnore model <|
@@ -55,7 +46,6 @@ cmdsForRoute model route =
                         )
                     then
                         [ Task.perform
-                            (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
                             (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
                             (Task.succeed ())
                         ]

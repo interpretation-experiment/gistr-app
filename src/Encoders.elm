@@ -22,25 +22,25 @@ import Types
 
 
 credentials : Types.Credentials -> JE.Value
-credentials credentials' =
+credentials credentials_ =
     JE.object
-        [ ( "username", JE.string credentials'.username )
-        , ( "password", JE.string credentials'.password )
+        [ ( "username", JE.string credentials_.username )
+        , ( "password", JE.string credentials_.password )
         ]
 
 
 user : Types.User -> JE.Value
-user user' =
+user user_ =
     JE.object
-        [ ( "username", JE.string user'.username )
-        , ( "is_active", JE.bool user'.isActive )
-        , ( "is_staff", JE.bool user'.isStaff )
+        [ ( "username", JE.string user_.username )
+        , ( "is_active", JE.bool user_.isActive )
+        , ( "is_staff", JE.bool user_.isStaff )
         ]
 
 
 recoveryEmail : String -> JE.Value
-recoveryEmail email' =
-    JE.object [ ( "email", JE.string email' ) ]
+recoveryEmail email_ =
+    JE.object [ ( "email", JE.string email_ ) ]
 
 
 resetCredentials : Types.ResetCredentials -> Types.ResetTokens -> JE.Value
@@ -72,13 +72,13 @@ newProfile maybeProlific =
 
 
 profile : Types.Profile -> JE.Value
-profile profile' =
+profile profile_ =
     JE.object
-        [ ( "prolific_id", unwrap JE.null JE.string profile'.prolificId )
-        , ( "mothertongue", JE.string profile'.mothertongue )
-        , ( "trained_reformulations", JE.bool profile'.trained )
-        , ( "introduced_exp_home", JE.bool profile'.introducedExpHome )
-        , ( "introduced_exp_play", JE.bool profile'.introducedExpPlay )
+        [ ( "prolific_id", unwrap JE.null JE.string profile_.prolificId )
+        , ( "mothertongue", JE.string profile_.mothertongue )
+        , ( "trained_reformulations", JE.bool profile_.trained )
+        , ( "introduced_exp_home", JE.bool profile_.introducedExpHome )
+        , ( "introduced_exp_play", JE.bool profile_.introducedExpPlay )
         ]
 
 
@@ -98,11 +98,11 @@ newEmail email =
 
 
 email : Types.Email -> JE.Value
-email email' =
+email email_ =
     JE.object
-        [ ( "email", JE.string email'.email )
-        , ( "verified", JE.bool email'.verified )
-        , ( "primary", JE.bool email'.primary )
+        [ ( "email", JE.string email_.email )
+        , ( "verified", JE.bool email_.verified )
+        , ( "primary", JE.bool email_.primary )
         ]
 
 

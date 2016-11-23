@@ -11,7 +11,6 @@ import Navigation
 import Notification
 import Profile.Update as ProfileUpdate
 import Router
-import Store
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -48,6 +47,9 @@ doUpdate msg model =
             }
                 ! []
 
+        {-
+           NOTIFICATIONS
+        -}
         Notify msg ->
             let
                 ( notifications, cmd ) =
@@ -60,12 +62,40 @@ doUpdate msg model =
         {-
            NAVIGATION
         -}
+        UrlUpdate newUrl route ->
+            if (Debug.log "url" newUrl) /= Router.toUrl model.route then
+                -- URL has changed, do something about it
+                let
+                    ( finalModel, navigationCmd ) =
+                        Helpers.navigateTo model route
+
+                    finalUrl =
+                        Router.toUrl finalModel.route
+
+                    urlCorrection =
+                        if newUrl /= finalUrl then
+                            Navigation.modifyUrl (Debug.log "url correction" finalUrl)
+                        else
+                            Cmd.none
+                in
+                    if finalModel.route /= model.route then
+                        -- Update the model and return corresponding commands,
+                        -- and also fix the browser's url if necessary.
+                        finalModel ! [ navigationCmd, urlCorrection ]
+                    else
+                        -- Then necessarily newUrl /= finalUrl. So don't update the model,
+                        -- but fix the browser's url.
+                        model ! [ urlCorrection ]
+            else
+                -- URL hasn't changed, do nothing
+                model ! []
+
         NavigateTo route ->
             let
-                ( model', cmd ) =
+                ( newModel, cmd ) =
                     Helpers.navigateTo model route
             in
-                model' ! [ cmd, Navigation.newUrl (Router.toUrl model'.route) ]
+                newModel ! [ cmd, Navigation.newUrl (Router.toUrl newModel.route) ]
 
         Error error ->
             -- Don't use `udpate (NavigateTo ...)` here so as not to lose the form inputs
@@ -75,8 +105,18 @@ doUpdate msg model =
         {-
            STORE
         -}
-        GotStoreItem item ->
-            { model | store = Store.set item model.store } ! []
+        WordSpanResult (Ok wordSpan) ->
+            let
+                store =
+                    model.store
+
+                newStore =
+                    { store | wordSpan = Just wordSpan }
+            in
+                { model | store = newStore } ! []
+
+        WordSpanResult (Err error) ->
+            update (Error error) model
 
         {-
            AUTH

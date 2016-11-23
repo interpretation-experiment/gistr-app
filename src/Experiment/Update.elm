@@ -37,12 +37,6 @@ update lift auth msg model =
             , Nothing
             )
 
-        UpdateProfile profile ->
-            ( Helpers.updateProfile model profile
-            , Cmd.none
-            , Nothing
-            )
-
         ClockMsg msg ->
             updateTrialOrIgnore model <|
                 \trial ->
@@ -102,7 +96,10 @@ update lift auth msg model =
 
         InstructionsQuit index ->
             if Nonempty.length Instructions.order == index + 1 then
-                update lift auth InstructionsDone model
+                ( model
+                , Cmd.none
+                , Just <| lift <| InstructionsDone
+                )
             else
                 updateInstructionsOrIgnore model <|
                     \state ->
@@ -117,8 +114,8 @@ update lift auth msg model =
                     auth.user.profile
 
                 updateProfile =
-                    Api.updateProfile { profile | introducedExpPlay = True } auth
-                        |> Task.perform AppMsg.Error (lift << UpdateProfile)
+                    Api.updateProfile auth { profile | introducedExpPlay = True }
+                        |> Task.attempt (lift << InstructionsDoneResult)
             in
                 updateInstructionsOrIgnore model <|
                     \state ->
@@ -130,10 +127,23 @@ update lift auth msg model =
                         , Nothing
                         )
 
+        InstructionsDoneResult (Ok profile) ->
+            ( Helpers.updateProfile model profile
+            , Cmd.none
+            , Nothing
+            )
+
+        InstructionsDoneResult (Err error) ->
+            ( model
+            , Cmd.none
+            , Just <| AppMsg.Error <| error
+            )
+
         {-
            TRIAL
         -}
         LoadTrial ->
+            -- TODO: select branch in tree, not root
             let
                 -- LANGUAGE VARIABLES
                 mothertongue =
@@ -183,7 +193,7 @@ update lift auth msg model =
 
                 -- SEVERAL-SENTENCES FETCHING TASKS
                 fetchSeveralSentences =
-                    Api.fetchMany model.store.trees severalFilter Nothing auth
+                    Api.getTrees auth Nothing severalFilter
                         |> Task.map (\page -> List.map .root page.items)
 
                 seed =
@@ -194,29 +204,25 @@ update lift auth msg model =
                     Task.map2 Helpers.shuffle seed fetchSeveralSentences
 
                 -- SINGLE-SENTENCE FETCHING TASKS
-                fetchUnshapedSingleSentence =
-                    Api.fetchMany model.store.trees unshapedSingleFilter Nothing auth
-                        `Task.andThen`
-                            \page ->
-                                case page.items of
-                                    tree :: _ ->
-                                        Task.succeed tree.root
+                firstRootOr default page =
+                    case page.items of
+                        tree :: _ ->
+                            Task.succeed tree.root
 
-                                    [] ->
-                                        Types.Unrecoverable
-                                            "Found no suitable tree for profile"
-                                            |> Task.fail
+                        [] ->
+                            default
+
+                fetchUnshapedSingleSentence =
+                    Api.getTrees auth Nothing unshapedSingleFilter
+                        |> Task.andThen
+                            (firstRootOr <|
+                                Task.fail <|
+                                    Types.Unrecoverable "Found no suitable tree for profile"
+                            )
 
                 fetchSingleSentence =
-                    Api.fetchMany model.store.trees shapedSingleFilter Nothing auth
-                        `Task.andThen`
-                            \page ->
-                                case page.items of
-                                    tree :: _ ->
-                                        Task.succeed tree.root
-
-                                    [] ->
-                                        fetchUnshapedSingleSentence
+                    Api.getTrees auth Nothing shapedSingleFilter
+                        |> Task.andThen (firstRootOr fetchUnshapedSingleSentence)
 
                 -- LOADING AND PRELOADING HELPERS
                 selectPreloaded preLoaded =
@@ -229,12 +235,12 @@ update lift auth msg model =
 
                 preloadAndSelect =
                     fetchRandomizedSentences
-                        `Task.andThen` (selectPreloaded >> Task.fromResult)
-                        |> Task.perform AppMsg.Error (lift << LoadedTrial)
+                        |> Task.andThen (selectPreloaded >> Helpers.resultToTask)
+                        |> Task.attempt (lift << LoadTrialResult)
 
                 loadSingle =
                     fetchSingleSentence
-                        |> Task.perform AppMsg.Error (lift << LoadedTrial << (,) [])
+                        |> Task.attempt (lift << LoadTrialResult << Result.map ((,) []))
 
                 loadingModel =
                     { model | experiment = ExpModel.setLoading True model.experiment }
@@ -265,12 +271,15 @@ update lift auth msg model =
                                         , Nothing
                                         )
 
-                                    Ok preLoadedSelected ->
+                                    Ok ( preLoaded, selected ) ->
                                         -- Use preloaded sentence
-                                        update lift
-                                            auth
-                                            (LoadedTrial preLoadedSelected)
-                                            model
+                                        ( model
+                                        , Cmd.none
+                                        , Ok ( preLoaded, selected )
+                                            |> LoadTrialResult
+                                            |> lift
+                                            |> Just
+                                        )
 
                     Lifecycle.Experiment _ ->
                         -- Load one remote sentence
@@ -286,7 +295,7 @@ update lift auth msg model =
                         , Nothing
                         )
 
-        LoadedTrial ( preLoaded, current ) ->
+        LoadTrialResult (Ok ( preLoaded, current )) ->
             let
                 newTrial =
                     case model.experiment.state of
@@ -315,6 +324,12 @@ update lift auth msg model =
                 , Cmd.none
                 , Nothing
                 )
+
+        LoadTrialResult (Err error) ->
+            ( model
+            , Cmd.none
+            , Just <| AppMsg.Error <| error
+            )
 
         TrialTask ->
             updateTrialOrIgnore model <|
@@ -370,36 +385,13 @@ update lift auth msg model =
                             , Nothing
                             )
 
-        WriteFail error ->
-            Helpers.feedbackOrUnrecoverable error model <|
-                \feedback ->
-                    updateTrialOrIgnore model <|
-                        \trial ->
-                            case trial.state of
-                                ExpModel.Writing form ->
-                                    ( { trial
-                                        | state =
-                                            ExpModel.Writing
-                                                (Form.fail feedback form)
-                                        , clock = Clock.resume trial.clock
-                                      }
-                                    , Cmd.none
-                                    , Nothing
-                                    )
-
-                                _ ->
-                                    ( trial
-                                    , Cmd.none
-                                    , Nothing
-                                    )
-
         WriteSubmit input ->
             -- validate if enough words
             --   if not, Fail with feedback
             --   if yes, pause clock and:
             --     if in training:
-            --       if sentences left, TrialSuccess directly with same profile
-            --       if nothing left, save trained in profile, getting back profile in TrialSuccess
+            --       if sentences left, WriteResult Ok directly with same profile
+            --       if nothing left, save trained in profile, getting back profile in WriteResult
             --     submit if not in training, getting back profile
             let
                 profile =
@@ -435,22 +427,22 @@ update lift auth msg model =
                             if trial.streak + 1 == auth.meta.trainingWork then
                                 -- Save our newly trained status
                                 ( trialState trial form
-                                , Api.updateProfile { profile | trained = True } auth
-                                    |> Task.perform AppMsg.Error (lift << TrialSuccess)
+                                , Api.updateProfile auth { profile | trained = True }
+                                    |> Task.attempt (lift << WriteResult)
                                 , Nothing
                                 )
                             else
                                 -- Move directly to next training trial
                                 ( trialState trial form
                                 , Cmd.none
-                                , Just <| lift (TrialSuccess profile)
+                                , Just <| lift <| WriteResult <| Ok profile
                                 )
 
                         Lifecycle.Experiment _ ->
                             -- Post the new sentence
                             ( trialState trial form
-                            , Api.postSentence (newSentence trial) auth
-                                |> Task.perform AppMsg.Error (lift << TrialSuccess)
+                            , Api.postSentence auth (newSentence trial)
+                                |> Task.attempt (lift << WriteResult)
                             , Nothing
                             )
 
@@ -460,10 +452,13 @@ update lift auth msg model =
                             , Nothing
                             )
 
-                inputInvalid trial =
-                    ( trial
+                inputInvalid trial form =
+                    ( { trial
+                        | state = ExpModel.Writing (Form.fail feedback form)
+                        , clock = Clock.resume trial.clock
+                      }
                     , Cmd.none
-                    , Just <| lift <| WriteFail (Types.ApiFeedback feedback)
+                    , Nothing
                     )
             in
                 updateTrialOrIgnore model <|
@@ -473,7 +468,7 @@ update lift auth msg model =
                                 if Feedback.isEmpty feedback then
                                     inputValid trial form
                                 else
-                                    inputInvalid trial
+                                    inputInvalid trial form
 
                             _ ->
                                 ( trial
@@ -481,7 +476,7 @@ update lift auth msg model =
                                 , Nothing
                                 )
 
-        TrialSuccess profile ->
+        WriteResult (Ok profile) ->
             -- get previous profile lifecycle
             -- update profile
             -- if lifecycle has changed, JustFinished
@@ -532,6 +527,12 @@ update lift auth msg model =
                         , Cmd.none
                         , Nothing
                         )
+
+        WriteResult (Err error) ->
+            ( model
+            , Cmd.none
+            , Just <| AppMsg.Error <| error
+            )
 
 
 

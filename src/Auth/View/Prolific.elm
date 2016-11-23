@@ -62,7 +62,7 @@ form lift { input, feedback } =
                     [ Attributes.id "inputProlificId"
                     , Attributes.autofocus True
                     , Attributes.placeholder "5381d3c8717b341db325eec3"
-                    , Attributes.type' "text"
+                    , Attributes.type_ "text"
                     , Attributes.value input
                     , Events.onInput (lift << SetProlificFormInput)
                     ]
@@ -75,7 +75,7 @@ form lift { input, feedback } =
                     , Html.strong [] [ Html.text "Simply follow the steps presented to get started with the experiment." ]
                     ]
                 , Html.button
-                    [ Attributes.type' "submit" ]
+                    [ Attributes.type_ "submit" ]
                     [ Html.text "Go to registration" ]
                 ]
             ]

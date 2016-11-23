@@ -1,35 +1,32 @@
 module Auth.Msg exposing (Msg(..))
 
+import Api
 import Types
 
 
 type Msg
     = -- LOGIN
       LoginFormInput Types.Credentials
-    | LoginFail Types.Error
     | Login Types.Credentials
-    | LoginSuccess Types.Auth
+    | LoginResult (Api.Result Types.Auth)
       -- LOCAL TOKEN LOGIN
     | GotLocalToken (Maybe Types.Token)
-    | LoginLocalTokenFail Types.Error
+    | LoginLocalTokenResult (Api.Result Types.Auth)
       -- LOGOUT
     | Logout
-    | LogoutFail Types.Error
-    | LogoutSuccess
+    | LogoutResult (Api.Result ())
       -- PROLIFIC
     | SetProlificFormInput String
     | SetProlific String
       -- PASSWORD RECOVERY
     | RecoverFormInput String
-    | RecoverFail Types.Error
     | Recover String
-    | RecoverSuccess String
+    | RecoverResult String (Api.Result ())
       -- PASSWORD RESET
     | ResetFormInput Types.ResetCredentials
-    | ResetFail Types.Error
     | Reset Types.ResetCredentials Types.ResetTokens
-    | ResetSuccess
+    | ResetResult (Api.Result ())
       -- REGISTRATION
     | RegisterFormInput Types.RegisterCredentials
-    | RegisterFail Types.Error
     | Register (Maybe String) Types.RegisterCredentials
+    | RegisterResult (Api.Result Types.Auth)

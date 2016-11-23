@@ -52,7 +52,7 @@ form lift { input, feedback, status } tokens =
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password1
                     , Events.onInput <| lift << (ResetFormInput << \p -> { input | password1 = p })
                     ]
@@ -65,7 +65,7 @@ form lift { input, feedback, status } tokens =
                     [ Attributes.id "inputPassword2"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password2
                     , Events.onInput <| lift << (ResetFormInput << \p -> { input | password2 = p })
                     ]
@@ -76,7 +76,7 @@ form lift { input, feedback, status } tokens =
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
                 , Html.button
-                    [ Attributes.type' "submit"
+                    [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Set new password" ]

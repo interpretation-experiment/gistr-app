@@ -165,9 +165,7 @@ chain : Parser e p a b -> Parser e p b c -> Parser e p a c
 chain parseFirst parseRest =
     \parts func ->
         parseFirst parts func
-            `Result.andThen`
-                \( restParts, restFunc ) ->
-                    parseRest restParts restFunc
+            |> Result.andThen (\( restParts, restFunc ) -> parseRest restParts restFunc)
 
 
 queryToUrlParser : QueryParser a b -> UrlParser a b
@@ -175,7 +173,7 @@ queryToUrlParser parseQuery =
     \( chunks, items ) formatter ->
         parseQuery items formatter
             |> Result.map (\( i, r ) -> ( ( chunks, i ), r ))
-            |> Result.formatError toString
+            |> Result.mapError toString
 
 
 pathToUrlParser : PathParser a b -> UrlParser a b

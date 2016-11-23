@@ -1,38 +1,34 @@
 module Profile.Msg exposing (Msg(..))
 
+import Api
 import Types
 
 
 type Msg
     = -- PASSWORD MANAGEMENT
       ChangePasswordFormInput Types.PasswordCredentials
-    | ChangePasswordFail Types.Error
     | ChangePassword Types.PasswordCredentials
-    | ChangePasswordSuccess Types.Auth
+    | ChangePasswordResult (Api.Result Types.Auth)
     | ChangePasswordRecover
-    | ChangePasswordRecoverSuccess
+    | ChangePasswordRecoverResult (Api.Result ())
       -- USERNAME MANAGEMENT
     | ChangeUsernameFormInput String
-    | ChangeUsernameFail Types.Error
     | ChangeUsername String
-    | ChangeUsernameSuccess Types.User
+    | ChangeUsernameResult (Api.Result Types.User)
       -- EMAIL MANAGEMENT
-    | RequestEmailVerification Types.Email
-    | RequestEmailVerificationSuccess Types.Email
-    | EmailConfirmationFail Types.Error
-    | EmailConfirmationSuccess Types.User
+    | VerifyEmail Types.Email
+    | VerifyEmailResult Types.Email (Api.Result ())
+    | ConfirmEmailResult (Api.Result Types.User)
     | PrimaryEmail Types.Email
-    | PrimaryEmailSuccess Types.User
+    | PrimaryEmailResult (Api.Result Types.User)
     | DeleteEmail Types.Email
-    | DeleteEmailSuccess Types.User
+    | DeleteEmailResult (Api.Result Types.User)
     | AddEmailFormInput String
-    | AddEmailFail Types.Error
     | AddEmail String
-    | AddEmailSuccess Types.User
+    | AddEmailResult (Api.Result Types.User)
       -- QUESTIONNAIRE
     | QuestionnaireFormInput Types.QuestionnaireForm
     | QuestionnaireFormConfirm Types.QuestionnaireForm
     | QuestionnaireFormCorrect
     | QuestionnaireFormSubmit Types.QuestionnaireForm
-    | QuestionnaireFormFail Types.Error
-    | QuestionnaireFormSuccess Types.Profile
+    | QuestionnaireFormResult (Api.Result Types.Profile)

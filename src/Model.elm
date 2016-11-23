@@ -7,10 +7,8 @@ module Model
         , initialModel
         )
 
-import Experiment.Instructions as ExpInstructions
 import Experiment.Model as ExpModel
 import Form
-import Intro
 import Notification
 import Router
 import Store

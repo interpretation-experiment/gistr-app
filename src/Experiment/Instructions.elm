@@ -9,7 +9,6 @@ module Experiment.Instructions
 import Experiment.Msg exposing (Msg(..))
 import Html
 import Intro
-import List.Extra exposing (getAt)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty)
 import Msg as AppMsg
@@ -33,7 +32,7 @@ instructions =
 
 order : Nonempty Node
 order =
-    Nonempty.map fst instructions
+    Nonempty.map Tuple.first instructions
 
 
 updateConfig : (Msg -> AppMsg.Msg) -> Intro.UpdateConfig Node AppMsg.Msg
@@ -48,5 +47,5 @@ viewConfig : (Msg -> AppMsg.Msg) -> Intro.ViewConfig Node AppMsg.Msg
 viewConfig lift =
     Intro.viewConfig
         { liftMsg = lift << InstructionsMsg
-        , tooltip = (\i -> snd (Nonempty.get i instructions))
+        , tooltip = (\i -> Tuple.second (Nonempty.get i instructions))
         }

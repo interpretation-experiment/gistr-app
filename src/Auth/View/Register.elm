@@ -55,7 +55,7 @@ form lift { input, feedback, status } maybeProlific =
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
-                    , Attributes.type' "text"
+                    , Attributes.type_ "text"
                     , Attributes.value input.username
                     , Events.onInput <| lift << (RegisterFormInput << \u -> { input | username = u })
                     ]
@@ -68,7 +68,7 @@ form lift { input, feedback, status } maybeProlific =
                     [ Attributes.id "inputEmail"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "joey@example.com (optional)"
-                    , Attributes.type' "email"
+                    , Attributes.type_ "email"
                     , Attributes.value input.email
                     , Events.onInput <| lift << (RegisterFormInput << \e -> { input | email = e })
                     ]
@@ -81,7 +81,7 @@ form lift { input, feedback, status } maybeProlific =
                     [ Attributes.id "inputPassword1"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password1
                     , Events.onInput <| lift << (RegisterFormInput << \p -> { input | password1 = p })
                     ]
@@ -94,7 +94,7 @@ form lift { input, feedback, status } maybeProlific =
                     [ Attributes.id "inputPassword2"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password2
                     , Events.onInput <| lift << (RegisterFormInput << \p -> { input | password2 = p })
                     ]
@@ -104,7 +104,7 @@ form lift { input, feedback, status } maybeProlific =
             , Html.div []
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
-                    [ Attributes.type' "submit"
+                    [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Sign up" ]

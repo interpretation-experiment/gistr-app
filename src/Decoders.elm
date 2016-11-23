@@ -40,7 +40,7 @@ preUser =
         |> Pipeline.required "username" JD.string
         |> Pipeline.required "is_active" JD.bool
         |> Pipeline.required "is_staff" JD.bool
-        |> Pipeline.required "profile" (Pipeline.nullable profile)
+        |> Pipeline.required "profile" (JD.nullable profile)
         |> Pipeline.required "emails" (JD.list email)
 
 
@@ -60,14 +60,14 @@ profile =
     Pipeline.decode Types.Profile
         |> Pipeline.required "id" JD.int
         |> Pipeline.required "created" date
-        |> Pipeline.required "prolific_id" (Pipeline.nullable JD.string)
+        |> Pipeline.required "prolific_id" (JD.nullable JD.string)
         |> Pipeline.required "mothertongue" JD.string
         |> Pipeline.required "trained_reformulations" JD.bool
         |> Pipeline.required "introduced_exp_home" JD.bool
         |> Pipeline.required "introduced_exp_play" JD.bool
         |> Pipeline.required "user" JD.int
-        |> Pipeline.required "questionnaire" (Pipeline.nullable JD.int)
-        |> Pipeline.required "word_span" (Pipeline.nullable JD.int)
+        |> Pipeline.required "questionnaire" (JD.nullable JD.int)
+        |> Pipeline.required "word_span" (JD.nullable JD.int)
         |> Pipeline.required "sentences" (JD.list JD.int)
         |> Pipeline.required "trees" (JD.list JD.int)
         |> Pipeline.required "user_username" JD.string
@@ -84,15 +84,17 @@ treeCounts =
 
 date : JD.Decoder Date.Date
 date =
-    JD.string
-        `JD.andThen`
-            \str ->
-                case Date.fromString str of
-                    Err err ->
-                        JD.fail err
+    let
+        fromString string =
+            case Date.fromString string of
+                Err err ->
+                    JD.fail err
 
-                    Ok date ->
-                        JD.succeed date
+                Ok date ->
+                    JD.succeed date
+    in
+        JD.string
+            |> JD.andThen fromString
 
 
 email : JD.Decoder Types.Email
@@ -106,15 +108,18 @@ email =
         |> Pipeline.hardcoded False
 
 
-feedback : Dict.Dict String String -> JD.Decoder Feedback.Feedback
+feedback : List ( String, String ) -> JD.Decoder Feedback.Feedback
 feedback fields =
-    (JD.dict (JD.tuple1 identity JD.string) |> JD.map (toFeedback fields))
-        `JD.andThen`
-            \feedback ->
-                if Feedback.noKnownErrors feedback then
-                    JD.fail ("Unknown errors: " ++ (Feedback.getUnknown feedback))
-                else
-                    JD.succeed feedback
+    let
+        checkKnown feedback =
+            if Feedback.noKnownErrors feedback then
+                JD.fail ("Unknown errors: " ++ (Feedback.getUnknown feedback))
+            else
+                JD.succeed feedback
+    in
+        JD.dict (JD.index 0 JD.string)
+            |> JD.map (toFeedback <| Dict.fromList fields)
+            |> JD.andThen checkKnown
 
 
 toFeedback : Dict.Dict String String -> Dict.Dict String String -> Feedback.Feedback
@@ -197,7 +202,7 @@ sentence =
         |> Pipeline.required "write_time_allotted" JD.float
         |> Pipeline.required "tree" JD.int
         |> Pipeline.required "profile" JD.int
-        |> Pipeline.required "parent" (Pipeline.nullable JD.int)
+        |> Pipeline.required "parent" (JD.nullable JD.int)
         |> Pipeline.required "children" (JD.list JD.int)
         |> Pipeline.required "profile_username" JD.string
 

@@ -32,14 +32,14 @@ module Types
         )
 
 import Date
-import Feedback
+import Http
 
 
 -- API
 
 
 type Error
-    = ApiFeedback Feedback.Feedback
+    = HttpError Http.Error
     | Unrecoverable String
 
 

@@ -28,7 +28,6 @@ import List.Zipper as Zipper
 import List.Zipper exposing (Zipper)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty)
-import Maybe.Extra exposing ((?))
 
 
 -- CONFIG
@@ -104,7 +103,7 @@ hide =
 start : Nonempty id -> State id
 start order =
     Zipper.singleton (Nonempty.head order)
-        |> Zipper.updateAfter (always (Nonempty.tail order))
+        |> Zipper.mapAfter (always (Nonempty.tail order))
         |> Running
 
 

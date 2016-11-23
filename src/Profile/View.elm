@@ -168,7 +168,7 @@ wordSpanSummary maybeId store =
         Just id ->
             let
                 detail =
-                    case Store.get id store.wordSpans of
+                    case store.wordSpan of
                         Nothing ->
                             ""
 
@@ -189,7 +189,7 @@ passwordChange lift { input, feedback, status } =
                     [ Attributes.id "inputOldPassword"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "Your old password"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.oldPassword
                     , Events.onInput <| lift << (ChangePasswordFormInput << \o -> { input | oldPassword = o })
                     ]
@@ -202,7 +202,7 @@ passwordChange lift { input, feedback, status } =
                     [ Attributes.id "inputPassword1"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password1
                     , Events.onInput <| lift << (ChangePasswordFormInput << \p -> { input | password1 = p })
                     ]
@@ -215,7 +215,7 @@ passwordChange lift { input, feedback, status } =
                     [ Attributes.id "inputPassword2"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password2
                     , Events.onInput <| lift << (ChangePasswordFormInput << \p -> { input | password2 = p })
                     ]
@@ -225,7 +225,7 @@ passwordChange lift { input, feedback, status } =
             , Html.div []
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
-                    [ Attributes.type' "submit"
+                    [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Update password" ]
@@ -247,13 +247,13 @@ usernameChange lift { input, feedback, status } =
             , Html.input
                 [ Attributes.id "inputUsername"
                 , Attributes.disabled (status /= Form.Entering)
-                , Attributes.type' "text"
+                , Attributes.type_ "text"
                 , Attributes.value input
                 , Events.onInput (lift << ChangeUsernameFormInput)
                 ]
                 []
             , Html.button
-                [ Attributes.type' "submit"
+                [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
                 ]
                 [ Html.text "Update username" ]
@@ -265,15 +265,15 @@ usernameChange lift { input, feedback, status } =
 
 
 emails : (Msg -> AppMsg.Msg) -> Form.Model String -> List Types.Email -> Html.Html AppMsg.Msg
-emails lift { input, feedback, status } emails' =
+emails lift { input, feedback, status } emails_ =
     let
         emailList =
-            case emails' of
+            case emails_ of
                 [] ->
                     Html.p [] [ Html.text "You have no emails configured" ]
 
                 _ ->
-                    Html.ul [] (List.map (email lift) emails')
+                    Html.ul [] (List.map (email lift) emails_)
     in
         Html.div []
             [ Html.h2 [] [ Html.text "Email" ]
@@ -289,13 +289,13 @@ emails lift { input, feedback, status } emails' =
                 , Html.input
                     [ Attributes.id "inputEmail"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.type' "email"
+                    , Attributes.type_ "email"
                     , Attributes.value input
                     , Events.onInput (lift << AddEmailFormInput)
                     ]
                     []
                 , Html.button
-                    [ Attributes.type' "submit"
+                    [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Add" ]
@@ -307,37 +307,37 @@ emails lift { input, feedback, status } emails' =
 
 
 email : (Msg -> AppMsg.Msg) -> Types.Email -> Html.Html AppMsg.Msg
-email lift email' =
+email lift email_ =
     let
         disabled =
-            Attributes.disabled email'.transacting
+            Attributes.disabled email_.transacting
 
         primary =
-            if email'.primary then
+            if email_.primary then
                 [ Html.span [] [ Html.text "Primary" ] ]
             else
                 []
 
         verified =
-            if email'.verified then
+            if email_.verified then
                 []
             else
                 [ Html.span [] [ Html.text "Unverified" ]
-                , Helpers.evButton [ disabled ] (lift <| RequestEmailVerification email') "Send verification email"
+                , Helpers.evButton [ disabled ] (lift <| VerifyEmail email_) "Send verification email"
                 ]
 
         setPrimary =
-            if email'.verified && (not email'.primary) then
-                [ Helpers.evButton [ disabled ] (lift <| PrimaryEmail email') "Set as primary" ]
+            if email_.verified && (not email_.primary) then
+                [ Helpers.evButton [ disabled ] (lift <| PrimaryEmail email_) "Set as primary" ]
             else
                 []
     in
         Html.div []
-            ([ Html.span [] [ Html.text email'.email ] ]
+            ([ Html.span [] [ Html.text email_.email ] ]
                 ++ primary
                 ++ verified
                 ++ setPrimary
-                ++ [ Helpers.evButton [ disabled ] (lift <| DeleteEmail email') "Delete" ]
+                ++ [ Helpers.evButton [ disabled ] (lift <| DeleteEmail email_) "Delete" ]
             )
 
 

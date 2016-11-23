@@ -59,7 +59,7 @@ form lift { input, feedback, status } =
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"
-                    , Attributes.type' "text"
+                    , Attributes.type_ "text"
                     , Attributes.value input.username
                     , Events.onInput (lift << LoginFormInput << \u -> { input | username = u })
                     ]
@@ -72,7 +72,7 @@ form lift { input, feedback, status } =
                     [ Attributes.id "inputPassword"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
-                    , Attributes.type' "password"
+                    , Attributes.type_ "password"
                     , Attributes.value input.password
                     , Events.onInput (lift << LoginFormInput << \p -> { input | password = p })
                     ]
@@ -82,7 +82,7 @@ form lift { input, feedback, status } =
             , Html.div []
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
-                    [ Attributes.type' "submit"
+                    [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Sign in" ]

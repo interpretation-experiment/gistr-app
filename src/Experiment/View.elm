@@ -207,7 +207,7 @@ write lift loading trialModel { input, feedback, status } =
                 , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 ]
             , Html.button
-                [ Attributes.type' "submit"
+                [ Attributes.type_ "submit"
                 , Attributes.disabled (loading || (status /= Form.Entering))
                 ]
                 [ Html.text "Send" ]

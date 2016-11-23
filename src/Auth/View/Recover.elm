@@ -66,7 +66,7 @@ form lift { input, feedback, status } =
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey@example.com"
-                    , Attributes.type' "mail"
+                    , Attributes.type_ "mail"
                     , Attributes.value input
                     , Events.onInput (lift << RecoverFormInput)
                     ]
@@ -75,7 +75,7 @@ form lift { input, feedback, status } =
             , Html.div []
                 [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
-                    [ Attributes.type' "submit"
+                    [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     ]
                     [ Html.text "Request password reset" ]
