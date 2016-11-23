@@ -11,7 +11,6 @@ import Navigation
 import Notification
 import Profile.Update as ProfileUpdate
 import Router
-import Store
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -63,6 +62,34 @@ doUpdate msg model =
         {-
            NAVIGATION
         -}
+        UrlUpdate newUrl route ->
+            if (Debug.log "url" newUrl) /= Router.toUrl model.route then
+                -- URL has changed, do something about it
+                let
+                    ( finalModel, navigationCmd ) =
+                        Helpers.navigateTo model route
+
+                    finalUrl =
+                        Router.toUrl finalModel.route
+
+                    urlCorrection =
+                        if newUrl /= finalUrl then
+                            Navigation.modifyUrl (Debug.log "url correction" finalUrl)
+                        else
+                            Cmd.none
+                in
+                    if finalModel.route /= model.route then
+                        -- Update the model and return corresponding commands,
+                        -- and also fix the browser's url if necessary.
+                        finalModel ! [ navigationCmd, urlCorrection ]
+                    else
+                        -- Then necessarily newUrl /= finalUrl. So don't update the model,
+                        -- but fix the browser's url.
+                        model ! [ urlCorrection ]
+            else
+                -- URL hasn't changed, do nothing
+                model ! []
+
         NavigateTo route ->
             let
                 ( newModel, cmd ) =

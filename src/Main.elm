@@ -3,14 +3,9 @@ module Main exposing (..)
 import Animation
 import Auth.Msg as AuthMsg
 import Dict
-import Experiment.Model as ExpModel
-import Experiment.Msg as ExpMsg
 import Experiment.Subscription as ExpSub
 import Form
-import Helpers exposing ((!!))
-import Intro
 import LocalStorage
-import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
@@ -20,55 +15,14 @@ import Update
 import View
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-    Navigation.program (Navigation.makeParser Router.locationParser)
+    Navigation.program (uncurry Msg.UrlUpdate << Router.parse)
         { init = init
         , view = View.view
         , update = Update.update
-        , urlUpdate = urlUpdate
         , subscriptions = subscriptions
         }
-
-
-
--- URL UPDATE
-
-
-urlUpdate : ( String, Maybe Router.Route ) -> Model -> ( Model, Cmd Msg )
-urlUpdate ( newUrl, maybeRoute ) model =
-    let
-        modelUrl =
-            Router.toUrl model.route
-    in
-        if (Debug.log "url" newUrl) /= modelUrl then
-            -- URL has changed, do something about it
-            let
-                ( finalModel, navigationCmd ) =
-                    Helpers.navigateTo model (maybeRoute ? model.route)
-
-                finalRoute =
-                    finalModel.route
-
-                finalUrl =
-                    Router.toUrl finalRoute
-            in
-                if finalRoute /= model.route then
-                    -- Update the model and return corresponding commands,
-                    -- and also fix the browser's url if necessary.
-                    ( finalModel, navigationCmd )
-                        !! (if newUrl /= finalUrl then
-                                [ Navigation.modifyUrl (Debug.log "url correction" finalUrl) ]
-                            else
-                                []
-                           )
-                else
-                    -- Then necessarily newUrl /= finalUrl. So don't update the model,
-                    -- but fix the browser's url.
-                    model ! [ Navigation.modifyUrl (Debug.log "url correction" finalUrl) ]
-        else
-            -- URL hasn't changed, do nothing
-            model ! []
 
 
 
@@ -99,11 +53,15 @@ subscriptions model =
 -- INIT
 
 
-init : ( String, Maybe Router.Route ) -> ( Model, Cmd Msg )
-init ( url, maybeRoute ) =
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
     -- Don't trigger any navigation (-> url update and/or redirection) due to
     -- the initial url, just wait for the tokenGet subscription to return a
     -- GotLocalToken, and that will trigger a navigation either way. Doing
     -- otherwise creates two competing navigation events (so url updates and/or
     -- redirections): the initial one, and the one from GotLocalToken.
-    Model.initialModel (maybeRoute ? Router.Home) ! [ LocalStorage.tokenGet ]
+    let
+        ( _, route ) =
+            Router.parse location
+    in
+        Model.initialModel route ! [ LocalStorage.tokenGet ]

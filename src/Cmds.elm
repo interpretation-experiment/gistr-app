@@ -1,4 +1,4 @@
-module Cmds exposing (cmdsForRoute)
+module Cmds exposing (cmdsForModel)
 
 import Api
 import Experiment.Msg as ExperimentMsg
@@ -7,14 +7,13 @@ import Model exposing (Model)
 import Msg exposing (Msg)
 import Profile.Msg as ProfileMsg
 import Router
-import Store
 import Task
 import Types
 
 
-cmdsForRoute : Model -> Router.Route -> List (Cmd Msg)
-cmdsForRoute model route =
-    case route of
+cmdsForModel : Model -> List (Cmd Msg)
+cmdsForModel model =
+    case model.route of
         Router.Profile (Router.Confirm key) ->
             authenticatedOrIgnore model <|
                 \auth ->

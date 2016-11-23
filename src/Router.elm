@@ -2,7 +2,7 @@ module Router
     exposing
         ( ProfileRoute(..)
         , Route(..)
-        , locationParser
+        , parse
         , normalize
         , toUrl
         )
@@ -146,20 +146,16 @@ normalize auth route =
 -- URL -> ROUTE
 
 
-locationParser : Navigation.Location -> ( String, Maybe Route )
-locationParser location =
+parse : Navigation.Location -> ( String, Route )
+parse location =
     let
-        path =
-            location.pathname
-
-        query =
-            location.search
+        url =
+            location.pathname ++ location.search
     in
-        ( path ++ query
-        , String.dropLeft 1 path
-            ++ query
+        ( url
+        , String.dropLeft 1 url
             |> UrlQueryParser.parse identity urlParser
-            |> Result.toMaybe
+            |> Result.withDefault Home
         )
 
 

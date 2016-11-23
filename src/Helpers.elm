@@ -39,7 +39,6 @@ import Http
 import Json.Decode as JD
 import List
 import List.Extra exposing (splitAt)
-import List.Nonempty as Nonempty
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo, Error))
 import Random
@@ -117,19 +116,19 @@ updateProfile model profile =
 
 
 navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
-navigateTo model route =
+navigateTo model request =
     let
-        authRoute =
-            Router.normalize model.auth (Debug.log "nav request" route)
-
-        emptyOnChange =
-            if authRoute /= model.route then
-                Model.emptyForms
-            else
-                identity
+        finalRoute =
+            Router.normalize model.auth (Debug.log "nav request" request)
     in
-        emptyOnChange { model | route = (Debug.log "nav final" authRoute) }
-            ! Cmds.cmdsForRoute model authRoute
+        if finalRoute /= model.route then
+            let
+                newModel =
+                    Model.emptyForms { model | route = (Debug.log "nav final" finalRoute) }
+            in
+                newModel ! Cmds.cmdsForModel newModel
+        else
+            model ! []
 
 
 authenticatedOrIgnore :

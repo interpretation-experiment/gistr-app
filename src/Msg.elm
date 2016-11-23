@@ -16,6 +16,7 @@ type Msg
       -- NOTIFICATIONS
     | Notify (Notification.Msg String)
       -- NAVIGATION
+    | UrlUpdate String Router.Route
     | NavigateTo Router.Route
     | Error Types.Error
       -- STORE
