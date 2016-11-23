@@ -4,519 +4,214 @@ module Api
         , changePassword
         , confirmEmail
         , deleteEmail
-        , fetch
-        , fetchAuth
-        , fetchMany
-        , fetchMeta
+        , getAuth
+        , getSentence
+        , getSentences
+        , getTree
+        , getTrees
+        , getWordSpan
         , login
         , logout
         , postQuestionnaire
         , postSentence
         , recover
         , register
-        , requestEmailVerification
         , reset
         , updateEmail
         , updateProfile
         , updateUser
+        , verifyEmail
         )
 
-import Decoders
-import Dict
-import Encoders
-import Feedback
-import HttpBuilder exposing (RequestBuilder)
-import Store
-import String
-import Task
+import Api.Calls as Calls
+import Api.Calls exposing (ApiTask)
 import Types
 
 
--- CONFIG
+-- AUTH
 
 
-baseUrl : String
-baseUrl =
-    "//127.0.0.1:8000/api"
+getSelf : Types.Token -> ApiTask Types.User
+getSelf token =
+    getSelfSettingProfile token Nothing
 
 
+getSelfSettingProfile : Types.Token -> Maybe String -> ApiTask Types.User
+getSelfSettingProfile token maybeProlific =
+    let
+        finalize preUser =
+            case preUser.profile of
+                Just profile ->
+                    Calls.succeed { preUser | profile = profile }
 
--- GENERIC CALLS
-
-
-call : (String -> RequestBuilder) -> String -> RequestBuilder
-call method url =
-    method (baseUrl ++ url)
-        |> HttpBuilder.withHeader "Content-Type" "application/json"
-        |> HttpBuilder.withHeader "Accept" "application/json"
-
-
-authCall : (String -> RequestBuilder) -> String -> Types.Token -> RequestBuilder
-authCall method url token =
-    call method url
-        |> HttpBuilder.withHeader "Authorization" ("Token " ++ token)
+                Nothing ->
+                    Calls.postProfile { token = token, preUser = preUser } maybeProlific
+                        |> Calls.map (\profile -> { preUser | profile = profile })
+    in
+        Calls.getPreUser token |> Calls.andThen finalize
 
 
-errorAs :
-    (a -> b)
-    -> (String -> b)
-    -> HttpBuilder.Error a
-    -> b
-errorAs format default error =
-    case error of
-        HttpBuilder.BadResponse response ->
-            format response.data
-
-        _ ->
-            default (toString error)
+getAuth : Types.Token -> ApiTask Types.Auth
+getAuth token =
+    getAuthSettingProfile token Nothing
 
 
+getAuthSettingProfile : Types.Token -> Maybe String -> ApiTask Types.Auth
+getAuthSettingProfile token maybeProlific =
+    Calls.map2 (Types.Auth token)
+        (getSelfSettingProfile token maybeProlific)
+        Calls.getMeta
 
--- LOGIN
 
-
-login : Types.Credentials -> Task.Task Types.Error Types.Auth
+login : Types.Credentials -> ApiTask Types.Auth
 login credentials =
-    let
-        getToken =
-            call HttpBuilder.post "/rest-auth/login/"
-                |> HttpBuilder.withJsonBody (Encoders.credentials credentials)
-                |> HttpBuilder.send
-                    (HttpBuilder.jsonReader Decoders.token)
-                    (HttpBuilder.jsonReader (Decoders.feedback loginFeedbackFields))
-                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-                |> Task.map .data
-    in
-        getToken `Task.andThen` fetchAuth
+    Calls.postLogin credentials
+        |> Calls.andThen getAuth
 
 
-loginFeedbackFields : Dict.Dict String String
-loginFeedbackFields =
-    Dict.fromList
-        [ ( "username", "username" )
-        , ( "password", "password" )
-        , ( "non_field_errors", "global" )
-        ]
+register : Types.RegisterCredentials -> Maybe String -> ApiTask Types.Auth
+register credentials maybeProlific =
+    Calls.postRegister credentials
+        |> Calls.andThen (\token -> getAuthSettingProfile token maybeProlific)
+
+
+logout : Types.Auth -> ApiTask ()
+logout =
+    Calls.postLogout
 
 
 
--- USER AND PROFILE
+-- PASSWORD
 
 
-fetchAuth : Types.Token -> Task.Task Types.Error Types.Auth
-fetchAuth token =
-    fetchAuthSettingProfile Nothing token
+recover : String -> ApiTask ()
+recover =
+    Calls.postRecovery
 
 
-fetchAuthSettingProfile : Maybe String -> Types.Token -> Task.Task Types.Error Types.Auth
-fetchAuthSettingProfile maybeProlific token =
-    Task.map2 (Types.Auth token) (fetchUserSettingProfile maybeProlific token) fetchMeta
+reset : Types.ResetTokens -> Types.ResetCredentials -> ApiTask ()
+reset =
+    Calls.postReset
 
 
-fetchUser : Types.Token -> Task.Task Types.Error Types.User
-fetchUser token =
-    fetchUserSettingProfile Nothing token
-
-
-fetchUserSettingProfile : Maybe String -> Types.Token -> Task.Task Types.Error Types.User
-fetchUserSettingProfile maybeProlific token =
-    fetchPreUser token
-        `Task.andThen`
-            \preUser ->
-                case preUser.profile of
-                    Just profile ->
-                        Task.succeed { preUser | profile = profile }
-
-                    Nothing ->
-                        createProfile maybeProlific { token = token, preUser = preUser }
-
-
-fetchPreUser : Types.Token -> Task.Task Types.Error Types.PreUser
-fetchPreUser token =
-    authCall HttpBuilder.get "/users/me/" token
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.preUser)
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map .data
-
-
-createProfile :
-    Maybe String
-    -> { token : Types.Token, preUser : Types.PreUser }
-    -> Task.Task Types.Error Types.User
-createProfile maybeProlific { token, preUser } =
-    authCall HttpBuilder.post "/profiles/" token
-        |> HttpBuilder.withJsonBody (Encoders.newProfile maybeProlific)
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.profile)
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map (.data >> \p -> { preUser | profile = p })
-
-
-updateUser : Types.User -> Types.Auth -> Task.Task Types.Error Types.User
-updateUser user { token } =
-    authCall HttpBuilder.put ("/users/" ++ (toString user.id) ++ "/") token
-        |> HttpBuilder.withJsonBody (Encoders.user user)
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.user)
-            (HttpBuilder.jsonReader (Decoders.feedback usernameChangeFeedbackFields))
-        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-        |> Task.map .data
-
-
-usernameChangeFeedbackFields : Dict.Dict String String
-usernameChangeFeedbackFields =
-    Dict.fromList
-        [ ( "username", "global" ) ]
-
-
-updateProfile : Types.Profile -> Types.Auth -> Task.Task Types.Error Types.Profile
-updateProfile profile { token } =
-    authCall HttpBuilder.put ("/profiles/" ++ (toString profile.id) ++ "/") token
-        |> HttpBuilder.withJsonBody (Encoders.profile profile)
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.profile)
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map .data
-
-
-
--- REGISTER
-
-
-register : Maybe String -> Types.RegisterCredentials -> Task.Task Types.Error Types.Auth
-register maybeProlific credentials =
-    let
-        createToken =
-            call HttpBuilder.post "/rest-auth/registration/"
-                |> HttpBuilder.withJsonBody (Encoders.registerCredentials credentials)
-                |> HttpBuilder.send
-                    (HttpBuilder.jsonReader Decoders.token)
-                    (HttpBuilder.jsonReader (Decoders.feedback registerFeedbackFields))
-                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-                |> Task.map .data
-    in
-        createToken `Task.andThen` (fetchAuthSettingProfile maybeProlific)
-
-
-registerFeedbackFields : Dict.Dict String String
-registerFeedbackFields =
-    Dict.fromList
-        [ ( "username", "username" )
-        , ( "email", "email" )
-        , ( "password1", "password1" )
-        , ( "password2", "password2" )
-        , ( "__all__", "global" )
-        ]
-
-
-
--- LOGOUT
-
-
-logout : Types.Auth -> Task.Task Types.Error ()
-logout { token } =
-    authCall HttpBuilder.post "/rest-auth/logout/" token
-        |> HttpBuilder.send
-            (always (Ok ()))
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map .data
-
-
-
--- RECOVER
-
-
-recover : String -> Task.Task Types.Error ()
-recover email =
-    call HttpBuilder.post "/rest-auth/password/reset/"
-        |> HttpBuilder.withJsonBody (Encoders.recoveryEmail email)
-        |> HttpBuilder.send
-            (always (Ok ()))
-            (HttpBuilder.jsonReader (Decoders.feedback recoverFeedbackFields))
-        |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-        |> Task.map .data
-
-
-recoverFeedbackFields : Dict.Dict String String
-recoverFeedbackFields =
-    Dict.fromList
-        [ ( "email", "global" ) ]
-
-
-
--- RESET
-
-
-reset : Types.ResetCredentials -> Types.ResetTokens -> Task.Task Types.Error ()
-reset credentials tokens =
-    call HttpBuilder.post "/rest-auth/password/reset/confirm/"
-        |> HttpBuilder.withJsonBody (Encoders.resetCredentials credentials tokens)
-        |> HttpBuilder.send
-            (always (Ok ()))
-            (HttpBuilder.jsonReader (Decoders.feedback resetFeedbackFields))
-        |> Task.mapError (errorAs (translateResetFeedback >> Types.ApiFeedback) Types.Unrecoverable)
-        |> Task.map .data
-
-
-resetFeedbackFields : Dict.Dict String String
-resetFeedbackFields =
-    Dict.fromList
-        [ ( "new_password1", "password1" )
-        , ( "new_password2", "password2" )
-        , ( "token", "resetCredentials" )
-        , ( "uid", "resetCredentials" )
-        ]
-
-
-translateResetFeedback : Feedback.Feedback -> Feedback.Feedback
-translateResetFeedback feedback =
-    Feedback.updateError "resetCredentials"
-        (Just
-            ("There was a problem. Did you use the"
-                ++ " last password-reset link you received?"
-            )
-        )
-        feedback
-
-
-
--- PASSWORD CHANGE
-
-
-changePassword : Types.PasswordCredentials -> Types.Auth -> Task.Task Types.Error Types.Auth
-changePassword credentials auth =
+changePassword : Types.Auth -> Types.PasswordCredentials -> ApiTask Types.Auth
+changePassword auth credentials =
     let
         loginCredentials =
             { username = auth.user.username, password = credentials.password1 }
-
-        postPassword =
-            authCall HttpBuilder.post "/rest-auth/password/change/" auth.token
-                |> HttpBuilder.withJsonBody (Encoders.passwordCredentials credentials)
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    (HttpBuilder.jsonReader (Decoders.feedback passwordChangeFeedbackFields))
-                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-                |> Task.map .data
     in
-        postPassword
-            `Task.andThen` (always <| logout auth)
-            `Task.andThen` (always <| login loginCredentials)
-
-
-passwordChangeFeedbackFields : Dict.Dict String String
-passwordChangeFeedbackFields =
-    Dict.fromList
-        [ ( "old_password", "oldPassword" )
-        , ( "new_password1", "password1" )
-        , ( "new_password2", "password2" )
-        ]
+        Calls.postPassword auth credentials
+            |> Calls.andThen (always <| Calls.postLogout auth)
+            |> Calls.andThen (always <| login loginCredentials)
 
 
 
--- EMAILS
+-- USER
 
 
-addEmail : String -> Types.Auth -> Task.Task Types.Error Types.User
-addEmail email { token } =
-    let
-        postEmail =
-            authCall HttpBuilder.post "/emails/" token
-                |> HttpBuilder.withJsonBody (Encoders.newEmail email)
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    (HttpBuilder.jsonReader (Decoders.feedback addEmailFeedbackFields))
-                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-                |> Task.map .data
-    in
-        postEmail `Task.andThen` (always <| fetchUser token)
-
-
-addEmailFeedbackFields : Dict.Dict String String
-addEmailFeedbackFields =
-    Dict.fromList [ ( "email", "global" ) ]
-
-
-requestEmailVerification : Types.Email -> Types.Auth -> Task.Task Types.Error ()
-requestEmailVerification email { token } =
-    authCall HttpBuilder.post ("/emails/" ++ (toString email.id) ++ "/verify/") token
-        |> HttpBuilder.send
-            (always (Ok ()))
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map .data
-
-
-updateEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
-updateEmail email { token } =
-    let
-        putEmail =
-            authCall HttpBuilder.put ("/emails/" ++ (toString email.id) ++ "/") token
-                |> HttpBuilder.withJsonBody (Encoders.email email)
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    HttpBuilder.stringReader
-                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-                |> Task.map .data
-    in
-        putEmail `Task.andThen` (always <| fetchUser token)
-
-
-deleteEmail : Types.Email -> Types.Auth -> Task.Task Types.Error Types.User
-deleteEmail email { token } =
-    let
-        delete =
-            authCall HttpBuilder.delete ("/emails/" ++ (toString email.id) ++ "/") token
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    HttpBuilder.stringReader
-                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-                |> Task.map .data
-    in
-        delete `Task.andThen` (always <| fetchUser token)
-
-
-confirmEmail : String -> Types.Auth -> Task.Task Types.Error Types.User
-confirmEmail key { token } =
-    let
-        confirm =
-            call HttpBuilder.post "/rest-auth/registration/verify-email/"
-                |> HttpBuilder.withJsonBody (Encoders.emailConfirmationKey key)
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    (HttpBuilder.jsonReader Decoders.detail)
-                |> Task.mapError
-                    (errorAs (Feedback.globalError >> Types.ApiFeedback) Types.Unrecoverable)
-                |> Task.map .data
-    in
-        confirm `Task.andThen` (always <| fetchUser token)
+updateUser : Types.Auth -> Types.User -> ApiTask Types.User
+updateUser =
+    Calls.putUser
 
 
 
--- STORE
+-- PROFILE
 
 
-fetch : Store.TypedStore a b -> Int -> Types.Auth -> Task.Task Types.Error a
-fetch typedStore id { token } =
-    authCall HttpBuilder.get
-        ("/"
-            ++ (Store.endpoint typedStore)
-            ++ "/"
-            ++ (toString id)
-            ++ "/"
-        )
-        token
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader (Store.decoder typedStore))
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map .data
-
-
-type alias Query =
-    List ( String, String )
-
-
-type alias PageQuery =
-    { pageSize : Int
-    , page : Int
-    }
-
-
-fetchMany :
-    Store.TypedStore a b
-    -> Query
-    -> Maybe PageQuery
-    -> Types.Auth
-    -> Task.Task Types.Error (Types.Page a)
-fetchMany typedStore query maybePageQuery { token } =
-    let
-        queryString =
-            query
-                |> List.map (\( k, v ) -> k ++ "=" ++ v)
-                |> String.join "&"
-
-        queryWithPage =
-            case maybePageQuery of
-                Nothing ->
-                    queryString
-
-                Just pageQuery ->
-                    queryString
-                        ++ "&page_size="
-                        ++ (toString pageQuery.pageSize)
-                        ++ "&page="
-                        ++ (toString pageQuery.page)
-    in
-        authCall HttpBuilder.get
-            ("/" ++ (Store.endpoint typedStore) ++ "/?" ++ queryWithPage)
-            token
-            |> HttpBuilder.send
-                (HttpBuilder.jsonReader (Decoders.page <| Store.decoder typedStore))
-                HttpBuilder.stringReader
-            |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-            |> Task.map .data
-
-
-postSentence : Types.NewSentence -> Types.Auth -> Task.Task Types.Error Types.Profile
-postSentence sentence { token } =
-    let
-        postSentence =
-            authCall HttpBuilder.post "/sentences/" token
-                |> HttpBuilder.withJsonBody (Encoders.newSentence sentence)
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    HttpBuilder.stringReader
-                |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-                |> Task.map .data
-    in
-        postSentence `Task.andThen` (always <| Task.map .profile <| fetchUser token)
+updateProfile : Types.Auth -> Types.Profile -> ApiTask Types.Profile
+updateProfile =
+    Calls.putProfile
 
 
 
--- META
+-- EMAIL
 
 
-fetchMeta : Task.Task Types.Error Types.Meta
-fetchMeta =
-    call HttpBuilder.get "/meta/"
-        |> HttpBuilder.send
-            (HttpBuilder.jsonReader Decoders.meta)
-            HttpBuilder.stringReader
-        |> Task.mapError (errorAs Types.Unrecoverable Types.Unrecoverable)
-        |> Task.map .data
+addEmail : Types.Auth -> String -> ApiTask Types.User
+addEmail auth email =
+    Calls.postEmail auth email
+        |> Calls.andThen (always <| getSelf auth.token)
+
+
+updateEmail : Types.Auth -> Types.Email -> ApiTask Types.User
+updateEmail auth email =
+    Calls.putEmail auth email
+        |> Calls.andThen (always <| getSelf auth.token)
+
+
+deleteEmail : Types.Auth -> Types.Email -> ApiTask Types.User
+deleteEmail auth email =
+    Calls.deleteEmail auth email
+        |> Calls.andThen (always <| getSelf auth.token)
+
+
+verifyEmail : Types.Auth -> Types.Email -> ApiTask ()
+verifyEmail =
+    Calls.postEmailVerify
+
+
+confirmEmail : Types.Auth -> String -> ApiTask Types.User
+confirmEmail auth key =
+    Calls.postEmailConfirm auth key
+        |> Calls.andThen (always <| getSelf auth.token)
 
 
 
 -- QUESTIONNAIRE
 
 
-postQuestionnaire : Types.QuestionnaireForm -> Types.Auth -> Task.Task Types.Error Types.Profile
-postQuestionnaire questionnaire { token } =
-    let
-        postQuestionnaire =
-            authCall HttpBuilder.post "/questionnaires/" token
-                |> HttpBuilder.withJsonBody (Encoders.newQuestionnaire questionnaire)
-                |> HttpBuilder.send
-                    (always (Ok ()))
-                    (HttpBuilder.jsonReader (Decoders.feedback postQuestionnaireFeedbackFields))
-                |> Task.mapError (errorAs Types.ApiFeedback Types.Unrecoverable)
-                |> Task.map .data
-    in
-        postQuestionnaire `Task.andThen` (always <| Task.map .profile <| fetchUser token)
+postQuestionnaire : Types.Auth -> Types.QuestionnaireForm -> ApiTask Types.Profile
+postQuestionnaire auth questionnaire =
+    Calls.postQuestionnaire auth questionnaire
+        |> Calls.andThen (always <| Calls.map .profile <| getSelf auth.token)
 
 
-postQuestionnaireFeedbackFields : Dict.Dict String String
-postQuestionnaireFeedbackFields =
-    Dict.fromList
-        [ ( "age", "age" )
-        , ( "gender", "gender" )
-        , ( "informed_how", "informedHow" )
-        , ( "informed_what", "informedWhat" )
-        , ( "job_type", "jobType" )
-        , ( "job_freetext", "jobFreetext" )
-        ]
+
+-- WORD SPAN
+
+
+getWordSpan : Types.Auth -> Int -> ApiTask Types.WordSpan
+getWordSpan =
+    Calls.getWordSpan
+
+
+
+-- SENTENCE
+
+
+getSentence : Types.Auth -> Int -> ApiTask Types.Sentence
+getSentence =
+    Calls.getSentence
+
+
+getSentences :
+    Types.Auth
+    -> Maybe { pageSize : Int, page : Int }
+    -> List ( String, String )
+    -> ApiTask (Types.Page Types.Sentence)
+getSentences =
+    Calls.getSentences
+
+
+postSentence : Types.Auth -> Types.NewSentence -> ApiTask Types.Profile
+postSentence auth sentence =
+    Calls.postSentence auth sentence
+        |> Calls.andThen (always <| Calls.map .profile <| getSelf auth.token)
+
+
+
+-- TREE
+
+
+getTree : Types.Auth -> Int -> ApiTask Types.Tree
+getTree =
+    Calls.getTree
+
+
+getTrees :
+    Types.Auth
+    -> Maybe { pageSize : Int, page : Int }
+    -> List ( String, String )
+    -> ApiTask (Types.Page Types.Tree)
+getTrees =
+    Calls.getTrees

@@ -108,7 +108,7 @@ email =
         |> Pipeline.hardcoded False
 
 
-feedback : Dict.Dict String String -> JD.Decoder Feedback.Feedback
+feedback : List ( String, String ) -> JD.Decoder Feedback.Feedback
 feedback fields =
     let
         checkKnown feedback =
@@ -118,7 +118,7 @@ feedback fields =
                 JD.succeed feedback
     in
         JD.dict (JD.index 0 JD.string)
-            |> JD.map (toFeedback fields)
+            |> JD.map (toFeedback <| Dict.fromList fields)
             |> JD.andThen checkKnown
 
 
