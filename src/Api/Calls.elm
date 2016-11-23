@@ -32,7 +32,6 @@ import Decoders
 import Encoders
 import Http
 import HttpBuilder exposing (RequestBuilder)
-import Json.Decode as JD
 import Json.Encode as JE
 import Maybe.Extra exposing (unwrap)
 import Task

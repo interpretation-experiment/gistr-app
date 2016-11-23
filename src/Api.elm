@@ -25,7 +25,6 @@ module Api
         )
 
 import Api.Calls as Calls
-import Http
 import Task
 import Types
 
