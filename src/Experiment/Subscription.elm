@@ -6,9 +6,6 @@ import Experiment.Msg exposing (Msg(..))
 import Helpers
 import Intro
 import Model exposing (Model)
-import String
-import Time
-import Types
 
 
 subscription : (Msg -> msg) -> Model -> Sub msg

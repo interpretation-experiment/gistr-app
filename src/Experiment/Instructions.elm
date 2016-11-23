@@ -9,7 +9,6 @@ module Experiment.Instructions
 import Experiment.Msg exposing (Msg(..))
 import Html
 import Intro
-import List.Extra exposing (getAt)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty)
 import Msg as AppMsg
