@@ -1,15 +1,11 @@
 'use strict';
 
-require('font-awesome/css/font-awesome.css');
-
 // Require index.html so it gets copied to dist
 require('./index.html');
 
+// Mount Elm
 var Elm = require('./Main.elm');
-var mountNode = document.getElementById('main');
-
-// The third value on embed are the initial values for incomming ports into Elm
-var app = Elm.Main.embed(mountNode);
+var app = Elm.Main.embed(document.getElementById('main'));
 
 // Ports
 app.ports.localStorageSet.subscribe(function({ key, value }) {
