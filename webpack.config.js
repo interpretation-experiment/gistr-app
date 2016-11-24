@@ -15,14 +15,19 @@ module.exports = {
   module: {
     loaders: [
       {
+        test:    /\.css$/,
+        exclude: /node_modules/,
+        loader:  'css-loader',
+      },
+      {
         test:    /\.html$/,
         exclude: /node_modules/,
-        loader:  'file?name=[name].[ext]',
+        loader:  'file-loader?name=[name].[ext]',
       },
       {
         test:    /\.elm$/,
         exclude: [/elm-stuff/, /node_modules/],
-        loader:  'elm-hot!elm-webpack?verbose=true&warn=true&debug=true',
+        loader:  'elm-hot-loader!elm-webpack-loader?verbose=true&warn=true&debug=true',
       },
     ],
 
