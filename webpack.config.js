@@ -1,4 +1,7 @@
-var path = require("path");
+var path = require('path');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+var extractVendorCss = new ExtractTextPlugin({ filename: 'vendor.css', allChunks: true });
 
 module.exports = {
   entry: {
@@ -15,24 +18,27 @@ module.exports = {
   module: {
     loaders: [
       {
-        test:    /\.css$/,
-        exclude: /node_modules/,
-        loader:  'css-loader',
+        test: /\.css$/,
+        loader: extractVendorCss.extract('css-loader'),
       },
       {
-        test:    /\.html$/,
+        test: /\.html$/,
         exclude: /node_modules/,
-        loader:  'file-loader?name=[name].[ext]',
+        loader: 'file-loader?name=[name].[ext]',
       },
       {
-        test:    /\.elm$/,
+        test: /\.elm$/,
         exclude: [/elm-stuff/, /node_modules/],
-        loader:  'elm-hot-loader!elm-webpack-loader?verbose=true&warn=true&debug=true',
+        loaders: ['elm-hot-loader', 'elm-webpack-loader?verbose=true&warn=true&debug=true'],
       },
     ],
 
     noParse: /\.elm$/,
   },
+
+  plugins: [
+    extractVendorCss
+  ],
 
   devServer: {
     inline: true,

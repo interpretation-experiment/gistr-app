@@ -1,6 +1,6 @@
 'use strict';
 
-// Require index.html so it gets copied to dist
+require('ace-css/css/ace.css');
 require('./index.html');
 
 // Mount Elm
