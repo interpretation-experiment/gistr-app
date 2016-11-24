@@ -1,5 +1,6 @@
 var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var extractVendorCss = new ExtractTextPlugin({ filename: 'vendor.css', allChunks: true });
 
@@ -13,7 +14,7 @@ module.exports = function(env) {
 
     output: {
       path: path.resolve(__dirname + '/dist'),
-      filename: '[name].js',
+      filename: '[name]-[chunkhash].js',
     },
 
     module: {
@@ -21,11 +22,6 @@ module.exports = function(env) {
         {
           test: /\.css$/,
           loader: extractVendorCss.extract('css-loader'),
-        },
-        {
-          test: /\.html$/,
-          exclude: /node_modules/,
-          loader: 'file-loader?name=[name].[ext]',
         },
         {
           test: /\.elm$/,
@@ -38,7 +34,8 @@ module.exports = function(env) {
     },
 
     plugins: [
-      extractVendorCss
+      extractVendorCss,
+      new HtmlWebpackPlugin({ template: 'src/index.html' })
     ],
 
     devServer: {

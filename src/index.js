@@ -1,7 +1,6 @@
 'use strict';
 
 require('ace-css/css/ace.css');
-require('./index.html');
 
 // Mount Elm
 var Elm = require('./Main.elm');
