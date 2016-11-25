@@ -52,11 +52,14 @@ app_final         = $(output)/app$(app_hash).js
 html             := $(output)/index.html
 
 
-.PHONY: all clean clean-elm clean-javascript
+.PHONY: all prod clean clean-elm clean-javascript
 
 
 all: $(html)
 	@echo -e "$(GREEN)$(BOLD)App built$(NORMAL)$(BOLD) → $(output)/$(NORMAL)\n"
+
+prod:
+	@TARGET=prod $(MAKE) --no-print-directory
 
 
 $(vendor_css): $(sources_css)

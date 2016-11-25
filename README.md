@@ -18,7 +18,7 @@ You need a recent version of node and GNU Make. Then:
 ```
 npm install
 make              # For development, output in build/
-TARGET=prod make  # For production, output in dist/
+make prod         # For production, output in dist/
 ```
 
 For continuous development:
