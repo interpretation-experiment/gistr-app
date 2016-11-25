@@ -71,7 +71,7 @@ $(app_js): $(index_js) $(sources_elm)
 	@$(ELM) $(main_elm) $(ELMFLAGS) --output $(main_elm_js)
 	@$(BABEL) -o $(babel_index_js) $<
 	@$(CATJS) $(main_elm_js) $(babel_index_js) > $@
-	@echo -e "$(NORMAL)"
+	@echo -ne "$(NORMAL)"
 
 
 $(html): $(vendor_css) $(app_js) $(index_html)
