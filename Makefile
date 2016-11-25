@@ -26,8 +26,8 @@ ifeq ($(TARGET), $(prod))
   CATCSS         := uglifycss
   CATJS          := babel --no-babelrc --presets=babili
   output         := $(dist)
-  vendor_hash     = -$(shell cat $(vendor_css) | $(HASH)).css
-  app_hash        = -$(shell cat $(app_js) | $(HASH)).js
+  vendor_hash     = -$(shell cat $(vendor_css) | $(HASH))
+  app_hash        = -$(shell cat $(app_js) | $(HASH))
 else
   ELMFLAGS       := --yes --warn --debug
   CATCSS         := cat
