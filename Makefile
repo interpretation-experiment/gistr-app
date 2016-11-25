@@ -84,7 +84,8 @@ $(html): $(vendor_css) $(app_js) $(index_html)
 
 clean-javascript:
 	@echo -e "$(LOW)Cleaning javascript build directories$(NORMAL)"
-	@rm -rf $(dist) $(build) $(build_tmp)
+	# Don't remove the actual $(build) directory since this disrupts BrowserSync
+	@rm -rf $(dist) $(build)/* $(build_tmp)
 
 
 clean-elm:
