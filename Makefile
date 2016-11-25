@@ -67,7 +67,7 @@ html             := $(output)/index.html
 all: $(html)
 	@echo -e "$(GREEN)$(BOLD)App built$(NORMAL)$(BOLD) → $(output)/$(NORMAL)\n"
 
-prod:
+prod: clean
 	@TARGET=prod $(MAKE) --no-print-directory
 
 
