@@ -8,7 +8,8 @@ SHELL            := /bin/bash
 HASH             := md5sum | awk '{print $$1}'
 HB               := hb -i
 BABEL            := babel --no-babelrc --presets=latest
-ELM              := elm make
+ELM              := elm-make
+ELMCSS           := elm-css
 
 # Colors
 GREEN            := \033[0;32m
@@ -30,8 +31,9 @@ ifeq ($(TARGET), $(prod))
   CATCSS         := uglifycss
   CATJS          := babel --no-babelrc --presets=babili
   output         := $(dist)
-  vendor_hash     = -$(shell cat $(vendor_css) | $(HASH))
-  app_hash        = -$(shell cat $(app_js) | $(HASH))
+  vendor_css_hash = -$(shell cat $(vendor_css) | $(HASH))
+  app_css_hash    = -$(shell cat $(app_css) | $(HASH))
+  app_js_hash     = -$(shell cat $(app_js) | $(HASH))
 else
   ELMFLAGS       := --yes --warn --debug
   CATCSS         := cat
@@ -42,17 +44,20 @@ endif
 # Source files
 sources_css      := node_modules/semantic-ui-css/semantic.css
 sources_elm      := $(shell find $(src) -name "*.elm")
+stylesheets_elm  := $(src)/Stylesheets.elm
 main_elm         := $(src)/Main.elm
 index_js         := $(src)/index.js
 index_html       := $(src)/index.html
 
 # Build files
 vendor_css       := $(build_tmp)/$(output)/vendor.css
+app_css          := $(build_tmp)/$(output)/app.css
 main_elm_js      := $(build_tmp)/$(output)/main-elm.js
 babel_index_js   := $(build_tmp)/$(output)/babel-index.js
 app_js           := $(build_tmp)/$(output)/app.js
-vendor_final      = $(output)/vendor$(vendor_hash).css
-app_final         = $(output)/app$(app_hash).js
+vendor_css_final  = $(output)/vendor$(vendor_css_hash).css
+app_css_final     = $(output)/app$(app_css_hash).css
+app_js_final      = $(output)/app$(app_js_hash).js
 html             := $(output)/index.html
 
 
@@ -72,6 +77,15 @@ $(vendor_css): $(sources_css)
 	@$(CATCSS) $^ > $@
 
 
+# Supress chattiness of elm-css, we already have progress report with elm-make
+$(app_css): $(sources_elm)
+	@echo -e "$(LOW)Generating app.css$(NORMAL)"
+	@$(eval css_tmp := $(shell mktemp -d -p $(build_tmp)))
+	@$(ELMCSS) $(stylesheets_elm) --output $(css_tmp) 1> /dev/null
+	@$(CATCSS) $(css_tmp)/* > $@
+	@rm -rf $(css_tmp)
+
+
 $(app_js): $(index_js) $(sources_elm)
 	@echo -e "$(LOW)Generating app.js"
 	@mkdir -p $(@D)
@@ -81,12 +95,13 @@ $(app_js): $(index_js) $(sources_elm)
 	@echo -ne "$(NORMAL)"
 
 
-$(html): $(vendor_css) $(app_js) $(index_html)
+$(html): $(app_js) $(vendor_css) $(app_css) $(index_html)
 	@echo -e "$(LOW)Generating index.html$(NORMAL)"
 	@mkdir -p $(@D)
-	@cp $(vendor_css) $(vendor_final)
-	@cp $(app_js) $(app_final)
-	@echo '{"vendor-css": "$(subst $(@D),,$(vendor_final))", "app-js": "$(subst $(@D),,$(app_final))"}' | $(HB) $(index_html) > $@
+	@cp $(vendor_css) $(vendor_css_final)
+	@cp $(app_css) $(app_css_final)
+	@cp $(app_js) $(app_js_final)
+	@echo '{"vendor-css": "$(subst $(@D),,$(vendor_css_final))", "app-css": "$(subst $(@D),,$(app_css_final))", "app-js": "$(subst $(@D),,$(app_js_final))"}' | $(HB) $(index_html) > $@
 
 
 # Don't remove the actual $(build) directory since this disrupts BrowserSync,
