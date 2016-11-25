@@ -1,3 +1,7 @@
+# TODO
+# - postcss
+# - asset fingerprinting
+
 # Path and Executables
 PATH             := node_modules/.bin:$(PATH)
 SHELL            := /bin/bash
