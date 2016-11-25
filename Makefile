@@ -36,7 +36,7 @@ else
 endif
 
 # Source files
-sources_css      := node_modules/ace-css/css/ace.css
+sources_css      := node_modules/semantic-ui-css/semantic.css
 sources_elm      := $(shell find $(src) -name "*.elm")
 main_elm         := $(src)/Main.elm
 index_js         := $(src)/index.js
