@@ -8,3 +8,22 @@ interpret, and long range effects of that.
 It is developed for my PhD on interpretation and cultural evolution.
 
 [Dive into more information](https://github.com/interpretation-experiment/gistr-app/wiki).
+
+
+Get started
+-----------
+
+You need a recent version of node and GNU Make. Then:
+
+```
+npm install
+make              # For development, output in build/
+TARGET=prod make  # For production, output in dist/
+```
+
+For continuous development:
+
+```
+./makewatch       # Will continuously build development version
+npm run serve     # Will serve and live-reload on rebuilds
+```

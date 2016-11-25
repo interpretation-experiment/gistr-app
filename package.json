@@ -2,22 +2,19 @@
   "name": "gistr",
   "version": "0.6.0",
   "description": "A GWAP on Interpretation",
-  "scripts": {
-    "build": "webpack",
-    "dev": "webpack-dev-server --port 3000 --hot"
-  },
   "repository": "https://gitlab.com/wehlutyk/gistr-app.git",
   "author": "Sébastien Lerique <sl@mehho.net>",
   "license": "GPL-3.0",
+  "scripts": {
+    "serve": "cd build && browser-sync start --server --reload-delay 500 --files ./*"
+  },
   "dependencies": {
     "ace-css": "^1.1.0",
-    "css-loader": "^0.26.0",
-    "elm-hot-loader": "^0.5.2",
-    "elm-webpack-loader": "^3.0.6",
-    "extract-text-webpack-plugin": "^2.0.0-beta.4",
-    "file-loader": "^0.9.0",
-    "html-webpack-plugin": "^2.24.1",
-    "webpack": "^2.1.0-beta.27",
-    "webpack-dev-server": "^1.16.2"
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0",
+    "babili": "0.0.9",
+    "browser-sync": "^2.18.2",
+    "handlebars-render": "^1.0.1",
+    "uglifycss": "0.0.25"
   }
 }
