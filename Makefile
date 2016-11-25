@@ -82,9 +82,10 @@ $(html): $(vendor_css) $(app_js) $(index_html)
 	@echo '{"vendor-css": "$(subst $(@D),,$(vendor_final))", "app-js": "$(subst $(@D),,$(app_final))"}' | $(HB) $(index_html) > $@
 
 
+# Don't remove the actual $(build) directory since this disrupts BrowserSync,
+# just remove its contents
 clean-javascript:
 	@echo -e "$(LOW)Cleaning javascript build directories$(NORMAL)"
-	# Don't remove the actual $(build) directory since this disrupts BrowserSync
 	@rm -rf $(dist) $(build)/* $(build_tmp)
 
 
