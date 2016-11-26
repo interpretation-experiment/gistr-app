@@ -1,5 +1,5 @@
 # TODO
-# - postcss
+# - postcss for autoprefixer
 # - asset fingerprinting
 
 # Path and Executables
@@ -42,7 +42,7 @@ else
 endif
 
 # Source files
-sources_css      := node_modules/semantic-ui-css/semantic.css
+sources_css      := $(src)/vendor.css
 sources_elm      := $(shell find $(src) -name "*.elm")
 stylesheets_elm  := $(src)/Stylesheets.elm
 main_elm         := $(src)/Main.elm
