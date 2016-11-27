@@ -5,38 +5,58 @@ import Html
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
+import Styles exposing (class, classList, id)
 import Types
 
 
-view : Model -> Html.Html Msg
+view : Model -> List (Html.Html Msg)
 view model =
-    Html.div [] [ header, body model ]
+    [ Html.header [] (header model)
+    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] (body model) ]
+    , Html.footer [] (footer model)
+    ]
 
 
-header : Html.Html msg
-header =
-    Html.h1 [] [ Html.text "Home" ]
-
-
-body : Model -> Html.Html Msg
-body model =
+header : Model -> List (Html.Html msg)
+header model =
     case model.auth of
         Types.Anonymous ->
-            Html.div []
-                [ Helpers.navButton Router.About "About"
-                , Helpers.navButton (Router.Login Nothing) "Sign in"
-                , Helpers.navButton (Router.Register Nothing) "Sign up"
-                ]
+            []
 
         Types.Authenticating ->
-            Html.div [] [ Helpers.loading ]
+            []
 
         Types.Authenticated { user } ->
-            Html.div []
-                [ Html.p [] [ Html.text ("Howdy, " ++ user.username) ]
-                , Html.div []
-                    [ Helpers.navButton Router.About "About"
-                    , Helpers.navButton Router.Experiment "Pass the experiment"
-                    , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
-                    ]
-                ]
+            [ Html.div
+                [ class [ Styles.Meta ] ]
+                [ Html.text ("Howdy, " ++ user.username) ]
+            ]
+
+
+body : Model -> List (Html.Html Msg)
+body model =
+    (Html.h1 [] [ Html.text "Home" ]) :: (buttons model)
+
+
+buttons : Model -> List (Html.Html Msg)
+buttons model =
+    case model.auth of
+        Types.Anonymous ->
+            [ Helpers.navButton Router.About "About"
+            , Helpers.navButton (Router.Login Nothing) "Sign in"
+            , Helpers.navButton (Router.Register Nothing) "Sign up"
+            ]
+
+        Types.Authenticating ->
+            [ Helpers.loading ]
+
+        Types.Authenticated _ ->
+            [ Helpers.navButton Router.About "About"
+            , Helpers.navButton Router.Experiment "Pass the experiment"
+            , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
+            ]
+
+
+footer : Model -> List (Html.Html Msg)
+footer model =
+    [ Html.text "Some buttons here" ]

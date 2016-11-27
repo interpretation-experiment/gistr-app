@@ -12,6 +12,7 @@ import Msg exposing (Msg)
 import Notification
 import Profile.View
 import Router
+import Styles exposing (class, classList, id)
 import View.About
 import View.Error
 import View.Home
@@ -26,11 +27,11 @@ view : Model -> Html.Html Msg
 view model =
     Html.div []
         [ Notification.view notificationConfig model.notifications
-        , routeView model
+        , Html.div [ id Styles.Page ] (routeView model)
         ]
 
 
-routeView : Model -> Html.Html Msg
+routeView : Model -> List (Html.Html Msg)
 routeView model =
     case model.route of
         Router.Home ->
@@ -40,25 +41,25 @@ routeView model =
             View.About.view model
 
         Router.Error ->
-            View.Error.view model
+            [ View.Error.view model ]
 
         Router.Login _ ->
-            Auth.View.Login.view Msg.AuthMsg model
+            [ Auth.View.Login.view Msg.AuthMsg model ]
 
         Router.Recover ->
-            Auth.View.Recover.view Msg.AuthMsg model
+            [ Auth.View.Recover.view Msg.AuthMsg model ]
 
         Router.Reset tokens ->
-            Auth.View.Reset.view Msg.AuthMsg model tokens
+            [ Auth.View.Reset.view Msg.AuthMsg model tokens ]
 
         Router.Register maybeProlific ->
-            Auth.View.Register.view Msg.AuthMsg model maybeProlific
+            [ Auth.View.Register.view Msg.AuthMsg model maybeProlific ]
 
         Router.Prolific ->
-            Auth.View.Prolific.view Msg.AuthMsg model
+            [ Auth.View.Prolific.view Msg.AuthMsg model ]
 
         Router.Profile profileRoute ->
-            Profile.View.view Msg.ProfileMsg model profileRoute
+            [ Profile.View.view Msg.ProfileMsg model profileRoute ]
 
         Router.Experiment ->
-            Experiment.View.view Msg.ExperimentMsg model
+            [ Experiment.View.view Msg.ExperimentMsg model ]
