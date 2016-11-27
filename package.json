@@ -6,13 +6,14 @@
   "author": "Sébastien Lerique <sl@mehho.net>",
   "license": "GPL-3.0",
   "scripts": {
-    "serve": "cd build && browser-sync start --server --reload-delay 500 --files ./*"
+    "serve": "node serve.js"
   },
   "dependencies": {
     "babel-cli": "^6.18.0",
     "babel-preset-latest": "^6.16.0",
     "babili": "0.0.9",
     "browser-sync": "^2.18.2",
+    "connect-history-api-fallback": "^1.3.0",
     "elm-css": "^0.6.0",
     "handlebars-render": "^1.0.1",
     "uglifycss": "0.0.25"
