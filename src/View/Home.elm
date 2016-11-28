@@ -5,6 +5,7 @@ import Html
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
+import Strings
 import Styles exposing (class, classList, id)
 import Types
 
@@ -12,7 +13,7 @@ import Types
 view : Model -> List (Html.Html Msg)
 view model =
     [ Html.header [] (header model)
-    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] (body model) ]
+    , Html.div [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body model) ]
     , Html.footer [] (footer model)
     ]
 
@@ -38,7 +39,12 @@ header model =
 body : Model -> List (Html.Html Msg)
 body model =
     [ Html.div []
-        [ Html.h1 [] [ Html.text "Home" ]
+        [ Html.div [ id Styles.Greeting ]
+            [ Html.h1 [] [ Html.text "Gistr" ]
+            , Html.small []
+                (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
+            ]
+        , Html.div [] Strings.homeQuestions
         , buttons model
         ]
     ]

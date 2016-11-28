@@ -153,3 +153,30 @@ questionnaireComment =
 sentenceTooShort : Int -> String
 sentenceTooShort minTokens =
     "Please type a longer sentence (at least " ++ toString minTokens ++ " words)"
+
+
+homeSubtitle1 : List (Html.Html msg)
+homeSubtitle1 =
+    [ Html.text "A "
+    , Html.strong [] [ Html.text "GWAP" ]
+    , Html.text " on Memory and Interpretation"
+    ]
+
+
+homeSubtitle2 : List (Html.Html Msg)
+homeSubtitle2 =
+    [ Html.text "by the "
+    , Html.a [ Attributes.href "https://cmb.hu-berlin.de/" ]
+        [ Html.text "Centre Marc Bloch" ]
+    , Html.text " in Berlin. "
+    , Helpers.navA Router.About "Learn more"
+    , Html.text "."
+    ]
+
+
+homeQuestions : List (Html.Html msg)
+homeQuestions =
+    [ Html.h3 [] [ Html.text "How good is your memory?" ]
+    , Html.p [] [ Html.text "How well do you remember what you read?" ]
+    , Html.p [] [ Html.text "With this experiment you'll learn how you unconsciously transform what you read. It lasts about 1 hour and it helps scientific research!" ]
+    ]
