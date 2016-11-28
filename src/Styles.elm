@@ -50,13 +50,9 @@ css =
             [ margin (px 0)
             , color (hex "#616469")
             , backgroundColor (hex "#eff1f3")
+            , fontSize (px 14)
             , fontFamilies
-                [ (qt "HelveticaNeue-Light")
-                , (qt "Helvetica Neue Light")
-                , (qt "Helvetica Neue")
-                , "Helvetica"
-                , "Arial"
-                , (qt "Lucida Grande")
+                [ (qt "Libre Franklin")
                 , .value sansSerif
                 ]
             ]
@@ -104,13 +100,70 @@ css =
           -- HOME LAYOUT
         , (#) Greeting
             [ centerElement
-            , marginBottom (px 30)
+            , marginBottom (px 40)
             , textAlign center
-            , children [ Css.Elements.small [ fontWeight lighter ] ]
+            , children
+                [ Css.Elements.p
+                    [ fontSize (em 0.9)
+                    , color (hex "#818181")
+                    , marginTop (px 20)
+                    , lineHeight (px 20)
+                    ]
+                ]
             ]
           -- UTILITIES
         , (.) Center [ centerElement ]
         , (.) CenterText [ textAlign center ]
           -- COMMON ELEMENTS
-        , h1 [ marginBottom (px 10) ]
+        , h1 [ fontWeight normal ]
+        , h2 [ fontWeight normal ]
+        , h3
+            [ fontWeight normal
+            , fontSize (em 1.25)
+            , margin3 (em 1.25) (px 0) (em 0.62)
+            ]
+        , p [ margin3 (px 0) (px 0) (em 0.62) ]
+          -- FONTS
+        , selector "@font-face"
+            [ fontFamilies [ (qt "Libre Franklin") ]
+            , fontStyle normal
+            , fontWeight (int 400)
+            , property "src" "local('Libre Franklin'), local('LibreFranklin-Regular'), url(https://fonts.gstatic.com/s/librefranklin/v1/PFwjf3aDdAQPvNKUrT3U7yzLtA-61L0zjfpz7YlT3Q0.woff2) format('woff2')"
+            , property "unicode-range" "U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF"
+            ]
+        , selector "@font-face"
+            [ fontFamilies [ (qt "Libre Franklin") ]
+            , fontStyle normal
+            , fontWeight (int 400)
+            , property "src" "local('Libre Franklin'), local('LibreFranklin-Regular'), url(https://fonts.gstatic.com/s/librefranklin/v1/PFwjf3aDdAQPvNKUrT3U70L2euXwouSmDRNACsKL_Ek.woff2) format('woff2')"
+            , property "unicode-range" "U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000"
+            ]
+        , selector "@font-face"
+            [ fontFamilies [ (qt "Libre Franklin") ]
+            , fontStyle normal
+            , fontWeight (int 700)
+            , property "src" "local('Libre Franklin Bold'), local('LibreFranklin-Bold'), url(https://fonts.gstatic.com/s/librefranklin/v1/1_DGDtljMiPWFs5rl_p0yFljbbiclJhQReCY5KHhrYQ.woff2) format('woff2')"
+            , property "unicode-range" "U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF"
+            ]
+        , selector "@font-face"
+            [ fontFamilies [ (qt "Libre Franklin") ]
+            , fontStyle normal
+            , fontWeight (int 700)
+            , property "src" "local('Libre Franklin Bold'), local('LibreFranklin-Bold'), url(https://fonts.gstatic.com/s/librefranklin/v1/1_DGDtljMiPWFs5rl_p0yFWV-FyrfMyO4CdzG9bhoAY.woff2) format('woff2')"
+            , property "unicode-range" "U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000"
+            ]
+        , selector "@font-face"
+            [ fontFamilies [ (qt "Libre Franklin") ]
+            , fontStyle italic
+            , fontWeight (int 400)
+            , property "src" "local('Libre Franklin Italic'), local('LibreFranklin-Italic'), url(https://fonts.gstatic.com/s/librefranklin/v1/zrsyK9EytLQ07oRM9IZIsfLkwZXlQ8vb2VGpYWaMNAo.woff2) format('woff2')"
+            , property "unicode-range" "U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF"
+            ]
+        , selector "@font-face"
+            [ fontFamilies [ (qt "Libre Franklin") ]
+            , fontStyle italic
+            , fontWeight (int 400)
+            , property "src" "local('Libre Franklin Italic'), local('LibreFranklin-Italic'), url(https://fonts.gstatic.com/s/librefranklin/v1/zrsyK9EytLQ07oRM9IZIsUGWZPQhhQLxjq7ViWViJIs.woff2) format('woff2')"
+            , property "unicode-range" "U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000"
+            ]
         ]

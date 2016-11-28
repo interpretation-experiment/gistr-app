@@ -30,7 +30,8 @@ header model =
         Types.Authenticated { user } ->
             [ Html.div
                 [ class [ Styles.Meta ] ]
-                [ Html.text ("Howdy, " ++ user.username)
+                [ Html.text "Howdy, "
+                , Html.strong [] [ Html.text user.username ]
                 , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
                 ]
             ]
@@ -41,7 +42,7 @@ body model =
     [ Html.div []
         [ Html.div [ id Styles.Greeting ]
             [ Html.h1 [] [ Html.text "Gistr" ]
-            , Html.small []
+            , Html.p []
                 (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
             ]
         , Html.div [] Strings.homeQuestions
