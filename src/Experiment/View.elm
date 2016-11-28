@@ -59,7 +59,7 @@ header lift profile meta model =
             else
                 Intro.hide
     in
-        [ Html.div [ class [ Styles.Nav ] ] [ Helpers.navButton Router.Home "Back" ]
+        [ Html.nav [] [ Helpers.navButton Router.Home "Back" ]
         , Intro.node
             (Instructions.viewConfig lift)
             instructionsState

@@ -23,8 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.div [ class [ Styles.Nav ] ]
-        [ Helpers.navButton (Router.Register Nothing) "Back" ]
+    [ Html.nav [] [ Helpers.navButton (Router.Register Nothing) "Back" ]
     , Html.h1 [] [ Html.text "Prolific Academic" ]
     ]
 

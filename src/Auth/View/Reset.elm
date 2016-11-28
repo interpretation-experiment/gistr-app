@@ -23,7 +23,7 @@ view lift model tokens =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.div [ class [ Styles.Nav ] ] [ Helpers.navButton (Router.Login Nothing) "Back" ]
+    [ Html.nav [] [ Helpers.navButton (Router.Login Nothing) "Back" ]
     , Html.h1 [] [ Html.text "Password reset" ]
     ]
 

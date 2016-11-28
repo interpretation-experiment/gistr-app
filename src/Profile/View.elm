@@ -27,7 +27,7 @@ view lift model route =
         contents =
             case model.auth of
                 Types.Authenticated auth ->
-                    [ Html.div [ class [ Styles.NavWide ] ] (menu route)
+                    [ Html.nav [] (menu route)
                     , Html.div [] (body lift model route auth)
                     ]
 
@@ -56,7 +56,7 @@ header model =
                 _ ->
                     []
     in
-        [ Html.div [ class [ Styles.Nav ] ] [ Helpers.navButton Router.Home "Back" ]
+        [ Html.nav [] [ Helpers.navButton Router.Home "Back" ]
         , Html.h1 [] [ Html.text "Profile" ]
         , Html.div [ class [ Styles.Meta ] ] logout
         ]

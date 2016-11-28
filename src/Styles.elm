@@ -24,13 +24,11 @@ namespaceName =
 
 
 type CssClasses
-    = Nav
-    | NavWide
-    | Meta
-    | Normal
-    | Wide
+    = Meta
     | SuperNarrow
     | Narrow
+    | Normal
+    | Wide
     | Center
     | CenterText
 
@@ -57,6 +55,7 @@ css =
                 , .value sansSerif
                 ]
             ]
+          -- GENERIC PAGE LAYOUT
         , (#) Page
             [ displayFlex
             , flexFlow1 column
@@ -69,10 +68,20 @@ css =
             [ displayFlex
             , alignItems center
             , minHeight (px 60)
+            , children
+                [ nav [ flex3 (num 0) (num 1) (pct 10), textAlign center ]
+                , (.) Meta [ marginLeft auto ]
+                ]
             ]
         , main_
             [ marginBottom (px 60)
             , children [ div [ margin2 (px 0) auto, displayFlex ] ]
+            , descendants
+                [ nav
+                    [ flex3 (num 0) (num 1) (pct 20)
+                    , adjacentSiblings [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
+                    ]
+                ]
             ]
         , footer
             [ maxWidth (px 300)
@@ -81,6 +90,12 @@ css =
             , padding2 (px 10) (px 40)
             , borderTop3 (px 1) solid (hex "#ddd")
             ]
+          -- BODY SIZING
+        , (.) SuperNarrow [ maxWidth (px 450) ]
+        , (.) Narrow [ maxWidth (px 540) ]
+        , (.) Normal [ maxWidth (px 720) ]
+        , (.) Wide [ maxWidth (px 900) ]
+          -- HOME LAYOUT
         , (#) Greeting
             [ marginRight auto
             , marginLeft auto
@@ -88,20 +103,7 @@ css =
             , textAlign center
             , children [ Css.Elements.small [ fontWeight lighter ] ]
             ]
-        , (.) SuperNarrow [ maxWidth (px 450) ]
-        , (.) Narrow [ maxWidth (px 540) ]
-        , (.) Normal [ maxWidth (px 720) ]
-        , (.) Wide [ maxWidth (px 900) ]
-        , (.) Nav
-            [ flex3 (num 0) (num 1) (pct 10)
-            , textAlign center
-            ]
-        , (.) NavWide [ flex3 (num 0) (num 1) (pct 20) ]
-        , (.) NavWide
-            [ adjacentSiblings
-                [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
-            ]
-        , (.) Meta [ marginLeft auto ]
+          -- UTILITIES
         , (.) Center
             [ marginRight auto
             , marginLeft auto
