@@ -65,7 +65,6 @@ css =
             [ displayFlex
             , flexFlow1 column
             , minHeight (vh 100)
-              -- CENTER PAGE
             , maxWidth (px 900)
             , centerElement
             ]
@@ -80,6 +79,7 @@ css =
             ]
         , main_
             [ marginBottom (px 60)
+              -- Apply SuperNarrow/Narrow/Normal/Wide to this div
             , children [ div [ centerElement, displayFlex ] ]
             , descendants
                 [ nav
@@ -111,5 +111,6 @@ css =
           -- UTILITIES
         , (.) Center [ centerElement ]
         , (.) CenterText [ textAlign center ]
+          -- COMMON ELEMENTS
         , h1 [ marginBottom (px 10) ]
         ]
