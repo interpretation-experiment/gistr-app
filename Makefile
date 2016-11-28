@@ -77,7 +77,7 @@ $(vendor_css): $(sources_css)
 	@$(CATCSS) $^ > $@
 
 
-# Supress chattiness of elm-css, we already have progress report with elm-make
+# Suppress chattiness of elm-css, we already have progress report with elm-make
 $(app_css): $(sources_elm)
 	@echo -e "$(LOW)Generating app.css$(NORMAL)"
 	@$(eval css_tmp := $(shell mktemp -d -p $(build_tmp)))
