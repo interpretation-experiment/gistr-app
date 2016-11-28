@@ -24,4 +24,6 @@ header =
 
 body : List (Html.Html Msg)
 body =
-    [ Html.p [] [ Html.text "Some text about Gistr." ] ]
+    [ Html.div []
+        [ Html.p [] [ Html.text "Some text about Gistr." ] ]
+    ]

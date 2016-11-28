@@ -17,55 +17,57 @@ import Profile.View.WordSpan as WordSpan
 import Router
 import Store
 import Strings
+import Styles exposing (class, classList, id)
 import Types
 
 
-view : (Msg -> AppMsg.Msg) -> Model -> Router.ProfileRoute -> Html.Html AppMsg.Msg
+view : (Msg -> AppMsg.Msg) -> Model -> Router.ProfileRoute -> List (Html.Html AppMsg.Msg)
 view lift model route =
     let
         contents =
             case model.auth of
                 Types.Authenticated auth ->
-                    [ menu route, body lift model route auth ]
+                    [ Html.div [ class [ Styles.NavWide ] ] (menu route)
+                    , Html.div [] (body lift model route auth)
+                    ]
 
                 Types.Authenticating ->
-                    [ Helpers.loading ]
+                    [ Html.div [] [ Helpers.loading ] ]
 
                 Types.Anonymous ->
-                    [ Helpers.notAuthed ]
+                    [ Html.div [] [ Helpers.notAuthed ] ]
     in
-        Html.div [] ((header model) :: contents)
+        [ Html.header [] (header model)
+        , Html.div [] [ Html.div [ class [ Styles.Normal ] ] contents ]
+        ]
 
 
-header : Model -> Html.Html AppMsg.Msg
+header : Model -> List (Html.Html AppMsg.Msg)
 header model =
     let
         logout =
             case model.auth of
                 Types.Authenticated auth ->
-                    Html.div []
-                        [ Html.text "Signed in as "
-                        , Html.strong [] [ Html.text auth.user.username ]
-                        , Helpers.evButton [] (AppMsg.AuthMsg AuthMsg.Logout) "Logout"
-                        ]
+                    [ Html.text "Signed in as "
+                    , Html.strong [] [ Html.text auth.user.username ]
+                    , Helpers.evButton [] (AppMsg.AuthMsg AuthMsg.Logout) "Sign out"
+                    ]
 
                 _ ->
-                    Html.span [] []
+                    []
     in
-        Html.div []
-            [ Helpers.navButton Router.Home "Back"
-            , logout
-            , Html.h1 [] [ Html.text "Profile" ]
-            ]
-
-
-menu : Router.ProfileRoute -> Html.Html AppMsg.Msg
-menu route =
-    Html.ul []
-        [ Html.li [] [ Helpers.navButton (Router.Profile Router.Dashboard) "Dashboard" ]
-        , Html.li [] [ Helpers.navButton (Router.Profile Router.Settings) "Settings" ]
-        , Html.li [] [ Helpers.navButton (Router.Profile Router.Emails) "Emails" ]
+        [ Html.div [ class [ Styles.Nav ] ] [ Helpers.navButton Router.Home "Back" ]
+        , Html.h1 [] [ Html.text "Profile" ]
+        , Html.div [ class [ Styles.Meta ] ] logout
         ]
+
+
+menu : Router.ProfileRoute -> List (Html.Html AppMsg.Msg)
+menu route =
+    [ Html.div [] [ Helpers.navButton (Router.Profile Router.Dashboard) "Dashboard" ]
+    , Html.div [] [ Helpers.navButton (Router.Profile Router.Settings) "Settings" ]
+    , Html.div [] [ Helpers.navButton (Router.Profile Router.Emails) "Emails" ]
+    ]
 
 
 body :
@@ -73,17 +75,16 @@ body :
     -> Model
     -> Router.ProfileRoute
     -> Types.Auth
-    -> Html.Html AppMsg.Msg
+    -> List (Html.Html AppMsg.Msg)
 body lift model route auth =
     case route of
         Router.Dashboard ->
             dashboard model auth.meta auth.user.profile
 
         Router.Settings ->
-            Html.div []
-                [ passwordChange lift model.password
-                , usernameChange lift model.username
-                ]
+            [ passwordChange lift model.password
+            , usernameChange lift model.username
+            ]
 
         Router.Emails ->
             emails lift model.emails auth.user.emails
@@ -98,13 +99,12 @@ body lift model route auth =
             WordSpan.view
 
 
-dashboard : Model -> Types.Meta -> Types.Profile -> Html.Html AppMsg.Msg
+dashboard : Model -> Types.Meta -> Types.Profile -> List (Html.Html AppMsg.Msg)
 dashboard model meta profile =
-    Html.div []
-        [ lifecycle meta profile
-        , questionnaireSummary profile.questionnaireId
-        , wordSpanSummary profile.wordSpanId model.store
-        ]
+    [ lifecycle meta profile
+    , questionnaireSummary profile.questionnaireId
+    , wordSpanSummary profile.wordSpanId model.store
+    ]
 
 
 lifecycle : Types.Meta -> Types.Profile -> Html.Html AppMsg.Msg
@@ -264,7 +264,11 @@ usernameChange lift { input, feedback, status } =
         ]
 
 
-emails : (Msg -> AppMsg.Msg) -> Form.Model String -> List Types.Email -> Html.Html AppMsg.Msg
+emails :
+    (Msg -> AppMsg.Msg)
+    -> Form.Model String
+    -> List Types.Email
+    -> List (Html.Html AppMsg.Msg)
 emails lift { input, feedback, status } emails_ =
     let
         emailList =
@@ -275,35 +279,34 @@ emails lift { input, feedback, status } emails_ =
                 _ ->
                     Html.ul [] (List.map (email lift) emails_)
     in
-        Html.div []
-            [ Html.h2 [] [ Html.text "Email" ]
-            , Html.p []
-                [ Html.text "Your "
-                , Html.strong [] [ Html.text "primary email address" ]
-                , Html.text " is used for account-related information and password reset."
-                ]
-            , emailList
-            , Html.h2 [] [ Html.text "Add an email address" ]
-            , Html.form [ Events.onSubmit <| lift (AddEmail input) ]
-                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-                , Html.input
-                    [ Attributes.id "inputEmail"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.type_ "email"
-                    , Attributes.value input
-                    , Events.onInput (lift << AddEmailFormInput)
-                    ]
-                    []
-                , Html.button
-                    [ Attributes.type_ "submit"
-                    , Attributes.disabled (status /= Form.Entering)
-                    ]
-                    [ Html.text "Add" ]
-                , Html.span
-                    (Animation.render <| Feedback.getSuccess "global" feedback)
-                    [ Html.text Strings.emailAdded ]
-                ]
+        [ Html.h2 [] [ Html.text "Email" ]
+        , Html.p []
+            [ Html.text "Your "
+            , Html.strong [] [ Html.text "primary email address" ]
+            , Html.text " is used for account-related information and password reset."
             ]
+        , emailList
+        , Html.h2 [] [ Html.text "Add an email address" ]
+        , Html.form [ Events.onSubmit <| lift (AddEmail input) ]
+            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.input
+                [ Attributes.id "inputEmail"
+                , Attributes.disabled (status /= Form.Entering)
+                , Attributes.type_ "email"
+                , Attributes.value input
+                , Events.onInput (lift << AddEmailFormInput)
+                ]
+                []
+            , Html.button
+                [ Attributes.type_ "submit"
+                , Attributes.disabled (status /= Form.Entering)
+                ]
+                [ Html.text "Add" ]
+            , Html.span
+                (Animation.render <| Feedback.getSuccess "global" feedback)
+                [ Html.text Strings.emailAdded ]
+            ]
+        ]
 
 
 email : (Msg -> AppMsg.Msg) -> Types.Email -> Html.Html AppMsg.Msg
@@ -341,18 +344,17 @@ email lift email_ =
             )
 
 
-emailConfirmation : Model.EmailConfirmationModel -> String -> Html.Html AppMsg.Msg
+emailConfirmation : Model.EmailConfirmationModel -> String -> List (Html.Html AppMsg.Msg)
 emailConfirmation model key =
     case model of
         Model.SendingConfirmation ->
-            Html.h2 [] [ Html.text "Confirming your email address..." ]
+            [ Html.h2 [] [ Html.text "Confirming your email address..." ] ]
 
         Model.ConfirmationFail ->
-            Html.div []
-                [ Html.h2 [] [ Html.text "Email confirmation failed" ]
-                , Html.p []
-                    [ Html.text "There was a problem. Did you use the "
-                    , Html.strong [] [ Html.text "last verification email" ]
-                    , Html.text " you received?"
-                    ]
+            [ Html.h2 [] [ Html.text "Email confirmation failed" ]
+            , Html.p []
+                [ Html.text "There was a problem. Did you use the "
+                , Html.strong [] [ Html.text "last verification email" ]
+                , Html.text " you received?"
                 ]
+            ]

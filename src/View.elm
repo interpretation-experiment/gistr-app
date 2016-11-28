@@ -41,25 +41,25 @@ routeView model =
             View.About.view model
 
         Router.Error ->
-            [ View.Error.view model ]
+            View.Error.view model
 
         Router.Login _ ->
-            [ Auth.View.Login.view Msg.AuthMsg model ]
+            Auth.View.Login.view Msg.AuthMsg model
 
         Router.Recover ->
-            [ Auth.View.Recover.view Msg.AuthMsg model ]
+            Auth.View.Recover.view Msg.AuthMsg model
 
         Router.Reset tokens ->
-            [ Auth.View.Reset.view Msg.AuthMsg model tokens ]
+            Auth.View.Reset.view Msg.AuthMsg model tokens
 
         Router.Register maybeProlific ->
-            [ Auth.View.Register.view Msg.AuthMsg model maybeProlific ]
+            Auth.View.Register.view Msg.AuthMsg model maybeProlific
 
         Router.Prolific ->
-            [ Auth.View.Prolific.view Msg.AuthMsg model ]
+            Auth.View.Prolific.view Msg.AuthMsg model
 
         Router.Profile profileRoute ->
-            [ Profile.View.view Msg.ProfileMsg model profileRoute ]
+            Profile.View.view Msg.ProfileMsg model profileRoute
 
         Router.Experiment ->
-            [ Experiment.View.view Msg.ExperimentMsg model ]
+            Experiment.View.view Msg.ExperimentMsg model

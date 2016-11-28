@@ -14,13 +14,12 @@ import Strings
 import Types
 
 
-view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> Html.Html AppMsg.Msg
+view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> List (Html.Html AppMsg.Msg)
 view lift model meta =
-    Html.div []
-        [ Html.h2 [] [ Html.text "General questionnaire" ]
-        , intro model.questionnaire
-        , form lift model.questionnaire meta
-        ]
+    [ Html.h2 [] [ Html.text "General questionnaire" ]
+    , intro model.questionnaire
+    , form lift model.questionnaire meta
+    ]
 
 
 intro : Form.Model Types.QuestionnaireForm -> Html.Html AppMsg.Msg

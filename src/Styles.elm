@@ -24,15 +24,11 @@ namespaceName =
 
 
 type CssClasses
-    = -- inside Header, or inside Body
-      Nav
-      -- on the right, inside Header
+    = Nav
+    | NavWide
     | Meta
-      -- for body. aligns left to non-nav in header. Inside, you can have navigation (profile)
     | Normal
-      -- for body. aligns left to nav in header
     | Wide
-      -- for body.
     | Narrow
 
 
@@ -64,14 +60,18 @@ css =
             , margin2 (px 0) auto
             , children
                 [ header
-                    [ -- FLEX LAYOUT
-                      displayFlex
-                    , flexFlow1 row
+                    [ displayFlex
                     , alignItems center
-                      -- SIZE
                     , minHeight (px 100)
                     ]
-                , div [ minHeight (px 200) ]
+                , div
+                    [ children
+                        [ div
+                            [ margin2 (px 0) auto
+                            , displayFlex
+                            ]
+                        ]
+                    ]
                 , footer
                     [ -- CENTER
                       maxWidth (px 300)
@@ -85,11 +85,19 @@ css =
                     ]
                 ]
               -- DEBUG
-            , descendants [ everything [ border3 (px 1) solid (hex "#ccc") ] ]
+              --, descendants [ everything [ border3 (px 1) solid (hex "#ccc") ] ]
             ]
-        , (.) Narrow
-            [ maxWidth (px 540)
-            , margin2 (px 0) auto
+        , (.) Narrow [ maxWidth (px 540) ]
+        , (.) Normal [ maxWidth (px 720) ]
+        , (.) Wide [ maxWidth (px 900) ]
+        , (.) Nav
+            [ flex3 (num 0) (num 1) (pct 10)
+            , textAlign center
+            ]
+        , (.) NavWide [ flex3 (num 0) (num 1) (pct 20) ]
+        , (.) NavWide
+            [ adjacentSiblings
+                [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
             ]
         , (.) Meta [ marginLeft auto ]
         ]

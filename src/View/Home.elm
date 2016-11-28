@@ -17,7 +17,7 @@ view model =
     ]
 
 
-header : Model -> List (Html.Html msg)
+header : Model -> List (Html.Html Msg)
 header model =
     case model.auth of
         Types.Anonymous ->
@@ -29,34 +29,40 @@ header model =
         Types.Authenticated { user } ->
             [ Html.div
                 [ class [ Styles.Meta ] ]
-                [ Html.text ("Howdy, " ++ user.username) ]
+                [ Html.text ("Howdy, " ++ user.username)
+                , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
+                ]
             ]
 
 
 body : Model -> List (Html.Html Msg)
 body model =
-    (Html.h1 [] [ Html.text "Home" ]) :: (buttons model)
+    [ Html.div []
+        [ Html.h1 [] [ Html.text "Home" ]
+        , buttons model
+        ]
+    ]
 
 
-buttons : Model -> List (Html.Html Msg)
+buttons : Model -> Html.Html Msg
 buttons model =
     case model.auth of
         Types.Anonymous ->
-            [ Helpers.navButton Router.About "About"
-            , Helpers.navButton (Router.Login Nothing) "Sign in"
-            , Helpers.navButton (Router.Register Nothing) "Sign up"
-            ]
+            Html.div []
+                [ Helpers.navButton (Router.Login Nothing) "Sign in"
+                , Helpers.navButton (Router.Register Nothing) "Sign up"
+                ]
 
         Types.Authenticating ->
-            [ Helpers.loading ]
+            Helpers.loading
 
         Types.Authenticated _ ->
-            [ Helpers.navButton Router.About "About"
-            , Helpers.navButton Router.Experiment "Pass the experiment"
-            , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
-            ]
+            Html.div []
+                [ Helpers.navButton Router.Experiment "Pass the experiment" ]
 
 
 footer : Model -> List (Html.Html Msg)
 footer model =
-    [ Html.text "Some buttons here" ]
+    [ Html.div []
+        [ Helpers.navButton Router.About "About" ]
+    ]

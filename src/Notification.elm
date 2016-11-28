@@ -240,6 +240,7 @@ view viewConfig (Model model) =
             , ( "padding-right", "20px" )
             , ( "width", toString config.widthPx ++ "px" )
             , ( "overflow", "hidden" )
+            , ( "z-index", "-1" )
             ]
         ]
         (List.map (notificationView viewConfig) model.notifications)
