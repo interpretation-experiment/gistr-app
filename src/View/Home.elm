@@ -13,7 +13,7 @@ import Types
 view : Model -> List (Html.Html Msg)
 view model =
     [ Html.header [] (header model)
-    , Html.div [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body model) ]
+    , Html.main_ [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body model) ]
     , Html.footer [] (footer model)
     ]
 

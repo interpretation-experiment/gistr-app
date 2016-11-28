@@ -17,7 +17,7 @@ import Types
 view : (Msg -> AppMsg.Msg) -> Model -> Maybe String -> List (Html.Html AppMsg.Msg)
 view lift model maybeProlific =
     [ Html.header [] header
-    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model maybeProlific) ]
+    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model maybeProlific) ]
     ]
 
 

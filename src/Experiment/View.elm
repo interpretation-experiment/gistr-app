@@ -24,7 +24,7 @@ view lift model =
     case model.auth of
         Types.Authenticated { user, meta } ->
             [ Html.header [] (header lift user.profile meta model.experiment)
-            , Html.div [] [ (body lift user.profile meta model.experiment) ]
+            , Html.main_ [] [ (body lift user.profile meta model.experiment) ]
             ]
 
         Types.Authenticating ->

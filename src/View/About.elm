@@ -11,7 +11,7 @@ import Styles exposing (class, classList, id)
 view : Model -> List (Html.Html Msg)
 view model =
     [ Html.header [] header
-    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] body ]
+    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] body ]
     ]
 
 

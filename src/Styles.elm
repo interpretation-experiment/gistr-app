@@ -64,43 +64,29 @@ css =
               -- CENTER PAGE
             , maxWidth (px 900)
             , margin2 (px 0) auto
-            , children
-                [ header
-                    [ displayFlex
-                    , alignItems center
-                    , minHeight (px 60)
-                    ]
-                , div
-                    [ marginBottom (px 60)
-                    , children
-                        [ div
-                            [ margin2 (px 0) auto
-                            , displayFlex
-                            ]
-                        ]
-                    ]
-                , footer
-                    [ -- CENTER
-                      maxWidth (px 300)
-                    , textAlign center
-                      -- PUSH TO BOTTOM
-                    , margin3 auto auto (px 0)
-                      -- SPACE
-                    , padding2 (px 10) (px 40)
-                      -- LINE
-                    , borderTop3 (px 1) solid (hex "#ddd")
-                    ]
-                ]
-              -- DEBUG
-              --, descendants [ everything [ border3 (px 1) solid (hex "#ccc") ] ]
+            ]
+        , header
+            [ displayFlex
+            , alignItems center
+            , minHeight (px 60)
+            ]
+        , main_
+            [ marginBottom (px 60)
+            , children [ div [ margin2 (px 0) auto, displayFlex ] ]
+            ]
+        , footer
+            [ maxWidth (px 300)
+            , textAlign center
+            , margin3 auto auto (px 0)
+            , padding2 (px 10) (px 40)
+            , borderTop3 (px 1) solid (hex "#ddd")
             ]
         , (#) Greeting
             [ marginRight auto
             , marginLeft auto
             , marginBottom (px 30)
             , textAlign center
-            , children
-                [ Css.Elements.small [ fontWeight lighter ] ]
+            , children [ Css.Elements.small [ fontWeight lighter ] ]
             ]
         , (.) SuperNarrow [ maxWidth (px 450) ]
         , (.) Narrow [ maxWidth (px 540) ]

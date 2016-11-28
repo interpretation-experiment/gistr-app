@@ -38,7 +38,7 @@ view lift model route =
                     [ Html.div [] [ Helpers.notAuthed ] ]
     in
         [ Html.header [] (header model)
-        , Html.div [] [ Html.div [ class [ Styles.Normal ] ] contents ]
+        , Html.main_ [] [ Html.div [ class [ Styles.Normal ] ] contents ]
         ]
 
 

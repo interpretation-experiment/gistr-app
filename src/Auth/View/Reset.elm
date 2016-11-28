@@ -17,7 +17,7 @@ import Types
 view : (Msg -> AppMsg.Msg) -> Model -> Types.ResetTokens -> List (Html.Html AppMsg.Msg)
 view lift model tokens =
     [ Html.header [] header
-    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model tokens) ]
+    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model tokens) ]
     ]
 
 

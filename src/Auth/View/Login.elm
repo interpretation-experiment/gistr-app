@@ -17,7 +17,7 @@ import Types
 view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
 view lift model =
     [ Html.header [] header
-    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model) ]
+    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model) ]
     ]
 
 

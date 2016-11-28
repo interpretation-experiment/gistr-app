@@ -9,7 +9,7 @@ import Styles exposing (class, classList, id)
 view : Model -> List (Html.Html msg)
 view model =
     [ Html.header [] []
-    , Html.div [] [ Html.div [ class [ Styles.Narrow ] ] (body model) ]
+    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] (body model) ]
     ]
 
 
