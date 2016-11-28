@@ -38,6 +38,11 @@ type CssIds
     | Greeting
 
 
+centerElement : Mixin
+centerElement =
+    mixin [ marginRight auto, marginLeft auto ]
+
+
 css : Stylesheet
 css =
     (stylesheet << namespace namespaceName)
@@ -62,7 +67,7 @@ css =
             , minHeight (vh 100)
               -- CENTER PAGE
             , maxWidth (px 900)
-            , margin2 (px 0) auto
+            , centerElement
             ]
         , header
             [ displayFlex
@@ -75,7 +80,7 @@ css =
             ]
         , main_
             [ marginBottom (px 60)
-            , children [ div [ margin2 (px 0) auto, displayFlex ] ]
+            , children [ div [ centerElement, displayFlex ] ]
             , descendants
                 [ nav
                     [ flex3 (num 0) (num 1) (pct 20)
@@ -86,7 +91,8 @@ css =
         , footer
             [ maxWidth (px 300)
             , textAlign center
-            , margin3 auto auto (px 0)
+            , marginTop auto
+            , centerElement
             , padding2 (px 10) (px 40)
             , borderTop3 (px 1) solid (hex "#ddd")
             ]
@@ -97,17 +103,13 @@ css =
         , (.) Wide [ maxWidth (px 900) ]
           -- HOME LAYOUT
         , (#) Greeting
-            [ marginRight auto
-            , marginLeft auto
+            [ centerElement
             , marginBottom (px 30)
             , textAlign center
             , children [ Css.Elements.small [ fontWeight lighter ] ]
             ]
           -- UTILITIES
-        , (.) Center
-            [ marginRight auto
-            , marginLeft auto
-            ]
+        , (.) Center [ centerElement ]
         , (.) CenterText [ textAlign center ]
         , h1 [ marginBottom (px 10) ]
         ]
