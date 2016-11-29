@@ -31,6 +31,10 @@ type CssClasses
     | Wide
     | Center
     | CenterText
+    | Btn
+    | BtnPrimary
+    | BtnLight
+    | BtnDark
 
 
 type CssIds
@@ -41,6 +45,84 @@ type CssIds
 centerElement : Mixin
 centerElement =
     mixin [ marginRight auto, marginLeft auto ]
+
+
+btn : Mixin
+btn =
+    mixin
+        [ borderRadius (em 0.25)
+        , border3 (px 1) solid (hex "#555")
+        , backgroundColor (hex "#fff")
+        , color (hex "#555")
+        , display inlineBlock
+        , marginBottom (em 0.5)
+        , padding2 (em 0.5) (em 0.75)
+        , textDecoration none
+        , property "transition" "color 0.4s, background-color 0.4s, border 0.4s"
+        ]
+
+
+btnHoverFocus : Mixin
+btnHoverFocus =
+    mixin
+        [ backgroundColor (hex "#fff")
+        , color (hex "#777")
+        , borderColor (hex "#ddd")
+        , property "transition" "background-color 0.3s, color 0.3s, border 0.3s"
+        ]
+
+
+btnPrimary : Mixin
+btnPrimary =
+    mixin
+        [ color (hex "#fff")
+        , backgroundColor (hex "#0074d9")
+        , borderColor unset
+        ]
+
+
+btnPrimaryHoverFocus : Mixin
+btnPrimaryHoverFocus =
+    mixin
+        [ color (hex "#fff")
+        , backgroundColor (hex "#0063aa")
+        , borderColor (hex "#0063aa")
+        ]
+
+
+btnLight : Mixin
+btnLight =
+    mixin
+        [ backgroundColor (hex "#f0f0f0")
+        , borderColor (hex "#f0f0f0")
+        , color (hex "#555")
+        ]
+
+
+btnLightHoverFocus : Mixin
+btnLightHoverFocus =
+    mixin
+        [ backgroundColor (hex "#ddd")
+        , borderColor (hex "#ddd")
+        , color (hex "#444")
+        ]
+
+
+btnDark : Mixin
+btnDark =
+    mixin
+        [ backgroundColor (hex "#555")
+        , color (hex "#eee")
+        ]
+
+
+btnDarkHoverFocus : Mixin
+btnDarkHoverFocus =
+    mixin
+        [ backgroundColor (hex "#333")
+        , borderColor (hex "#333")
+        , color (hex "#eee")
+        ]
 
 
 css : Stylesheet
@@ -123,14 +205,58 @@ css =
             , margin3 (em 1.25) (px 0) (em 0.62)
             ]
         , p [ margin3 (px 0) (px 0) (em 0.62) ]
-        , a [ property "transition" "color .2s", color (hex "#265c83") ]
-          -- The ":visited" pseudo-class is not in elm-css, and ":link" must be
-          -- before it (because of the LVHA-rule)
-        , selector "a:link, a:visited" [ color (hex "#265c83") ]
         , a
-            [ hover [ color (hex "#62b3d2"), textDecoration underline ]
-            , active [ property "transition" "color .2s", color (hex "#007be6") ]
+            [ property "transition" "color .1s"
+            , color (hex "#265c83")
+            , link [ color (hex "#265c83") ]
+            , hover [ color (hex "#62b3d2"), textDecoration underline ]
+            , active [ property "transition" "color .1s", color (hex "#007be6") ]
             , textDecoration none
+            ]
+        , (.) Btn
+            [ btn
+            , link [ btn ]
+            , hover [ btnHoverFocus ]
+            , focus [ btnHoverFocus ]
+            , active
+                [ backgroundColor (hex "#ccc")
+                , borderColor (hex "#ccc")
+                , color (hex "#444")
+                , property "transition" "background-color 0.3s, color 0.3s, border 0.3s"
+                ]
+            ]
+        , (.) BtnPrimary
+            [ btnPrimary
+            , link [ btnPrimary ]
+            , hover [ btnPrimaryHoverFocus ]
+            , focus [ btnPrimaryHoverFocus ]
+            , active
+                [ color (hex "#fff")
+                , backgroundColor (hex "#001f3f")
+                , borderColor (hex "#001f3f")
+                ]
+            ]
+        , (.) BtnLight
+            [ btnLight
+            , link [ btnLight ]
+            , hover [ btnLightHoverFocus ]
+            , focus [ btnLightHoverFocus ]
+            , active
+                [ backgroundColor (hex "#ccc")
+                , borderColor (hex "#ccc")
+                , color (hex "#444")
+                ]
+            ]
+        , (.) BtnDark
+            [ btnDark
+            , link [ btnDark ]
+            , hover [ btnDarkHoverFocus ]
+            , focus [ btnDarkHoverFocus ]
+            , active
+                [ backgroundColor (hex "#777")
+                , borderColor (hex "#777")
+                , color (hex "#eee")
+                ]
             ]
           -- FONTS
         , selector "@font-face"
