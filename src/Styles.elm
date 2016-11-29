@@ -132,9 +132,6 @@ css =
             , active [ property "transition" "color .2s", color (hex "#007be6") ]
             , textDecoration none
             ]
-          -- a { -webkit-transition: color .4s; transition: color .4s; color: #265C83; }
-          -- a:active { -webkit-transition: color .3s; transition: color .3s; color: #007BE6; }
-          --.link { text-decoration: none; }
           -- FONTS
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
