@@ -31,11 +31,13 @@ type CssClasses
     | Wide
     | Center
     | CenterText
+    | FlexCenter
     | BtnLink
     | Btn
     | BtnPrimary
     | BtnLight
     | BtnDark
+    | Avatar
 
 
 type CssIds
@@ -212,6 +214,15 @@ css =
           -- UTILITIES
         , (.) Center [ centerElement ]
         , (.) CenterText [ textAlign center ]
+        , (.) FlexCenter [ displayFlex, alignItems center ]
+        , (.) Avatar
+            [ margin (px 10)
+            , width (px 40)
+            , height (px 40)
+            , borderRadius (pct 100)
+            , overflow hidden
+            , display inlineBlock
+            ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]

@@ -29,10 +29,12 @@ header model =
 
         Types.Authenticated { user } ->
             [ Html.div
-                [ class [ Styles.Meta ] ]
-                [ Html.text "Howdy, "
-                , Html.strong [] [ Html.text user.username ]
-                , Helpers.navButton [] (Router.Profile Router.Dashboard) "Profile"
+                [ class [ Styles.Meta, Styles.FlexCenter ] ]
+                [ Html.span []
+                    [ Html.text "Howdy, "
+                    , Html.strong [] [ Html.text user.username ]
+                    ]
+                , Helpers.avatar user (Router.Profile Router.Dashboard)
                 ]
             ]
 

@@ -5,6 +5,7 @@ module Helpers
         , alreadyAuthed
         , authenticatedOr
         , authenticatedOrIgnore
+        , avatar
         , cmd
         , evA
         , evButton
@@ -39,11 +40,14 @@ import Http
 import Json.Decode as JD
 import List
 import List.Extra exposing (splitAt)
+import MD5
+import Maybe.Extra exposing ((?))
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo, Error))
 import Random
 import Router
 import String
+import Styles exposing (class, classList, id)
 import Task
 import Time
 import Types
@@ -190,6 +194,33 @@ updateAuthNav authStatus route model =
 
 
 -- VIEWS
+
+
+avatar : Types.User -> Router.Route -> Html.Html Msg
+avatar user route =
+    let
+        email =
+            case List.filter .primary user.emails of
+                [] ->
+                    Maybe.map .email (List.head user.emails) ? ""
+
+                primary :: _ ->
+                    primary.email
+
+        hash =
+            MD5.hex <| String.toLower <| String.trim email
+    in
+        Html.a
+            [ Attributes.href (Router.toUrl route)
+            , onClickMsg (NavigateTo route)
+            , class [ Styles.Avatar ]
+            ]
+            [ Html.img
+                [ Attributes.src ("//www.gravatar.com/avatar/" ++ hash ++ "?d=retro&s=40")
+                , Attributes.alt "Profile"
+                ]
+                []
+            ]
 
 
 evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
