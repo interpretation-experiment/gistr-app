@@ -23,7 +23,7 @@ view lift model maybeProlific =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navButton Router.Home "Back" ]
+    [ Html.nav [] [ Helpers.navButton [] Router.Home "Back" ]
     , Html.h1 [] [ Html.text "Sign up" ]
     ]
 
@@ -111,6 +111,7 @@ form lift { input, feedback, status } maybeProlific =
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
+                , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Sign up" ]
             ]

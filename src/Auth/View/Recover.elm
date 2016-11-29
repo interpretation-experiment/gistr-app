@@ -23,7 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navButton (Router.Login Nothing) "Back" ]
+    [ Html.nav [] [ Helpers.navButton [] (Router.Login Nothing) "Back" ]
     , Html.h1 [] [ Html.text "Password recovery" ]
     ]
 
@@ -78,6 +78,7 @@ form lift { input, feedback, status } =
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
+                , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Request password reset" ]
             ]

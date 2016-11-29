@@ -23,7 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navButton (Router.Register Nothing) "Back" ]
+    [ Html.nav [] [ Helpers.navButton [] (Router.Register Nothing) "Back" ]
     , Html.h1 [] [ Html.text "Prolific Academic" ]
     ]
 
@@ -76,7 +76,7 @@ form lift { input, feedback } =
                 , Html.strong [] [ Html.text "Simply follow the steps presented to get started with the experiment." ]
                 ]
             , Html.button
-                [ Attributes.type_ "submit" ]
+                [ Attributes.type_ "submit", class [ Styles.Btn, Styles.BtnPrimary ] ]
                 [ Html.text "Go to registration" ]
             ]
         ]

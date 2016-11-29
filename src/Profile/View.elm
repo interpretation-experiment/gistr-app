@@ -50,13 +50,17 @@ header model =
                 Types.Authenticated auth ->
                     [ Html.text "Signed in as "
                     , Html.strong [] [ Html.text auth.user.username ]
-                    , Helpers.evButton [] (AppMsg.AuthMsg AuthMsg.Logout) "Sign out"
+                    , Html.text " — "
+                    , Helpers.evButton
+                        [ class [ Styles.Btn ] ]
+                        (AppMsg.AuthMsg AuthMsg.Logout)
+                        "Sign out"
                     ]
 
                 _ ->
                     []
     in
-        [ Html.nav [] [ Helpers.navButton Router.Home "Back" ]
+        [ Html.nav [] [ Helpers.navButton [] Router.Home "Back" ]
         , Html.h1 [] [ Html.text "Profile" ]
         , Html.div [ class [ Styles.Meta ] ] logout
         ]
@@ -64,9 +68,9 @@ header model =
 
 menu : Router.ProfileRoute -> List (Html.Html AppMsg.Msg)
 menu route =
-    [ Html.div [] [ Helpers.navButton (Router.Profile Router.Dashboard) "Dashboard" ]
-    , Html.div [] [ Helpers.navButton (Router.Profile Router.Settings) "Settings" ]
-    , Html.div [] [ Helpers.navButton (Router.Profile Router.Emails) "Emails" ]
+    [ Html.div [] [ Helpers.navButton [] (Router.Profile Router.Dashboard) "Dashboard" ]
+    , Html.div [] [ Helpers.navButton [] (Router.Profile Router.Settings) "Settings" ]
+    , Html.div [] [ Helpers.navButton [] (Router.Profile Router.Emails) "Emails" ]
     ]
 
 
@@ -148,8 +152,11 @@ questionnaireSummary maybeId =
     case maybeId of
         Nothing ->
             Html.p []
-                [ Html.text "Questionnaire — Not yet done"
-                , Helpers.navButton (Router.Profile Router.Questionnaire) "Fill the questionnaire"
+                [ Html.text "Questionnaire — Not yet done "
+                , Helpers.navButton
+                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    (Router.Profile Router.Questionnaire)
+                    "Fill the questionnaire"
                 ]
 
         Just _ ->
@@ -161,8 +168,11 @@ wordSpanSummary maybeId store =
     case maybeId of
         Nothing ->
             Html.p []
-                [ Html.text "Word span test — Not yet done"
-                , Helpers.navButton (Router.Profile Router.WordSpan) "Pass the test"
+                [ Html.text "Word span test — Not yet done "
+                , Helpers.navButton
+                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    (Router.Profile Router.WordSpan)
+                    "Pass the test"
                 ]
 
         Just id ->
@@ -178,20 +188,27 @@ wordSpanSummary maybeId store =
                 Html.p [] [ Html.text ("Word span test — ✓" ++ detail) ]
 
 
-passwordChange : (Msg -> AppMsg.Msg) -> Form.Model Types.PasswordCredentials -> Html.Html AppMsg.Msg
+passwordChange :
+    (Msg -> AppMsg.Msg)
+    -> Form.Model Types.PasswordCredentials
+    -> Html.Html AppMsg.Msg
 passwordChange lift { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change password" ]
         , Html.form [ Events.onSubmit <| lift (ChangePassword input) ]
             [ Html.div []
-                [ Html.label [ Attributes.for "inputOldPassword" ] [ Html.text "Old password" ]
+                [ Html.label
+                    [ Attributes.for "inputOldPassword" ]
+                    [ Html.text "Old password" ]
                 , Html.input
                     [ Attributes.id "inputOldPassword"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "Your old password"
                     , Attributes.type_ "password"
                     , Attributes.value input.oldPassword
-                    , Events.onInput <| lift << (ChangePasswordFormInput << \o -> { input | oldPassword = o })
+                    , Events.onInput <|
+                        lift
+                            << (ChangePasswordFormInput << \o -> { input | oldPassword = o })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "oldPassword" feedback) ]
@@ -204,20 +221,26 @@ passwordChange lift { input, feedback, status } =
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type_ "password"
                     , Attributes.value input.password1
-                    , Events.onInput <| lift << (ChangePasswordFormInput << \p -> { input | password1 = p })
+                    , Events.onInput <|
+                        lift
+                            << (ChangePasswordFormInput << \p -> { input | password1 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
             , Html.div []
-                [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm new password" ]
+                [ Html.label
+                    [ Attributes.for "inputPassword2" ]
+                    [ Html.text "Confirm new password" ]
                 , Html.input
                     [ Attributes.id "inputPassword2"
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.placeholder "ubA1oh"
                     , Attributes.type_ "password"
                     , Attributes.value input.password2
-                    , Events.onInput <| lift << (ChangePasswordFormInput << \p -> { input | password2 = p })
+                    , Events.onInput <|
+                        lift
+                            << (ChangePasswordFormInput << \p -> { input | password2 = p })
                     ]
                     []
                 , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
@@ -227,12 +250,16 @@ passwordChange lift { input, feedback, status } =
                 , Html.button
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
                     ]
                     [ Html.text "Update password" ]
                 , Html.span
                     (Animation.render <| Feedback.getSuccess "global" feedback)
                     [ Html.text Strings.passwordSaved ]
-                , Helpers.evA "#" (lift ChangePasswordRecover) "I forgot my current password"
+                , Helpers.evButton
+                    [ class [ Styles.BtnLink ] ]
+                    (lift ChangePasswordRecover)
+                    "I forgot my current password"
                 ]
             ]
         ]
@@ -255,6 +282,7 @@ usernameChange lift { input, feedback, status } =
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
+                , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Update username" ]
             , Html.span
@@ -300,6 +328,7 @@ emails lift { input, feedback, status } emails_ =
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
+                , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Add" ]
             , Html.span
@@ -326,12 +355,19 @@ email lift email_ =
                 []
             else
                 [ Html.span [] [ Html.text "Unverified" ]
-                , Helpers.evButton [ disabled ] (lift <| VerifyEmail email_) "Send verification email"
+                , Helpers.evButton
+                    [ disabled ]
+                    (lift <| VerifyEmail email_)
+                    "Send verification email"
                 ]
 
         setPrimary =
             if email_.verified && (not email_.primary) then
-                [ Helpers.evButton [ disabled ] (lift <| PrimaryEmail email_) "Set as primary" ]
+                [ Helpers.evButton
+                    [ disabled ]
+                    (lift <| PrimaryEmail email_)
+                    "Set as primary"
+                ]
             else
                 []
     in

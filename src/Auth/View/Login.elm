@@ -23,7 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navButton Router.Home "Back" ]
+    [ Html.nav [] [ Helpers.navButton [] Router.Home "Back" ]
     , Html.h1 [] [ Html.text "Sign in" ]
     ]
 
@@ -85,9 +85,13 @@ form lift { input, feedback, status } =
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
+                , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Sign in" ]
-            , Helpers.navA Router.Recover "I forgot my password"
+            , Helpers.navButton
+                [ class [ Styles.BtnLink ] ]
+                Router.Recover
+                "I forgot my password"
             ]
         ]
     ]

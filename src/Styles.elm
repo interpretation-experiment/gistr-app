@@ -31,6 +31,7 @@ type CssClasses
     | Wide
     | Center
     | CenterText
+    | BtnLink
     | Btn
     | BtnPrimary
     | BtnLight
@@ -47,8 +48,23 @@ centerElement =
     mixin [ marginRight auto, marginLeft auto ]
 
 
+linkMixin : Mixin
+linkMixin =
+    mixin
+        [ property "transition" "color .1s"
+        , color (hex "#265c83")
+        , link [ color (hex "#265c83") ]
+        , hover [ color (hex "#62b3d2"), textDecoration underline ]
+        , active [ property "transition" "color .1s", color (hex "#007be6") ]
+        , textDecoration none
+        , backgroundColor unset
+        , border unset
+        ]
+
+
 btn : Mixin
 btn =
+    -- TODO: deal with disabled and cursor
     mixin
         [ borderRadius (em 0.25)
         , border3 (px 1) solid (hex "#555")
@@ -205,14 +221,9 @@ css =
             , margin3 (em 1.25) (px 0) (em 0.62)
             ]
         , p [ margin3 (px 0) (px 0) (em 0.62) ]
-        , a
-            [ property "transition" "color .1s"
-            , color (hex "#265c83")
-            , link [ color (hex "#265c83") ]
-            , hover [ color (hex "#62b3d2"), textDecoration underline ]
-            , active [ property "transition" "color .1s", color (hex "#007be6") ]
-            , textDecoration none
-            ]
+        , button [ fontSize (em 1) ]
+        , a [ linkMixin ]
+        , (.) BtnLink [ linkMixin ]
         , (.) Btn
             [ btn
             , link [ btn ]

@@ -59,7 +59,7 @@ header lift profile meta model =
             else
                 Intro.hide
     in
-        [ Html.nav [] [ Helpers.navButton Router.Home "Back" ]
+        [ Html.nav [] [ Helpers.navButton [] Router.Home "Back" ]
         , Intro.node
             (Instructions.viewConfig lift)
             instructionsState
@@ -142,11 +142,11 @@ instructions lift loading state =
         []
         [ Html.text "Second stuff" ]
     , Helpers.evButton
-        [ Attributes.disabled loading ]
+        [ Attributes.disabled loading, class [ Styles.Btn ] ]
         (lift InstructionsStart)
         "Replay instructions"
     , Helpers.evButton
-        [ Attributes.disabled loading ]
+        [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
         (lift LoadTrial)
         "Start"
     , Intro.overlay state
@@ -172,12 +172,18 @@ trial lift loading trialModel =
 
         ExpModel.Timeout ->
             [ Html.text "TODO: timeout"
-            , Helpers.evButton [ Attributes.disabled loading ] (lift LoadTrial) "Next"
+            , Helpers.evButton
+                [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+                (lift LoadTrial)
+                "Next"
             ]
 
         ExpModel.Pause ->
             [ Html.text "TODO: pause"
-            , Helpers.evButton [ Attributes.disabled loading ] (lift LoadTrial) "Next"
+            , Helpers.evButton
+                [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+                (lift LoadTrial)
+                "Next"
             ]
 
 
@@ -205,6 +211,7 @@ write lift loading trialModel { input, feedback, status } =
         , Html.button
             [ Attributes.type_ "submit"
             , Attributes.disabled (loading || (status /= Form.Entering))
+            , class [ Styles.Btn, Styles.BtnPrimary ]
             ]
             [ Html.text "Send" ]
         ]

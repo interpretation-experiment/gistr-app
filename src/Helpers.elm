@@ -197,9 +197,9 @@ evButton attrs msg text =
     Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
 
 
-navButton : Router.Route -> String -> Html.Html Msg
-navButton route text =
-    evButton [] (NavigateTo route) text
+navButton : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navButton attrs route text =
+    evButton attrs (NavigateTo route) text
 
 
 evA : String -> Msg -> String -> Html.Html Msg

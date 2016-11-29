@@ -32,7 +32,7 @@ header model =
                 [ class [ Styles.Meta ] ]
                 [ Html.text "Howdy, "
                 , Html.strong [] [ Html.text user.username ]
-                , Helpers.navButton (Router.Profile Router.Dashboard) "Profile"
+                , Helpers.navButton [] (Router.Profile Router.Dashboard) "Profile"
                 ]
             ]
 
@@ -56,8 +56,14 @@ buttons model =
     case model.auth of
         Types.Anonymous ->
             Html.div []
-                [ Helpers.navButton (Router.Login Nothing) "Sign in"
-                , Helpers.navButton (Router.Register Nothing) "Sign up"
+                [ Helpers.navButton
+                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    (Router.Register Nothing)
+                    "Pass the experiment"
+                , Helpers.navButton
+                    [ class [ Styles.Btn ] ]
+                    (Router.Login Nothing)
+                    "Sign in"
                 ]
 
         Types.Authenticating ->
@@ -65,11 +71,15 @@ buttons model =
 
         Types.Authenticated _ ->
             Html.div []
-                [ Helpers.navButton Router.Experiment "Pass the experiment" ]
+                [ Helpers.navButton
+                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    Router.Experiment
+                    "Pass the experiment"
+                ]
 
 
 footer : Model -> List (Html.Html Msg)
 footer model =
     [ Html.div []
-        [ Helpers.navButton Router.About "About" ]
+        [ Helpers.navButton [] Router.About "About" ]
     ]

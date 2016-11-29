@@ -11,6 +11,7 @@ import Msg as AppMsg
 import Profile.Msg exposing (Msg(..))
 import String
 import Strings
+import Styles exposing (class, classList, id)
 import Types
 
 
@@ -103,7 +104,10 @@ form lift { input, feedback, status } meta =
         ( submitButtons, submitMsg ) =
             case status of
                 Form.Entering ->
-                    ( [ Html.button [ Attributes.type_ "submit" ]
+                    ( [ Html.button
+                            [ Attributes.type_ "submit"
+                            , class [ Styles.Btn, Styles.BtnPrimary ]
+                            ]
                             [ Html.text "Confirm answers" ]
                       ]
                     , lift <| QuestionnaireFormConfirm input
@@ -111,12 +115,15 @@ form lift { input, feedback, status } meta =
 
                 _ ->
                     ( [ Helpers.evButton
-                            [ Attributes.disabled (status /= Form.Confirming) ]
+                            [ Attributes.disabled (status /= Form.Confirming)
+                            , class [ Styles.Btn ]
+                            ]
                             (lift QuestionnaireFormCorrect)
                             "Correct answers"
                       , Html.button
                             [ Attributes.type_ "submit"
                             , Attributes.disabled (status /= Form.Confirming)
+                            , class [ Styles.Btn, Styles.BtnPrimary ]
                             ]
                             [ Html.text "Send answers" ]
                       ]
