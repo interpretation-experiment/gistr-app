@@ -128,42 +128,42 @@ css =
             [ fontFamilies [ (qt "Libre Franklin") ]
             , fontStyle normal
             , fontWeight (int 400)
-            , property "src" "local('Libre Franklin'), local('LibreFranklin-Regular'), url(https://fonts.gstatic.com/s/librefranklin/v1/PFwjf3aDdAQPvNKUrT3U7yzLtA-61L0zjfpz7YlT3Q0.woff2) format('woff2')"
+            , property "src" "local('Libre Franklin'), local('LibreFranklin-Regular'), url(/assets/fonts/LibreFranklin-LatinExt-normal-400.woff2) format('woff2')"
             , property "unicode-range" "U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF"
             ]
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
             , fontStyle normal
             , fontWeight (int 400)
-            , property "src" "local('Libre Franklin'), local('LibreFranklin-Regular'), url(https://fonts.gstatic.com/s/librefranklin/v1/PFwjf3aDdAQPvNKUrT3U70L2euXwouSmDRNACsKL_Ek.woff2) format('woff2')"
+            , property "src" "local('Libre Franklin'), local('LibreFranklin-Regular'), url(/assets/fonts/LibreFranklin-Latin-normal-400.woff2) format('woff2')"
             , property "unicode-range" "U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000"
             ]
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
             , fontStyle normal
             , fontWeight (int 700)
-            , property "src" "local('Libre Franklin Bold'), local('LibreFranklin-Bold'), url(https://fonts.gstatic.com/s/librefranklin/v1/1_DGDtljMiPWFs5rl_p0yFljbbiclJhQReCY5KHhrYQ.woff2) format('woff2')"
+            , property "src" "local('Libre Franklin Bold'), local('LibreFranklin-Bold'), url(/assets/fonts/LibreFranklin-LatinExt-normal-700.woff2) format('woff2')"
             , property "unicode-range" "U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF"
             ]
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
             , fontStyle normal
             , fontWeight (int 700)
-            , property "src" "local('Libre Franklin Bold'), local('LibreFranklin-Bold'), url(https://fonts.gstatic.com/s/librefranklin/v1/1_DGDtljMiPWFs5rl_p0yFWV-FyrfMyO4CdzG9bhoAY.woff2) format('woff2')"
+            , property "src" "local('Libre Franklin Bold'), local('LibreFranklin-Bold'), url(/assets/fonts/LibreFranklin-Latin-normal-700.woff2) format('woff2')"
             , property "unicode-range" "U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000"
             ]
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
             , fontStyle italic
             , fontWeight (int 400)
-            , property "src" "local('Libre Franklin Italic'), local('LibreFranklin-Italic'), url(https://fonts.gstatic.com/s/librefranklin/v1/zrsyK9EytLQ07oRM9IZIsfLkwZXlQ8vb2VGpYWaMNAo.woff2) format('woff2')"
+            , property "src" "local('Libre Franklin Italic'), local('LibreFranklin-Italic'), url(/assets/fonts/LibreFranklin-LatinExt-italic-400.woff2) format('woff2')"
             , property "unicode-range" "U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF"
             ]
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
             , fontStyle italic
             , fontWeight (int 400)
-            , property "src" "local('Libre Franklin Italic'), local('LibreFranklin-Italic'), url(https://fonts.gstatic.com/s/librefranklin/v1/zrsyK9EytLQ07oRM9IZIsUGWZPQhhQLxjq7ViWViJIs.woff2) format('woff2')"
+            , property "src" "local('Libre Franklin Italic'), local('LibreFranklin-Italic'), url(/assets/fonts/LibreFranklin-Latin-italic-400.woff2) format('woff2')"
             , property "unicode-range" "U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000"
             ]
         ]

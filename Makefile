@@ -1,6 +1,5 @@
 # TODO
 # - postcss for autoprefixer
-# - asset fingerprinting
 
 # Path and Executables
 PATH             := node_modules/.bin:$(PATH)
@@ -10,6 +9,8 @@ HB               := hb -i
 BABEL            := babel --no-babelrc --presets=latest
 ELM              := elm-make
 ELMCSS           := elm-css
+ASSET_PATH        = sed "s/^$(src)\/\(.*\)$$/\1/"
+SEDESCAPE        := sed "s/\//\\\\\//g" | sed "s/\./\\\\./g"
 
 # Colors
 GREEN            := \033[0;32m
@@ -19,13 +20,14 @@ NORMAL           := \033[0m
 
 # Folders
 src              := src
+src_assets       := $(src)/assets
 elm_artifacts    := elm-stuff/build-artifacts
 build            := build
 dist             := dist
 build_tmp        := build_tmp
 
 # Parameters
-prod            := prod
+prod             := prod
 ifeq ($(TARGET), $(prod))
   ELMFLAGS       := --yes --warn
   CATCSS         := uglifycss
@@ -34,14 +36,17 @@ ifeq ($(TARGET), $(prod))
   vendor_css_hash = -$(shell cat $(vendor_css) | $(HASH))
   app_css_hash    = -$(shell cat $(app_css) | $(HASH))
   app_js_hash     = -$(shell cat $(app_js) | $(HASH))
+  ASSET_PATH_HASH = sed "s/^$(src)\/\(.*\)\.\([^\.]*\)$$/\1-$${hash}.\2/"
 else
   ELMFLAGS       := --yes --warn --debug
   CATCSS         := cat
   CATJS          := cat
   output         := $(build)
+  ASSET_PATH_HASH = $(ASSET_PATH)
 endif
 
 # Source files
+assets           := $(shell find $(src_assets) -type f)
 sources_css      := $(src)/vendor.css
 sources_elm      := $(shell find $(src) -name "*.elm")
 stylesheets_elm  := $(src)/Stylesheets.elm
@@ -64,6 +69,15 @@ html             := $(output)/index.html
 .PHONY: all prod clean clean-elm clean-javascript
 
 
+define hash-asset-paths =
+  for a in $(assets); do \
+    hash=$$(cat $${a} | $(HASH)); \
+    sedpath=$$(echo $${a} | $(ASSET_PATH) | $(SEDESCAPE)); \
+    sedpathhash=$$(echo $${a} | $(ASSET_PATH_HASH) | $(SEDESCAPE)); \
+    sed -i "s/$${sedpath}/$${sedpathhash}/g" $@; \
+  done
+endef
+
 all: $(html)
 	@echo -e "$(GREEN)$(BOLD)App built$(NORMAL)$(BOLD) → $(output)/$(NORMAL)\n"
 
@@ -71,27 +85,30 @@ prod: clean
 	@TARGET=prod $(MAKE) --no-print-directory
 
 
-$(vendor_css): $(sources_css)
+$(vendor_css): $(sources_css) $(assets)
 	@echo -e "$(LOW)Generating vendor.css$(NORMAL)"
 	@mkdir -p $(@D)
-	@$(CATCSS) $^ > $@
+	@$(CATCSS) $(sources_css) > $@
+	@$(hash-asset-paths)
 
 
 # Suppress chattiness of elm-css, we already have progress report with elm-make
-$(app_css): $(sources_elm)
+$(app_css): $(sources_elm) $(assets)
 	@echo -e "$(LOW)Generating app.css$(NORMAL)"
 	@$(eval css_tmp := $(shell mktemp -d -p $(build_tmp)))
 	@$(ELMCSS) $(stylesheets_elm) --output $(css_tmp) 1> /dev/null
 	@$(CATCSS) $(css_tmp)/* > $@
+	@$(hash-asset-paths)
 	@rm -rf $(css_tmp)
 
 
-$(app_js): $(index_js) $(sources_elm)
+$(app_js): $(index_js) $(sources_elm) $(assets)
 	@echo -e "$(LOW)Generating app.js"
 	@mkdir -p $(@D)
 	@$(ELM) $(main_elm) $(ELMFLAGS) --output $(main_elm_js)
 	@$(BABEL) -o $(babel_index_js) $<
 	@$(CATJS) $(main_elm_js) $(babel_index_js) > $@
+	@$(hash-asset-paths)
 	@echo -ne "$(NORMAL)"
 
 
@@ -102,6 +119,12 @@ $(html): $(app_js) $(vendor_css) $(app_css) $(index_html)
 	@cp $(app_css) $(app_css_final)
 	@cp $(app_js) $(app_js_final)
 	@echo '{"vendor-css": "$(subst $(@D),,$(vendor_css_final))", "app-css": "$(subst $(@D),,$(app_css_final))", "app-js": "$(subst $(@D),,$(app_js_final))"}' | $(HB) $(index_html) > $@
+	@for a in $(assets); do \
+	  hash=$$(cat $${a} | $(HASH)); \
+	  pathhash=$$(echo $${a} | $(ASSET_PATH_HASH)); \
+	  mkdir -p $(@D)/$$(dirname $${pathhash}); \
+	  cp $${a} $(@D)/$${pathhash}; \
+	done
 
 
 # Don't remove the actual $(build) directory since this disrupts BrowserSync,
