@@ -38,6 +38,9 @@ type CssClasses
     | BtnLight
     | BtnDark
     | Avatar
+    | NavIcon
+    | IconSmall
+    | IconBig
 
 
 type CssIds
@@ -221,8 +224,15 @@ css =
             , height (px 40)
             , borderRadius (pct 100)
             , overflow hidden
-            , display inlineBlock
             ]
+        , (.) NavIcon
+            [ display inlineBlock
+            , property "fill" "#888"
+            , hover [ property "fill" "#222" ]
+            , margin (px 10)
+            ]
+        , (.) IconSmall [ width (px 20), height (px 20) ]
+        , (.) IconBig [ width (px 30), height (px 30) ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]

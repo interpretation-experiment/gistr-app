@@ -10,12 +10,14 @@ module Helpers
         , evA
         , evButton
         , extractFeedback
+        , hrefIcon
         , ifShorterThan
         , ifShorterThanWords
         , ifThenValidate
         , loading
         , navA
         , navButton
+        , navIcon
         , navigateTo
         , notAuthed
         , readTime
@@ -48,6 +50,8 @@ import Random
 import Router
 import String
 import Styles exposing (class, classList, id)
+import Svg
+import Svg.Attributes as SvgAttributes
 import Task
 import Time
 import Types
@@ -221,6 +225,33 @@ avatar user route =
                 ]
                 []
             ]
+
+
+hrefIcon : Styles.CssClasses -> String -> String -> Html.Html Msg
+hrefIcon size href name =
+    Html.a [ Attributes.href href, class [ size, Styles.NavIcon ] ] [ icon name ]
+
+
+navIcon : Styles.CssClasses -> Router.Route -> String -> Html.Html Msg
+navIcon size route name =
+    Html.a
+        [ Attributes.href (Router.toUrl route)
+        , onClickMsg (NavigateTo route)
+        , class [ size, Styles.NavIcon ]
+        ]
+        [ icon name ]
+
+
+icon : String -> Html.Html Msg
+icon name =
+    Svg.svg
+        [ SvgAttributes.viewBox "0 0 100 100" ]
+        [ Svg.use
+            [ SvgAttributes.xlinkHref
+                ("/assets/img/icons.svg#si-awesome-" ++ name)
+            ]
+            []
+        ]
 
 
 evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg

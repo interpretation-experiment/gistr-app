@@ -83,5 +83,11 @@ buttons model =
 footer : Model -> List (Html.Html Msg)
 footer model =
     [ Html.div []
-        [ Helpers.navButton [] Router.About "About" ]
+        -- TODO: change depending on lifecycle
+        [ Helpers.hrefIcon Styles.IconSmall "mailto:sl@mehho.net" "envelope"
+        , Helpers.navIcon Styles.IconSmall Router.About "info-circle"
+        , Helpers.hrefIcon Styles.IconSmall "https://twitter.com/gistrexp" "twitter"
+        , Helpers.hrefIcon Styles.IconSmall "https://github.com/interpretation-experiment/gistr-app" "github"
+          -- TODO: intro icon
+        ]
     ]
