@@ -228,10 +228,11 @@ css =
         , (.) NavIcon
             [ display inlineBlock
             , property "fill" "#888"
+            , property "transition" "fill .3s"
             , hover [ property "fill" "#222" ]
             , margin (px 10)
             ]
-        , (.) IconSmall [ width (px 20), height (px 20) ]
+        , (.) IconSmall [ width (px 18), height (px 18) ]
         , (.) IconBig [ width (px 30), height (px 30) ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
