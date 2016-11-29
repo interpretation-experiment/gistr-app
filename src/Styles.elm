@@ -123,6 +123,18 @@ css =
             , margin3 (em 1.25) (px 0) (em 0.62)
             ]
         , p [ margin3 (px 0) (px 0) (em 0.62) ]
+        , a [ property "transition" "color .2s", color (hex "#265c83") ]
+          -- The ":visited" pseudo-class is not in elm-css, and ":link" must be
+          -- before it (because of the LVHA-rule)
+        , selector "a:link, a:visited" [ color (hex "#265c83") ]
+        , a
+            [ hover [ color (hex "#62b3d2"), textDecoration underline ]
+            , active [ property "transition" "color .2s", color (hex "#007be6") ]
+            , textDecoration none
+            ]
+          -- a { -webkit-transition: color .4s; transition: color .4s; color: #265C83; }
+          -- a:active { -webkit-transition: color .3s; transition: color .3s; color: #007BE6; }
+          --.link { text-decoration: none; }
           -- FONTS
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
