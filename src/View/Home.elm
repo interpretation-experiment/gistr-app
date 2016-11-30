@@ -2,6 +2,7 @@ module View.Home exposing (view)
 
 import Helpers
 import Html
+import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
@@ -82,24 +83,56 @@ buttons model =
 
 footer : Model -> List (Html.Html Msg)
 footer model =
-    [ Html.div []
-        -- TODO: change depending on lifecycle
-        [ Helpers.hrefIcon
-            [ class [ Styles.IconSmall ], Helpers.tooltip "Email the developers" ]
-            "mailto:sl@mehho.net"
-            "envelope"
-        , Helpers.navIcon
-            [ class [ Styles.IconSmall ], Helpers.tooltip "About Gistr" ]
-            Router.About
-            "info-circle"
-        , Helpers.hrefIcon
-            [ class [ Styles.IconSmall ], Helpers.tooltip "Twitter" ]
-            "https://twitter.com/gistrexp"
-            "twitter"
-        , Helpers.hrefIcon
-            [ class [ Styles.IconSmall ], Helpers.tooltip "GitHub" ]
-            "https://github.com/interpretation-experiment/gistr-app"
-            "github"
-          -- TODO: intro icon
-        ]
-    ]
+    let
+        -- TODO: intro icon
+        devs =
+            Helpers.hrefIcon
+                [ class [ Styles.IconSmall ], Helpers.tooltip "Email the developers" ]
+                "mailto:sl@mehho.net"
+                "envelope"
+
+        about =
+            Helpers.navIcon
+                [ class [ Styles.IconSmall ], Helpers.tooltip "About Gistr" ]
+                Router.About
+                "info-circle"
+
+        twitter =
+            Helpers.hrefIcon
+                [ class [ Styles.IconSmall ], Helpers.tooltip "Twitter" ]
+                "https://twitter.com/gistrexp"
+                "twitter"
+
+        github =
+            Helpers.hrefIcon
+                [ class [ Styles.IconSmall ], Helpers.tooltip "GitHub" ]
+                "https://github.com/interpretation-experiment/gistr-app"
+                "github"
+
+        icons =
+            case model.auth of
+                Types.Anonymous ->
+                    [ devs, about ]
+
+                Types.Authenticating ->
+                    [ devs, about ]
+
+                Types.Authenticated { user, meta } ->
+                    if user.isStaff then
+                        -- TODO: and intro icon
+                        [ devs, about, twitter, github ]
+                    else
+                        case Lifecycle.state meta user.profile of
+                            Lifecycle.Training _ ->
+                                -- TODO: and intro icon
+                                [ devs, about ]
+
+                            Lifecycle.Experiment _ ->
+                                -- TODO: and intro icon
+                                [ devs, about ]
+
+                            Lifecycle.Done ->
+                                -- TODO: and intro icon
+                                [ devs, about, twitter, github ]
+    in
+        [ Html.div [] icons ]
