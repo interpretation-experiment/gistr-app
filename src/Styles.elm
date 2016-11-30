@@ -51,6 +51,8 @@ type CssClasses
     | Input
     | Error
     | Success
+    | Icon
+    | Left
 
 
 type CssIds
@@ -395,6 +397,42 @@ css =
                         [ color (hex "#96da9e") ]
                     , selector "input:focus:-ms-input-placeholder"
                         [ color (hex "#96da9e") ]
+                    ]
+                ]
+            ]
+          -- INPUT ICONS
+        , (.) Input
+            [ withClass Icon
+                [ children
+                    [ (.) Icon
+                        [ cursor default
+                        , position absolute
+                          --, lineHeight (num 1)
+                        , textAlign center
+                        , top (em 0.45)
+                        , right (em 0.4)
+                        , margin (em 0)
+                          --, height (pct 100)
+                        , width (em 1.5)
+                        , opacity (num 0.5)
+                        , borderRadius4 (em 0) (em 0.2) (em 0.2) (em 0)
+                        , property "transition" "opacity .3s ease"
+                        , property "pointer-events" "none"
+                        ]
+                    , input
+                        [ paddingRight (em 2.3)
+                        , focus [ generalSiblings [ (.) Icon [ opacity (num 1) ] ] ]
+                        ]
+                    ]
+                , withClass Left
+                    [ children
+                        [ (.) Icon
+                            [ right auto
+                            , left (em 0.4)
+                            , borderRadius4 (em 0.2) (em 0) (em 0) (em 0.2)
+                            ]
+                        , input [ paddingLeft (em 2.3), paddingRight (em 0.85) ]
+                        ]
                     ]
                 ]
             ]
