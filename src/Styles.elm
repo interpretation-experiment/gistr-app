@@ -84,7 +84,7 @@ btn =
         , color (hex "#265c83")
         , display inlineBlock
         , marginBottom (em 0.5)
-        , padding2 (em 0.4) (em 0.6)
+        , padding2 (em 0.5) (em 0.75)
         , textDecoration none
         , cursor pointer
         , property
@@ -246,7 +246,15 @@ css =
             , margin3 (em 1.25) (px 0) (em 0.62)
             ]
         , p [ margin3 (px 0) (px 0) (em 0.62) ]
-        , button [ fontSize (em 1) ]
+        , button
+            [ fontSize (em 1)
+            , fontFamilies
+                [ (qt "Libre Franklin")
+                , .value sansSerif
+                ]
+            ]
+          -- Fix for buttons appearing differently in Chrome vs. Firefox
+        , selector "button::-moz-focus-inner" [ border (px 0), padding (px 0) ]
         , a [ linkMixin ]
         , (.) BtnLink [ linkMixin ]
         , (.) Btn
