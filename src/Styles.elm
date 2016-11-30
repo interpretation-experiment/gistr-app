@@ -67,53 +67,46 @@ linkMixin =
         , color (hex "#265c83")
         , link [ color (hex "#265c83") ]
         , hover [ color (hex "#62b3d2"), textDecoration underline ]
-        , active [ property "transition" "color .1s", color (hex "#007be6") ]
+        , active [ color (hex "#007be6") ]
         , textDecoration none
         , backgroundColor unset
         , border unset
+        , cursor pointer
         ]
 
 
 btn : Mixin
 btn =
-    -- TODO: deal with disabled and cursor
     mixin
-        [ borderRadius (em 0.25)
-        , border3 (px 1) solid (hex "#555")
-        , backgroundColor (hex "#fff")
-        , color (hex "#555")
+        [ borderRadius (em 0.2)
+        , border3 (px 1) solid (hex "#d6d9dd")
+        , backgroundColor (hex "#f9fafb")
+        , color (hex "#265c83")
         , display inlineBlock
         , marginBottom (em 0.5)
-        , padding2 (em 0.5) (em 0.75)
+        , padding2 (em 0.4) (em 0.6)
         , textDecoration none
-        , property "transition" "color 0.4s, background-color 0.4s, border 0.4s"
+        , cursor pointer
+        , property
+            "transition"
+            "opacity 0.3s, color 0.3s, border-color 0.3s, background-color 0.3s"
         ]
 
 
 btnHoverFocus : Mixin
 btnHoverFocus =
-    mixin
-        [ backgroundColor (hex "#fff")
-        , color (hex "#777")
-        , borderColor (hex "#ddd")
-        , property "transition" "background-color 0.3s, color 0.3s, border 0.3s"
-        ]
+    mixin [ backgroundColor (hex "#edf0f3") ]
 
 
 btnPrimary : Mixin
 btnPrimary =
-    mixin
-        [ color (hex "#fff")
-        , backgroundColor (hex "#0074d9")
-        , borderColor unset
-        ]
+    mixin [ color (hex "#fff"), backgroundColor (hex "#0074d9") ]
 
 
 btnPrimaryHoverFocus : Mixin
 btnPrimaryHoverFocus =
     mixin
-        [ color (hex "#fff")
-        , backgroundColor (hex "#0063aa")
+        [ backgroundColor (hex "#0063aa")
         , borderColor (hex "#0063aa")
         ]
 
@@ -266,6 +259,14 @@ css =
                 , borderColor (hex "#ccc")
                 , color (hex "#444")
                 , property "transition" "background-color 0.3s, color 0.3s, border 0.3s"
+                ]
+            , disabled
+                [ cursor default
+                , color (hex "#9ca0a6")
+                , borderColor (hex "#c0c4cb")
+                , backgroundColor (hex "#d6d9dd")
+                , opacity (num 0.65)
+                , property "pointer-events" "none"
                 ]
             ]
         , (.) BtnPrimary
