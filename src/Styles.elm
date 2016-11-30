@@ -14,6 +14,13 @@ import Css.Namespace exposing (namespace)
 import Html.CssHelpers
 
 
+{-
+   Credits:
+   - Buttons are inspired by http://mrmrs.io/btns/
+   - Tooltips are inspired by http://semantic-ui.com/modules/popup.html#tooltip
+-}
+
+
 namespaceName : String
 namespaceName =
     "layout"
@@ -294,6 +301,63 @@ css =
                 , color (hex "#eee")
                 ]
             ]
+          -- TOOLTIPS
+        , selector "[data-tooltip]" [ position relative ]
+          -- Tooltip arrow
+        , selector "[data-tooltip]:before"
+            [ backgroundColor (hex "#4f5155")
+            , bottom (pct 100)
+            , height (em 0.5)
+            , left (pct 50)
+            , marginBottom (Css.rem 0.1429)
+            , marginLeft (Css.rem -0.0714)
+            , opacity (num 0)
+            , position absolute
+            , property "content" "''"
+            , property "pointer-events" "none"
+            , property "transform-origin" "center top"
+            , property "transition" "all .1s ease"
+            , property "visibility" "hidden"
+            , property "z-index" "2"
+            , right auto
+            , top auto
+            , transform (rotateZ (deg 45))
+            , width (em 0.5)
+            ]
+          -- Tooltip content
+        , selector "[data-tooltip]:after"
+            [ backgroundColor (hex "#4f5155")
+            , borderRadius (Css.rem 0.15)
+            , borderStyle none
+            , bottom (pct 100)
+            , color (hex "#eff1f3")
+            , fontSize (Css.rem 0.8)
+            , fontStyle normal
+            , fontWeight (int 400)
+            , left (pct 50)
+            , marginBottom (em 0.5)
+            , maxWidth none
+            , opacity (num 0)
+            , padding2 (em 0.4) (em 0.5)
+            , position absolute
+            , property "content" "attr(data-tooltip)"
+            , property "pointer-events" "none"
+            , property "text-transform" "none"
+            , property "transform-origin" "center bottom"
+            , property "transition" "all .1s ease"
+            , property "visibility" "hidden"
+            , property "z-index" "1"
+            , textAlign left
+            , transform (translateX (pct -50))
+            , whiteSpace noWrap
+            ]
+          -- Tooltip Animation
+        , selector "[data-tooltip]:hover:before, [data-tooltip]:hover:after"
+            [ property "visibility" "visible"
+            , property "pointer-events" "auto"
+            ]
+        , selector "[data-tooltip]:hover:before" [ opacity (num 1) ]
+        , selector "[data-tooltip]:hover:after" [ opacity (num 1) ]
           -- FONTS
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]

@@ -84,10 +84,22 @@ footer : Model -> List (Html.Html Msg)
 footer model =
     [ Html.div []
         -- TODO: change depending on lifecycle
-        [ Helpers.hrefIcon Styles.IconSmall "mailto:sl@mehho.net" "envelope"
-        , Helpers.navIcon Styles.IconSmall Router.About "info-circle"
-        , Helpers.hrefIcon Styles.IconSmall "https://twitter.com/gistrexp" "twitter"
-        , Helpers.hrefIcon Styles.IconSmall "https://github.com/interpretation-experiment/gistr-app" "github"
+        [ Helpers.hrefIcon
+            [ class [ Styles.IconSmall ], Helpers.tooltip "Email the developers" ]
+            "mailto:sl@mehho.net"
+            "envelope"
+        , Helpers.navIcon
+            [ class [ Styles.IconSmall ], Helpers.tooltip "About Gistr" ]
+            Router.About
+            "info-circle"
+        , Helpers.hrefIcon
+            [ class [ Styles.IconSmall ], Helpers.tooltip "Twitter" ]
+            "https://twitter.com/gistrexp"
+            "twitter"
+        , Helpers.hrefIcon
+            [ class [ Styles.IconSmall ], Helpers.tooltip "GitHub" ]
+            "https://github.com/interpretation-experiment/gistr-app"
+            "github"
           -- TODO: intro icon
         ]
     ]

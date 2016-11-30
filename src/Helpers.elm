@@ -23,6 +23,7 @@ module Helpers
         , readTime
         , resultToTask
         , shuffle
+        , tooltip
         , trialOr
         , updateAuth
         , updateAuthNav
@@ -43,7 +44,7 @@ import Json.Decode as JD
 import List
 import List.Extra exposing (splitAt)
 import MD5
-import Maybe.Extra exposing ((?))
+import Maybe.Extra exposing ((?), unwrap)
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo, Error))
 import Random
@@ -227,18 +228,27 @@ avatar user route =
             ]
 
 
-hrefIcon : Styles.CssClasses -> String -> String -> Html.Html Msg
-hrefIcon size href name =
-    Html.a [ Attributes.href href, class [ size, Styles.NavIcon ] ] [ icon name ]
+tooltip : String -> Html.Attribute msg
+tooltip text =
+    Attributes.attribute "data-tooltip" text
 
 
-navIcon : Styles.CssClasses -> Router.Route -> String -> Html.Html Msg
-navIcon size route name =
+hrefIcon : List (Html.Attribute Msg) -> String -> String -> Html.Html Msg
+hrefIcon attrs href name =
     Html.a
-        [ Attributes.href (Router.toUrl route)
-        , onClickMsg (NavigateTo route)
-        , class [ size, Styles.NavIcon ]
-        ]
+        ([ Attributes.href href, class [ Styles.NavIcon ] ] ++ attrs)
+        [ icon name ]
+
+
+navIcon : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navIcon attrs route name =
+    Html.a
+        ([ Attributes.href (Router.toUrl route)
+         , onClickMsg (NavigateTo route)
+         , class [ Styles.NavIcon ]
+         ]
+            ++ attrs
+        )
         [ icon name ]
 
 
