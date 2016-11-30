@@ -48,6 +48,9 @@ type CssClasses
     | NavIcon
     | IconSmall
     | IconBig
+    | Input
+    | Error
+    | Success
 
 
 type CssIds
@@ -234,9 +237,9 @@ css =
             , property "transition" "fill .3s"
             , hover [ property "fill" "#222" ]
             , margin (px 10)
+            , withClass IconSmall [ width (px 18), height (px 18) ]
+            , withClass IconBig [ width (px 30), height (px 30) ]
             ]
-        , (.) IconSmall [ width (px 18), height (px 18) ]
-        , (.) IconBig [ width (px 30), height (px 30) ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]
@@ -256,6 +259,7 @@ css =
           -- Fix for buttons appearing differently in Chrome vs. Firefox
         , selector "button::-moz-focus-inner" [ border (px 0), padding (px 0) ]
         , a [ linkMixin ]
+          -- BUTTONS
         , (.) BtnLink [ linkMixin ]
         , (.) Btn
             [ btn
@@ -276,38 +280,122 @@ css =
                 , opacity (num 0.65)
                 , property "pointer-events" "none"
                 ]
-            ]
-        , (.) BtnPrimary
-            [ btnPrimary
-            , link [ btnPrimary ]
-            , hover [ btnPrimaryHoverFocus ]
-            , focus [ btnPrimaryHoverFocus ]
-            , active
-                [ color (hex "#fff")
-                , backgroundColor (hex "#001f3f")
-                , borderColor (hex "#001f3f")
+            , withClass BtnPrimary
+                [ btnPrimary
+                , link [ btnPrimary ]
+                , hover [ btnPrimaryHoverFocus ]
+                , focus [ btnPrimaryHoverFocus ]
+                , active
+                    [ color (hex "#fff")
+                    , backgroundColor (hex "#001f3f")
+                    , borderColor (hex "#001f3f")
+                    ]
+                ]
+            , withClass BtnLight
+                [ btnLight
+                , link [ btnLight ]
+                , hover [ btnLightHoverFocus ]
+                , focus [ btnLightHoverFocus ]
+                , active
+                    [ backgroundColor (hex "#ccc")
+                    , borderColor (hex "#ccc")
+                    , color (hex "#444")
+                    ]
+                ]
+            , withClass BtnDark
+                [ btnDark
+                , link [ btnDark ]
+                , hover [ btnDarkHoverFocus ]
+                , focus [ btnDarkHoverFocus ]
+                , active
+                    [ backgroundColor (hex "#777")
+                    , borderColor (hex "#777")
+                    , color (hex "#eee")
+                    ]
                 ]
             ]
-        , (.) BtnLight
-            [ btnLight
-            , link [ btnLight ]
-            , hover [ btnLightHoverFocus ]
-            , focus [ btnLightHoverFocus ]
-            , active
-                [ backgroundColor (hex "#ccc")
-                , borderColor (hex "#ccc")
-                , color (hex "#444")
+          -- INPUTS
+        , (.) Input
+            [ position relative
+            , fontWeight normal
+            , fontStyle normal
+            , property "display" "inline-flex"
+            , color (hex "#000000e6")
+            , descendants
+                [ input
+                    [ margin (px 0)
+                    , maxWidth (pct 100)
+                    , flex2 (num 1) (num 0)
+                    , outline none
+                    , textAlign left
+                    , fontFamilies [ (qt "Libre Franklin"), .value sansSerif ]
+                    , fontSize (em 1)
+                    , padding2 (em 0.45) (em 0.85)
+                    , backgroundColor (hex "#fff")
+                    , border3 (px 1) solid (rgba 33 35 37 0.2)
+                    , color (rgba 0 0 0 0.87)
+                    , borderRadius (em 0.2)
+                    , property "transition" "box-shadow .1s ease, border-color .1s ease"
+                    , boxShadow none
+                    , disabled [ opacity (num 0.45), property "pointer-events" "none" ]
+                    , focus [ borderColor (hex "#85b7d9"), color (rgba 0 0 0 0.8) ]
+                    ]
+                  -- Placeholder
+                , selector "input::-moz-placeholder"
+                    [ color (rgba 191 191 191 0.87) ]
+                , selector "input::-webkit-input-placeholder"
+                    [ color (rgba 191 191 191 0.87) ]
+                , selector "input:-ms-input-placeholder"
+                    [ color (rgba 191 191 191 0.87) ]
+                  -- Placeholder focus
+                , selector "input:focus::-moz-placeholder"
+                    [ color (rgba 115 115 115 0.87) ]
+                , selector "input:focus::-webkit-input-placeholder"
+                    [ color (rgba 115 115 115 0.87) ]
+                , selector "input:focus:-ms-input-placeholder"
+                    [ color (rgba 115 115 115 0.87) ]
                 ]
-            ]
-        , (.) BtnDark
-            [ btnDark
-            , link [ btnDark ]
-            , hover [ btnDarkHoverFocus ]
-            , focus [ btnDarkHoverFocus ]
-            , active
-                [ backgroundColor (hex "#777")
-                , borderColor (hex "#777")
-                , color (hex "#eee")
+            , withClass Error
+                [ descendants
+                    [ input
+                        [ color (hex "#9f3a38")
+                        , borderColor (hex "#e0b4b4")
+                        , backgroundColor (hex "#fff6f6")
+                        , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
+                        ]
+                      -- Placeholder
+                    , selector "input::-moz-placeholder" [ color (hex "#e6bcbb") ]
+                    , selector "input::-webkit-input-placeholder" [ color (hex "#e6bcbb") ]
+                    , selector "input:-ms-input-placeholder" [ color (hex "#e6bcbb") ]
+                      -- Placeholder focus
+                    , selector "input:focus::-moz-placeholder"
+                        [ color (hex "#da9796") ]
+                    , selector "input:focus::-webkit-input-placeholder"
+                        [ color (hex "#da9796") ]
+                    , selector "input:focus:-ms-input-placeholder"
+                        [ color (hex "#da9796") ]
+                    ]
+                ]
+            , withClass Success
+                [ descendants
+                    [ input
+                        [ color (hex "#389f48")
+                        , borderColor (hex "#b4e0b8")
+                        , backgroundColor (hex "#f6fff6")
+                        , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]
+                        ]
+                      -- Placeholder
+                    , selector "input::-moz-placeholder" [ color (hex "#bbe6c0") ]
+                    , selector "input::-webkit-input-placeholder" [ color (hex "#bbe6c0") ]
+                    , selector "input:-ms-input-placeholder" [ color (hex "#bbe6c0") ]
+                      -- Placeholder focus
+                    , selector "input:focus::-moz-placeholder"
+                        [ color (hex "#96da9e") ]
+                    , selector "input:focus::-webkit-input-placeholder"
+                        [ color (hex "#96da9e") ]
+                    , selector "input:focus:-ms-input-placeholder"
+                        [ color (hex "#96da9e") ]
+                    ]
                 ]
             ]
           -- TOOLTIPS
