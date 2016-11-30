@@ -224,6 +224,9 @@ css =
             , height (px 40)
             , borderRadius (pct 100)
             , overflow hidden
+            , opacity (num 0.7)
+            , property "transition" "opacity .3s"
+            , hover [ opacity (num 1) ]
             ]
         , (.) NavIcon
             [ display inlineBlock

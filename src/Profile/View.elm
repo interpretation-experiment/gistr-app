@@ -60,7 +60,7 @@ header model =
                 _ ->
                     []
     in
-        [ Html.nav [] [ Helpers.navButton [] Router.Home "Back" ]
+        [ Html.nav [] [ Helpers.navIcon Styles.IconBig Router.Home "home" ]
         , Html.h1 [] [ Html.text "Profile" ]
         , Html.div [ class [ Styles.Meta ] ] logout
         ]

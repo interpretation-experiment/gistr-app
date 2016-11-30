@@ -17,7 +17,7 @@ view model =
 
 header : List (Html.Html Msg)
 header =
-    [ Html.nav [] [ Helpers.navButton [] Router.Home "Back" ]
+    [ Html.nav [] [ Helpers.navIcon Styles.IconBig Router.Home "home" ]
     , Html.h1 [] [ Html.text "About" ]
     ]
 

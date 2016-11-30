@@ -240,6 +240,7 @@ view viewConfig (Model model) =
             , ( "padding-right", "20px" )
             , ( "width", toString config.widthPx ++ "px" )
             , ( "overflow", "hidden" )
+              -- TODO: maybe use "pointer-events: none" instead
             , ( "z-index", "-1" )
             ]
         ]

@@ -23,7 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navButton [] (Router.Register Nothing) "Back" ]
+    [ Html.nav [] [ Helpers.navIcon Styles.IconBig (Router.Register Nothing) "angle-double-left" ]
     , Html.h1 [] [ Html.text "Prolific Academic" ]
     ]
 
