@@ -55,29 +55,37 @@ form lift { input, feedback, status } =
     , Html.form [ Events.onSubmit (lift <| Login input) ]
         [ Html.div []
             [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
-            , Html.input
-                [ Attributes.id "inputUsername"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.autofocus True
-                , Attributes.placeholder "joey"
-                , Attributes.type_ "text"
-                , Attributes.value input.username
-                , Events.onInput (lift << LoginFormInput << \u -> { input | username = u })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
+                , Html.input
+                    [ Attributes.id "inputUsername"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.autofocus True
+                    , Attributes.placeholder "joey"
+                    , Attributes.type_ "text"
+                    , Attributes.value input.username
+                    , Events.onInput
+                        (lift << LoginFormInput << \u -> { input | username = u })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
             ]
         , Html.div []
             [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
-            , Html.input
-                [ Attributes.id "inputPassword"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.placeholder "ubA1oh"
-                , Attributes.type_ "password"
-                , Attributes.value input.password
-                , Events.onInput (lift << LoginFormInput << \p -> { input | password = p })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                , Html.input
+                    [ Attributes.id "inputPassword"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type_ "password"
+                    , Attributes.value input.password
+                    , Events.onInput
+                        (lift << LoginFormInput << \p -> { input | password = p })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "password" feedback) ]
             ]
         , Html.div []

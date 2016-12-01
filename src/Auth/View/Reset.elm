@@ -52,34 +52,40 @@ form lift { input, feedback, status } tokens =
     , Html.form [ Events.onSubmit <| lift (Reset input tokens) ]
         [ Html.div []
             [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
-            , Html.input
-                [ Attributes.id "inputPassword1"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.autofocus True
-                , Attributes.placeholder "ubA1oh"
-                , Attributes.type_ "password"
-                , Attributes.value input.password1
-                , Events.onInput <|
-                    lift
-                        << (ResetFormInput << \p -> { input | password1 = p })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                , Html.input
+                    [ Attributes.id "inputPassword1"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.autofocus True
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type_ "password"
+                    , Attributes.value input.password1
+                    , Events.onInput <|
+                        lift
+                            << (ResetFormInput << \p -> { input | password1 = p })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
             ]
         , Html.div []
             [ Html.label [ Attributes.for "inputPassword2" ]
                 [ Html.text "Confirm new password" ]
-            , Html.input
-                [ Attributes.id "inputPassword2"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.placeholder "ubA1oh"
-                , Attributes.type_ "password"
-                , Attributes.value input.password2
-                , Events.onInput <|
-                    lift
-                        << (ResetFormInput << \p -> { input | password2 = p })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                , Html.input
+                    [ Attributes.id "inputPassword2"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type_ "password"
+                    , Attributes.value input.password2
+                    , Events.onInput <|
+                        lift
+                            << (ResetFormInput << \p -> { input | password2 = p })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
             ]
         , Html.div []

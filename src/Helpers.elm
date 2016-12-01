@@ -11,6 +11,7 @@ module Helpers
         , evButton
         , extractFeedback
         , hrefIcon
+        , icon
         , ifShorterThan
         , ifShorterThanWords
         , ifThenValidate

@@ -55,55 +55,76 @@ form lift { input, feedback, status } maybeProlific =
     , Html.form [ Events.onSubmit <| lift (Register maybeProlific input) ]
         [ Html.div []
             [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
-            , Html.input
-                [ Attributes.id "inputUsername"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.autofocus True
-                , Attributes.placeholder "joey"
-                , Attributes.type_ "text"
-                , Attributes.value input.username
-                , Events.onInput <| lift << (RegisterFormInput << \u -> { input | username = u })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
+                , Html.input
+                    [ Attributes.id "inputUsername"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.autofocus True
+                    , Attributes.placeholder "joey"
+                    , Attributes.type_ "text"
+                    , Attributes.value input.username
+                    , Events.onInput <|
+                        lift
+                            << (RegisterFormInput << \u -> { input | username = u })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
             ]
         , Html.div []
             [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
-            , Html.input
-                [ Attributes.id "inputEmail"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.placeholder "joey@example.com (optional)"
-                , Attributes.type_ "email"
-                , Attributes.value input.email
-                , Events.onInput <| lift << (RegisterFormInput << \e -> { input | email = e })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
+                , Html.input
+                    [ Attributes.id "inputEmail"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.placeholder "joey@example.com (optional)"
+                    , Attributes.type_ "email"
+                    , Attributes.value input.email
+                    , Events.onInput <|
+                        lift
+                            << (RegisterFormInput << \e -> { input | email = e })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "email" feedback) ]
             ]
         , Html.div []
             [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
-            , Html.input
-                [ Attributes.id "inputPassword1"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.placeholder "ubA1oh"
-                , Attributes.type_ "password"
-                , Attributes.value input.password1
-                , Events.onInput <| lift << (RegisterFormInput << \p -> { input | password1 = p })
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                , Html.input
+                    [ Attributes.id "inputPassword1"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type_ "password"
+                    , Attributes.value input.password1
+                    , Events.onInput <|
+                        lift
+                            << (RegisterFormInput << \p -> { input | password1 = p })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
             ]
         , Html.div []
-            [ Html.label [ Attributes.for "inputPassword2" ] [ Html.text "Confirm password" ]
-            , Html.input
-                [ Attributes.id "inputPassword2"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.placeholder "ubA1oh"
-                , Attributes.type_ "password"
-                , Attributes.value input.password2
-                , Events.onInput <| lift << (RegisterFormInput << \p -> { input | password2 = p })
+            [ Html.label [ Attributes.for "inputPassword2" ]
+                [ Html.text "Confirm password" ]
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                , Html.input
+                    [ Attributes.id "inputPassword2"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.type_ "password"
+                    , Attributes.value input.password2
+                    , Events.onInput <|
+                        lift
+                            << (RegisterFormInput << \p -> { input | password2 = p })
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
             ]
         , Html.div []

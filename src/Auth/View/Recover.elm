@@ -62,16 +62,19 @@ form lift { input, feedback, status } =
     , Html.form [ Events.onSubmit <| lift (Recover input) ]
         [ Html.div []
             [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
-            , Html.input
-                [ Attributes.id "inputEmail"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.autofocus True
-                , Attributes.placeholder "joey@example.com"
-                , Attributes.type_ "mail"
-                , Attributes.value input
-                , Events.onInput (lift << RecoverFormInput)
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
+                , Html.input
+                    [ Attributes.id "inputEmail"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.autofocus True
+                    , Attributes.placeholder "joey@example.com"
+                    , Attributes.type_ "mail"
+                    , Attributes.value input
+                    , Events.onInput (lift << RecoverFormInput)
+                    ]
+                    []
                 ]
-                []
             ]
         , Html.div []
             [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]

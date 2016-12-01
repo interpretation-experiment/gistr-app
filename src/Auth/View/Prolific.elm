@@ -58,16 +58,20 @@ form lift { input, feedback } =
         ]
     , Html.form [ Events.onSubmit (lift <| SetProlific input) ]
         [ Html.div []
-            [ Html.label [ Attributes.for "inputProlificId" ] [ Html.text "Prolific Academic ID" ]
-            , Html.input
-                [ Attributes.id "inputProlificId"
-                , Attributes.autofocus True
-                , Attributes.placeholder "5381d3c8717b341db325eec3"
-                , Attributes.type_ "text"
-                , Attributes.value input
-                , Events.onInput (lift << SetProlificFormInput)
+            [ Html.label [ Attributes.for "inputProlificId" ]
+                [ Html.text "Prolific Academic ID" ]
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "barcode" ]
+                , Html.input
+                    [ Attributes.id "inputProlificId"
+                    , Attributes.autofocus True
+                    , Attributes.placeholder "5381d3c8717b341db325eec3"
+                    , Attributes.type_ "text"
+                    , Attributes.value input
+                    , Events.onInput (lift << SetProlificFormInput)
+                    ]
+                    []
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         , Html.div []

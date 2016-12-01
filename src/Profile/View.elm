@@ -200,49 +200,65 @@ passwordChange lift { input, feedback, status } =
                 [ Html.label
                     [ Attributes.for "inputOldPassword" ]
                     [ Html.text "Old password" ]
-                , Html.input
-                    [ Attributes.id "inputOldPassword"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "Your old password"
-                    , Attributes.type_ "password"
-                    , Attributes.value input.oldPassword
-                    , Events.onInput <|
-                        lift
-                            << (ChangePasswordFormInput << \o -> { input | oldPassword = o })
+                , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                    [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                    , Html.input
+                        [ Attributes.id "inputOldPassword"
+                        , Attributes.disabled (status /= Form.Entering)
+                        , Attributes.placeholder "Your old password"
+                        , Attributes.type_ "password"
+                        , Attributes.value input.oldPassword
+                        , Events.onInput <|
+                            lift
+                                << (ChangePasswordFormInput
+                                        << \o -> { input | oldPassword = o }
+                                   )
+                        ]
+                        []
                     ]
-                    []
                 , Html.span [] [ Html.text (Feedback.getError "oldPassword" feedback) ]
                 ]
             , Html.div []
-                [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
-                , Html.input
-                    [ Attributes.id "inputPassword1"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "ubA1oh"
-                    , Attributes.type_ "password"
-                    , Attributes.value input.password1
-                    , Events.onInput <|
-                        lift
-                            << (ChangePasswordFormInput << \p -> { input | password1 = p })
+                [ Html.label [ Attributes.for "inputPassword1" ]
+                    [ Html.text "New password" ]
+                , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                    [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                    , Html.input
+                        [ Attributes.id "inputPassword1"
+                        , Attributes.disabled (status /= Form.Entering)
+                        , Attributes.placeholder "ubA1oh"
+                        , Attributes.type_ "password"
+                        , Attributes.value input.password1
+                        , Events.onInput <|
+                            lift
+                                << (ChangePasswordFormInput
+                                        << \p -> { input | password1 = p }
+                                   )
+                        ]
+                        []
                     ]
-                    []
                 , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
             , Html.div []
                 [ Html.label
                     [ Attributes.for "inputPassword2" ]
                     [ Html.text "Confirm new password" ]
-                , Html.input
-                    [ Attributes.id "inputPassword2"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "ubA1oh"
-                    , Attributes.type_ "password"
-                    , Attributes.value input.password2
-                    , Events.onInput <|
-                        lift
-                            << (ChangePasswordFormInput << \p -> { input | password2 = p })
+                , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                    [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
+                    , Html.input
+                        [ Attributes.id "inputPassword2"
+                        , Attributes.disabled (status /= Form.Entering)
+                        , Attributes.placeholder "ubA1oh"
+                        , Attributes.type_ "password"
+                        , Attributes.value input.password2
+                        , Events.onInput <|
+                            lift
+                                << (ChangePasswordFormInput
+                                        << \p -> { input | password2 = p }
+                                   )
+                        ]
+                        []
                     ]
-                    []
                 , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
@@ -271,14 +287,17 @@ usernameChange lift { input, feedback, status } =
         [ Html.h2 [] [ Html.text "Change username" ]
         , Html.form [ Events.onSubmit <| lift (ChangeUsername input) ]
             [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.input
-                [ Attributes.id "inputUsername"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.type_ "text"
-                , Attributes.value input
-                , Events.onInput (lift << ChangeUsernameFormInput)
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
+                , Html.input
+                    [ Attributes.id "inputUsername"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.type_ "text"
+                    , Attributes.value input
+                    , Events.onInput (lift << ChangeUsernameFormInput)
+                    ]
+                    []
                 ]
-                []
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
@@ -317,14 +336,17 @@ emails lift { input, feedback, status } emails_ =
         , Html.h2 [] [ Html.text "Add an email address" ]
         , Html.form [ Events.onSubmit <| lift (AddEmail input) ]
             [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.input
-                [ Attributes.id "inputEmail"
-                , Attributes.disabled (status /= Form.Entering)
-                , Attributes.type_ "email"
-                , Attributes.value input
-                , Events.onInput (lift << AddEmailFormInput)
+            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+                [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
+                , Html.input
+                    [ Attributes.id "inputEmail"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Attributes.type_ "email"
+                    , Attributes.value input
+                    , Events.onInput (lift << AddEmailFormInput)
+                    ]
+                    []
                 ]
-                []
             , Html.button
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)

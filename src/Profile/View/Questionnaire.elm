@@ -135,17 +135,19 @@ form lift { input, feedback, status } meta =
             , Html.div []
                 [ Html.label [ Attributes.for "inputAge" ]
                     [ Html.strong [] [ Html.text "Age" ] ]
-                , Html.input
-                    [ Attributes.id "inputAge"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.type_ "number"
-                    , Attributes.value input.age
-                    , Events.onInput <|
-                        lift
-                            << QuestionnaireFormInput
-                            << \a -> { input | age = a }
+                , Html.div [ class [ Styles.Input ] ]
+                    [ Html.input
+                        [ Attributes.id "inputAge"
+                        , Attributes.disabled (status /= Form.Entering)
+                        , Attributes.type_ "number"
+                        , Attributes.value input.age
+                        , Events.onInput <|
+                            lift
+                                << QuestionnaireFormInput
+                                << \a -> { input | age = a }
+                        ]
+                        []
                     ]
-                    []
                 , Html.span [] [ Html.text (Feedback.getError "age" feedback) ]
                 ]
             , Html.div []
