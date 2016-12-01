@@ -130,15 +130,14 @@ navigateTo model request =
     let
         finalRoute =
             Router.normalize model.auth (Debug.log "nav request" request)
+
+        newModel =
+            if finalRoute /= model.route then
+                Model.emptyForms { model | route = (Debug.log "nav final" finalRoute) }
+            else
+                model
     in
-        if finalRoute /= model.route then
-            let
-                newModel =
-                    Model.emptyForms { model | route = (Debug.log "nav final" finalRoute) }
-            in
-                newModel ! Cmds.cmdsForModel newModel
-        else
-            model ! []
+        newModel ! Cmds.cmdsForModel newModel
 
 
 authenticatedOrIgnore :
