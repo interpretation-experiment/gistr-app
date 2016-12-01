@@ -17,7 +17,8 @@ import Html.CssHelpers
 {-
    Credits:
    - Buttons are inspired by http://mrmrs.io/btns/
-   - Tooltips and inputs are inspired by http://semantic-ui.com/modules/popup.html#tooltip
+   - Tooltips are inspired by http://semantic-ui.com/modules/popup.html#tooltip
+   - Inputs are inspired by http://semantic-ui.com/elements/input.html
 -}
 
 
