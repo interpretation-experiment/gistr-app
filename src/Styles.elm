@@ -447,9 +447,10 @@ css =
                         , margin4 (px 0) (px -1) (px 0) (px 0)
                         , width (em 1.1)
                         , backgroundColor (hex "#d2d2d2")
-                        , paddingLeft (em 0.6)
-                        , paddingRight (em 0.6)
                         , displayFlex
+                        , flexDirection column
+                        , property "justify-content" "center"
+                        , padding2 (em 0) (em 0.6)
                         , borderRadius4 (em 0.2) (em 0) (em 0) (em 0.2)
                         , adjacentSiblings
                             [ input
