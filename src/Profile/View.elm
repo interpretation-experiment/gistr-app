@@ -321,10 +321,10 @@ emails lift { input, feedback, status } emails_ =
         emailList =
             case emails_ of
                 [] ->
-                    Html.p [] [ Html.text "You have no emails configured" ]
+                    Html.p [] [ Html.text "You have no emails configured." ]
 
                 _ ->
-                    Html.ul [] (List.map (email lift) emails_)
+                    Html.div [] (List.map (email lift) emails_)
     in
         [ Html.h2 [] [ Html.text "Email" ]
         , Html.p []
@@ -368,7 +368,7 @@ email lift email_ =
 
         primary =
             if email_.primary then
-                [ Html.span [] [ Html.text "Primary" ] ]
+                [ Html.span [ class [ Styles.BadgeSuccess ] ] [ Html.text "Primary" ] ]
             else
                 []
 
@@ -376,9 +376,9 @@ email lift email_ =
             if email_.verified then
                 []
             else
-                [ Html.span [] [ Html.text "Unverified" ]
+                [ Html.span [ class [ Styles.BadgeDefault ] ] [ Html.text "Unverified" ]
                 , Helpers.evButton
-                    [ disabled ]
+                    [ disabled, class [ Styles.Btn, Styles.BtnSmall ] ]
                     (lift <| VerifyEmail email_)
                     "Send verification email"
                 ]
@@ -386,19 +386,23 @@ email lift email_ =
         setPrimary =
             if email_.verified && (not email_.primary) then
                 [ Helpers.evButton
-                    [ disabled ]
+                    [ disabled, class [ Styles.Btn, Styles.BtnSmall ] ]
                     (lift <| PrimaryEmail email_)
                     "Set as primary"
                 ]
             else
                 []
     in
-        Html.div []
+        Html.div [ class [ Styles.EmailLine ] ]
             ([ Html.span [] [ Html.text email_.email ] ]
                 ++ primary
                 ++ verified
                 ++ setPrimary
-                ++ [ Helpers.evButton [ disabled ] (lift <| DeleteEmail email_) "Delete" ]
+                ++ [ Helpers.evIconButton
+                        [ disabled, class [ Styles.IconSmall ] ]
+                        (lift <| DeleteEmail email_)
+                        "trash"
+                   ]
             )
 
 

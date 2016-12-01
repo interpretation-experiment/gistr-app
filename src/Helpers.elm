@@ -9,6 +9,7 @@ module Helpers
         , cmd
         , evA
         , evButton
+        , evIconButton
         , extractFeedback
         , hrefIcon
         , icon
@@ -233,6 +234,35 @@ tooltip text =
     Attributes.attribute "data-tooltip" text
 
 
+evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
+evButton attrs msg text =
+    Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
+
+
+evIconButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
+evIconButton attrs msg name =
+    Html.button
+        ([ onClickMsg msg, class [ Styles.BtnIcon ] ] ++ attrs)
+        [ icon name ]
+
+
+navButton : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navButton attrs route text =
+    evButton attrs (NavigateTo route) text
+
+
+evA : String -> Msg -> String -> Html.Html Msg
+evA url msg text =
+    Html.a
+        [ Attributes.href url, onClickMsg msg ]
+        [ Html.text text ]
+
+
+navA : Router.Route -> String -> Html.Html Msg
+navA route text =
+    evA (Router.toUrl route) (NavigateTo route) text
+
+
 hrefIcon : List (Html.Attribute Msg) -> String -> String -> Html.Html Msg
 hrefIcon attrs href name =
     Html.a
@@ -262,28 +292,6 @@ icon name =
             ]
             []
         ]
-
-
-evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
-evButton attrs msg text =
-    Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
-
-
-navButton : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
-navButton attrs route text =
-    evButton attrs (NavigateTo route) text
-
-
-evA : String -> Msg -> String -> Html.Html Msg
-evA url msg text =
-    Html.a
-        [ Attributes.href url, onClickMsg msg ]
-        [ Html.text text ]
-
-
-navA : Router.Route -> String -> Html.Html Msg
-navA route text =
-    evA (Router.toUrl route) (NavigateTo route) text
 
 
 onClickMsg : a -> Html.Attribute a

@@ -40,11 +40,13 @@ type CssClasses
     | Center
     | CenterText
     | FlexCenter
+    | BtnIcon
     | BtnLink
     | Btn
     | BtnPrimary
     | BtnLight
     | BtnDark
+    | BtnSmall
     | Avatar
     | NavIcon
     | IconSmall
@@ -55,11 +57,25 @@ type CssClasses
     | Icon
     | Left
     | Label
+    | BadgeSuccess
+    | BadgeDefault
+    | EmailLine
 
 
 type CssIds
     = Page
     | Greeting
+
+
+badge : Mixin
+badge =
+    mixin
+        [ borderRadius (em 0.25)
+        , color (hex "#fff")
+        , fontSize (em 0.75)
+        , fontWeight (int 700)
+        , padding2 (em 0.2) (em 0.6)
+        ]
 
 
 centerElement : Mixin
@@ -241,9 +257,9 @@ css =
             , property "transition" "fill .3s"
             , hover [ property "fill" "#222" ]
             , margin (px 10)
-            , withClass IconSmall [ width (px 18), height (px 18) ]
-            , withClass IconBig [ width (px 30), height (px 30) ]
             ]
+        , (.) IconSmall [ width (px 18), height (px 18) ]
+        , (.) IconBig [ width (px 30), height (px 30) ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]
@@ -263,8 +279,42 @@ css =
           -- Fix for buttons appearing differently in Chrome vs. Firefox
         , selector "button::-moz-focus-inner" [ border (px 0), padding (px 0) ]
         , a [ linkMixin ]
+          -- EMAIL LINE
+        , (.) EmailLine
+            [ displayFlex
+            , alignItems baseline
+            , borderBottom3 (px 1) solid (hex "#ccc")
+            , marginBottom (em 0.5)
+            , children
+                [ (.) BtnIcon
+                    [ alignSelf center
+                    , property "fill" "#a00"
+                    , active [ property "fill" "#f00" ]
+                    , disabled [ property "fill" "#666" ]
+                    ]
+                , everything [ marginLeft (em 0.5), marginRight (em 0.5) ]
+                , selector "button:first-of-type" [ marginLeft auto ]
+                ]
+            ]
           -- BUTTONS
         , (.) BtnLink [ linkMixin ]
+        , (.) BtnIcon
+            [ border (px 0)
+            , backgroundColor unset
+            , padding (px 0)
+            , margin (em 0.2)
+            , cursor pointer
+            , opacity (num 0.65)
+            , property "transition" "opacity 0.3s, fill 0.3s"
+            , hover [ opacity (num 1) ]
+            , focus [ opacity (num 1) ]
+            , active [ opacity (num 1) ]
+            , disabled
+                [ cursor default
+                , opacity (num 0.65)
+                , property "pointer-events" "none"
+                ]
+            ]
         , (.) Btn
             [ btn
             , link [ btn ]
@@ -274,7 +324,6 @@ css =
                 [ backgroundColor (hex "#ccc")
                 , borderColor (hex "#ccc")
                 , color (hex "#444")
-                , property "transition" "background-color 0.3s, color 0.3s, border 0.3s"
                 ]
             , disabled
                 [ cursor default
@@ -316,6 +365,12 @@ css =
                     , borderColor (hex "#777")
                     , color (hex "#eee")
                     ]
+                ]
+            , withClass BtnSmall
+                [ fontSize (em 0.8)
+                , paddingTop (em 0.2)
+                , paddingBottom (em 0.2)
+                , margin (px 0)
                 ]
             ]
           -- INPUTS
@@ -450,7 +505,8 @@ css =
                         , displayFlex
                         , flexDirection column
                         , property "justify-content" "center"
-                        , padding2 (em 0) (em 0.6)
+                        , padding2 (em 0) (em 0.8)
+                        , property "fill" "#616469"
                         , borderRadius4 (em 0.2) (em 0) (em 0) (em 0.2)
                         , adjacentSiblings
                             [ input
@@ -462,6 +518,9 @@ css =
                     ]
                 ]
             ]
+          -- BADGES
+        , (.) BadgeDefault [ badge, backgroundColor (hex "#b5b8bd") ]
+        , (.) BadgeSuccess [ badge, backgroundColor (hex "#00a14b") ]
           -- TOOLTIPS
         , selector "[data-tooltip]" [ position relative ]
           -- Tooltip arrow
