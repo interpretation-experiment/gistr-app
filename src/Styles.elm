@@ -17,7 +17,7 @@ import Html.CssHelpers
 {-
    Credits:
    - Buttons are inspired by http://mrmrs.io/btns/
-   - Tooltips are inspired by http://semantic-ui.com/modules/popup.html#tooltip
+   - Tooltips and inputs are inspired by http://semantic-ui.com/modules/popup.html#tooltip
 -}
 
 
@@ -53,6 +53,7 @@ type CssClasses
     | Success
     | Icon
     | Left
+    | Label
 
 
 type CssIds
@@ -328,6 +329,7 @@ css =
                     [ margin (px 0)
                     , maxWidth (pct 100)
                     , flex2 (num 1) (num 0)
+                    , flexBasis auto
                     , outline none
                     , textAlign left
                     , fontFamilies [ (qt "Libre Franklin"), .value sansSerif ]
@@ -407,13 +409,11 @@ css =
                     [ (.) Icon
                         [ cursor default
                         , position absolute
-                          --, lineHeight (num 1)
                         , textAlign center
-                        , top (em 0.45)
-                        , right (em 0.4)
+                        , top (em 0.6)
+                        , right (em 0.55)
                         , margin (em 0)
-                          --, height (pct 100)
-                        , width (em 1.5)
+                        , width (em 1.2)
                         , opacity (num 0.5)
                         , borderRadius4 (em 0) (em 0.2) (em 0.2) (em 0)
                         , property "transition" "opacity .3s ease"
@@ -428,10 +428,34 @@ css =
                     [ children
                         [ (.) Icon
                             [ right auto
-                            , left (em 0.4)
+                            , left (em 0.55)
                             , borderRadius4 (em 0.2) (em 0) (em 0) (em 0.2)
                             ]
                         , input [ paddingLeft (em 2.3), paddingRight (em 0.85) ]
+                        ]
+                    ]
+                ]
+            ]
+          -- INPUT ADJACENT LABELS
+        , (.) Input
+            [ withClass Label
+                [ children
+                    [ (.) Label
+                        [ flex2 (num 0) (num 0)
+                        , flexBasis auto
+                        , margin4 (px 0) (px -1) (px 0) (px 0)
+                        , width (em 1.1)
+                        , backgroundColor (hex "#d2d2d2")
+                        , paddingLeft (em 0.6)
+                        , paddingRight (em 0.6)
+                        , displayFlex
+                        , borderRadius4 (em 0.2) (em 0) (em 0) (em 0.2)
+                        , adjacentSiblings
+                            [ input
+                                [ borderTopLeftRadius (px 0)
+                                , borderBottomLeftRadius (px 0)
+                                ]
+                            ]
                         ]
                     ]
                 ]
