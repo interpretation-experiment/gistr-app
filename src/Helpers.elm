@@ -22,9 +22,11 @@ module Helpers
         , navIcon
         , navigateTo
         , notAuthed
+        , onInputContent
         , readTime
         , resultToTask
         , shuffle
+        , textarea
         , tooltip
         , trialOr
         , updateAuth
@@ -315,6 +317,21 @@ notAuthed =
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+
+
+textarea : List (Html.Attribute msg) -> Html.Html msg
+textarea attrs =
+    Html.div ([ class [ Styles.Textarea ], Attributes.contenteditable True ] ++ attrs) []
+
+
+onInputContent : (String -> msg) -> Html.Attribute msg
+onInputContent tagger =
+    Events.on "input" (JD.map tagger targetInnerText)
+
+
+targetInnerText : JD.Decoder String
+targetInnerText =
+    JD.at [ "target", "textContent" ] JD.string
 
 
 

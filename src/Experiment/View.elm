@@ -198,14 +198,13 @@ write lift loading trialModel { input, feedback, status } =
     , Html.form [ Events.onSubmit (lift <| WriteSubmit input) ]
         [ Html.div []
             [ Html.label [ Attributes.for "inputText" ] [ Html.text "Write:" ]
-            , Html.textarea
+            , Helpers.textarea
                 [ Attributes.id "inputText"
+                  -- TODO: get working
                 , Attributes.autofocus True
-                , Attributes.value input
-                , Attributes.disabled (loading || (status /= Form.Entering))
-                , Events.onInput (lift << WriteInput)
+                , classList [ ( Styles.Disabled, (loading || (status /= Form.Entering)) ) ]
+                , Helpers.onInputContent (lift << WriteInput)
                 ]
-                []
             , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         , Html.button

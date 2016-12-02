@@ -64,31 +64,27 @@ form lift { input, feedback, status } meta =
                 [ Html.div [ class [ Styles.FormBlock ] ]
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
-                    , Html.textarea
+                    , Helpers.textarea
                         [ Attributes.id "inputInformedHow"
-                        , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.value input.informedHow
-                        , Events.onInput <|
+                        , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                        , Helpers.onInputContent <|
                             lift
                                 << QuestionnaireFormInput
                                 << \h -> { input | informedHow = h }
                         ]
-                        []
                     , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
                 , Html.div [ class [ Styles.FormBlock ] ]
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
-                    , Html.textarea
+                    , Helpers.textarea
                         [ Attributes.id "inputInformedWhat"
-                        , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.value input.informedWhat
-                        , Events.onInput <|
+                        , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                        , Helpers.onInputContent <|
                             lift
                                 << QuestionnaireFormInput
                                 << \w -> { input | informedWhat = w }
                         ]
-                        []
                     , Html.div [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
                     ]
                 ]
@@ -156,7 +152,7 @@ form lift { input, feedback, status } meta =
                 , Html.div [] (List.map genderRadio meta.genderChoices)
                 , Html.div [] [ Html.text (Feedback.getError "gender" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ] ]
                 [ Html.label [ Attributes.for "inputInformed" ]
                     [ Html.input
                         [ Attributes.id "inputInformed"
@@ -196,16 +192,14 @@ form lift { input, feedback, status } meta =
             , Html.div [ class [ Styles.FormBlock ] ]
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
-                , Html.textarea
+                , Helpers.textarea
                     [ Attributes.id "inputJobFreetext"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.value input.jobFreetext
-                    , Events.onInput <|
+                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                    , Helpers.onInputContent <|
                         lift
                             << QuestionnaireFormInput
                             << \t -> { input | jobFreetext = t }
                     ]
-                    []
                 , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]
             , Html.div []
