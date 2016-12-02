@@ -91,23 +91,31 @@ body lift model route auth =
             ]
 
         Router.Emails ->
-            emails lift model.emails auth.user.emails
+            [ Html.div [ class [ Styles.Well ] ]
+                (emails lift model.emails auth.user.emails)
+            ]
 
         Router.Confirm key ->
-            emailConfirmation model.emailConfirmation key
+            [ Html.div [ class [ Styles.Well ] ]
+                (emailConfirmation model.emailConfirmation key)
+            ]
 
         Router.Questionnaire ->
-            Questionnaire.view lift model auth.meta
+            [ Html.div [ class [ Styles.Well ] ]
+                (Questionnaire.view lift model auth.meta)
+            ]
 
         Router.WordSpan ->
-            WordSpan.view
+            [ Html.div [ class [ Styles.Well ] ]
+                WordSpan.view
+            ]
 
 
 dashboard : Model -> Types.Meta -> Types.Profile -> List (Html.Html AppMsg.Msg)
 dashboard model meta profile =
     [ lifecycle meta profile
-    , questionnaireSummary profile.questionnaireId
-    , wordSpanSummary profile.wordSpanId model.store
+    , Html.div [ class [ Styles.Well ] ] [ questionnaireSummary profile.questionnaireId ]
+    , Html.div [ class [ Styles.Well ] ] [ wordSpanSummary profile.wordSpanId model.store ]
     ]
 
 
@@ -151,7 +159,7 @@ questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg
 questionnaireSummary maybeId =
     case maybeId of
         Nothing ->
-            Html.p []
+            Html.h4 []
                 [ Html.text "Questionnaire — Not yet done "
                 , Helpers.navButton
                     [ class [ Styles.Btn, Styles.BtnPrimary ] ]
@@ -160,14 +168,14 @@ questionnaireSummary maybeId =
                 ]
 
         Just _ ->
-            Html.p [] [ Html.text "Questionnaire — ✓ Done" ]
+            Html.h4 [] [ Html.text "Questionnaire — ✓ Done" ]
 
 
 wordSpanSummary : Maybe Int -> Store.Store -> Html.Html AppMsg.Msg
 wordSpanSummary maybeId store =
     case maybeId of
         Nothing ->
-            Html.p []
+            Html.h4 []
                 [ Html.text "Word span test — Not yet done "
                 , Helpers.navButton
                     [ class [ Styles.Btn, Styles.BtnPrimary ] ]
@@ -185,7 +193,7 @@ wordSpanSummary maybeId store =
                         Just wordSpan ->
                             " " ++ (toString wordSpan.span) ++ " words"
             in
-                Html.p [] [ Html.text ("Word span test — ✓" ++ detail) ]
+                Html.h4 [] [ Html.text ("Word span test — ✓" ++ detail) ]
 
 
 passwordChange :
@@ -193,7 +201,7 @@ passwordChange :
     -> Form.Model Types.PasswordCredentials
     -> Html.Html AppMsg.Msg
 passwordChange lift { input, feedback, status } =
-    Html.div []
+    Html.div [ class [ Styles.Well ] ]
         [ Html.h2 [] [ Html.text "Change password" ]
         , Html.form
             [ class [ Styles.FormPage ], Events.onSubmit <| lift (ChangePassword input) ]
@@ -272,7 +280,8 @@ passwordChange lift { input, feedback, status } =
                 , Html.div [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
-                [ Html.div [ class [ Styles.Error ] ] [ Html.text (Feedback.getError "global" feedback) ]
+                [ Html.div [ class [ Styles.Error ] ]
+                    [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
@@ -299,7 +308,7 @@ usernameChange :
     -> Types.Auth
     -> Html.Html AppMsg.Msg
 usernameChange lift { input, feedback, status } { user } =
-    Html.div []
+    Html.div [ class [ Styles.Well ] ]
         [ Html.h2 [] [ Html.text "Change username" ]
         , Html.form
             [ class [ Styles.FormInline ], Events.onSubmit <| lift (ChangeUsername input) ]
@@ -384,7 +393,8 @@ emails lift { input, feedback, status } emails_ =
                     ++ [ class [ Styles.BadgeSuccess ] ]
                 )
                 [ Html.text Strings.emailAdded ]
-            , Html.span [ class [ Styles.Error ] ] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.span [ class [ Styles.Error ] ]
+                [ Html.text (Feedback.getError "global" feedback) ]
             ]
         ]
 

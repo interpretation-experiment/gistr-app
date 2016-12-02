@@ -66,6 +66,7 @@ type CssClasses
     | FormPage
     | FormFlex
     | FormBlock
+    | Well
 
 
 type CssIds
@@ -266,6 +267,15 @@ css =
             ]
         , (.) IconSmall [ width (px 18), height (px 18) ]
         , (.) IconBig [ width (px 30), height (px 30) ]
+        , (.) Well
+            [ minHeight (em 1)
+            , padding2 (em 1) (em 2)
+            , marginBottom (em 1)
+            , backgroundColor (hex "#f5f5f5")
+            , border3 (px 1) solid (hex "#e3e3e3")
+            , borderRadius (px 2)
+            , boxShadow5 inset (px 0) (px 1) (px 1) (rgba 0 0 0 0.05)
+            ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]
@@ -274,9 +284,14 @@ css =
             , fontSize (em 1.25)
             , margin3 (em 1.25) (px 0) (em 0.62)
             ]
+        , h4
+            [ fontWeight normal
+            , fontSize (em 1.15)
+            , margin3 (em 1.25) (px 0) (em 0.62)
+            ]
         , p [ margin3 (px 0) (px 0) (em 0.62) ]
         , button
-            [ fontSize (em 1)
+            [ fontSize (px 14)
             , fontFamilies
                 [ (qt "Libre Franklin")
                 , .value sansSerif
