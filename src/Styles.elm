@@ -181,6 +181,7 @@ css =
     (stylesheet << namespace namespaceName)
         [ body
             [ margin (px 0)
+            , padding2 (px 0) (px 10)
             , color (hex "#616469")
             , backgroundColor (hex "#eff1f3")
             , fontSize (px 14)
