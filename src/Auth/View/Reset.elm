@@ -52,11 +52,12 @@ form lift { input, feedback, status } tokens =
         [ Html.div [ class [ Styles.FormBlock ] ]
             [ Html.div [] [ Html.h2 [] [ Html.text "Set your new password" ] ] ]
         , Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
+            [ Html.label [ Helpers.forId Styles.InputAutofocus ]
+                [ Html.text "New password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
                 , Html.input
-                    [ Attributes.id "inputPassword1"
+                    [ id Styles.InputAutofocus
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "ubA1oh"

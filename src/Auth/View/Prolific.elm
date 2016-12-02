@@ -62,12 +62,12 @@ form lift { input, feedback } =
                 ]
             ]
         , Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.label [ Attributes.for "inputProlificId" ]
+            [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                 [ Html.text "Prolific Academic ID" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "barcode" ]
                 , Html.input
-                    [ Attributes.id "inputProlificId"
+                    [ id Styles.InputAutofocus
                     , Attributes.autofocus True
                     , Attributes.placeholder "5381d3c8717b341db325eec3"
                     , Attributes.type_ "text"

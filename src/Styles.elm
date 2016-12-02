@@ -71,6 +71,7 @@ type CssClasses
 type CssIds
     = Page
     | Greeting
+    | InputAutofocus
 
 
 badge : Mixin

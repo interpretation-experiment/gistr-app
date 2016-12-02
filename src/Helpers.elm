@@ -11,6 +11,7 @@ module Helpers
         , evButton
         , evIconButton
         , extractFeedback
+        , forId
         , hrefIcon
         , icon
         , ifShorterThan
@@ -332,6 +333,11 @@ onInputContent tagger =
 targetInnerText : JD.Decoder String
 targetInnerText =
     JD.at [ "target", "textContent" ] JD.string
+
+
+forId : a -> Html.Attribute msg
+forId =
+    Attributes.for << toString
 
 
 

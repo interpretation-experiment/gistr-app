@@ -65,11 +65,11 @@ form lift { input, feedback, status } =
                 ]
             ]
         , Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
+            [ Html.label [ Helpers.forId Styles.InputAutofocus ] [ Html.text "Email" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
                 , Html.input
-                    [ Attributes.id "inputEmail"
+                    [ id Styles.InputAutofocus
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey@example.com"

@@ -56,11 +56,12 @@ form lift { input, feedback, status } =
                 ]
             ]
         , Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
+            [ Html.label [ Helpers.forId Styles.InputAutofocus ]
+                [ Html.text "Username" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
                 , Html.input
-                    [ Attributes.id "inputUsername"
+                    [ id Styles.InputAutofocus
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
                     , Attributes.placeholder "joey"

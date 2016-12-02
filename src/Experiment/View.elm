@@ -195,17 +195,16 @@ write :
     -> List (Html.Html AppMsg.Msg)
 write lift loading trialModel { input, feedback, status } =
     [ Html.text "Write"
-    , Html.form [ Events.onSubmit (lift <| WriteSubmit input) ]
-        [ Html.div []
-            [ Html.label [ Attributes.for "inputText" ] [ Html.text "Write:" ]
+    , Html.form [ class [ Styles.FormPage ], Events.onSubmit (lift <| WriteSubmit input) ]
+        [ Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.label [ Helpers.forId Styles.InputAutofocus ] [ Html.text "Write:" ]
             , Helpers.textarea
-                [ Attributes.id "inputText"
-                  -- TODO: get working
+                [ id Styles.InputAutofocus
                 , Attributes.autofocus True
                 , classList [ ( Styles.Disabled, (loading || (status /= Form.Entering)) ) ]
                 , Helpers.onInputContent (lift << WriteInput)
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         , Html.button
             [ Attributes.type_ "submit"
