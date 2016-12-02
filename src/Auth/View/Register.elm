@@ -51,9 +51,12 @@ form :
     -> Maybe String
     -> List (Html.Html AppMsg.Msg)
 form lift { input, feedback, status } maybeProlific =
-    [ prolificLogin maybeProlific
-    , Html.form [ Events.onSubmit <| lift (Register maybeProlific input) ]
-        [ Html.div []
+    [ Html.form
+        [ class [ Styles.FormFlex ]
+        , Events.onSubmit <| lift (Register maybeProlific input)
+        ]
+        [ Html.div [ class [ Styles.FormBlock ] ] [ prolificLogin maybeProlific ]
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
@@ -70,9 +73,9 @@ form lift { input, feedback, status } maybeProlific =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "username" feedback) ]
             ]
-        , Html.div []
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
@@ -88,9 +91,9 @@ form lift { input, feedback, status } maybeProlific =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "email" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "email" feedback) ]
             ]
-        , Html.div []
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
@@ -106,9 +109,9 @@ form lift { input, feedback, status } maybeProlific =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "password1" feedback) ]
             ]
-        , Html.div []
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputPassword2" ]
                 [ Html.text "Confirm password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -125,16 +128,18 @@ form lift { input, feedback, status } maybeProlific =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "password2" feedback) ]
             ]
-        , Html.div []
-            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.button
-                [ Attributes.type_ "submit"
-                , Attributes.disabled (status /= Form.Entering)
-                , class [ Styles.Btn, Styles.BtnPrimary ]
+        , Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.div []
+                [ Html.button
+                    [ Attributes.type_ "submit"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    ]
+                    [ Html.text "Sign up" ]
                 ]
-                [ Html.text "Sign up" ]
             ]
         ]
     ]

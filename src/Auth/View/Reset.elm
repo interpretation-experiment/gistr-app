@@ -48,9 +48,10 @@ form :
     -> Types.ResetTokens
     -> List (Html.Html AppMsg.Msg)
 form lift { input, feedback, status } tokens =
-    [ Html.h2 [] [ Html.text "Set your new password" ]
-    , Html.form [ Events.onSubmit <| lift (Reset input tokens) ]
-        [ Html.div []
+    [ Html.form [ class [ Styles.FormFlex ], Events.onSubmit <| lift (Reset input tokens) ]
+        [ Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div [] [ Html.h2 [] [ Html.text "Set your new password" ] ] ]
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "New password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
@@ -67,9 +68,9 @@ form lift { input, feedback, status } tokens =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "password1" feedback) ]
             ]
-        , Html.div []
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputPassword2" ]
                 [ Html.text "Confirm new password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -86,17 +87,21 @@ form lift { input, feedback, status } tokens =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "password2" feedback) ]
             ]
-        , Html.div []
-            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
-            , Html.button
-                [ Attributes.type_ "submit"
-                , Attributes.disabled (status /= Form.Entering)
-                , class [ Styles.Btn, Styles.BtnPrimary ]
+        , Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div []
+                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+                , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
                 ]
-                [ Html.text "Set new password" ]
+            , Html.div []
+                [ Html.button
+                    [ Attributes.type_ "submit"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    ]
+                    [ Html.text "Set new password" ]
+                ]
             ]
         ]
     ]

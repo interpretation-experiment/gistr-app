@@ -52,15 +52,19 @@ body lift model =
 
 form : (Msg -> AppMsg.Msg) -> Form.Model String -> List (Html.Html AppMsg.Msg)
 form lift { input, feedback, status } =
-    [ Html.h2 [] [ Html.text "Reset your password" ]
-    , Html.p [] [ Html.text "Type in the email address you gave for your account and we'll send you an email with instructions to reset your password." ]
-    , Html.p []
-        [ Html.text "If you didn't register an email address on your account there is no way to recover your password short of "
-        , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "contacting the developers" ]
-        , Html.text "."
-        ]
-    , Html.form [ Events.onSubmit <| lift (Recover input) ]
-        [ Html.div []
+    [ Html.form [ class [ Styles.FormFlex ], Events.onSubmit <| lift (Recover input) ]
+        [ Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div []
+                [ Html.h2 [] [ Html.text "Reset your password" ]
+                , Html.p [] [ Html.text "Type in the email address you gave for your account and we'll send you an email with instructions to reset your password." ]
+                , Html.p []
+                    [ Html.text "If you didn't register an email address on your account there is no way to recover your password short of "
+                    , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "contacting the developers" ]
+                    , Html.text "."
+                    ]
+                ]
+            ]
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
@@ -75,15 +79,17 @@ form lift { input, feedback, status } =
                     ]
                     []
                 ]
+            , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
-        , Html.div []
-            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.button
-                [ Attributes.type_ "submit"
-                , Attributes.disabled (status /= Form.Entering)
-                , class [ Styles.Btn, Styles.BtnPrimary ]
+        , Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div []
+                [ Html.button
+                    [ Attributes.type_ "submit"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    ]
+                    [ Html.text "Request password reset" ]
                 ]
-                [ Html.text "Request password reset" ]
             ]
         ]
     ]

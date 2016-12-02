@@ -17,7 +17,7 @@ import Types
 view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
 view lift model =
     [ Html.header [] header
-    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] (body lift model) ]
+    , Html.main_ [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body lift model) ]
     ]
 
 
@@ -47,13 +47,15 @@ body lift model =
 
 form : (Msg -> AppMsg.Msg) -> Form.Model Types.Credentials -> List (Html.Html AppMsg.Msg)
 form lift { input, feedback, status } =
-    [ Html.div []
-        [ Html.text "No account yet? "
-        , Helpers.navA (Router.Register Nothing) "Sign up"
-        , Html.text "!"
-        ]
-    , Html.form [ Events.onSubmit (lift <| Login input) ]
-        [ Html.div []
+    [ Html.form [ class [ Styles.FormFlex ], Events.onSubmit (lift <| Login input) ]
+        [ Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div []
+                [ Html.text "No account yet? "
+                , Helpers.navA (Router.Register Nothing) "Sign up"
+                , Html.text "!"
+                ]
+            ]
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputUsername" ] [ Html.text "Username" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
@@ -69,9 +71,9 @@ form lift { input, feedback, status } =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "username" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "username" feedback) ]
             ]
-        , Html.div []
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
@@ -86,20 +88,22 @@ form lift { input, feedback, status } =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "password" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "password" feedback) ]
             ]
-        , Html.div []
-            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.button
-                [ Attributes.type_ "submit"
-                , Attributes.disabled (status /= Form.Entering)
-                , class [ Styles.Btn, Styles.BtnPrimary ]
+        , Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.div []
+                [ Html.button
+                    [ Attributes.type_ "submit"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    ]
+                    [ Html.text "Sign in" ]
+                , Helpers.navButton
+                    [ class [ Styles.BtnLink ] ]
+                    Router.Recover
+                    "I forgot my password"
                 ]
-                [ Html.text "Sign in" ]
-            , Helpers.navButton
-                [ class [ Styles.BtnLink ] ]
-                Router.Recover
-                "I forgot my password"
             ]
         ]
     ]

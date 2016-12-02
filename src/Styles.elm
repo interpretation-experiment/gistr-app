@@ -60,6 +60,10 @@ type CssClasses
     | BadgeSuccess
     | BadgeDefault
     | EmailLine
+    | FormInline
+    | FormPage
+    | FormFlex
+    | FormBlock
 
 
 type CssIds
@@ -106,7 +110,6 @@ btn =
         , backgroundColor (hex "#f9fafb")
         , color (hex "#265c83")
         , display inlineBlock
-        , marginBottom (em 0.5)
         , padding2 (em 0.5) (em 0.75)
         , textDecoration none
         , cursor pointer
@@ -219,8 +222,8 @@ css =
             , borderTop3 (px 1) solid (hex "#ddd")
             ]
           -- BODY SIZING
-        , (.) SuperNarrow [ maxWidth (px 450) ]
-        , (.) Narrow [ maxWidth (px 540) ]
+        , (.) SuperNarrow [ display block, maxWidth (px 450) ]
+        , (.) Narrow [ display block, maxWidth (px 540) ]
         , (.) Normal [ maxWidth (px 720) ]
         , (.) Wide [ maxWidth (px 900) ]
           -- HOME LAYOUT
@@ -293,7 +296,7 @@ css =
                     , disabled [ property "fill" "#666" ]
                     ]
                 , everything [ marginLeft (em 0.5), marginRight (em 0.5) ]
-                , selector "button:first-of-type" [ marginLeft auto ]
+                , button [ firstOfType [ marginLeft auto ] ]
                 ]
             ]
           -- BUTTONS
@@ -378,7 +381,7 @@ css =
             [ position relative
             , fontWeight normal
             , fontStyle normal
-            , property "display" "inline-flex"
+            , displayFlex
             , color (hex "#000000e6")
             , descendants
                 [ input
@@ -518,6 +521,53 @@ css =
                     ]
                 ]
             ]
+          -- FORMS
+        , form [ descendants [ label [ fontWeight (int 700) ] ] ]
+        , (.) FormInline
+            [ displayFlex
+            , alignItems center
+            , flexWrap wrap
+            , children
+                [ selector "input[type=number]" [ maxWidth (em 4) ]
+                , everything [ marginRight (em 1), marginBottom (em 0.5) ]
+                ]
+            ]
+        , (.) FormPage
+            [ children [ div [ marginBottom (em 1) ] ]
+            , descendants
+                [ (.) FormBlock
+                    [ children
+                        [ label [ display block ]
+                        , everything [ marginBottom (em 0.5) ]
+                        ]
+                    ]
+                ]
+            ]
+        , (.) FormFlex
+            [ children [ div [ marginBottom (em 1) ] ]
+            , descendants
+                [ (.) FormBlock
+                    [ displayFlex
+                    , alignItems center
+                    , property "justify-content" "flex-end"
+                    , flexWrap wrap
+                    , children
+                        [ label
+                            [ flex3 (num 0) (num 1) (pct 20)
+                            , textAlign right
+                            , marginRight (em 1)
+                            ]
+                        , div [ flex3 (num 0) (num 0) (pct 75) ]
+                        , selector "div:not(:empty) ~ div:not(:empty)" [ marginTop (em 1) ]
+                        ]
+                    ]
+                ]
+            ]
+          -- Only show number spinner on hover/focus in Firefox (mimicking
+          -- Chrome default behaviour)
+        , selector "input[type=number]" [ property "-moz-appearance" "textfield" ]
+        , selector "input[type=number]:hover, input[type=number]:focus"
+            [ property "-moz-appearance" "number-input" ]
           -- BADGES
         , (.) BadgeDefault [ badge, backgroundColor (hex "#b5b8bd") ]
         , (.) BadgeSuccess [ badge, backgroundColor (hex "#00a14b") ]

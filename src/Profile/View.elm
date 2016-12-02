@@ -87,7 +87,7 @@ body lift model route auth =
 
         Router.Settings ->
             [ passwordChange lift model.password
-            , usernameChange lift model.username
+            , usernameChange lift model.username auth
             ]
 
         Router.Emails ->
@@ -195,8 +195,9 @@ passwordChange :
 passwordChange lift { input, feedback, status } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change password" ]
-        , Html.form [ Events.onSubmit <| lift (ChangePassword input) ]
-            [ Html.div []
+        , Html.form
+            [ class [ Styles.FormPage ], Events.onSubmit <| lift (ChangePassword input) ]
+            [ Html.div [ class [ Styles.FormBlock ] ]
                 [ Html.label
                     [ Attributes.for "inputOldPassword" ]
                     [ Html.text "Old password" ]
@@ -216,9 +217,9 @@ passwordChange lift { input, feedback, status } =
                         ]
                         []
                     ]
-                , Html.span [] [ Html.text (Feedback.getError "oldPassword" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "oldPassword" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ] ]
                 [ Html.label [ Attributes.for "inputPassword1" ]
                     [ Html.text "New password" ]
                 , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -237,9 +238,9 @@ passwordChange lift { input, feedback, status } =
                         ]
                         []
                     ]
-                , Html.span [] [ Html.text (Feedback.getError "password1" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "password1" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ] ]
                 [ Html.label
                     [ Attributes.for "inputPassword2" ]
                     [ Html.text "Confirm new password" ]
@@ -259,10 +260,10 @@ passwordChange lift { input, feedback, status } =
                         ]
                         []
                     ]
-                , Html.span [] [ Html.text (Feedback.getError "password2" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "password2" feedback) ]
                 ]
             , Html.div []
-                [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+                [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.button
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
@@ -281,16 +282,21 @@ passwordChange lift { input, feedback, status } =
         ]
 
 
-usernameChange : (Msg -> AppMsg.Msg) -> Form.Model String -> Html.Html AppMsg.Msg
-usernameChange lift { input, feedback, status } =
+usernameChange :
+    (Msg -> AppMsg.Msg)
+    -> Form.Model String
+    -> Types.Auth
+    -> Html.Html AppMsg.Msg
+usernameChange lift { input, feedback, status } { user } =
     Html.div []
         [ Html.h2 [] [ Html.text "Change username" ]
-        , Html.form [ Events.onSubmit <| lift (ChangeUsername input) ]
-            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+        , Html.form
+            [ class [ Styles.FormInline ], Events.onSubmit <| lift (ChangeUsername input) ]
+            [ Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
                 , Html.input
                     [ Attributes.id "inputUsername"
+                    , Attributes.placeholder user.username
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.type_ "text"
                     , Attributes.value input
@@ -307,6 +313,7 @@ usernameChange lift { input, feedback, status } =
             , Html.span
                 (Animation.render <| Feedback.getSuccess "global" feedback)
                 [ Html.text Strings.usernameSaved ]
+            , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         ]
 
@@ -334,9 +341,9 @@ emails lift { input, feedback, status } emails_ =
             ]
         , emailList
         , Html.h2 [] [ Html.text "Add an email address" ]
-        , Html.form [ Events.onSubmit <| lift (AddEmail input) ]
-            [ Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
-            , Html.div [ class [ Styles.Input, Styles.Label ] ]
+        , Html.form
+            [ class [ Styles.FormInline ], Events.onSubmit <| lift (AddEmail input) ]
+            [ Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
                 , Html.input
                     [ Attributes.id "inputEmail"
@@ -356,6 +363,7 @@ emails lift { input, feedback, status } emails_ =
             , Html.span
                 (Animation.render <| Feedback.getSuccess "global" feedback)
                 [ Html.text Strings.emailAdded ]
+            , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         ]
 

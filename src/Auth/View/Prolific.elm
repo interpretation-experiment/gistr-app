@@ -47,17 +47,21 @@ body lift model =
 
 form : (Msg -> AppMsg.Msg) -> Form.Model String -> List (Html.Html AppMsg.Msg)
 form lift { input, feedback } =
-    [ Html.div []
-        [ Html.text "Not a Prolific Academic participant? "
-        , Helpers.navA (Router.Register Nothing) "Skip this"
-        ]
-    , Html.h2 [] [ Html.text "Welcome to Gistr!" ]
-    , Html.p []
-        [ Html.text "Before we start, "
-        , Html.strong [] [ Html.text "please enter your Prolific Academic ID" ]
-        ]
-    , Html.form [ Events.onSubmit (lift <| SetProlific input) ]
-        [ Html.div []
+    [ Html.form [ class [ Styles.FormFlex ], Events.onSubmit (lift <| SetProlific input) ]
+        [ Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div []
+                [ Html.div []
+                    [ Html.text "Not a Prolific Academic participant? "
+                    , Helpers.navA (Router.Register Nothing) "Skip this"
+                    ]
+                , Html.h2 [] [ Html.text "Welcome to Gistr!" ]
+                , Html.p []
+                    [ Html.text "Before we start, "
+                    , Html.strong [] [ Html.text "please enter your Prolific Academic ID" ]
+                    ]
+                ]
+            ]
+        , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.label [ Attributes.for "inputProlificId" ]
                 [ Html.text "Prolific Academic ID" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -72,16 +76,18 @@ form lift { input, feedback } =
                     ]
                     []
                 ]
-            , Html.span [] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
-        , Html.div []
-            [ Html.p []
-                [ Html.text "You will now be taken to a registration page. "
-                , Html.strong [] [ Html.text "Simply follow the steps presented to get started with the experiment." ]
+        , Html.div [ class [ Styles.FormBlock ] ]
+            [ Html.div []
+                [ Html.p []
+                    [ Html.text "You will now be taken to a registration page. "
+                    , Html.strong [] [ Html.text "Simply follow the steps presented to get started with the experiment." ]
+                    ]
+                , Html.button
+                    [ Attributes.type_ "submit", class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    [ Html.text "Go to registration" ]
                 ]
-            , Html.button
-                [ Attributes.type_ "submit", class [ Styles.Btn, Styles.BtnPrimary ] ]
-                [ Html.text "Go to registration" ]
             ]
         ]
     ]
