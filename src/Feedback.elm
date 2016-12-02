@@ -10,6 +10,8 @@ module Feedback
         , getUnknown
         , globalError
         , globalSuccess
+        , hasError
+        , hasSuccess
         , isEmpty
         , noKnownErrors
         , successAnimations
@@ -34,9 +36,21 @@ type Feedback
         }
 
 
+
+-- CREATING
+
+
+feedback : Dict.Dict String String -> String -> Feedback
+feedback errors unknown =
+    Feedback
+        { known = Dict.map (\k e -> FeedbackError e) errors
+        , unknown = unknown
+        }
+
+
 empty : Feedback
 empty =
-    Feedback { known = Dict.empty, unknown = "" }
+    feedback Dict.empty ""
 
 
 globalError : String -> Feedback
@@ -49,14 +63,6 @@ customError key error =
     updateError key (Just error) empty
 
 
-updateError : String -> Maybe String -> Feedback -> Feedback
-updateError key maybeValue (Feedback { known, unknown }) =
-    Feedback
-        { known = Dict.update key (always (Maybe.map FeedbackError maybeValue)) known
-        , unknown = unknown
-        }
-
-
 globalSuccess : Feedback -> Feedback
 globalSuccess currentFeedback =
     customSuccess "global" currentFeedback
@@ -65,6 +71,23 @@ globalSuccess currentFeedback =
 customSuccess : String -> Feedback -> Feedback
 customSuccess key currentFeedback =
     setSuccess key currentFeedback empty
+
+
+fromValidator : a -> Validate.Validator ( String, String ) a -> Feedback
+fromValidator subject validator =
+    feedback (validator subject |> Dict.fromList) ""
+
+
+
+-- UPDATING
+
+
+updateError : String -> Maybe String -> Feedback -> Feedback
+updateError key maybeValue (Feedback { known, unknown }) =
+    Feedback
+        { known = Dict.update key (always (Maybe.map FeedbackError maybeValue)) known
+        , unknown = unknown
+        }
 
 
 setSuccess : String -> Feedback -> Feedback -> Feedback
@@ -77,6 +100,10 @@ setSuccess key currentFeedback (Feedback { known, unknown }) =
             { known = Dict.insert key (FeedbackSuccess success) known
             , unknown = unknown
             }
+
+
+
+-- ANIMATING
 
 
 startSuccessAnimation : Animation.State -> Animation.State
@@ -116,24 +143,15 @@ successValue item =
             Just success
 
 
-successAnimations : Feedback -> List (Animation.State)
+successAnimations : Feedback -> List Animation.State
 successAnimations (Feedback { known, unknown }) =
     known
         |> Dict.values
         |> List.filterMap successValue
 
 
-feedback : Dict.Dict String String -> String -> Feedback
-feedback errors unknown =
-    Feedback
-        { known = Dict.map (\k e -> FeedbackError e) errors
-        , unknown = unknown
-        }
 
-
-fromValidator : a -> Validate.Validator ( String, String ) a -> Feedback
-fromValidator subject validator =
-    feedback (validator subject |> Dict.fromList) ""
+-- ACCESSING
 
 
 isError : FeedbackItem -> Bool
@@ -161,6 +179,19 @@ getUnknown (Feedback { unknown }) =
     unknown
 
 
+hasError : String -> Feedback -> Bool
+hasError key (Feedback { known }) =
+    case Dict.get key known of
+        Just (FeedbackError error) ->
+            True
+
+        Just (FeedbackSuccess _) ->
+            False
+
+        Nothing ->
+            False
+
+
 getError : String -> Feedback -> String
 getError key (Feedback { known }) =
     case Dict.get key known of
@@ -172,6 +203,19 @@ getError key (Feedback { known }) =
 
         Nothing ->
             ""
+
+
+hasSuccess : String -> Feedback -> Bool
+hasSuccess key (Feedback { known }) =
+    case Dict.get key known of
+        Just (FeedbackSuccess success) ->
+            True
+
+        Just (FeedbackError _) ->
+            False
+
+        Nothing ->
+            False
 
 
 getSuccess : String -> Feedback -> Animation.State

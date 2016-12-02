@@ -55,7 +55,10 @@ form lift { input, feedback, status } =
                 , Html.text "!"
                 ]
             ]
-        , Html.div [ class [ Styles.FormBlock ] ]
+        , Html.div
+            [ class [ Styles.FormBlock ]
+            , Helpers.feedbackStyles "username" feedback
+            ]
             [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                 [ Html.text "Username" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -74,7 +77,10 @@ form lift { input, feedback, status } =
                 ]
             , Html.div [] [ Html.text (Feedback.getError "username" feedback) ]
             ]
-        , Html.div [ class [ Styles.FormBlock ] ]
+        , Html.div
+            [ class [ Styles.FormBlock ]
+            , Helpers.feedbackStyles "password" feedback
+            ]
             [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
@@ -92,7 +98,7 @@ form lift { input, feedback, status } =
             , Html.div [] [ Html.text (Feedback.getError "password" feedback) ]
             ]
         , Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
+            [ Html.div [ class [ Styles.Error ] ] [ Html.text (Feedback.getError "global" feedback) ]
             , Html.div []
                 [ Html.button
                     [ Attributes.type_ "submit"

@@ -61,7 +61,10 @@ form lift { input, feedback } =
                     ]
                 ]
             ]
-        , Html.div [ class [ Styles.FormBlock ] ]
+        , Html.div
+            [ class [ Styles.FormBlock ]
+            , Helpers.feedbackStyles "global" feedback
+            ]
             [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                 [ Html.text "Prolific Academic ID" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]

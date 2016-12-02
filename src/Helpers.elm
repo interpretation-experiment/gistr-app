@@ -11,6 +11,7 @@ module Helpers
         , evButton
         , evIconButton
         , extractFeedback
+        , feedbackStyles
         , forId
         , hrefIcon
         , icon
@@ -338,6 +339,11 @@ targetInnerText =
 forId : a -> Html.Attribute msg
 forId =
     Attributes.for << toString
+
+
+feedbackStyles : String -> Feedback.Feedback -> Html.Attribute msg
+feedbackStyles key feedback =
+    classList [ ( Styles.Error, Feedback.hasError key feedback ) ]
 
 
 

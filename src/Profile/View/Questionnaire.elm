@@ -61,7 +61,7 @@ form lift { input, feedback, status } meta =
 
         informedDetails =
             Html.div [ class [ Styles.FormPage ] ]
-                [ Html.div [ class [ Styles.FormBlock ] ]
+                [ Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedHow" feedback ]
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
                     , Helpers.textarea
@@ -74,7 +74,7 @@ form lift { input, feedback, status } meta =
                         ]
                     , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
-                , Html.div [ class [ Styles.FormBlock ] ]
+                , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedWhat" feedback ]
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
                     , Helpers.textarea
@@ -128,7 +128,7 @@ form lift { input, feedback, status } meta =
     in
         Html.form [ class [ Styles.FormPage ], Events.onSubmit submitMsg ]
             [ Html.h3 [] [ Html.text "About you" ]
-            , Html.div [ class [ Styles.FormInline ] ]
+            , Html.div [ class [ Styles.FormInline ], Helpers.feedbackStyles "age" feedback ]
                 [ Html.label [ Attributes.for "inputAge" ]
                     [ Html.strong [] [ Html.text "Age" ] ]
                 , Html.div [ class [ Styles.Input ] ]
@@ -146,7 +146,7 @@ form lift { input, feedback, status } meta =
                     ]
                 , Html.div [] [ Html.text (Feedback.getError "age" feedback) ]
                 ]
-            , Html.div [ class [ Styles.FormBlock ] ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "gender" feedback ]
                 [ Html.label [ Attributes.for "inputGender" ]
                     [ Html.strong [] [ Html.text "Gender" ] ]
                 , Html.div [] (List.map genderRadio meta.genderChoices)
@@ -175,7 +175,7 @@ form lift { input, feedback, status } meta =
                 Html.div [] []
             , Html.h3 [] [ Html.text "What you do" ]
             , Html.p [] [ Html.text Strings.questionnaireJobIntro ]
-            , Html.div [ class [ Styles.FormBlock ] ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobType" feedback ]
                 [ Html.label [ Attributes.for "inputJobType" ]
                     [ Html.strong [] [ Html.text Strings.questionnaireJobType ] ]
                 , Html.select
@@ -189,7 +189,7 @@ form lift { input, feedback, status } meta =
                     (List.map jobOption ({ name = "", label = Strings.selectPlease } :: meta.jobTypeChoices))
                 , Html.div [] [ Html.text (Feedback.getError "jobType" feedback) ]
                 ]
-            , Html.div [ class [ Styles.FormBlock ] ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobFreetext" feedback ]
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
                 , Helpers.textarea
@@ -202,7 +202,7 @@ form lift { input, feedback, status } meta =
                     ]
                 , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.Error ] ]
                 ((Html.div [] [ Html.text (Feedback.getError "global" feedback) ]) :: submitButtons)
             , Html.p [] Strings.questionnaireComment
             ]

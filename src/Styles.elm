@@ -51,6 +51,7 @@ type CssClasses
     | NavIcon
     | IconSmall
     | IconBig
+    | Textarea
     | Input
     | Error
     | Success
@@ -65,7 +66,6 @@ type CssClasses
     | FormPage
     | FormFlex
     | FormBlock
-    | Textarea
 
 
 type CssIds
@@ -407,18 +407,6 @@ css =
                 , property "-ms-user-select" "none"
                 , property "user-select" "none"
                 ]
-            , withClass Error
-                [ color (hex "#9f3a38")
-                , borderColor (hex "#e0b4b4")
-                , backgroundColor (hex "#fff6f6")
-                , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
-                ]
-            , withClass Success
-                [ color (hex "#389f48")
-                , borderColor (hex "#b4e0b8")
-                , backgroundColor (hex "#f6fff6")
-                , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]
-                ]
             ]
         , (.) Input
             [ position relative
@@ -461,47 +449,59 @@ css =
                 , selector "input:focus:-ms-input-placeholder"
                     [ color (rgba 115 115 115 0.87) ]
                 ]
-            , withClass Error
-                [ descendants
-                    [ input
-                        [ color (hex "#9f3a38")
-                        , borderColor (hex "#e0b4b4")
-                        , backgroundColor (hex "#fff6f6")
-                        , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
-                        ]
-                      -- Placeholder
-                    , selector "input::-moz-placeholder" [ color (hex "#e6bcbb") ]
-                    , selector "input::-webkit-input-placeholder" [ color (hex "#e6bcbb") ]
-                    , selector "input:-ms-input-placeholder" [ color (hex "#e6bcbb") ]
-                      -- Placeholder focus
-                    , selector "input:focus::-moz-placeholder"
-                        [ color (hex "#da9796") ]
-                    , selector "input:focus::-webkit-input-placeholder"
-                        [ color (hex "#da9796") ]
-                    , selector "input:focus:-ms-input-placeholder"
-                        [ color (hex "#da9796") ]
+            ]
+        , (.) Error
+            [ color (hex "#9f3a38")
+            , descendants
+                [ input
+                    [ borderColor (hex "#e0b4b4")
+                    , backgroundColor (hex "#fff6f6")
+                    , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
                     ]
+                , (.) Textarea
+                    [ borderColor (hex "#e0b4b4")
+                    , backgroundColor (hex "#fff6f6")
+                    , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
+                    ]
+                , (.) Label [ backgroundColor (hex "#e1bfbf") |> important ]
+                  -- Placeholder
+                , selector "input::-moz-placeholder" [ color (hex "#e6bcbb") ]
+                , selector "input::-webkit-input-placeholder" [ color (hex "#e6bcbb") ]
+                , selector "input:-ms-input-placeholder" [ color (hex "#e6bcbb") ]
+                  -- Placeholder focus
+                , selector "input:focus::-moz-placeholder"
+                    [ color (hex "#da9796") ]
+                , selector "input:focus::-webkit-input-placeholder"
+                    [ color (hex "#da9796") ]
+                , selector "input:focus:-ms-input-placeholder"
+                    [ color (hex "#da9796") ]
                 ]
-            , withClass Success
-                [ descendants
-                    [ input
-                        [ color (hex "#389f48")
-                        , borderColor (hex "#b4e0b8")
-                        , backgroundColor (hex "#f6fff6")
-                        , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]
-                        ]
-                      -- Placeholder
-                    , selector "input::-moz-placeholder" [ color (hex "#bbe6c0") ]
-                    , selector "input::-webkit-input-placeholder" [ color (hex "#bbe6c0") ]
-                    , selector "input:-ms-input-placeholder" [ color (hex "#bbe6c0") ]
-                      -- Placeholder focus
-                    , selector "input:focus::-moz-placeholder"
-                        [ color (hex "#96da9e") ]
-                    , selector "input:focus::-webkit-input-placeholder"
-                        [ color (hex "#96da9e") ]
-                    , selector "input:focus:-ms-input-placeholder"
-                        [ color (hex "#96da9e") ]
+            ]
+        , (.) Success
+            [ color (hex "#389f48")
+            , descendants
+                [ input
+                    [ borderColor (hex "#b4e0b8")
+                    , backgroundColor (hex "#f6fff6")
+                    , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]
                     ]
+                , (.) Textarea
+                    [ borderColor (hex "#b4e0b8")
+                    , backgroundColor (hex "#f6fff6")
+                    , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]
+                    ]
+                , (.) Label [ backgroundColor (hex "#b8e0ba") |> important ]
+                  -- Placeholder
+                , selector "input::-moz-placeholder" [ color (hex "#bbe6c0") ]
+                , selector "input::-webkit-input-placeholder" [ color (hex "#bbe6c0") ]
+                , selector "input:-ms-input-placeholder" [ color (hex "#bbe6c0") ]
+                  -- Placeholder focus
+                , selector "input:focus::-moz-placeholder"
+                    [ color (hex "#96da9e") ]
+                , selector "input:focus::-webkit-input-placeholder"
+                    [ color (hex "#96da9e") ]
+                , selector "input:focus:-ms-input-placeholder"
+                    [ color (hex "#96da9e") ]
                 ]
             ]
           -- INPUT ICONS

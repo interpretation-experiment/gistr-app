@@ -196,7 +196,10 @@ write :
 write lift loading trialModel { input, feedback, status } =
     [ Html.text "Write"
     , Html.form [ class [ Styles.FormPage ], Events.onSubmit (lift <| WriteSubmit input) ]
-        [ Html.div [ class [ Styles.FormBlock ] ]
+        [ Html.div
+            [ class [ Styles.FormBlock ]
+            , Helpers.feedbackStyles "global" feedback
+            ]
             [ Html.label [ Helpers.forId Styles.InputAutofocus ] [ Html.text "Write:" ]
             , Helpers.textarea
                 [ id Styles.InputAutofocus
