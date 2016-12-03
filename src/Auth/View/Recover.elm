@@ -23,7 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.IconBig ] ] (Router.Login Nothing) "angle-double-left" ]
+    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] (Router.Login Nothing) "angle-double-left" ]
     , Html.h1 [] [ Html.text "Password recovery" ]
     ]
 
@@ -42,7 +42,7 @@ body lift model =
                             sent email
 
                 Types.Authenticating ->
-                    [ Helpers.loading ]
+                    [ Helpers.loading Styles.Big ]
 
                 Types.Authenticated { user } ->
                     [ Helpers.alreadyAuthed user ]

@@ -23,7 +23,7 @@ view lift model maybeProlific =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.IconBig ] ] Router.Home "home" ]
+    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
     , Html.h1 [] [ Html.text "Sign up" ]
     ]
 
@@ -37,7 +37,7 @@ body lift model maybeProlific =
                     form lift model.register maybeProlific
 
                 Types.Authenticating ->
-                    [ Helpers.loading ]
+                    [ Helpers.loading Styles.Big ]
 
                 Types.Authenticated { user } ->
                     [ Helpers.alreadyAuthed user ]

@@ -1,6 +1,9 @@
 (function() {
   'use strict';
 
+  // Hide initial loader
+  document.getElementById("initial-loader").style["display"] = "none";
+
   // Mount Elm
   var app = Elm.Main.embed(document.getElementById('main'));
 

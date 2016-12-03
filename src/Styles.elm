@@ -49,8 +49,8 @@ type CssClasses
     | BtnSmall
     | Avatar
     | NavIcon
-    | IconSmall
-    | IconBig
+    | Small
+    | Big
     | Textarea
     | Input
     | Error
@@ -71,6 +71,7 @@ type CssClasses
     | Active
     | InfoBox
     | RequestBox
+    | Loader
 
 
 type CssIds
@@ -279,9 +280,9 @@ css =
             , property "transition" "fill .3s"
             , hover [ property "fill" "#222" ]
             , margin (px 10)
+            , withClass Small [ width (px 18), height (px 18) ]
+            , withClass Big [ width (px 30), height (px 30) ]
             ]
-        , (.) IconSmall [ width (px 18), height (px 18) ]
-        , (.) IconBig [ width (px 30), height (px 30) ]
         , (.) Well
             [ minHeight (em 1)
             , padding2 (em 1) (em 2)
@@ -290,6 +291,42 @@ css =
             , border3 (px 1) solid (hex "#e3e3e3")
             , borderRadius (px 2)
             , boxShadow5 inset (px 0) (px 1) (px 1) (rgba 0 0 0 0.05)
+            ]
+        , (.) Loader
+            [ margin2 (px 0) auto
+            , position relative
+            , withClass Small
+                [ width (em 1)
+                , height (em 1)
+                , margin2 (px 0) (em 1)
+                , display inlineBlock
+                , before [ top (em 0.2) ]
+                , after [ top (em 0.2) ]
+                ]
+            , withClass Big
+                [ width (px 30), height (px 30), marginTop (px 50) ]
+            , before
+                [ position absolute
+                , property "content" "''"
+                , borderRadius (pct 100)
+                , border3 (px 2) solid (rgba 0 0 0 0.1)
+                , width (pct 100)
+                , height (pct 100)
+                , boxSizing borderBox
+                ]
+            , after
+                [ position absolute
+                , property "content" "''"
+                , property "animation" "loader .6s infinite linear"
+                , borderRadius (pct 100)
+                , borderColor3 (hex "#767676") transparent transparent
+                , borderStyle solid
+                , property "border-width" "2px"
+                , boxShadow5 (px 0) (px 0) (px 0) (px 1) transparent
+                , width (pct 100)
+                , height (pct 100)
+                , boxSizing borderBox
+                ]
             ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]

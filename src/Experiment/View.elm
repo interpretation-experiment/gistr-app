@@ -28,7 +28,7 @@ view lift model =
             ]
 
         Types.Authenticating ->
-            [ Helpers.loading ]
+            [ Helpers.loading Styles.Big ]
 
         Types.Anonymous ->
             [ Helpers.notAuthed ]
@@ -59,7 +59,7 @@ header lift profile meta model =
             else
                 Intro.hide
     in
-        [ Html.nav [] [ Helpers.navIcon [ class [ Styles.IconBig ] ] Router.Home "home" ]
+        [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
         , Intro.node
             (Instructions.viewConfig lift)
             instructionsState

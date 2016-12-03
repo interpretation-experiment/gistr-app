@@ -23,7 +23,7 @@ view lift model =
 
 header : List (Html.Html AppMsg.Msg)
 header =
-    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.IconBig ] ] (Router.Register Nothing) "angle-double-left" ]
+    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] (Router.Register Nothing) "angle-double-left" ]
     , Html.h1 [] [ Html.text "Prolific Academic" ]
     ]
 
@@ -37,7 +37,7 @@ body lift model =
                     form lift model.prolific
 
                 Types.Authenticating ->
-                    [ Helpers.loading ]
+                    [ Helpers.loading Styles.Big ]
 
                 Types.Authenticated { user } ->
                     [ Helpers.alreadyAuthed user ]

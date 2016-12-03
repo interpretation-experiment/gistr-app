@@ -306,9 +306,9 @@ onClickMsg msg =
         (msg |> JD.succeed)
 
 
-loading : Html.Html msg
-loading =
-    Html.p [] [ Html.text "Loading..." ]
+loading : Styles.CssClasses -> Html.Html msg
+loading size =
+    Html.div [ class [ Styles.Loader, size ] ] []
 
 
 notAuthed : Html.Html msg

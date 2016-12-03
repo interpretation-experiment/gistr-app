@@ -70,7 +70,7 @@ buttons model =
                 ]
 
         Types.Authenticating ->
-            Helpers.loading
+            Helpers.loading Styles.Big
 
         Types.Authenticated _ ->
             Html.div []
@@ -87,25 +87,25 @@ footer model =
         -- TODO: intro icon
         devs =
             Helpers.hrefIcon
-                [ class [ Styles.IconSmall ], Helpers.tooltip "Email the developers" ]
+                [ class [ Styles.Small ], Helpers.tooltip "Email the developers" ]
                 "mailto:sl@mehho.net"
                 "envelope"
 
         about =
             Helpers.navIcon
-                [ class [ Styles.IconSmall ], Helpers.tooltip "About Gistr" ]
+                [ class [ Styles.Small ], Helpers.tooltip "About Gistr" ]
                 Router.About
                 "info-circle"
 
         twitter =
             Helpers.hrefIcon
-                [ class [ Styles.IconSmall ], Helpers.tooltip "Twitter" ]
+                [ class [ Styles.Small ], Helpers.tooltip "Twitter" ]
                 "https://twitter.com/gistrexp"
                 "twitter"
 
         github =
             Helpers.hrefIcon
-                [ class [ Styles.IconSmall ], Helpers.tooltip "GitHub" ]
+                [ class [ Styles.Small ], Helpers.tooltip "GitHub" ]
                 "https://github.com/interpretation-experiment/gistr-app"
                 "github"
 

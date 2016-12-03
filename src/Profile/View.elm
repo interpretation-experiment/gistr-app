@@ -32,7 +32,7 @@ view lift model route =
                     ]
 
                 Types.Authenticating ->
-                    [ Html.div [] [ Helpers.loading ] ]
+                    [ Helpers.loading Styles.Big ]
 
                 Types.Anonymous ->
                     [ Html.div [] [ Helpers.notAuthed ] ]
@@ -60,7 +60,7 @@ header model =
                 _ ->
                     []
     in
-        [ Html.nav [] [ Helpers.navIcon [ class [ Styles.IconBig ] ] Router.Home "home" ]
+        [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
         , Html.h1 [] [ Html.text "Profile" ]
         , Html.div [ class [ Styles.Meta ] ] logout
         ]
@@ -202,12 +202,12 @@ wordSpanSummary maybeId store =
                 detail =
                     case store.wordSpan of
                         Nothing ->
-                            ""
+                            Helpers.loading Styles.Small
 
                         Just wordSpan ->
-                            " " ++ (toString wordSpan.span) ++ " words"
+                            Html.text (" " ++ (toString wordSpan.span) ++ " words")
             in
-                Html.h4 [] [ Html.text ("Word span test — ✓" ++ detail) ]
+                Html.h4 [] [ Html.text ("Word span test — ✓"), detail ]
 
 
 passwordChange :
@@ -452,7 +452,7 @@ email lift email_ =
                 ++ verified
                 ++ setPrimary
                 ++ [ Helpers.evIconButton
-                        [ disabled, class [ Styles.IconSmall ] ]
+                        [ disabled, class [ Styles.Small ] ]
                         (lift <| DeleteEmail email_)
                         "trash"
                    ]
