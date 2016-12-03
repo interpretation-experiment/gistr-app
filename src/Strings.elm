@@ -75,14 +75,14 @@ testWordSpan =
 startTraining : List (Html.Html Msg)
 startTraining =
     [ Html.text "Start the experiment "
-    , Helpers.navA Router.Experiment "right now"
+    , Helpers.navA [] Router.Experiment "right now"
     ]
 
 
 profileComplete : List (Html.Html Msg)
 profileComplete =
     [ Html.text "Your profile is complete, you can keep going with "
-    , Helpers.navA Router.Experiment "the experiment"
+    , Helpers.navA [] Router.Experiment "the experiment"
     ]
 
 
@@ -169,7 +169,7 @@ homeSubtitle2 =
     , Html.a [ Attributes.href "https://cmb.hu-berlin.de/" ]
         [ Html.text "Centre Marc Bloch" ]
     , Html.text " in Berlin. "
-    , Helpers.navA Router.About "Learn more"
+    , Helpers.navA [] Router.About "Learn more"
     , Html.text "."
     ]
 

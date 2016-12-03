@@ -51,7 +51,7 @@ form lift { input, feedback, status } =
         [ Html.div [ class [ Styles.FormBlock ] ]
             [ Html.div []
                 [ Html.text "No account yet? "
-                , Helpers.navA (Router.Register Nothing) "Sign up"
+                , Helpers.navA [] (Router.Register Nothing) "Sign up"
                 , Html.text "!"
                 ]
             ]

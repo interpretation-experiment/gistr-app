@@ -157,7 +157,7 @@ prolificLogin maybeProlific =
                     ]
                 , Html.p []
                     [ Html.text "(Made a mistake? "
-                    , Helpers.navA Router.Prolific "Go back"
+                    , Helpers.navA [] Router.Prolific "Go back"
                     , Html.text ")"
                     ]
                 ]
@@ -166,11 +166,11 @@ prolificLogin maybeProlific =
             Html.div []
                 [ Html.div []
                     [ Html.text "Prolific Academic participant? "
-                    , Helpers.navA Router.Prolific "Please enter your ID"
+                    , Helpers.navA [] Router.Prolific "Please enter your ID"
                     , Html.text " first"
                     ]
                 , Html.div []
                     [ Html.text "Already have an account? "
-                    , Helpers.navA (Router.Login Nothing) "Sign in here"
+                    , Helpers.navA [] (Router.Login Nothing) "Sign in here"
                     ]
                 ]

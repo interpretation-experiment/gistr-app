@@ -67,11 +67,20 @@ header model =
 
 
 menu : Router.ProfileRoute -> List (Html.Html AppMsg.Msg)
-menu route =
-    [ Html.div [] [ Helpers.navButton [] (Router.Profile Router.Dashboard) "Dashboard" ]
-    , Html.div [] [ Helpers.navButton [] (Router.Profile Router.Settings) "Settings" ]
-    , Html.div [] [ Helpers.navButton [] (Router.Profile Router.Emails) "Emails" ]
-    ]
+menu current =
+    let
+        item route text =
+            Helpers.navA
+                [ classList [ ( Styles.Active, (Router.Profile current) == route ) ] ]
+                route
+                text
+    in
+        [ Html.div [ class [ Styles.Menu ] ]
+            [ item (Router.Profile Router.Dashboard) "Dashboard"
+            , item (Router.Profile Router.Settings) "Settings"
+            , item (Router.Profile Router.Emails) "Emails"
+            ]
+        ]
 
 
 body :

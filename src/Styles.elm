@@ -67,6 +67,8 @@ type CssClasses
     | FormFlex
     | FormBlock
     | Well
+    | Menu
+    | Active
 
 
 type CssIds
@@ -288,7 +290,7 @@ css =
         , h4
             [ fontWeight normal
             , fontSize (em 1.15)
-            , margin3 (em 1.25) (px 0) (em 0.62)
+            , margin2 (em 1) (px 0)
             ]
         , p [ margin3 (px 0) (px 0) (em 0.62) ]
         , button
@@ -301,6 +303,39 @@ css =
           -- Fix for buttons appearing differently in Chrome vs. Firefox
         , selector "button::-moz-focus-inner" [ border (px 0), padding (px 0) ]
         , a [ linkMixin ]
+          -- MENU
+        , (.) Menu
+            [ display block
+            , border3 (px 1) solid (rgba 34 36 38 0.15)
+            , boxShadow5 (px 0) (px 1) (px 2) (px 0) (rgba 34 36 38 0.15)
+            , marginRight (em 1)
+            , backgroundColor (hex "#fcfcfc")
+            , borderRadius (em 0.3)
+            , children
+                [ a
+                    [ display block
+                    , color unset
+                    , padding (em 1)
+                    , textDecoration none
+                    , property "transition"
+                        "background .1s ease, box-shadow .1s ease, color .1s ease"
+                    , borderTop3 (px 1) solid (rgba 34 36 38 0.1)
+                    , firstChild
+                        [ borderTop (px 0)
+                        , borderRadius4 (em 0.3) (em 0.3) (em 0) (em 0)
+                        ]
+                    , lastChild [ borderRadius4 (em 0) (em 0) (em 0.3) (em 0.3) ]
+                    , active [ outline none ]
+                    , hover [ backgroundColor (rgba 0 0 0 0.03) ]
+                    ]
+                , (.) Active
+                    [ backgroundColor (rgba 0 0 0 0.07)
+                    , outline none
+                    , hover [ backgroundColor (rgba 0 0 0 0.07) ]
+                    , firstChild [ color (hex "#006964") ]
+                    ]
+                ]
+            ]
           -- EMAIL LINE
         , (.) EmailLine
             [ displayFlex

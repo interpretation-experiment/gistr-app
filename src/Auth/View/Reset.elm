@@ -113,7 +113,7 @@ sent =
     [ Html.h2 [] [ Html.text "Your new password has been saved" ]
     , Html.p []
         [ Html.text "You can try and "
-        , Helpers.navA (Router.Login Nothing) "sign in"
+        , Helpers.navA [] (Router.Login Nothing) "sign in"
         , Html.text " right now."
         ]
     ]

@@ -255,16 +255,16 @@ navButton attrs route text =
     evButton attrs (NavigateTo route) text
 
 
-evA : String -> Msg -> String -> Html.Html Msg
-evA url msg text =
+evA : List (Html.Attribute Msg) -> String -> Msg -> String -> Html.Html Msg
+evA attrs url msg text =
     Html.a
-        [ Attributes.href url, onClickMsg msg ]
+        ([ Attributes.href url, onClickMsg msg ] ++ attrs)
         [ Html.text text ]
 
 
-navA : Router.Route -> String -> Html.Html Msg
-navA route text =
-    evA (Router.toUrl route) (NavigateTo route) text
+navA : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navA attrs route text =
+    evA attrs (Router.toUrl route) (NavigateTo route) text
 
 
 hrefIcon : List (Html.Attribute Msg) -> String -> String -> Html.Html Msg

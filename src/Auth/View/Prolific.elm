@@ -52,7 +52,7 @@ form lift { input, feedback } =
             [ Html.div []
                 [ Html.div []
                     [ Html.text "Not a Prolific Academic participant? "
-                    , Helpers.navA (Router.Register Nothing) "Skip this"
+                    , Helpers.navA [] (Router.Register Nothing) "Skip this"
                     ]
                 , Html.h2 [] [ Html.text "Welcome to Gistr!" ]
                 , Html.p []
