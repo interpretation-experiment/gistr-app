@@ -50,9 +50,11 @@ form lift { input, feedback } =
     [ Html.form [ class [ Styles.FormFlex ], Events.onSubmit (lift <| SetProlific input) ]
         [ Html.div [ class [ Styles.FormBlock ] ]
             [ Html.div []
-                [ Html.div []
-                    [ Html.text "Not a Prolific Academic participant? "
-                    , Helpers.navA [] (Router.Register Nothing) "Skip this"
+                [ Html.div [ class [ Styles.InfoBox ] ]
+                    [ Html.div []
+                        [ Html.text "Not a Prolific Academic participant? "
+                        , Helpers.navA [] (Router.Register Nothing) "Skip this"
+                        ]
                     ]
                 , Html.h2 [] [ Html.text "Welcome to Gistr!" ]
                 , Html.p []

@@ -49,10 +49,12 @@ form : (Msg -> AppMsg.Msg) -> Form.Model Types.Credentials -> List (Html.Html Ap
 form lift { input, feedback, status } =
     [ Html.form [ class [ Styles.FormFlex ], Events.onSubmit (lift <| Login input) ]
         [ Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.div []
-                [ Html.text "No account yet? "
-                , Helpers.navA [] (Router.Register Nothing) "Sign up"
-                , Html.text "!"
+            [ Html.div [ class [ Styles.InfoBox ] ]
+                [ Html.div []
+                    [ Html.text "No account yet? "
+                    , Helpers.navA [] (Router.Register Nothing) "Sign up"
+                    , Html.text "!"
+                    ]
                 ]
             ]
         , Html.div

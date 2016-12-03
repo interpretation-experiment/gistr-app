@@ -76,6 +76,7 @@ startTraining : List (Html.Html Msg)
 startTraining =
     [ Html.text "Start the experiment "
     , Helpers.navA [] Router.Experiment "right now"
+    , Html.text "!"
     ]
 
 

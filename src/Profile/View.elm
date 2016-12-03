@@ -140,28 +140,33 @@ lifecycle meta profile =
                     [ Html.text Strings.testWordSpan ]
 
         describeTests tests =
-            Html.div []
-                [ Html.text Strings.completeProfile
-                , Html.ul [] <|
-                    List.map (\t -> Html.li [] (description t)) tests
+            Html.div [ class [ Styles.RequestBox ] ]
+                [ Html.div []
+                    [ Html.text Strings.completeProfile
+                    , Html.ul [] <|
+                        List.map (\t -> Html.li [] (description t)) tests
+                    ]
                 ]
     in
         case Lifecycle.state meta profile of
             Lifecycle.Training tests ->
                 if List.length tests == 0 then
-                    Html.div [] Strings.startTraining
+                    Html.div [ class [ Styles.InfoBox ] ]
+                        [ Html.div [] Strings.startTraining ]
                 else
                     describeTests tests
 
             Lifecycle.Experiment tests ->
                 if List.length tests == 0 then
-                    Html.div [] Strings.profileComplete
+                    Html.div [ class [ Styles.InfoBox ] ]
+                        [ Html.div [] Strings.profileComplete ]
                 else
                     describeTests tests
 
             Lifecycle.Done ->
                 -- TODO
-                Html.div [] [ Html.text "TODO: exp done! Show completion code if we have a prolific id. Show stats and point to profile/tree exploration." ]
+                Html.div [ class [ Styles.InfoBox ] ]
+                    [ Html.div [] [ Html.text "TODO: exp done! Show completion code if we have a prolific id. Show stats and point to profile/tree exploration." ] ]
 
 
 questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg

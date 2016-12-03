@@ -69,12 +69,24 @@ type CssClasses
     | Well
     | Menu
     | Active
+    | InfoBox
+    | RequestBox
 
 
 type CssIds
     = Page
     | Greeting
     | InputAutofocus
+
+
+box : Mixin
+box =
+    mixin
+        [ borderBottom3 (px 1) solid (rgba 214 217 221 0.5)
+        , marginBottom (em 1.43)
+        , borderRadius (px 2)
+        , children [ div [ padding (em 0.86) ] ]
+        ]
 
 
 badge : Mixin
@@ -300,6 +312,7 @@ css =
                 , .value sansSerif
                 ]
             ]
+        , ul [ margin2 (em 0.5) (em 0) ]
           -- Fix for buttons appearing differently in Chrome vs. Firefox
         , selector "button::-moz-focus-inner" [ border (px 0), padding (px 0) ]
         , a [ linkMixin ]
@@ -335,6 +348,17 @@ css =
                     , firstChild [ color (hex "#006964") ]
                     ]
                 ]
+            ]
+          -- BOXES
+        , (.) RequestBox
+            [ box
+            , backgroundColor (hex "#fcf8e3")
+            , color (hex "#8a6d3b")
+            ]
+        , (.) InfoBox
+            [ box
+            , backgroundColor (hex "#dfd9f7")
+            , color (hex "#54318f")
             ]
           -- EMAIL LINE
         , (.) EmailLine
@@ -481,7 +505,7 @@ css =
                     , color (rgba 0 0 0 0.87)
                     , borderRadius (em 0.2)
                     , property "transition" "box-shadow .1s ease, border-color .1s ease"
-                    , boxShadow none
+                    , boxShadow5 inset (px 0) (px 1) (px 1) (rgba 0 0 0 0.075)
                     , disabled [ opacity (num 0.45), property "pointer-events" "none" ]
                     , focus [ borderColor (hex "#85b7d9"), color (rgba 0 0 0 0.8) ]
                     ]

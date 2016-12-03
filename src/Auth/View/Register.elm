@@ -93,7 +93,10 @@ form lift { input, feedback, status } maybeProlific =
                 ]
             , Html.div [] [ Html.text (Feedback.getError "email" feedback) ]
             ]
-        , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "password1" feedback ]
+        , Html.div
+            [ class [ Styles.FormBlock ]
+            , Helpers.feedbackStyles "password1" feedback
+            ]
             [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "lock" ]
@@ -111,7 +114,10 @@ form lift { input, feedback, status } maybeProlific =
                 ]
             , Html.div [] [ Html.text (Feedback.getError "password1" feedback) ]
             ]
-        , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "password2" feedback ]
+        , Html.div
+            [ class [ Styles.FormBlock ]
+            , Helpers.feedbackStyles "password2" feedback
+            ]
             [ Html.label [ Attributes.for "inputPassword2" ]
                 [ Html.text "Confirm password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -131,7 +137,8 @@ form lift { input, feedback, status } maybeProlific =
             , Html.div [] [ Html.text (Feedback.getError "password2" feedback) ]
             ]
         , Html.div [ class [ Styles.FormBlock ] ]
-            [ Html.div [ class [ Styles.Error ] ] [ Html.text (Feedback.getError "global" feedback) ]
+            [ Html.div [ class [ Styles.Error ] ]
+                [ Html.text (Feedback.getError "global" feedback) ]
             , Html.div []
                 [ Html.button
                     [ Attributes.type_ "submit"
@@ -149,28 +156,38 @@ prolificLogin : Maybe String -> Html.Html AppMsg.Msg
 prolificLogin maybeProlific =
     case maybeProlific of
         Just prolificId ->
-            Html.div []
-                [ Html.p [] [ Html.text ("Your id is " ++ prolificId) ]
-                , Html.p []
-                    [ Html.text "Now, "
-                    , Html.strong [] [ Html.text "sign up to start the experiment" ]
-                    ]
-                , Html.p []
-                    [ Html.text "(Made a mistake? "
-                    , Helpers.navA [] Router.Prolific "Go back"
-                    , Html.text ")"
+            Html.div [ class [ Styles.InfoBox ] ]
+                [ Html.div []
+                    [ Html.p []
+                        [ Html.text "Your ID is "
+                        , Html.span [ class [ Styles.BadgeDefault ] ]
+                            [ Html.text prolificId ]
+                        ]
+                    , Html.p []
+                        [ Html.text "Now, "
+                        , Html.strong [] [ Html.text "sign up to start the experiment" ]
+                        ]
+                    , Html.p []
+                        [ Html.text "(Made a mistake? "
+                        , Helpers.navA [] Router.Prolific "Go back"
+                        , Html.text ")"
+                        ]
                     ]
                 ]
 
         Nothing ->
             Html.div []
-                [ Html.div []
-                    [ Html.text "Prolific Academic participant? "
-                    , Helpers.navA [] Router.Prolific "Please enter your ID"
-                    , Html.text " first"
+                [ Html.div [ class [ Styles.RequestBox ] ]
+                    [ Html.div []
+                        [ Html.text "Prolific Academic participant? "
+                        , Helpers.navA [] Router.Prolific "Please enter your ID"
+                        , Html.text " first"
+                        ]
                     ]
-                , Html.div []
-                    [ Html.text "Already have an account? "
-                    , Helpers.navA [] (Router.Login Nothing) "Sign in here"
+                , Html.div [ class [ Styles.InfoBox ] ]
+                    [ Html.div []
+                        [ Html.text "Already have an account? "
+                        , Helpers.navA [] (Router.Login Nothing) "Sign in here"
+                        ]
                     ]
                 ]
