@@ -72,12 +72,37 @@ type CssClasses
     | InfoBox
     | RequestBox
     | Loader
+    | WarningNotification
+    | InfoNotification
 
 
 type CssIds
     = Page
     | Greeting
     | InputAutofocus
+
+
+notification : Mixin
+notification =
+    mixin
+        [ boxShadow4 (px 0) (px 2) (px 10) (rgba 50 50 50 0.5)
+        , borderRadius (px 2)
+        , margin3 (px 10) (px 10) (px 20)
+        , padding (px 12)
+        , minHeight (px 40)
+        , opacity (num 0.8)
+        , children
+            [ button
+                [ float right
+                , marginLeft (em 0.2)
+                , width (px 12)
+                , height (px 12)
+                , lineHeight (px 0)
+                , display none
+                ]
+            ]
+        , hover [ children [ button [ display unset ] ] ]
+        ]
 
 
 box : Mixin
@@ -328,6 +353,18 @@ css =
                 , boxSizing borderBox
                 ]
             ]
+        , (.) WarningNotification
+            [ notification
+            , color (hex "#a94442")
+            , backgroundColor (hex "#f2dede")
+            , property "fill" "#a94442"
+            ]
+        , (.) InfoNotification
+            [ notification
+            , color (hex "#54318f")
+            , backgroundColor (hex "#dfd9f7")
+            , property "fill" "#54318f"
+            ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]
@@ -432,6 +469,8 @@ css =
                 , opacity (num 0.65)
                 , property "pointer-events" "none"
                 ]
+            , withClass Small [ width (px 18), height (px 18) ]
+            , withClass Big [ width (px 30), height (px 30) ]
             ]
         , (.) Btn
             [ btn

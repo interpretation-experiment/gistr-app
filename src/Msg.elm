@@ -4,6 +4,7 @@ import Animation
 import Api
 import Auth.Msg as Auth
 import Experiment.Msg as Experiment
+import Html
 import Notification
 import Profile.Msg as Profile
 import Router
@@ -14,7 +15,7 @@ type Msg
     = NoOp
     | Animate Animation.Msg
       -- NOTIFICATIONS
-    | Notify (Notification.Msg String)
+    | Notify (Notification.Msg ( String, Html.Html Msg, Types.Notification ))
       -- NAVIGATION
     | UrlUpdate String Router.Route
     | NavigateTo Router.Route

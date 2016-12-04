@@ -10,6 +10,7 @@ module Types
         , Meta
         , NewSentence
         , NewWordSpan
+        , Notification(..)
         , Page
         , PasswordCredentials
         , PreUser
@@ -375,3 +376,12 @@ type alias PasswordCredentials =
 emptyPasswordCredentials : PasswordCredentials
 emptyPasswordCredentials =
     PasswordCredentials "" "" ""
+
+
+
+-- NOTIFICATION
+
+
+type Notification
+    = Info
+    | Warning
