@@ -20,7 +20,6 @@ module Intro
         , viewConfig
         )
 
-import AnimationFrame
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
@@ -31,6 +30,7 @@ import List.Nonempty exposing (Nonempty)
 import List.Zipper as Zipper
 import List.Zipper exposing (Zipper)
 import Styles exposing (class, classList, id)
+import Time
 
 
 -- CONFIG
@@ -220,7 +220,7 @@ subscription lift state =
         Running Start _ ->
             Sub.batch
                 [ Keyboard.downs (lift << KeyDown)
-                , AnimationFrame.times (always <| lift FinishTransition)
+                , Time.every (200 * Time.millisecond) (always <| lift FinishTransition)
                 ]
 
         Running End _ ->
