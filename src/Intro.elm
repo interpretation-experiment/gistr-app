@@ -1,6 +1,7 @@
 module Intro
     exposing
         ( Msg
+        , Position(..)
         , State
         , UpdateConfig
         , ViewConfig
@@ -19,15 +20,17 @@ module Intro
         , viewConfig
         )
 
+import AnimationFrame
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Keyboard exposing (KeyCode)
 import List
-import List.Zipper as Zipper
-import List.Zipper exposing (Zipper)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty)
+import List.Zipper as Zipper
+import List.Zipper exposing (Zipper)
+import Styles exposing (class, classList, id)
 
 
 -- CONFIG
@@ -80,9 +83,14 @@ currentIndex zipper =
 -- MODEL
 
 
+type TransitionState
+    = Start
+    | End
+
+
 type State id
     = Hidden
-    | Running (Zipper id)
+    | Running TransitionState (Zipper id)
 
 
 isRunning : State id -> Bool
@@ -91,7 +99,7 @@ isRunning state =
         Hidden ->
             False
 
-        Running _ ->
+        Running _ _ ->
             True
 
 
@@ -104,7 +112,7 @@ start : Nonempty id -> State id
 start order =
     Zipper.singleton (Nonempty.head order)
         |> Zipper.mapAfter (always (Nonempty.tail order))
-        |> Running
+        |> Running Start
 
 
 isPast : id -> State id -> Bool
@@ -113,7 +121,7 @@ isPast id state =
         Hidden ->
             False
 
-        Running zipper ->
+        Running _ zipper ->
             List.member id (Zipper.before zipper)
 
 
@@ -123,7 +131,7 @@ isActive id state =
         Hidden ->
             False
 
-        Running zipper ->
+        Running _ zipper ->
             Zipper.current zipper == id
 
 
@@ -133,7 +141,7 @@ isFuture id state =
         Hidden ->
             False
 
-        Running zipper ->
+        Running _ zipper ->
             List.member id (Zipper.after zipper)
 
 
@@ -147,6 +155,7 @@ type Msg
     | StepBack
     | Quit
     | Done
+    | FinishTransition
 
 
 update : UpdateConfig id msg -> Msg -> State id -> ( State id, Maybe msg )
@@ -155,7 +164,7 @@ update (UpdateConfig config) msg state =
         Hidden ->
             ( state, Nothing )
 
-        Running zipper ->
+        Running _ zipper ->
             case msg of
                 KeyDown keyCode ->
                     if keyCode == 37 then
@@ -176,7 +185,7 @@ update (UpdateConfig config) msg state =
                             update (UpdateConfig config) Done state
 
                         Just newZipper ->
-                            ( Running newZipper, Nothing )
+                            ( Running Start newZipper, Nothing )
 
                 StepBack ->
                     case Zipper.previous zipper of
@@ -184,7 +193,7 @@ update (UpdateConfig config) msg state =
                             ( state, Nothing )
 
                         Just newZipper ->
-                            ( Running newZipper, Nothing )
+                            ( Running Start newZipper, Nothing )
 
                 Quit ->
                     ( Hidden
@@ -194,6 +203,9 @@ update (UpdateConfig config) msg state =
                 Done ->
                     ( Hidden, Just config.onDone )
 
+                FinishTransition ->
+                    ( Running End zipper, Nothing )
+
 
 
 -- SUBSCRIPTION
@@ -201,14 +213,29 @@ update (UpdateConfig config) msg state =
 
 subscription : (Msg -> msg) -> State id -> Sub msg
 subscription lift state =
-    if isRunning state then
-        Keyboard.downs (lift << KeyDown)
-    else
-        Sub.none
+    case state of
+        Hidden ->
+            Sub.none
+
+        Running Start _ ->
+            Sub.batch
+                [ Keyboard.downs (lift << KeyDown)
+                , AnimationFrame.times (always <| lift FinishTransition)
+                ]
+
+        Running End _ ->
+            Keyboard.downs (lift << KeyDown)
 
 
 
 -- VIEW
+
+
+type Position
+    = Top
+    | Right
+    | Bottom
+    | Left
 
 
 type ViewConfig id msg
@@ -218,13 +245,13 @@ type ViewConfig id msg
         , labelBack : String
         , labelNext : String
         , liftMsg : Msg -> msg
-        , tooltip : Int -> Html.Html msg
+        , tooltip : Int -> ( Position, Html.Html msg )
         }
 
 
 viewConfig :
     { liftMsg : Msg -> msg
-    , tooltip : Int -> Html.Html msg
+    , tooltip : Int -> ( Position, Html.Html msg )
     }
     -> ViewConfig id msg
 viewConfig { liftMsg, tooltip } =
@@ -244,7 +271,7 @@ customViewConfig :
     , labelBack : String
     , labelNext : String
     , liftMsg : Msg -> msg
-    , tooltip : Int -> Html.Html msg
+    , tooltip : Int -> ( Position, Html.Html msg )
     }
     -> ViewConfig id msg
 customViewConfig { labelQuit, labelDone, labelBack, labelNext, liftMsg, tooltip } =
@@ -261,24 +288,35 @@ customViewConfig { labelQuit, labelDone, labelBack, labelNext, liftMsg, tooltip 
 overlay : State id -> Html.Html msg
 overlay state =
     let
-        attributes =
+        activeState =
             if isRunning state then
-                [ Attributes.style
-                    [ ( "position", "fixed" )
-                    , ( "top", "0" )
-                    , ( "bottom", "0" )
-                    , ( "left", "0" )
-                    , ( "right", "0" )
-                    , ( "backgroundColor", "black" )
-                    , ( "opacity", "0.8" )
-                    , ( "zIndex", "9999" )
-                    ]
-                , Attributes.class "elm-intro-overlayActive"
+                [ Attributes.class "elm-intro-overlayActive"
+                , Attributes.style [ ( "opacity", "0.8" ) ]
                 ]
             else
-                []
+                [ Attributes.style [ ( "opacity", "0" ), ( "pointerEvents", "none" ) ] ]
     in
-        Html.div ((Attributes.class "elm-intro-overlay") :: attributes) []
+        Html.div
+            ([ Attributes.class "elm-intro-overlay"
+             , Attributes.style
+                [ ( "position", "fixed" )
+                , ( "top", "0" )
+                , ( "bottom", "0" )
+                , ( "left", "0" )
+                , ( "right", "0" )
+                , ( "backgroundImage"
+                  , "radial-gradient(ellipse, "
+                        ++ "rgba(0, 0, 0, 0.4) 0px, "
+                        ++ "rgba(0, 0, 0, 0.9) 100%)"
+                  )
+                , ( "opacity", "0.8" )
+                , ( "zIndex", "9999" )
+                , ( "transition", "opacity 0.3s ease-out" )
+                ]
+             ]
+                ++ activeState
+            )
+            []
 
 
 node :
@@ -289,55 +327,185 @@ node :
     -> List (Html.Attribute msg)
     -> List (Html.Html msg)
     -> Html.Html msg
-node config state id makeNode attributes contents =
+node config state id makeNode attributes content =
+    makeNode
+        (attributes ++ (nodeAttributes state id))
+        (content ++ (tooltip config state id))
+
+
+nodeAttributes : State id -> id -> List (Html.Attribute msg)
+nodeAttributes state id =
     let
-        ( introAttributes, tooltip ) =
+        activeState =
             case state of
                 Hidden ->
-                    ( []
-                    , Html.div [] []
-                    )
+                    []
 
-                Running zipper ->
+                Running _ zipper ->
                     if Zipper.current zipper == id then
-                        activeDetails config zipper
+                        [ Attributes.class "elm-intro-nodeActive"
+                        , Attributes.style
+                            [ ( "position", "relative" )
+                            , ( "zIndex", "99999" )
+                            , ( "backgroundColor", "rgba(255, 255, 255, 0.9)" )
+                            , ( "boxShadow"
+                              , "0 0 0 4px rgba(255, 255, 255, 0.9), "
+                                    ++ "0 2px 15px 4px rgba(0, 0, 0, .4)"
+                              )
+                            , ( "borderRadius", "1px" )
+                            , ( "transition", "all .3s ease-in-out" )
+                            ]
+                        ]
                     else
-                        ( []
-                        , Html.div [] []
-                        )
+                        -- This little hack lets us animate the box-shadow
+                        -- color only (vs. also its size) on the instruction
+                        -- nodes once the intro is running
+                        [ Attributes.style
+                            [ ( "boxShadow"
+                              , "0 0 0 4px rgba(255, 255, 255, 0), "
+                                    ++ "0 2px 15px 4px rgba(0, 0, 0, 0)"
+                              )
+                            ]
+                        ]
     in
-        makeNode
-            (attributes ++ (Attributes.class "elm-intro-node") :: introAttributes)
-            (contents ++ [ tooltip ])
+        activeState ++ [ Attributes.class "elm-intro-node" ]
 
 
 progress : Zipper id -> Html.Html a
 progress zipper =
-    (toString <| 1 + List.length (Zipper.before zipper))
-        ++ " / "
-        ++ (toString <| length zipper)
-        |> Html.text
+    let
+        dot color =
+            Html.div
+                [ Attributes.style
+                    [ ( "width", "6px" )
+                    , ( "height", "6px" )
+                    , ( "backgroundColor", color )
+                    , ( "margin", "2px" )
+                    , ( "border-radius", "100%" )
+                    ]
+                ]
+                [ Html.text " " ]
+    in
+        Html.div
+            [ Attributes.style
+                [ ( "display", "flex" )
+                , ( "alignItems", "center" )
+                , ( "justifyContent", "center" )
+                , ( "margin", "10px 10px" )
+                ]
+            ]
+            ((List.repeat (List.length <| Zipper.before zipper) (dot "#ccc"))
+                ++ [ dot "#999" ]
+                ++ (List.repeat (List.length <| Zipper.after zipper) (dot "#ccc"))
+            )
 
 
-activeDetails :
-    ViewConfig id msg
-    -> Zipper id
-    -> ( List (Html.Attribute msg), Html.Html msg )
-activeDetails (ViewConfig config) zipper =
+tooltip : ViewConfig id msg -> State id -> id -> List (Html.Html msg)
+tooltip config state id =
+    case state of
+        Hidden ->
+            []
+
+        Running transition zipper ->
+            if Zipper.current zipper == id then
+                let
+                    visibilityAttributes =
+                        case transition of
+                            Start ->
+                                [ ( "opacity", "0" )
+                                , ( "pointerEvents", "none" )
+                                ]
+
+                            End ->
+                                [ ( "opacity", "1" )
+                                , ( "transition", "opacity 0.5s ease-in-out" )
+                                ]
+                in
+                    [ Html.div
+                        [ Attributes.class "elm-intro-tooltipActive"
+                        , Attributes.class "elm-intro-tooltip"
+                        , Attributes.style visibilityAttributes
+                        , tooltipPositionAttributes config zipper
+                        , Attributes.style
+                            [ ( "position", "absolute" )
+                            , ( "padding", "10px" )
+                            , ( "boxSizing", "border-box" )
+                            , ( "backgroundColor", "white" )
+                            , ( "borderRadius", "3px" )
+                            , ( "boxShadow", "0 1px 10px rgba(0, 0, 0, .4)" )
+                            , ( "fontSize", "initial" )
+                            , ( "fontWeight", "initial" )
+                            , ( "fontHeight", "initial" )
+                            ]
+                        ]
+                        (tooltipContent config zipper)
+                    ]
+            else
+                []
+
+
+tooltipPositionAttributes : ViewConfig id msg -> Zipper id -> Html.Attribute msg
+tooltipPositionAttributes (ViewConfig config) zipper =
+    case Tuple.first (config.tooltip (currentIndex zipper)) of
+        Top ->
+            Attributes.style
+                [ ( "marginBottom", "10px" )
+                , ( "marginLeft", "-137px" )
+                , ( "left", "50%" )
+                , ( "bottom", "100%" )
+                , ( "width", "275px" )
+                ]
+
+        Right ->
+            Attributes.style
+                [ ( "marginLeft", "10px" )
+                , ( "marginTop", "-4px" )
+                , ( "top", "0" )
+                , ( "left", "100%" )
+                , ( "width", "225px" )
+                ]
+
+        Bottom ->
+            Attributes.style
+                [ ( "marginTop", "10px" )
+                , ( "marginLeft", "-137px" )
+                , ( "left", "50%" )
+                , ( "width", "275px" )
+                ]
+
+        Left ->
+            Attributes.style
+                [ ( "marginRight", "10px" )
+                , ( "marginTop", "-4px" )
+                , ( "top", "0" )
+                , ( "right", "100%" )
+                , ( "width", "225px" )
+                ]
+
+
+tooltipContent : ViewConfig id msg -> Zipper id -> List (Html.Html msg)
+tooltipContent (ViewConfig config) zipper =
     let
         outButton =
             if isLast zipper then
                 Html.button
-                    [ Events.onClick <| config.liftMsg Done ]
+                    [ Events.onClick <| config.liftMsg Done
+                    , class [ Styles.Btn, Styles.BtnSmall ]
+                    , Attributes.style [ ( "marginRight", "5px" ) ]
+                    ]
                     [ Html.text config.labelDone ]
             else
                 Html.button
-                    [ Events.onClick <| config.liftMsg Quit ]
+                    [ Events.onClick <| config.liftMsg Quit
+                    , class [ Styles.Btn, Styles.BtnSmall ]
+                    , Attributes.style [ ( "marginRight", "5px" ) ]
+                    ]
                     [ Html.text config.labelQuit ]
 
         nextButton =
             Html.button
                 [ Attributes.disabled (isLast zipper)
+                , class [ Styles.Btn, Styles.BtnSmall ]
                 , Events.onClick <| config.liftMsg StepNext
                 ]
                 [ Html.text config.labelNext ]
@@ -345,37 +513,71 @@ activeDetails (ViewConfig config) zipper =
         backButton =
             Html.button
                 [ Attributes.disabled (isFirst zipper)
+                , class [ Styles.Btn, Styles.BtnSmall ]
                 , Events.onClick <| config.liftMsg StepBack
                 ]
                 [ Html.text config.labelBack ]
+
+        arrow =
+            Html.div
+                [ Attributes.style
+                    [ ( "position", "absolute" )
+                    , ( "border", "5px solid white" )
+                    ]
+                , arrowPositionAttributes (ViewConfig config) zipper
+                ]
+                []
     in
-        ( [ Attributes.class "elm-intro-nodeActive"
-          , Attributes.style
-                [ ( "position", "relative" )
-                , ( "zIndex", "99999" )
-                , ( "backgroundColor", "white" )
-                , ( "boxShadow", "0 0 1px 3px white" )
-                ]
-          ]
+        [ config.tooltip (currentIndex zipper) |> Tuple.second
+        , progress zipper
         , Html.div
-            [ Attributes.class "elm-intro-tooltipActive"
-            , Attributes.style
-                [ ( "position", "absolute" )
-                , ( "width", "275px" )
-                , ( "marginTop", "10px" )
-                , ( "marginLeft", "-137px" )
+            [ Attributes.style [ ( "float", "right" ) ] ]
+            [ outButton, backButton, nextButton ]
+        , arrow
+        ]
+
+
+arrowPositionAttributes : ViewConfig id msg -> Zipper id -> Html.Attribute msg
+arrowPositionAttributes (ViewConfig config) zipper =
+    case Tuple.first (config.tooltip (currentIndex zipper)) of
+        Top ->
+            Attributes.style
+                [ ( "bottom", "-10px" )
                 , ( "left", "50%" )
-                , ( "padding", "5px" )
-                , ( "backgroundColor", "white" )
-                , ( "fontSize", "initial" )
-                , ( "fontWeight", "initial" )
-                , ( "fontHeight", "initial" )
+                , ( "margin-left", "-130px" )
+                , ( "borderTopColor", "white" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "transparent" )
+                , ( "borderLeftColor", "transparent" )
                 ]
-            ]
-            [ config.tooltip (currentIndex zipper)
-            , progress zipper
-            , outButton
-            , backButton
-            , nextButton
-            ]
-        )
+
+        Right ->
+            Attributes.style
+                [ ( "top", "7px" )
+                , ( "left", "-10px" )
+                , ( "borderTopColor", "transparent" )
+                , ( "borderRightColor", "white" )
+                , ( "borderBottomColor", "transparent" )
+                , ( "borderLeftColor", "transparent" )
+                ]
+
+        Bottom ->
+            Attributes.style
+                [ ( "top", "-10px" )
+                , ( "left", "50%" )
+                , ( "margin-left", "-130px" )
+                , ( "borderTopColor", "transparent" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "white" )
+                , ( "borderLeftColor", "transparent" )
+                ]
+
+        Left ->
+            Attributes.style
+                [ ( "top", "7px" )
+                , ( "right", "-10px" )
+                , ( "borderTopColor", "transparent" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "transparent" )
+                , ( "borderLeftColor", "white" )
+                ]
