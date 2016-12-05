@@ -117,7 +117,8 @@ feedback fields =
             else
                 JD.succeed feedback
     in
-        JD.dict (JD.index 0 JD.string)
+        JD.oneOf [ JD.string, JD.index 0 JD.string ]
+            |> JD.dict
             |> JD.map (toFeedback <| Dict.fromList fields)
             |> JD.andThen checkKnown
 

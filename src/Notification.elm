@@ -1,7 +1,6 @@
 module Notification
     exposing
-        ( Kind(..)
-        , Model
+        ( Model
         , Msg(Notify, Animate)
         , Notification
         , ViewConfig
@@ -17,7 +16,6 @@ import Animation
 import Animation.Messenger as Messenger
 import Html
 import Html.Attributes as Attributes
-import Html.Events as Events
 import List
 import Time
 
@@ -53,7 +51,6 @@ empty =
 
 type alias DisplayedNotification a =
     { id : Int
-    , kind : Kind
     , content : a
     , display : Messenger.State (Msg a)
     }
@@ -62,23 +59,15 @@ type alias DisplayedNotification a =
 type Notification a
     = Notification
         { content : a
-        , kind : Kind
-        , duration : Time.Time
+        , duration : Maybe Time.Time
         }
 
 
-type Kind
-    = Dismissable
-    | Disappearing
-    | DismissableDisappearing
-
-
-notification : Kind -> a -> Notification a
-notification kind content =
+notification : a -> Maybe Time.Time -> Notification a
+notification content maybeDuration =
     Notification
         { content = content
-        , kind = kind
-        , duration = 10 * Time.second
+        , duration = maybeDuration
         }
 
 
@@ -86,22 +75,16 @@ displayNotification : Int -> Notification a -> DisplayedNotification a
 displayNotification id (Notification specs) =
     let
         disappearance =
-            case specs.kind of
-                Dismissable ->
+            case specs.duration of
+                Nothing ->
                     []
 
-                Disappearing ->
-                    [ Animation.wait specs.duration
-                    , Messenger.send (Dismiss id)
-                    ]
-
-                DismissableDisappearing ->
-                    [ Animation.wait specs.duration
+                Just duration ->
+                    [ Animation.wait duration
                     , Messenger.send (Dismiss id)
                     ]
     in
         { id = id
-        , kind = specs.kind
         , content = specs.content
         , display =
             Animation.style
@@ -217,11 +200,14 @@ subscription lift (Model model) =
 type ViewConfig a msg
     = ViewConfig
         { liftMsg : Msg a -> msg
-        , template : a -> Html.Html msg
+        , template : a -> msg -> Html.Html msg
         }
 
 
-viewConfig : (Msg a -> msg) -> (a -> Html.Html msg) -> ViewConfig a msg
+viewConfig :
+    (Msg a -> msg)
+    -> (a -> msg -> Html.Html msg)
+    -> ViewConfig a msg
 viewConfig liftMsg template =
     ViewConfig
         { liftMsg = liftMsg
@@ -240,6 +226,8 @@ view viewConfig (Model model) =
             , ( "padding-right", "20px" )
             , ( "width", toString config.widthPx ++ "px" )
             , ( "overflow", "hidden" )
+            , ( "pointer-events", "none" )
+            , ( "z-index", "999" )
             ]
         ]
         (List.map (notificationView viewConfig) model.notifications)
@@ -247,34 +235,10 @@ view viewConfig (Model model) =
 
 notificationView : ViewConfig a msg -> DisplayedNotification a -> Html.Html msg
 notificationView (ViewConfig config) notification =
-    let
-        dismissButton =
-            Html.button [ Events.onClick <| config.liftMsg <| Dismiss notification.id ]
-                [ Html.text "X" ]
-
-        controls =
-            case notification.kind of
-                Dismissable ->
-                    [ dismissButton ]
-
-                Disappearing ->
-                    []
-
-                DismissableDisappearing ->
-                    [ dismissButton ]
-    in
-        Html.div
-            ((Animation.render notification.display)
-                ++ [ Attributes.style
-                        [ ( "padding", "0.01px" ) ]
-                   ]
-            )
-            [ Html.div
-                [ Attributes.style
-                    [ ( "margin", "10px" )
-                    , ( "background-color", "burlywood" )
-                    , ( "box-shadow", "0 0 3px 3px burlywood" )
-                    ]
-                ]
-                ([ config.template notification.content ] ++ controls)
-            ]
+    Html.div
+        ((Animation.render notification.display)
+            ++ [ Attributes.style
+                    [ ( "padding", "0.01px" ), ( "pointer-events", "auto" ) ]
+               ]
+        )
+        [ config.template notification.content (config.liftMsg <| Dismiss notification.id) ]

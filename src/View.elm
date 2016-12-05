@@ -7,30 +7,51 @@ import Auth.View.Register
 import Auth.View.Reset
 import Experiment.View
 import Html
+import Helpers
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Notification
 import Profile.View
 import Router
+import Styles exposing (class, classList, id)
+import Types
 import View.About
 import View.Error
 import View.Home
 
 
-notificationConfig : Notification.ViewConfig String Msg
+notificationConfig : Notification.ViewConfig ( String, Html.Html Msg, Types.Notification ) Msg
 notificationConfig =
-    Notification.viewConfig Msg.Notify (\s -> Html.p [] [ Html.text s ])
+    Notification.viewConfig Msg.Notify notificationTemplate
+
+
+notificationTemplate : ( String, Html.Html Msg, Types.Notification ) -> Msg -> Html.Html Msg
+notificationTemplate ( title, content, tipe ) dismiss =
+    let
+        style =
+            case tipe of
+                Types.Info ->
+                    Styles.InfoNotification
+
+                Types.Warning ->
+                    Styles.WarningNotification
+    in
+        Html.div [ class [ style ] ]
+            [ Helpers.evIconButton [] dismiss "close"
+            , Html.p [] [ Html.strong [] [ Html.text title ] ]
+            , Html.div [] [ content ]
+            ]
 
 
 view : Model -> Html.Html Msg
 view model =
     Html.div []
         [ Notification.view notificationConfig model.notifications
-        , routeView model
+        , Html.div [ id Styles.Page ] (routeView model)
         ]
 
 
-routeView : Model -> Html.Html Msg
+routeView : Model -> List (Html.Html Msg)
 routeView model =
     case model.route of
         Router.Home ->

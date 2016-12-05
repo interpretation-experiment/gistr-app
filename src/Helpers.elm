@@ -5,21 +5,31 @@ module Helpers
         , alreadyAuthed
         , authenticatedOr
         , authenticatedOrIgnore
+        , avatar
         , cmd
         , evA
         , evButton
+        , evIconButton
         , extractFeedback
+        , feedbackStyles
+        , forId
+        , hrefIcon
+        , icon
         , ifShorterThan
         , ifShorterThanWords
         , ifThenValidate
         , loading
         , navA
         , navButton
+        , navIcon
         , navigateTo
         , notAuthed
+        , onInputContent
         , readTime
         , resultToTask
         , shuffle
+        , textarea
+        , tooltip
         , trialOr
         , updateAuth
         , updateAuthNav
@@ -39,11 +49,16 @@ import Http
 import Json.Decode as JD
 import List
 import List.Extra exposing (splitAt)
+import MD5
+import Maybe.Extra exposing ((?), unwrap)
 import Model exposing (Model)
 import Msg exposing (Msg(NavigateTo, Error))
 import Random
 import Router
 import String
+import Styles exposing (class, classList, id)
+import Svg
+import Svg.Attributes as SvgAttributes
 import Task
 import Time
 import Types
@@ -120,15 +135,14 @@ navigateTo model request =
     let
         finalRoute =
             Router.normalize model.auth (Debug.log "nav request" request)
+
+        newModel =
+            if finalRoute /= model.route then
+                Model.emptyForms { model | route = (Debug.log "nav final" finalRoute) }
+            else
+                model
     in
-        if finalRoute /= model.route then
-            let
-                newModel =
-                    Model.emptyForms { model | route = (Debug.log "nav final" finalRoute) }
-            in
-                newModel ! Cmds.cmdsForModel newModel
-        else
-            model ! []
+        newModel ! Cmds.cmdsForModel newModel
 
 
 authenticatedOrIgnore :
@@ -192,26 +206,96 @@ updateAuthNav authStatus route model =
 -- VIEWS
 
 
+avatar : Types.User -> Router.Route -> Html.Html Msg
+avatar user route =
+    let
+        email =
+            case List.filter .primary user.emails of
+                [] ->
+                    Maybe.map .email (List.head user.emails) ? ""
+
+                primary :: _ ->
+                    primary.email
+
+        hash =
+            MD5.hex <| String.toLower <| String.trim email
+    in
+        Html.a
+            [ Attributes.href (Router.toUrl route)
+            , onClickMsg (NavigateTo route)
+            , class [ Styles.Avatar ]
+            ]
+            [ Html.img
+                [ Attributes.src ("//www.gravatar.com/avatar/" ++ hash ++ "?d=retro&s=40")
+                , Attributes.alt "Profile"
+                ]
+                []
+            ]
+
+
+tooltip : String -> Html.Attribute msg
+tooltip text =
+    Attributes.attribute "data-tooltip" text
+
+
 evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
 evButton attrs msg text =
     Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
 
 
-navButton : Router.Route -> String -> Html.Html Msg
-navButton route text =
-    evButton [] (NavigateTo route) text
+evIconButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
+evIconButton attrs msg name =
+    Html.button
+        ([ onClickMsg msg, class [ Styles.BtnIcon ] ] ++ attrs)
+        [ icon name ]
 
 
-evA : String -> Msg -> String -> Html.Html Msg
-evA url msg text =
+navButton : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navButton attrs route text =
+    evButton attrs (NavigateTo route) text
+
+
+evA : List (Html.Attribute Msg) -> String -> Msg -> String -> Html.Html Msg
+evA attrs url msg text =
     Html.a
-        [ Attributes.href url, onClickMsg msg ]
+        ([ Attributes.href url, onClickMsg msg ] ++ attrs)
         [ Html.text text ]
 
 
-navA : Router.Route -> String -> Html.Html Msg
-navA route text =
-    evA (Router.toUrl route) (NavigateTo route) text
+navA : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navA attrs route text =
+    evA attrs (Router.toUrl route) (NavigateTo route) text
+
+
+hrefIcon : List (Html.Attribute Msg) -> String -> String -> Html.Html Msg
+hrefIcon attrs href name =
+    Html.a
+        ([ Attributes.href href, class [ Styles.NavIcon ] ] ++ attrs)
+        [ icon name ]
+
+
+navIcon : List (Html.Attribute Msg) -> Router.Route -> String -> Html.Html Msg
+navIcon attrs route name =
+    Html.a
+        ([ Attributes.href (Router.toUrl route)
+         , onClickMsg (NavigateTo route)
+         , class [ Styles.NavIcon ]
+         ]
+            ++ attrs
+        )
+        [ icon name ]
+
+
+icon : String -> Html.Html Msg
+icon name =
+    Svg.svg
+        [ SvgAttributes.viewBox "0 0 100 100" ]
+        [ Svg.use
+            [ SvgAttributes.xlinkHref
+                ("/assets/img/icons.svg#si-awesome-" ++ name)
+            ]
+            []
+        ]
 
 
 onClickMsg : a -> Html.Attribute a
@@ -222,9 +306,9 @@ onClickMsg msg =
         (msg |> JD.succeed)
 
 
-loading : Html.Html msg
-loading =
-    Html.p [] [ Html.text "Loading..." ]
+loading : Styles.CssClasses -> Html.Html msg
+loading size =
+    Html.div [ class [ Styles.Loader, size ] ] []
 
 
 notAuthed : Html.Html msg
@@ -235,6 +319,31 @@ notAuthed =
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
+
+
+textarea : List (Html.Attribute msg) -> Html.Html msg
+textarea attrs =
+    Html.div ([ class [ Styles.Textarea ], Attributes.contenteditable True ] ++ attrs) []
+
+
+onInputContent : (String -> msg) -> Html.Attribute msg
+onInputContent tagger =
+    Events.on "input" (JD.map tagger targetInnerText)
+
+
+targetInnerText : JD.Decoder String
+targetInnerText =
+    JD.at [ "target", "textContent" ] JD.string
+
+
+forId : a -> Html.Attribute msg
+forId =
+    Attributes.for << toString
+
+
+feedbackStyles : String -> Feedback.Feedback -> Html.Attribute msg
+feedbackStyles key feedback =
+    classList [ ( Styles.Error, Feedback.hasError key feedback ) ]
 
 
 

@@ -9,6 +9,8 @@ module Model
 
 import Experiment.Model as ExpModel
 import Form
+import Html
+import Msg exposing (Msg)
 import Notification
 import Router
 import Store
@@ -23,7 +25,7 @@ type alias Model =
     , auth : Types.AuthStatus
     , store : Store.Store
     , error : Maybe Types.Error
-    , notifications : Notification.Model String
+    , notifications : Notification.Model ( String, Html.Html Msg, Types.Notification )
     , login : Form.Model Types.Credentials
     , recover : FinishableForm String String
     , reset : FinishableForm Types.ResetCredentials ()

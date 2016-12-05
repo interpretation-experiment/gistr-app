@@ -20,13 +20,13 @@ type Node
     | B
 
 
-instructions : Nonempty ( Node, Html.Html AppMsg.Msg )
+instructions : Nonempty ( Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
 instructions =
     Nonempty.Nonempty
-        ( Title, Html.p [] [ Html.text "This is the title!" ] )
-        [ ( A, Html.p [] [ Html.text "This is stuff A" ] )
-        , ( A, Html.p [] [ Html.text "This is stuff A again" ] )
-        , ( B, Html.p [] [ Html.text "And finally stuff B" ] )
+        ( Title, ( Intro.Bottom, Html.p [] [ Html.text "This is the title!" ] ) )
+        [ ( A, ( Intro.Right, Html.p [] [ Html.text "This is stuff A" ] ) )
+        , ( A, ( Intro.Top, Html.p [] [ Html.text "This is stuff A again" ] ) )
+        , ( B, ( Intro.Left, Html.p [] [ Html.text "And finally stuff B" ] ) )
         ]
 
 

@@ -1,25 +1,22 @@
-'use strict';
+(function() {
+  'use strict';
 
-require('font-awesome/css/font-awesome.css');
+  // Hide initial loader
+  document.getElementById("initial-loader").style["display"] = "none";
 
-// Require index.html so it gets copied to dist
-require('./index.html');
+  // Mount Elm
+  var app = Elm.Main.embed(document.getElementById('main'));
 
-var Elm = require('./Main.elm');
-var mountNode = document.getElementById('main');
+  // Ports
+  app.ports.localStorageSet.subscribe(function({ key, value }) {
+    localStorage.setItem(key, value);
+  });
 
-// The third value on embed are the initial values for incomming ports into Elm
-var app = Elm.Main.embed(mountNode);
+  app.ports.localStorageGet.subscribe(function(key) {
+    app.ports.localStorageReceive.send({ key: key, value: localStorage.getItem(key) });
+  });
 
-// Ports
-app.ports.localStorageSet.subscribe(function({ key, value }) {
-  localStorage.setItem(key, value);
-});
-
-app.ports.localStorageGet.subscribe(function(key) {
-  app.ports.localStorageReceive.send({ key: key, value: localStorage.getItem(key) });
-});
-
-app.ports.localStorageRemove.subscribe(function(key) {
-  localStorage.removeItem(key);
-});
+  app.ports.localStorageRemove.subscribe(function(key) {
+    localStorage.removeItem(key);
+  });
+})();

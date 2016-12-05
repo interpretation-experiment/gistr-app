@@ -5,21 +5,25 @@ import Html
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Router
+import Styles exposing (class, classList, id)
 
 
-view : Model -> Html.Html Msg
+view : Model -> List (Html.Html Msg)
 view model =
-    Html.div [] [ header, body model ]
+    [ Html.header [] header
+    , Html.main_ [] [ Html.div [ class [ Styles.Narrow ] ] body ]
+    ]
 
 
-header : Html.Html Msg
+header : List (Html.Html Msg)
 header =
-    Html.div []
-        [ Helpers.navButton Router.Home "Back"
-        , Html.h1 [] [ Html.text "About" ]
-        ]
+    [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
+    , Html.h1 [] [ Html.text "About" ]
+    ]
 
 
-body : Model -> Html.Html Msg
-body model =
-    Html.div [] []
+body : List (Html.Html Msg)
+body =
+    [ Html.div []
+        [ Html.p [] [ Html.text "Some text about Gistr." ] ]
+    ]

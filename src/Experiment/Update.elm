@@ -2,6 +2,7 @@ module Experiment.Update exposing (update)
 
 import Api
 import Clock
+import Cmds
 import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
@@ -349,7 +350,7 @@ update lift auth msg model =
                         | state = ExpModel.Writing <| Form.empty ""
                         , clock = Clock.init <| Helpers.writeTime auth.meta trial.current
                       }
-                    , Cmd.none
+                    , Cmds.autofocus
                     , Nothing
                     )
 

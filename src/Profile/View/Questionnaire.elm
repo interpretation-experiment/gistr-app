@@ -11,16 +11,16 @@ import Msg as AppMsg
 import Profile.Msg exposing (Msg(..))
 import String
 import Strings
+import Styles exposing (class, classList, id)
 import Types
 
 
-view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> Html.Html AppMsg.Msg
+view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> List (Html.Html AppMsg.Msg)
 view lift model meta =
-    Html.div []
-        [ Html.h2 [] [ Html.text "General questionnaire" ]
-        , intro model.questionnaire
-        , form lift model.questionnaire meta
-        ]
+    [ Html.h2 [] [ Html.text "General questionnaire" ]
+    , intro model.questionnaire
+    , form lift model.questionnaire meta
+    ]
 
 
 intro : Form.Model Types.QuestionnaireForm -> Html.Html AppMsg.Msg
@@ -60,36 +60,32 @@ form lift { input, feedback, status } meta =
                 ]
 
         informedDetails =
-            Html.div []
-                [ Html.div []
+            Html.div [ class [ Styles.FormPage ] ]
+                [ Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedHow" feedback ]
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
-                    , Html.textarea
+                    , Helpers.textarea
                         [ Attributes.id "inputInformedHow"
-                        , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.value input.informedHow
-                        , Events.onInput <|
+                        , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                        , Helpers.onInputContent <|
                             lift
                                 << QuestionnaireFormInput
                                 << \h -> { input | informedHow = h }
                         ]
-                        []
-                    , Html.span [] [ Html.text (Feedback.getError "informedHow" feedback) ]
+                    , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
-                , Html.div []
+                , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedWhat" feedback ]
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
-                    , Html.textarea
+                    , Helpers.textarea
                         [ Attributes.id "inputInformedWhat"
-                        , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.value input.informedWhat
-                        , Events.onInput <|
+                        , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                        , Helpers.onInputContent <|
                             lift
                                 << QuestionnaireFormInput
                                 << \w -> { input | informedWhat = w }
                         ]
-                        []
-                    , Html.span [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
+                    , Html.div [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
                     ]
                 ]
 
@@ -104,7 +100,10 @@ form lift { input, feedback, status } meta =
         ( submitButtons, submitMsg ) =
             case status of
                 Form.Entering ->
-                    ( [ Html.button [ Attributes.type_ "submit" ]
+                    ( [ Html.button
+                            [ Attributes.type_ "submit"
+                            , class [ Styles.Btn, Styles.BtnPrimary ]
+                            ]
                             [ Html.text "Confirm answers" ]
                       ]
                     , lift <| QuestionnaireFormConfirm input
@@ -112,43 +111,48 @@ form lift { input, feedback, status } meta =
 
                 _ ->
                     ( [ Helpers.evButton
-                            [ Attributes.disabled (status /= Form.Confirming) ]
+                            [ Attributes.disabled (status /= Form.Confirming)
+                            , class [ Styles.Btn ]
+                            ]
                             (lift QuestionnaireFormCorrect)
                             "Correct answers"
                       , Html.button
                             [ Attributes.type_ "submit"
                             , Attributes.disabled (status /= Form.Confirming)
+                            , class [ Styles.Btn, Styles.BtnPrimary ]
                             ]
                             [ Html.text "Send answers" ]
                       ]
                     , lift <| QuestionnaireFormSubmit input
                     )
     in
-        Html.form [ Events.onSubmit submitMsg ]
+        Html.form [ class [ Styles.FormPage ], Events.onSubmit submitMsg ]
             [ Html.h3 [] [ Html.text "About you" ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormInline ], Helpers.feedbackStyles "age" feedback ]
                 [ Html.label [ Attributes.for "inputAge" ]
                     [ Html.strong [] [ Html.text "Age" ] ]
-                , Html.input
-                    [ Attributes.id "inputAge"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.type_ "number"
-                    , Attributes.value input.age
-                    , Events.onInput <|
-                        lift
-                            << QuestionnaireFormInput
-                            << \a -> { input | age = a }
+                , Html.div [ class [ Styles.Input ] ]
+                    [ Html.input
+                        [ Attributes.id "inputAge"
+                        , Attributes.disabled (status /= Form.Entering)
+                        , Attributes.type_ "number"
+                        , Attributes.value input.age
+                        , Events.onInput <|
+                            lift
+                                << QuestionnaireFormInput
+                                << \a -> { input | age = a }
+                        ]
+                        []
                     ]
-                    []
-                , Html.span [] [ Html.text (Feedback.getError "age" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "age" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "gender" feedback ]
                 [ Html.label [ Attributes.for "inputGender" ]
                     [ Html.strong [] [ Html.text "Gender" ] ]
                 , Html.div [] (List.map genderRadio meta.genderChoices)
-                , Html.span [] [ Html.text (Feedback.getError "gender" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "gender" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ] ]
                 [ Html.label [ Attributes.for "inputInformed" ]
                     [ Html.input
                         [ Attributes.id "inputInformed"
@@ -171,7 +175,7 @@ form lift { input, feedback, status } meta =
                 Html.div [] []
             , Html.h3 [] [ Html.text "What you do" ]
             , Html.p [] [ Html.text Strings.questionnaireJobIntro ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobType" feedback ]
                 [ Html.label [ Attributes.for "inputJobType" ]
                     [ Html.strong [] [ Html.text Strings.questionnaireJobType ] ]
                 , Html.select
@@ -183,24 +187,22 @@ form lift { input, feedback, status } meta =
                             << \j -> { input | jobType = j }
                     ]
                     (List.map jobOption ({ name = "", label = Strings.selectPlease } :: meta.jobTypeChoices))
-                , Html.span [] [ Html.text (Feedback.getError "jobType" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "jobType" feedback) ]
                 ]
-            , Html.div []
+            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobFreetext" feedback ]
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
-                , Html.textarea
+                , Helpers.textarea
                     [ Attributes.id "inputJobFreetext"
-                    , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.value input.jobFreetext
-                    , Events.onInput <|
+                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                    , Helpers.onInputContent <|
                         lift
                             << QuestionnaireFormInput
                             << \t -> { input | jobFreetext = t }
                     ]
-                    []
-                , Html.span [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
+                , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]
-            , Html.div []
-                ((Html.span [] [ Html.text (Feedback.getError "global" feedback) ]) :: submitButtons)
+            , Html.div [ class [ Styles.Error ] ]
+                ((Html.div [] [ Html.text (Feedback.getError "global" feedback) ]) :: submitButtons)
             , Html.p [] Strings.questionnaireComment
             ]

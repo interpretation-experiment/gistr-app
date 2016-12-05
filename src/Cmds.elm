@@ -1,18 +1,48 @@
-module Cmds exposing (cmdsForModel)
+module Cmds exposing (autofocus, cmdsForModel)
 
 import Api
+import Dom
 import Experiment.Msg as ExperimentMsg
 import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Profile.Msg as ProfileMsg
 import Router
+import Styles
 import Task
 import Types
 
 
+autofocus : Cmd Msg
+autofocus =
+    let
+        focusLog result =
+            let
+                log =
+                    case result of
+                        Err _ ->
+                            "none found"
+
+                        Ok _ ->
+                            "ok"
+
+                _ =
+                    Debug.log "autofocus" log
+            in
+                Msg.NoOp
+    in
+        toString Styles.InputAutofocus
+            |> Dom.focus
+            |> Task.attempt focusLog
+
+
 cmdsForModel : Model -> List (Cmd Msg)
 cmdsForModel model =
+    autofocus :: (nonFocusCmds model)
+
+
+nonFocusCmds : Model -> List (Cmd Msg)
+nonFocusCmds model =
     case model.route of
         Router.Profile (Router.Confirm key) ->
             authenticatedOrIgnore model <|
