@@ -181,3 +181,8 @@ homeQuestions =
     , Html.p [] [ Html.text "How well do you remember what you read?" ]
     , Html.p [] [ Html.text "With this experiment you'll learn how you unconsciously transform what you read. It lasts about 1 hour and it helps scientific research!" ]
     ]
+
+
+resetProblem : String
+resetProblem =
+    "There was a problem. Did you use the last password-reset link you received?"

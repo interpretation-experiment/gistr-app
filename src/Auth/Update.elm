@@ -246,10 +246,7 @@ update lift msg model =
         ResetResult (Err error) ->
             let
                 transpose =
-                    -- TODO: move to Strings.elm
-                    "There was a problem. Did you use the"
-                        ++ " last password-reset link you received?"
-                        |> Just
+                    Just Strings.resetProblem
                         |> Feedback.updateError "resetCredentials"
             in
                 Helpers.extractFeedback error
