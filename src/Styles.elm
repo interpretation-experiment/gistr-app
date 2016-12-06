@@ -74,6 +74,9 @@ type CssClasses
     | Loader
     | WarningNotification
     | InfoNotification
+    | SuccessNotification
+    | SmoothAppearing
+    | Hidden
 
 
 type CssIds
@@ -98,10 +101,10 @@ notification =
                 , width (px 12)
                 , height (px 12)
                 , lineHeight (px 0)
-                , display none
+                , property "visibility" "hidden"
                 ]
             ]
-        , hover [ children [ button [ display unset ] ] ]
+        , hover [ children [ button [ property "visibility" "visible" ] ] ]
         ]
 
 
@@ -111,6 +114,11 @@ box =
         [ borderBottom3 (px 1) solid (rgba 214 217 221 0.5)
         , marginBottom (em 1.43)
         , borderRadius (px 2)
+          -- Pad divs inside this element, since we use it in flex boxes, where
+          -- layout is computed without padding (so adding padding on this
+          -- element ruins the flex layout, therefore we put the padding in a
+          -- child element). This is fixed by using Grid Layout, once it's in
+          -- most browsers.
         , children [ div [ padding (em 0.86) ] ]
         ]
 
@@ -365,6 +373,18 @@ css =
             , backgroundColor (hex "#dfd9f7")
             , property "fill" "#54318f"
             ]
+        , (.) SuccessNotification
+            [ notification
+            , color (hex "#389f48")
+            , backgroundColor (hex "#f6fff6")
+            , property "fill" "#389f48"
+            ]
+        , (.) SmoothAppearing
+            [ property "transition" "opacity .3s ease-in-out, max-height .3s ease-in-out"
+            , boxSizing borderBox
+            , maxHeight (px 500)
+            ]
+        , (.) Hidden [ maxHeight (px 0), opacity (num 0), property "pointer-events" "none" ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]
