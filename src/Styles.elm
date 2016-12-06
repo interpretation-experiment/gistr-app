@@ -41,6 +41,7 @@ type CssClasses
     | CenterText
     | FlexCenter
     | BtnIcon
+    | BtnIconBtn
     | BtnLink
     | Btn
     | BtnPrimary
@@ -252,7 +253,11 @@ css =
             , minHeight (px 60)
             , children
                 [ nav [ flex3 (num 0) (num 1) (pct 10), textAlign center ]
-                , (.) Meta [ marginLeft auto ]
+                , (.) Meta
+                    [ marginLeft auto
+                    , marginTop (px 10)
+                    , children [ (.) Avatar [ margin2 (px 0) (px 10) ] ]
+                    ]
                 ]
             ]
         , main_
@@ -298,8 +303,7 @@ css =
         , (.) CenterText [ textAlign center ]
         , (.) FlexCenter [ displayFlex, alignItems center ]
         , (.) Avatar
-            [ margin (px 10)
-            , width (px 40)
+            [ width (px 40)
             , height (px 40)
             , borderRadius (pct 100)
             , overflow hidden
@@ -475,15 +479,10 @@ css =
         , (.) BtnLink [ linkMixin ]
         , (.) BtnIcon
             [ border (px 0)
-            , backgroundColor unset
+            , backgroundColor initial
             , padding (px 0)
-            , margin (em 0.2)
             , cursor pointer
-            , opacity (num 0.65)
             , property "transition" "opacity 0.3s, fill 0.3s"
-            , hover [ opacity (num 1) ]
-            , focus [ opacity (num 1) ]
-            , active [ opacity (num 1) ]
             , disabled
                 [ cursor default
                 , opacity (num 0.65)
@@ -491,6 +490,13 @@ css =
                 ]
             , withClass Small [ width (px 18), height (px 18) ]
             , withClass Big [ width (px 30), height (px 30) ]
+            ]
+        , (.) BtnIconBtn
+            [ margin (em 0.2)
+            , opacity (num 0.65)
+            , hover [ opacity (num 1) ]
+            , focus [ opacity (num 1) ]
+            , active [ opacity (num 1) ]
             ]
         , (.) Btn
             [ btn

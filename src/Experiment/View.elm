@@ -52,17 +52,11 @@ header lift profile meta model =
 
                 Lifecycle.Done ->
                     "Experiment — Done"
-
-        instructionsState =
-            if Lifecycle.stateIsCompletable meta profile then
-                ExpModel.instructionsState model
-            else
-                Intro.hide
     in
         [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
         , Intro.node
             (Instructions.viewConfig lift)
-            instructionsState
+            (ExpModel.instructionsState model)
             Instructions.Title
             Html.h1
             []
