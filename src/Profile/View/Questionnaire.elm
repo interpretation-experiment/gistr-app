@@ -18,22 +18,9 @@ import Types
 view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> List (Html.Html AppMsg.Msg)
 view lift model meta =
     [ Html.h2 [] [ Html.text "General questionnaire" ]
-    , intro model.questionnaire
+    , Html.div [] (List.map (\p -> Html.p [] [ Html.text p ]) Strings.questionnaireIntro)
     , form lift model.questionnaire meta
     ]
-
-
-intro : Form.Model Types.QuestionnaireForm -> Html.Html AppMsg.Msg
-intro { status } =
-    case status of
-        Form.Entering ->
-            Html.div [] (List.map (\p -> Html.p [] [ Html.text p ]) Strings.questionnaireIntro)
-
-        Form.Confirming ->
-            Html.div [] Strings.questionnaireCheck
-
-        Form.Sending ->
-            Html.div [] Strings.questionnaireCheck
 
 
 form :
@@ -202,6 +189,11 @@ form lift { input, feedback, status } meta =
                     ]
                 , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]
+            , Html.div
+                [ class [ Styles.RequestBox, Styles.SmoothAppearing ]
+                , classList [ ( Styles.Hidden, status == Form.Entering ) ]
+                ]
+                [ Html.div [] [ Html.p [] Strings.questionnaireCheck ] ]
             , Html.div [ class [ Styles.Error ] ]
                 ((Html.div [] [ Html.text (Feedback.getError "global" feedback) ]) :: submitButtons)
             , Html.p [] Strings.questionnaireComment
