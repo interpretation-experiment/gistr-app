@@ -6,8 +6,9 @@ import Auth.View.Recover
 import Auth.View.Register
 import Auth.View.Reset
 import Experiment.View
-import Html
 import Helpers
+import Home.View
+import Html
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Notification
@@ -17,7 +18,6 @@ import Styles exposing (class, classList, id)
 import Types
 import View.About
 import View.Error
-import View.Home
 
 
 notificationConfig : Notification.ViewConfig ( String, Html.Html Msg, Types.Notification ) Msg
@@ -58,7 +58,7 @@ routeView : Model -> List (Html.Html Msg)
 routeView model =
     case model.route of
         Router.Home ->
-            View.Home.view model
+            Home.View.view Msg.HomeMsg model
 
         Router.About ->
             View.About.view model

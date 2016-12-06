@@ -1,26 +1,30 @@
-module View.Home exposing (view)
+module Home.View exposing (view)
 
 import Helpers
+import Home.Instructions as Instructions
 import Html
+import Intro
 import Lifecycle
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg as AppMsg
+import Home.Msg exposing (Msg(..))
 import Router
 import Strings
 import Styles exposing (class, classList, id)
 import Types
 
 
-view : Model -> List (Html.Html Msg)
-view model =
-    [ Html.header [] (header model)
-    , Html.main_ [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body model) ]
-    , Html.footer [] (footer model)
+view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
+view lift model =
+    [ Html.header [] (header lift model)
+    , Html.main_ [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body lift model) ]
+    , Html.footer [] (footer lift model)
+    , Intro.overlay model.home
     ]
 
 
-header : Model -> List (Html.Html Msg)
-header model =
+header : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
+header lift model =
     case model.auth of
         Types.Anonymous ->
             []
@@ -29,7 +33,11 @@ header model =
             []
 
         Types.Authenticated { user } ->
-            [ Html.div
+            [ Intro.node
+                (Instructions.viewConfig lift)
+                model.home
+                Instructions.Profile
+                Html.div
                 [ class [ Styles.Meta, Styles.FlexCenter ] ]
                 [ Html.span []
                     [ Html.text "Howdy, "
@@ -40,21 +48,33 @@ header model =
             ]
 
 
-body : Model -> List (Html.Html Msg)
-body model =
+body : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
+body lift model =
     [ Html.div []
-        [ Html.div [ id Styles.Greeting ]
+        [ Intro.node
+            (Instructions.viewConfig lift)
+            model.home
+            Instructions.Greeting
+            Html.div
+            [ id Styles.Greeting ]
             [ Html.h1 [] [ Html.text "Gistr" ]
             , Html.p []
                 (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
             ]
-        , Html.div [] Strings.homeQuestions
-        , buttons model
+        , Intro.node
+            (Instructions.viewConfig lift)
+            model.home
+            Instructions.Body
+            Html.div
+            []
+            [ Html.div [] Strings.homeQuestions
+            , buttons model
+            ]
         ]
     ]
 
 
-buttons : Model -> Html.Html Msg
+buttons : Model -> Html.Html AppMsg.Msg
 buttons model =
     case model.auth of
         Types.Anonymous ->
@@ -81,10 +101,9 @@ buttons model =
                 ]
 
 
-footer : Model -> List (Html.Html Msg)
-footer model =
+footer : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
+footer lift model =
     let
-        -- TODO: intro icon
         devs =
             Helpers.hrefIcon
                 [ class [ Styles.Small ], Helpers.tooltip "Email the developers" ]
@@ -109,6 +128,12 @@ footer model =
                 "https://github.com/interpretation-experiment/gistr-app"
                 "github"
 
+        intro =
+            Helpers.evIconButton
+                [ class [ Styles.Small, Styles.NavIcon ], Helpers.tooltip "Play intro" ]
+                (lift InstructionsStart)
+                "question-circle"
+
         icons =
             case model.auth of
                 Types.Anonymous ->
@@ -119,20 +144,16 @@ footer model =
 
                 Types.Authenticated { user, meta } ->
                     if user.isStaff then
-                        -- TODO: and intro icon
-                        [ devs, about, twitter, github ]
+                        [ devs, about, twitter, github, intro ]
                     else
                         case Lifecycle.state meta user.profile of
                             Lifecycle.Training _ ->
-                                -- TODO: and intro icon
-                                [ devs, about ]
+                                [ devs, about, intro ]
 
                             Lifecycle.Experiment _ ->
-                                -- TODO: and intro icon
-                                [ devs, about ]
+                                [ devs, about, intro ]
 
                             Lifecycle.Done ->
-                                -- TODO: and intro icon
                                 [ devs, about, twitter, github ]
     in
         [ Html.div [] icons ]

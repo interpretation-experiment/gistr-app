@@ -5,6 +5,7 @@ import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
 import Form
 import Helpers exposing ((!!))
+import Home.Update as HomeUpdate
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
@@ -117,6 +118,14 @@ doUpdate msg model =
 
         WordSpanResult (Err error) ->
             update (Error error) model
+
+        {-
+           HOME
+        -}
+        HomeMsg msg ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    (HomeUpdate.update HomeMsg auth msg model |> processMsgs)
 
         {-
            AUTH

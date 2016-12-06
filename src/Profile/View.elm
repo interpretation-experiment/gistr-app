@@ -451,7 +451,7 @@ email lift email_ =
                 ++ verified
                 ++ setPrimary
                 ++ [ Helpers.evIconButton
-                        [ disabled, class [ Styles.Small ] ]
+                        [ disabled, class [ Styles.Small, Styles.BtnIconBtn ] ]
                         (lift <| DeleteEmail email_)
                         "trash"
                    ]

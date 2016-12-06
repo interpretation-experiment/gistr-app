@@ -4,6 +4,7 @@ import Animation
 import Api
 import Auth.Msg as Auth
 import Experiment.Msg as Experiment
+import Home.Msg as Home
 import Html
 import Notification
 import Profile.Msg as Profile
@@ -22,6 +23,8 @@ type Msg
     | Error Types.Error
       -- STORE
     | WordSpanResult (Api.Result Types.WordSpan)
+      -- HOME
+    | HomeMsg Home.Msg
       -- AUTH
     | AuthMsg Auth.Msg
       -- PROFILE
