@@ -433,9 +433,8 @@ tooltip config state id =
                             , ( "backgroundColor", "white" )
                             , ( "borderRadius", "3px" )
                             , ( "boxShadow", "0 1px 10px rgba(0, 0, 0, .4)" )
-                            , ( "fontSize", "unset" )
-                            , ( "fontWeight", "unset" )
-                            , ( "fontHeight", "unset" )
+                            , ( "fontSize", "0.85rem" )
+                            , ( "fontWeight", "400" )
                             , ( "textAlign", "left" )
                             ]
                         ]
