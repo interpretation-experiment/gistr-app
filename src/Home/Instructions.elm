@@ -22,6 +22,7 @@ type Node
 
 instructions : Nonempty ( Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
 instructions =
+    -- TODO: move to Strings.elm
     Nonempty.Nonempty
         ( Greeting
         , ( Intro.Bottom

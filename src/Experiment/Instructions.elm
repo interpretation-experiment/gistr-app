@@ -22,6 +22,7 @@ type Node
 
 instructions : Nonempty ( Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
 instructions =
+    -- TODO: move to Strings.elm
     Nonempty.Nonempty
         ( Title, ( Intro.Bottom, Html.p [] [ Html.text "This is the title!" ] ) )
         [ ( A, ( Intro.Right, Html.p [] [ Html.text "This is stuff A" ] ) )
