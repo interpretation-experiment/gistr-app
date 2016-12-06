@@ -122,7 +122,7 @@ doUpdate msg model =
            AUTH
         -}
         AuthMsg msg ->
-            AuthUpdate.update AuthMsg msg model |> processMaybeMsg
+            AuthUpdate.update AuthMsg msg model |> processMsgs
 
         {-
            PROFILE
@@ -130,7 +130,7 @@ doUpdate msg model =
         ProfileMsg msg ->
             Helpers.authenticatedOrIgnore model <|
                 \auth ->
-                    (ProfileUpdate.update ProfileMsg auth msg model |> processMaybeMsg)
+                    (ProfileUpdate.update ProfileMsg auth msg model |> processMsgs)
 
         {-
            EXPERIMENT
@@ -138,18 +138,16 @@ doUpdate msg model =
         ExperimentMsg msg ->
             Helpers.authenticatedOrIgnore model <|
                 \auth ->
-                    (ExperimentUpdate.update ExperimentMsg auth msg model |> processMaybeMsg)
+                    (ExperimentUpdate.update ExperimentMsg auth msg model |> processMsgs)
 
 
 
 -- UPDATE HELPERS
 
 
-processMaybeMsg : ( Model, Cmd Msg, Maybe Msg ) -> ( Model, Cmd Msg )
-processMaybeMsg ( model, cmd, maybeMsg ) =
-    case maybeMsg of
-        Nothing ->
-            ( model, cmd )
-
-        Just msg ->
-            update msg model !! [ cmd ]
+processMsgs : ( Model, Cmd Msg, List Msg ) -> ( Model, Cmd Msg )
+processMsgs ( model, cmd, msgs ) =
+    List.foldl
+        (\msg ( lastModel, lastCmd ) -> update msg lastModel !! [ lastCmd ])
+        ( model, cmd )
+        msgs

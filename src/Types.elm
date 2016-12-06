@@ -385,3 +385,4 @@ emptyPasswordCredentials =
 type Notification
     = Info
     | Warning
+    | Success

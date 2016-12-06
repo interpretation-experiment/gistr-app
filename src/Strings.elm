@@ -186,3 +186,68 @@ homeQuestions =
 resetProblem : String
 resetProblem =
     "There was a problem. Did you use the last password-reset link you received?"
+
+
+recoverPasswordNoEmailTitle : String
+recoverPasswordNoEmailTitle =
+    "Configure your emails"
+
+
+recoverPasswordNoEmail : Html.Html Msg
+recoverPasswordNoEmail =
+    Html.div []
+        [ Html.p []
+            [ Html.text "We have no email address to send you a password reset link." ]
+        , Html.p []
+            [ Helpers.navA [] (Router.Profile Router.Emails) "Configure an email address"
+            , Html.text " first!"
+            ]
+        ]
+
+
+recoverPasswordSentTitle : String
+recoverPasswordSentTitle =
+    "Password reset by email"
+
+
+recoverPasswordSent : String -> Html.Html msg
+recoverPasswordSent email =
+    Html.p []
+        [ Html.text "We just sent an email to "
+        , Html.strong [] [ Html.text email ]
+        , Html.text " with instructions to reset your password"
+        ]
+
+
+verifyEmailSentTitle : String
+verifyEmailSentTitle =
+    "Verification email"
+
+
+verifyEmailSent : String -> Html.Html msg
+verifyEmailSent email =
+    Html.p []
+        [ Html.text "We just sent a verification email to "
+        , Html.strong [] [ Html.text email ]
+        , Html.text ", please follow the instructions in it"
+        ]
+
+
+emailConfirmedTitle : String
+emailConfirmedTitle =
+    "Email confirmed"
+
+
+emailConfirmed : Html.Html msg
+emailConfirmed =
+    Html.text "Your email address was successfully confirmed!"
+
+
+questionnaireCompletedTitle : String
+questionnaireCompletedTitle =
+    "Questionnaire completed"
+
+
+questionnaireCompleted : Html.Html msg
+questionnaireCompleted =
+    Html.text "Thanks for filling the questionnaire!"

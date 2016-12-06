@@ -164,7 +164,6 @@ lifecycle meta profile =
                     describeTests tests
 
             Lifecycle.Done ->
-                -- TODO
                 Html.div [ class [ Styles.InfoBox ] ]
                     [ Html.div [] [ Html.text "TODO: exp done! Show completion code if we have a prolific id. Show stats and point to profile/tree exploration." ] ]
 

@@ -13,6 +13,7 @@ import Intro
 import Lifecycle
 import List
 import List.Nonempty as Nonempty
+import Maybe.Extra exposing (maybeToList)
 import Model exposing (Model)
 import Msg as AppMsg
 import Random
@@ -29,13 +30,13 @@ update :
     -> Types.Auth
     -> Msg
     -> Model
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 update lift auth msg model =
     case msg of
         NoOp ->
             ( model
             , Cmd.none
-            , Nothing
+            , []
             )
 
         ClockMsg msg ->
@@ -66,7 +67,7 @@ update lift auth msg model =
                     in
                         ( { trial | clock = newClock }
                         , Cmd.none
-                        , maybeOut
+                        , maybeToList maybeOut
                         )
 
         {-
@@ -81,7 +82,7 @@ update lift auth msg model =
                     in
                         ( newState
                         , Cmd.none
-                        , maybeOut
+                        , maybeToList maybeOut
                         )
 
         InstructionsStart ->
@@ -92,21 +93,21 @@ update lift auth msg model =
             in
                 ( { model | experiment = model.experiment |> ExpModel.setState instructions }
                 , Cmd.none
-                , Nothing
+                , []
                 )
 
         InstructionsQuit index ->
             if Nonempty.length Instructions.order == index + 1 then
                 ( model
                 , Cmd.none
-                , Just <| lift <| InstructionsDone
+                , [ lift InstructionsDone ]
                 )
             else
                 updateInstructionsOrIgnore model <|
                     \state ->
                         ( Intro.hide
                         , Cmd.none
-                        , Nothing
+                        , []
                         )
 
         InstructionsDone ->
@@ -125,19 +126,19 @@ update lift auth msg model =
                             updateProfile
                           else
                             Cmd.none
-                        , Nothing
+                        , []
                         )
 
         InstructionsDoneResult (Ok profile) ->
             ( Helpers.updateProfile model profile
             , Cmd.none
-            , Nothing
+            , []
             )
 
         InstructionsDoneResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         {-
@@ -253,14 +254,14 @@ update lift auth msg model =
                                 -- Preload training sentences
                                 ( loadingModel
                                 , preloadAndSelect
-                                , Nothing
+                                , []
                                 )
 
                             ExpModel.Instructions _ ->
                                 -- Preload training sentences
                                 ( loadingModel
                                 , preloadAndSelect
-                                , Nothing
+                                , []
                                 )
 
                             ExpModel.Trial trial ->
@@ -269,31 +270,31 @@ update lift auth msg model =
                                         -- Load one remote sentence
                                         ( loadingModel
                                         , loadSingle
-                                        , Nothing
+                                        , []
                                         )
 
                                     Ok ( preLoaded, selected ) ->
                                         -- Use preloaded sentence
                                         ( model
                                         , Cmd.none
-                                        , Ok ( preLoaded, selected )
-                                            |> LoadTrialResult
-                                            |> lift
-                                            |> Just
+                                        , [ Ok ( preLoaded, selected )
+                                                |> LoadTrialResult
+                                                |> lift
+                                          ]
                                         )
 
                     Lifecycle.Experiment _ ->
                         -- Load one remote sentence
                         ( loadingModel
                         , loadSingle
-                        , Nothing
+                        , []
                         )
 
                     Lifecycle.Done ->
                         -- Ignore
                         ( model
                         , Cmd.none
-                        , Nothing
+                        , []
                         )
 
         LoadTrialResult (Ok ( preLoaded, current )) ->
@@ -323,13 +324,13 @@ update lift auth msg model =
                             |> ExpModel.setState (ExpModel.Trial newTrial)
                   }
                 , Cmd.none
-                , Nothing
+                , []
                 )
 
         LoadTrialResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         TrialTask ->
@@ -340,7 +341,7 @@ update lift auth msg model =
                         , clock = Clock.init <| 2 * Time.second
                       }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         TrialWrite ->
@@ -351,7 +352,7 @@ update lift auth msg model =
                         , clock = Clock.init <| Helpers.writeTime auth.meta trial.current
                       }
                     , Cmds.autofocus
-                    , Nothing
+                    , []
                     )
 
         TrialTimeout ->
@@ -359,7 +360,7 @@ update lift auth msg model =
                 \trial ->
                     ( { trial | state = ExpModel.Timeout, clock = Clock.disabled }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         TrialPause ->
@@ -367,7 +368,7 @@ update lift auth msg model =
                 \trial ->
                     ( { trial | state = ExpModel.Pause, clock = Clock.disabled }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         WriteInput input ->
@@ -377,13 +378,13 @@ update lift auth msg model =
                         ExpModel.Writing form ->
                             ( { trial | state = ExpModel.Writing (Form.input input form) }
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
                         _ ->
                             ( trial
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
         WriteSubmit input ->
@@ -430,13 +431,13 @@ update lift auth msg model =
                                 ( trialState trial form
                                 , Api.updateProfile auth { profile | trained = True }
                                     |> Task.attempt (lift << WriteResult)
-                                , Nothing
+                                , []
                                 )
                             else
                                 -- Move directly to next training trial
                                 ( trialState trial form
                                 , Cmd.none
-                                , Just <| lift <| WriteResult <| Ok profile
+                                , [ lift <| WriteResult <| Ok profile ]
                                 )
 
                         Lifecycle.Experiment _ ->
@@ -444,13 +445,13 @@ update lift auth msg model =
                             ( trialState trial form
                             , Api.postSentence auth (newSentence trial)
                                 |> Task.attempt (lift << WriteResult)
-                            , Nothing
+                            , []
                             )
 
                         Lifecycle.Done ->
                             ( trial
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
                 inputInvalid trial form =
@@ -459,7 +460,7 @@ update lift auth msg model =
                         , clock = Clock.resume trial.clock
                       }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
             in
                 updateTrialOrIgnore model <|
@@ -474,7 +475,7 @@ update lift auth msg model =
                             _ ->
                                 ( trial
                                 , Cmd.none
-                                , Nothing
+                                , []
                                 )
 
         WriteResult (Ok profile) ->
@@ -506,7 +507,7 @@ update lift auth msg model =
                                         model.experiment
                               }
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
                         else
                             let
@@ -526,13 +527,13 @@ update lift auth msg model =
                     _ ->
                         ( model
                         , Cmd.none
-                        , Nothing
+                        , []
                         )
 
         WriteResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
 
@@ -542,10 +543,10 @@ update lift auth msg model =
 
 updateTrialOrIgnore :
     Model
-    -> (ExpModel.TrialModel -> ( ExpModel.TrialModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg ))
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> (ExpModel.TrialModel -> ( ExpModel.TrialModel, Cmd AppMsg.Msg, List AppMsg.Msg ))
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 updateTrialOrIgnore model updater =
-    Helpers.trialOr model ( model, Cmd.none, Nothing ) <|
+    Helpers.trialOr model ( model, Cmd.none, [] ) <|
         \trial ->
             let
                 ( newTrial, cmd, maybeOut ) =
@@ -566,9 +567,9 @@ updateTrialOrIgnore model updater =
 updateInstructionsOrIgnore :
     Model
     -> (Intro.State Instructions.Node
-        -> ( Intro.State Instructions.Node, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+        -> ( Intro.State Instructions.Node, Cmd AppMsg.Msg, List AppMsg.Msg )
        )
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 updateInstructionsOrIgnore model updater =
     case model.experiment.state of
         ExpModel.Instructions state ->
@@ -590,5 +591,5 @@ updateInstructionsOrIgnore model updater =
         _ ->
             ( model
             , Cmd.none
-            , Nothing
+            , []
             )

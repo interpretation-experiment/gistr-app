@@ -17,7 +17,7 @@ import Types
 import Validate
 
 
-update : (Msg -> AppMsg.Msg) -> Msg -> Model -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+update : (Msg -> AppMsg.Msg) -> Msg -> Model -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 update lift msg model =
     case msg of
         {-
@@ -26,13 +26,13 @@ update lift msg model =
         LoginFormInput input ->
             ( { model | login = Form.input input model.login }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         Login credentials ->
             ( { model | login = Form.setStatus Form.Sending model.login }
             , Api.login credentials |> Task.attempt (lift << LoginResult)
-            , Nothing
+            , []
             )
 
         LoginResult (Ok auth) ->
@@ -59,7 +59,7 @@ update lift msg model =
                 \feedback ->
                     ( { model | login = Form.fail feedback model.login }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         {-
@@ -70,7 +70,7 @@ update lift msg model =
                 Just token ->
                     ( model
                     , Api.getAuth token |> Task.attempt (lift << LoginLocalTokenResult)
-                    , Nothing
+                    , []
                     )
 
                 Nothing ->
@@ -79,7 +79,7 @@ update lift msg model =
         LoginLocalTokenResult (Ok auth) ->
             ( model
             , Cmd.none
-            , Just <| lift <| LoginResult <| Ok auth
+            , [ lift <| LoginResult <| Ok auth ]
             )
 
         LoginLocalTokenResult (Err _) ->
@@ -89,7 +89,7 @@ update lift msg model =
            LOGOUT
         -}
         Logout ->
-            Helpers.authenticatedOr model ( model, Cmd.none, Nothing ) <|
+            Helpers.authenticatedOr model ( model, Cmd.none, [] ) <|
                 \auth ->
                     Helpers.updateAuth Types.Authenticating model
                         !!! [ Api.logout auth |> Task.attempt (lift << LogoutResult)
@@ -111,7 +111,7 @@ update lift msg model =
             in
                 ( model
                 , Cmd.none
-                , Just <| lift <| LogoutResult <| Ok ()
+                , [ lift <| LogoutResult <| Ok () ]
                 )
 
         {-
@@ -120,14 +120,14 @@ update lift msg model =
         SetProlificFormInput input ->
             ( { model | prolific = Form.input input model.prolific }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         SetProlific prolificId ->
             if Regex.contains (Regex.regex "^[a-z0-9]+$") prolificId then
                 ( model
                 , Cmd.none
-                , Just <| AppMsg.NavigateTo <| Router.Register <| Just prolificId
+                , [ AppMsg.NavigateTo <| Router.Register <| Just prolificId ]
                 )
             else
                 let
@@ -136,7 +136,7 @@ update lift msg model =
                 in
                     ( { model | prolific = Form.fail invalid model.prolific }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         {-
@@ -147,13 +147,13 @@ update lift msg model =
                 Model.Form form ->
                     ( { model | recover = Model.Form (Form.input input form) }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
                 Model.Sent _ ->
                     ( model
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         Recover email ->
@@ -161,19 +161,19 @@ update lift msg model =
                 Model.Form form ->
                     ( { model | recover = Model.Form (Form.setStatus Form.Sending form) }
                     , Api.recover email |> Task.attempt (lift << RecoverResult email)
-                    , Nothing
+                    , []
                     )
 
                 Model.Sent _ ->
                     ( model
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         RecoverResult email (Ok ()) ->
             ( { model | recover = Model.Sent email }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         RecoverResult _ (Err error) ->
@@ -183,13 +183,13 @@ update lift msg model =
                         Model.Form form ->
                             ( { model | recover = Model.Form (Form.fail feedback form) }
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
                         Model.Sent _ ->
                             ( model
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
         {-
@@ -200,13 +200,13 @@ update lift msg model =
                 Model.Form form ->
                     ( { model | reset = Model.Form (Form.input input form) }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
                 Model.Sent _ ->
                     ( model
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         Reset credentials tokens ->
@@ -226,18 +226,18 @@ update lift msg model =
                             ( { model | reset = Model.Form (Form.setStatus Form.Sending form) }
                             , Api.reset tokens credentials
                                 |> Task.attempt (lift << ResetResult)
-                            , Nothing
+                            , []
                             )
                         else
                             ( { model | reset = Model.Form (Form.fail feedback form) }
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
                 Model.Sent _ ->
                     ( model
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         ResetResult (Ok ()) ->
@@ -265,13 +265,13 @@ update lift msg model =
                                         Model.Form (Form.fail (transpose feedback) form)
                                   }
                                 , Cmd.none
-                                , Nothing
+                                , []
                                 )
 
                             Model.Sent _ ->
                                 ( model
                                 , Cmd.none
-                                , Nothing
+                                , []
                                 )
 
         {-
@@ -280,20 +280,20 @@ update lift msg model =
         RegisterFormInput input ->
             ( { model | register = Form.input input model.register }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         Register maybeProlific credentials ->
             ( { model | register = Form.setStatus Form.Sending model.register }
             , Api.register credentials maybeProlific
                 |> Task.attempt (lift << RegisterResult)
-            , Nothing
+            , []
             )
 
         RegisterResult (Ok auth) ->
             ( model
             , Cmd.none
-            , Just <| lift <| LoginResult <| Ok auth
+            , [ lift <| LoginResult <| Ok auth ]
             )
 
         RegisterResult (Err error) ->
@@ -309,5 +309,5 @@ update lift msg model =
                 \feedback ->
                     ( { model | register = Form.fail feedback model.register }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )

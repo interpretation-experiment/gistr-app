@@ -21,7 +21,7 @@ update :
     -> Types.Auth
     -> Msg
     -> Model
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 update lift auth msg model =
     case msg of
         {-
@@ -30,14 +30,14 @@ update lift auth msg model =
         ChangePasswordFormInput input ->
             ( { model | password = Form.input input model.password }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         ChangePassword credentials ->
             ( { model | password = Form.setStatus Form.Sending model.password }
             , Api.changePassword auth credentials
                 |> Task.attempt (lift << ChangePasswordResult)
-            , Nothing
+            , []
             )
 
         ChangePasswordResult (Ok auth) ->
@@ -50,7 +50,7 @@ update lift auth msg model =
             in
                 ( { model | password = Form.succeed emptyInput feedback model.password }
                 , Cmd.none
-                , Just <| AppMsg.AuthMsg <| AuthMsg.LoginResult <| Ok auth
+                , [ AppMsg.AuthMsg <| AuthMsg.LoginResult <| Ok auth ]
                 )
 
         ChangePasswordResult (Err error) ->
@@ -64,7 +64,7 @@ update lift auth msg model =
                 \feedback ->
                     ( { model | password = Form.fail feedback model.password }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         ChangePasswordRecover ->
@@ -77,31 +77,37 @@ update lift auth msg model =
             in
                 case maybeRecovery of
                     Nothing ->
-                        -- TODO popup notification
                         ( model
                         , Cmd.none
-                        , Nothing
+                        , [ Helpers.notify
+                                Strings.recoverPasswordNoEmailTitle
+                                Strings.recoverPasswordNoEmail
+                                Types.Warning
+                          ]
                         )
 
                     Just email ->
-                        -- TODO popup notification
                         ( model
                         , Api.recover email.email
-                            |> Task.attempt (lift << ChangePasswordRecoverResult)
-                        , Nothing
+                            |> Task.attempt
+                                (lift << ChangePasswordRecoverResult email.email)
+                        , []
                         )
 
-        ChangePasswordRecoverResult (Ok ()) ->
-            -- TODO popup notification
+        ChangePasswordRecoverResult email (Ok ()) ->
             ( model
             , Cmd.none
-            , Nothing
+            , [ Helpers.notify
+                    Strings.recoverPasswordSentTitle
+                    (Strings.recoverPasswordSent email)
+                    Types.Info
+              ]
             )
 
-        ChangePasswordRecoverResult (Err error) ->
+        ChangePasswordRecoverResult _ (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         {-
@@ -110,7 +116,7 @@ update lift auth msg model =
         ChangeUsernameFormInput input ->
             ( { model | username = Form.input input model.username }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         ChangeUsername username ->
@@ -121,7 +127,7 @@ update lift auth msg model =
                 ( { model | username = Form.setStatus Form.Sending model.username }
                 , Api.updateUser auth { user | username = username }
                     |> Task.attempt (lift << ChangeUsernameResult)
-                , Nothing
+                , []
                 )
 
         ChangeUsernameResult (Ok user) ->
@@ -133,7 +139,7 @@ update lift auth msg model =
                     { model | username = Form.succeed "" feedback model.username }
                     user
                 , Cmd.none
-                , Nothing
+                , []
                 )
 
         ChangeUsernameResult (Err error) ->
@@ -141,7 +147,7 @@ update lift auth msg model =
                 \feedback ->
                     ( { model | username = Form.fail feedback model.username }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         {-
@@ -159,11 +165,10 @@ update lift auth msg model =
                 ( Helpers.updateUser model { user | emails = emails }
                 , Api.verifyEmail auth email
                     |> Task.attempt (lift << VerifyEmailResult email)
-                , Nothing
+                , []
                 )
 
         VerifyEmailResult email (Ok ()) ->
-            -- TODO popup notification
             let
                 user =
                     auth.user
@@ -177,29 +182,36 @@ update lift auth msg model =
             in
                 ( Helpers.updateUser model { user | emails = emails }
                 , Cmd.none
-                , Nothing
+                , [ Helpers.notify
+                        Strings.verifyEmailSentTitle
+                        (Strings.verifyEmailSent email.email)
+                        Types.Info
+                  ]
                 )
 
         VerifyEmailResult _ (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         ConfirmEmailResult (Ok user) ->
-            -- TODO popup notification
             ( Helpers.updateUser model user
             , Cmd.none
-            , Just <| AppMsg.NavigateTo <| Router.Profile Router.Emails
+            , [ AppMsg.NavigateTo <| Router.Profile Router.Emails
+              , Helpers.notify
+                    Strings.emailConfirmedTitle
+                    Strings.emailConfirmed
+                    Types.Success
+              ]
             )
 
         ConfirmEmailResult (Err error) ->
-            -- TODO popup notification
             Helpers.extractFeedback error model [ ( "detail", "global" ) ] <|
                 \_ ->
                     ( { model | emailConfirmation = Model.ConfirmationFail }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         PrimaryEmail email ->
@@ -215,19 +227,19 @@ update lift auth msg model =
                 ( Helpers.updateUser model { user | emails = emails }
                 , Api.updateEmail auth { email | primary = True }
                     |> Task.attempt (lift << PrimaryEmailResult)
-                , Nothing
+                , []
                 )
 
         PrimaryEmailResult (Ok user) ->
             ( Helpers.updateUser model user
             , Cmd.none
-            , Nothing
+            , []
             )
 
         PrimaryEmailResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         DeleteEmail email ->
@@ -256,36 +268,34 @@ update lift auth msg model =
                 , fixPrimary
                     |> Task.andThen (always <| Api.deleteEmail auth email)
                     |> Task.attempt (lift << DeleteEmailResult)
-                , Nothing
+                , []
                 )
 
         DeleteEmailResult (Ok user) ->
-            -- TODO popup notification
             ( Helpers.updateUser model user
             , Cmd.none
-            , Nothing
+            , []
             )
 
         DeleteEmailResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         AddEmailFormInput input ->
             ( { model | emails = Form.input input model.emails }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         AddEmail input ->
             ( { model | emails = Form.setStatus Form.Sending model.emails }
-            , Api.addEmail auth input |> Task.attempt (lift << AddEmailResult)
-            , Nothing
+            , Api.addEmail auth input |> Task.attempt (lift << AddEmailResult input)
+            , []
             )
 
-        AddEmailResult (Ok user) ->
-            -- TODO: popup notification
+        AddEmailResult email (Ok user) ->
             let
                 feedback =
                     Feedback.globalSuccess model.emails.feedback
@@ -294,15 +304,19 @@ update lift auth msg model =
                     { model | emails = Form.succeed "" feedback model.emails }
                     user
                 , Cmd.none
-                , Nothing
+                , [ Helpers.notify
+                        Strings.verifyEmailSentTitle
+                        (Strings.verifyEmailSent email)
+                        Types.Info
+                  ]
                 )
 
-        AddEmailResult (Err error) ->
+        AddEmailResult _ (Err error) ->
             Helpers.extractFeedback error model [ ( "email", "global" ) ] <|
                 \feedback ->
                     ( { model | emails = Form.fail feedback model.emails }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         {-
@@ -311,7 +325,7 @@ update lift auth msg model =
         QuestionnaireFormInput input ->
             ( { model | questionnaire = Form.input input model.questionnaire }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         QuestionnaireFormConfirm input ->
@@ -344,18 +358,18 @@ update lift auth msg model =
                 if Feedback.isEmpty feedback then
                     ( { model | questionnaire = Form.confirm input model.questionnaire }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
                 else
                     ( { model | questionnaire = Form.fail feedback model.questionnaire }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         QuestionnaireFormCorrect ->
             ( { model | questionnaire = Form.setStatus Form.Entering model.questionnaire }
             , Cmd.none
-            , Nothing
+            , []
             )
 
         QuestionnaireFormSubmit input ->
@@ -377,14 +391,18 @@ update lift auth msg model =
                 ( { model | questionnaire = Form.setStatus Form.Sending model.questionnaire }
                 , Api.postQuestionnaire auth processedInput
                     |> Task.attempt (lift << QuestionnaireFormResult)
-                , Nothing
+                , []
                 )
 
         QuestionnaireFormResult (Ok profile) ->
-            -- TODO: popup notification
             ( Helpers.updateProfile model profile
             , Cmd.none
-            , Just <| AppMsg.NavigateTo <| Router.Profile Router.Dashboard
+            , [ AppMsg.NavigateTo <| Router.Profile Router.Dashboard
+              , Helpers.notify
+                    Strings.questionnaireCompletedTitle
+                    Strings.questionnaireCompleted
+                    Types.Success
+              ]
             )
 
         QuestionnaireFormResult (Err error) ->
@@ -401,5 +419,5 @@ update lift auth msg model =
                 \feedback ->
                     ( { model | questionnaire = Form.fail feedback model.questionnaire }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )

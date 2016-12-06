@@ -35,6 +35,9 @@ notificationTemplate ( title, content, tipe ) dismiss =
 
                 Types.Warning ->
                     Styles.WarningNotification
+
+                Types.Success ->
+                    Styles.SuccessNotification
     in
         Html.div [ class [ style ] ]
             [ Helpers.evIconButton [] dismiss "close"

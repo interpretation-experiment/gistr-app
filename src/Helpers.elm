@@ -24,6 +24,7 @@ module Helpers
         , navIcon
         , navigateTo
         , notAuthed
+        , notify
         , onInputContent
         , readTime
         , resultToTask
@@ -52,7 +53,8 @@ import List.Extra exposing (splitAt)
 import MD5
 import Maybe.Extra exposing ((?), unwrap)
 import Model exposing (Model)
-import Msg exposing (Msg(NavigateTo, Error))
+import Msg exposing (Msg(NavigateTo, Error, Notify))
+import Notification
 import Random
 import Router
 import String
@@ -79,9 +81,9 @@ cmd msg =
     model ! (cmd :: cmds)
 
 
-(!!!) : ( model, Cmd msg, Maybe msg ) -> List (Cmd msg) -> ( model, Cmd msg, Maybe msg )
-(!!!) ( model, cmd, maybeMsg ) cmds =
-    ( model, Cmd.batch (cmd :: cmds), maybeMsg )
+(!!!) : ( model, Cmd msg, List msg ) -> List (Cmd msg) -> ( model, Cmd msg, List msg )
+(!!!) ( model, cmd, msgs ) cmds =
+    ( model, Cmd.batch (cmd :: cmds), msgs )
 
 
 authenticatedOr : { a | auth : Types.AuthStatus } -> b -> (Types.Auth -> b) -> b
@@ -157,8 +159,8 @@ extractFeedback :
     Types.Error
     -> Model
     -> List ( String, String )
-    -> (Feedback.Feedback -> ( Model, Cmd Msg, Maybe Msg ))
-    -> ( Model, Cmd Msg, Maybe Msg )
+    -> (Feedback.Feedback -> ( Model, Cmd Msg, List Msg ))
+    -> ( Model, Cmd Msg, List Msg )
 extractFeedback error model fields feedbackFunc =
     case error of
         Types.HttpError httpError ->
@@ -169,13 +171,20 @@ extractFeedback error model fields feedbackFunc =
                             feedbackFunc feedback
 
                         Err _ ->
-                            ( model, Cmd.none, Just <| Error <| error )
+                            ( model, Cmd.none, [ Error error ] )
 
                 _ ->
-                    ( model, Cmd.none, Just <| Error <| error )
+                    ( model, Cmd.none, [ Error error ] )
 
         Types.Unrecoverable _ ->
-            ( model, Cmd.none, Just <| Error <| error )
+            ( model, Cmd.none, [ Error error ] )
+
+
+notify : String -> Html.Html Msg -> Types.Notification -> Msg
+notify title content tipe =
+    Notify <|
+        Notification.Notify <|
+            Notification.notification ( title, content, tipe ) (Just <| 10 * Time.second)
 
 
 
@@ -185,11 +194,11 @@ extractFeedback error model fields feedbackFunc =
 updateAuth :
     Types.AuthStatus
     -> Model
-    -> ( Model, Cmd Msg, Maybe Msg )
+    -> ( Model, Cmd Msg, List Msg )
 updateAuth authStatus model =
     ( { model | auth = authStatus }
     , Cmd.none
-    , Just (NavigateTo model.route)
+    , [ NavigateTo model.route ]
     )
 
 
@@ -197,7 +206,7 @@ updateAuthNav :
     Types.AuthStatus
     -> Router.Route
     -> Model
-    -> ( Model, Cmd Msg, Maybe Msg )
+    -> ( Model, Cmd Msg, List Msg )
 updateAuthNav authStatus route model =
     updateAuth authStatus { model | route = route }
 
