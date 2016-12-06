@@ -107,7 +107,7 @@ update lift auth msg model =
                     ExpModel.Instructions
                         (Intro.start <| Nonempty.map Tuple.first View.instructions)
             in
-                ( { model | experiment = model.experiment |> ExpModel.setState instructions }
+                ( { model | experiment = ExpModel.setState instructions model.experiment }
                 , Cmd.none
                 , []
                 )
