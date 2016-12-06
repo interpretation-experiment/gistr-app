@@ -220,7 +220,7 @@ subscription lift state =
         Running Start _ ->
             Sub.batch
                 [ Keyboard.downs (lift << KeyDown)
-                , Time.every (200 * Time.millisecond) (always <| lift FinishTransition)
+                , Time.every (100 * Time.millisecond) (always <| lift FinishTransition)
                 ]
 
         Running End _ ->
@@ -418,7 +418,7 @@ tooltip config state id =
 
                             End ->
                                 [ ( "opacity", "1" )
-                                , ( "transition", "opacity 0.5s ease-in-out" )
+                                , ( "transition", "opacity 0.3s ease-in-out" )
                                 ]
                 in
                     [ Html.div
@@ -433,9 +433,10 @@ tooltip config state id =
                             , ( "backgroundColor", "white" )
                             , ( "borderRadius", "3px" )
                             , ( "boxShadow", "0 1px 10px rgba(0, 0, 0, .4)" )
-                            , ( "fontSize", "initial" )
-                            , ( "fontWeight", "initial" )
-                            , ( "fontHeight", "initial" )
+                            , ( "fontSize", "unset" )
+                            , ( "fontWeight", "unset" )
+                            , ( "fontHeight", "unset" )
+                            , ( "textAlign", "left" )
                             ]
                         ]
                         (tooltipContent config zipper)
