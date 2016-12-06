@@ -49,7 +49,7 @@ type alias Choice =
 
 
 type alias Meta =
-    { -- BRANCH SHAPING
+    { -- TREE SHAPING
       targetBranchDepth : Int
     , targetBranchCount : Int
     , branchProbability : Float
@@ -70,8 +70,6 @@ type alias Meta =
       defaultLanguge : String
     , supportedLanguages : List Choice
     , otherLanguage : String
-    , -- SERVER VERSION
-      version : String
     }
 
 
