@@ -1,7 +1,6 @@
-module Experiment.View exposing (view)
+module Experiment.View exposing (view, instructions)
 
 import Clock
-import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
 import Feedback
@@ -12,11 +11,39 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Intro
 import Lifecycle
+import List.Nonempty as Nonempty
+import List.Nonempty exposing (Nonempty)
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
 import Styles exposing (class, classList, id)
 import Types
+
+
+-- INSTRUCTIONS
+
+
+instructionsConfig : (Msg -> AppMsg.Msg) -> Intro.ViewConfig ExpModel.Node AppMsg.Msg
+instructionsConfig lift =
+    Intro.viewConfig
+        { liftMsg = lift << InstructionsMsg
+        , tooltip = (\i -> Tuple.second (Nonempty.get i instructions))
+        }
+
+
+instructions : Nonempty ( ExpModel.Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
+instructions =
+    -- TODO: move to Strings.elm
+    Nonempty.Nonempty
+        ( ExpModel.Title, ( Intro.Bottom, Html.p [] [ Html.text "This is the title!" ] ) )
+        [ ( ExpModel.A, ( Intro.Right, Html.p [] [ Html.text "This is stuff A" ] ) )
+        , ( ExpModel.A, ( Intro.Top, Html.p [] [ Html.text "This is stuff A again" ] ) )
+        , ( ExpModel.B, ( Intro.Left, Html.p [] [ Html.text "And finally stuff B" ] ) )
+        ]
+
+
+
+-- VIEW
 
 
 view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
@@ -32,6 +59,10 @@ view lift model =
 
         Types.Anonymous ->
             [ Helpers.notAuthed ]
+
+
+
+-- HEADER
 
 
 header :
@@ -55,13 +86,17 @@ header lift profile meta model =
     in
         [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
         , Intro.node
-            (Instructions.viewConfig lift)
+            (instructionsConfig lift)
             (ExpModel.instructionsState model)
-            Instructions.Title
+            ExpModel.Title
             Html.h1
             []
             [ Html.text title ]
         ]
+
+
+
+-- BODY
 
 
 body :
@@ -80,7 +115,7 @@ body lift profile meta model =
 
                 ExpModel.Instructions introState ->
                     Html.div [ class [ Styles.Normal ] ]
-                        [ Html.div [] (instructions lift model.loadingNext introState) ]
+                        [ Html.div [] (instructionsView lift model.loadingNext introState) ]
 
                 ExpModel.Trial trialModel ->
                     Html.div [ class [ Styles.Narrow ] ]
@@ -115,23 +150,27 @@ body lift profile meta model =
                     [ Html.div [] [ Html.text "TODO: exp done" ] ]
 
 
-instructions :
+
+-- INSTRUCTIONS
+
+
+instructionsView :
     (Msg -> AppMsg.Msg)
     -> Bool
-    -> Intro.State Instructions.Node
+    -> Intro.State ExpModel.Node
     -> List (Html.Html AppMsg.Msg)
-instructions lift loading state =
+instructionsView lift loading state =
     [ Intro.node
-        (Instructions.viewConfig lift)
+        (instructionsConfig lift)
         state
-        Instructions.A
+        ExpModel.A
         Html.p
         []
         [ Html.text "First stuff" ]
     , Intro.node
-        (Instructions.viewConfig lift)
+        (instructionsConfig lift)
         state
-        Instructions.B
+        ExpModel.B
         Html.p
         []
         [ Html.text "Second stuff" ]
@@ -145,6 +184,10 @@ instructions lift loading state =
         "Start"
     , Intro.overlay state
     ]
+
+
+
+-- TRIAL
 
 
 trial : (Msg -> AppMsg.Msg) -> Bool -> ExpModel.TrialModel -> List (Html.Html AppMsg.Msg)

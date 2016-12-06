@@ -1,6 +1,7 @@
 module Experiment.Model
     exposing
         ( Model
+        , Node(..)
         , State(..)
         , TrialModel
         , TrialState(..)
@@ -12,7 +13,6 @@ module Experiment.Model
         )
 
 import Clock
-import Experiment.Instructions as Instructions
 import Form
 import Intro
 import Types
@@ -33,7 +33,7 @@ type alias Model =
 
 type State
     = JustFinished
-    | Instructions (Intro.State Instructions.Node)
+    | Instructions (Intro.State Node)
     | Trial TrialModel
 
 
@@ -55,10 +55,20 @@ type TrialState
 
 
 
+-- INSTRUCTIONS
+
+
+type Node
+    = Title
+    | A
+    | B
+
+
+
 -- HELPERS
 
 
-instructionsState : Model -> Intro.State Instructions.Node
+instructionsState : Model -> Intro.State Node
 instructionsState model =
     case model.state of
         Instructions state ->

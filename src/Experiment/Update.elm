@@ -3,9 +3,9 @@ module Experiment.Update exposing (update)
 import Api
 import Clock
 import Cmds
-import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Experiment.View as View
 import Feedback
 import Form
 import Helpers
@@ -23,6 +23,21 @@ import Task
 import Time
 import Types
 import Validate
+
+
+-- INSTRUCTIONS
+
+
+instructionsConfig : (Msg -> AppMsg.Msg) -> Intro.UpdateConfig ExpModel.Node AppMsg.Msg
+instructionsConfig lift =
+    Intro.updateConfig
+        { onQuit = lift << InstructionsQuit
+        , onDone = lift InstructionsDone
+        }
+
+
+
+-- UPDATE
 
 
 update :
@@ -78,7 +93,7 @@ update lift auth msg model =
                 \state ->
                     let
                         ( newState, maybeOut ) =
-                            Intro.update (Instructions.updateConfig lift) msg state
+                            Intro.update (instructionsConfig lift) msg state
                     in
                         ( newState
                         , Cmd.none
@@ -89,7 +104,8 @@ update lift auth msg model =
             -- TODO: differentiate training and exp, and set intro path accordingly
             let
                 instructions =
-                    ExpModel.Instructions (Intro.start Instructions.order)
+                    ExpModel.Instructions
+                        (Intro.start <| Nonempty.map Tuple.first View.instructions)
             in
                 ( { model | experiment = model.experiment |> ExpModel.setState instructions }
                 , Cmd.none
@@ -97,7 +113,7 @@ update lift auth msg model =
                 )
 
         InstructionsQuit index ->
-            if Nonempty.length Instructions.order == index + 1 then
+            if Nonempty.length View.instructions == index + 1 then
                 ( model
                 , Cmd.none
                 , [ lift InstructionsDone ]
@@ -566,8 +582,8 @@ updateTrialOrIgnore model updater =
 
 updateInstructionsOrIgnore :
     Model
-    -> (Intro.State Instructions.Node
-        -> ( Intro.State Instructions.Node, Cmd AppMsg.Msg, List AppMsg.Msg )
+    -> (Intro.State ExpModel.Node
+        -> ( Intro.State ExpModel.Node, Cmd AppMsg.Msg, List AppMsg.Msg )
        )
     -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 updateInstructionsOrIgnore model updater =

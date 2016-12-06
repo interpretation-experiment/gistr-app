@@ -9,7 +9,7 @@ module Model
 
 import Experiment.Model as ExpModel
 import Form
-import Home.Instructions as HomeInstructions
+import Home.Model as HomeModel
 import Html
 import Intro
 import Msg exposing (Msg)
@@ -29,7 +29,7 @@ type alias Model =
     , error : Maybe Types.Error
     , notifications : Notification.Model ( String, Html.Html Msg, Types.Notification )
     , -- Page-related data
-      home : Intro.State HomeInstructions.Node
+      home : Intro.State HomeModel.Node
     , login : Form.Model Types.Credentials
     , recover : FinishableForm String String
     , reset : FinishableForm Types.ResetCredentials ()

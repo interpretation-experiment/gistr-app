@@ -1,17 +1,54 @@
-module Home.View exposing (view)
+module Home.View exposing (view, instructions)
 
 import Helpers
-import Home.Instructions as Instructions
+import Home.Model as HomeModel
+import Home.Msg exposing (Msg(..))
 import Html
 import Intro
 import Lifecycle
+import List.Nonempty as Nonempty
+import List.Nonempty exposing (Nonempty)
 import Model exposing (Model)
 import Msg as AppMsg
-import Home.Msg exposing (Msg(..))
 import Router
 import Strings
 import Styles exposing (class, classList, id)
 import Types
+
+
+-- INSTRUCTIONS
+
+
+instructions : Nonempty ( HomeModel.Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
+instructions =
+    Nonempty.Nonempty
+        ( HomeModel.Greeting
+        , ( Intro.Bottom, Html.p [] [ Html.text Strings.homeInstructionsGreeting ] )
+        )
+        [ ( HomeModel.Profile
+          , ( Intro.Left
+            , Html.div []
+                [ Html.p [] [ Html.text Strings.homeInstructionsProfileTests ]
+                , Html.p [] [ Html.text Strings.homeInstructionsProfileTestsWhenever ]
+                ]
+            )
+          )
+        , ( HomeModel.Body
+          , ( Intro.Bottom, Html.p [] [ Html.text Strings.homeInstructionsGetGoing ] )
+          )
+        ]
+
+
+instructionsConfig : (Msg -> AppMsg.Msg) -> Intro.ViewConfig HomeModel.Node AppMsg.Msg
+instructionsConfig lift =
+    Intro.viewConfig
+        { liftMsg = lift << InstructionsMsg
+        , tooltip = (\i -> Tuple.second (Nonempty.get i instructions))
+        }
+
+
+
+-- VIEW
 
 
 view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
@@ -34,9 +71,9 @@ header lift model =
 
         Types.Authenticated { user } ->
             [ Intro.node
-                (Instructions.viewConfig lift)
+                (instructionsConfig lift)
                 model.home
-                Instructions.Profile
+                HomeModel.Profile
                 Html.div
                 [ class [ Styles.Meta, Styles.FlexCenter ] ]
                 [ Html.span []
@@ -52,9 +89,9 @@ body : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
 body lift model =
     [ Html.div []
         [ Intro.node
-            (Instructions.viewConfig lift)
+            (instructionsConfig lift)
             model.home
-            Instructions.Greeting
+            HomeModel.Greeting
             Html.div
             [ id Styles.Greeting ]
             [ Html.h1 [] [ Html.text "Gistr" ]
@@ -62,9 +99,9 @@ body lift model =
                 (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
             ]
         , Intro.node
-            (Instructions.viewConfig lift)
+            (instructionsConfig lift)
             model.home
-            Instructions.Body
+            HomeModel.Body
             Html.div
             []
             [ Html.div [] Strings.homeQuestions

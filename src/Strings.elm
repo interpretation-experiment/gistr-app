@@ -251,3 +251,23 @@ questionnaireCompletedTitle =
 questionnaireCompleted : Html.Html msg
 questionnaireCompleted =
     Html.text "Thanks for filling the questionnaire!"
+
+
+homeInstructionsGreeting : String
+homeInstructionsGreeting =
+    "Hi! Welcome to the Gistr Experiment :-)"
+
+
+homeInstructionsProfileTests : String
+homeInstructionsProfileTests =
+    "There are a few tests and a questionnaire to fill in your profile page."
+
+
+homeInstructionsProfileTestsWhenever : String
+homeInstructionsProfileTestsWhenever =
+    "Feel free to do them when you want to!"
+
+
+homeInstructionsGetGoing : String
+homeInstructionsGetGoing =
+    "Get going on the experiment now! You'll get to know all about it afterwards."

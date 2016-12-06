@@ -2,8 +2,9 @@ module Home.Update exposing (update)
 
 import Api
 import Helpers
-import Home.Instructions as Instructions
+import Home.Model as HomeModel
 import Home.Msg exposing (Msg(..))
+import Home.View as View
 import Intro
 import List.Nonempty as Nonempty
 import Maybe.Extra exposing (maybeToList)
@@ -11,6 +12,21 @@ import Model exposing (Model)
 import Msg as AppMsg
 import Task
 import Types
+
+
+-- INSTRUCTIONS
+
+
+instructionsConfig : (Msg -> AppMsg.Msg) -> Intro.UpdateConfig HomeModel.Node AppMsg.Msg
+instructionsConfig lift =
+    Intro.updateConfig
+        { onQuit = lift << InstructionsQuit
+        , onDone = lift InstructionsDone
+        }
+
+
+
+-- UPDATE
 
 
 update :
@@ -24,7 +40,7 @@ update lift auth msg model =
         InstructionsMsg msg ->
             let
                 ( newHome, maybeOut ) =
-                    Intro.update (Instructions.updateConfig lift) msg model.home
+                    Intro.update (instructionsConfig lift) msg model.home
             in
                 ( { model | home = newHome }
                 , Cmd.none
@@ -32,14 +48,14 @@ update lift auth msg model =
                 )
 
         InstructionsStart ->
-            -- TODO: differentiate training and exp, and set intro path accordingly
-            ( { model | home = Intro.start Instructions.order }
+            -- TODO: differentiate training/exp and done, and set intro path accordingly
+            ( { model | home = Intro.start (Nonempty.map Tuple.first View.instructions) }
             , Cmd.none
             , []
             )
 
         InstructionsQuit index ->
-            if Nonempty.length Instructions.order == index + 1 then
+            if Nonempty.length View.instructions == index + 1 then
                 ( model
                 , Cmd.none
                 , [ lift InstructionsDone ]
