@@ -78,6 +78,9 @@ type CssClasses
     | SuccessNotification
     | SmoothAppearing
     | Hidden
+    | Trial
+    | Header
+    | Clock
 
 
 type CssIds
@@ -295,6 +298,23 @@ css =
                     , color (hex "#818181")
                     , marginTop (px 20)
                     , lineHeight (px 20)
+                    ]
+                ]
+            ]
+          -- EXPERIMENT LAYOUT
+        , (.) Trial
+            [ marginTop (em 2)
+            , descendants
+                [ (.) Header
+                    [ opacity (num 0.8)
+                    , displayFlex
+                    , alignItems center
+                    ]
+                , (.) Clock [ marginRight (em 1), width (px 50) ]
+                , selector "blockquote"
+                    [ paddingLeft (em 1)
+                    , borderLeft3 (px 3) solid (rgba 200 200 200 0.6)
+                    , fontSize (em 1.2)
                     ]
                 ]
             ]

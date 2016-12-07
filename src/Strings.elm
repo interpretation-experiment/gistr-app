@@ -440,3 +440,8 @@ aboutAuthorsCreated =
         [ Html.text "CAMS" ]
     , Html.text " in Paris."
     ]
+
+
+expReadMemorize : String
+expReadMemorize =
+    "Read and memorize the following sentence"

@@ -16,6 +16,7 @@ import List.Nonempty exposing (Nonempty)
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
+import Strings
 import Styles exposing (class, classList, id)
 import Types
 
@@ -119,7 +120,9 @@ body lift profile meta model =
 
                 ExpModel.Trial trialModel ->
                     Html.div [ class [ Styles.Narrow ] ]
-                        [ Html.div [] (trial lift model.loadingNext trialModel) ]
+                        [ Html.div [ class [ Styles.Trial ] ]
+                            (trial lift model.loadingNext trialModel)
+                        ]
 
         finishProfileView =
             Html.div [ class [ Styles.Narrow ] ]
@@ -194,9 +197,11 @@ trial : (Msg -> AppMsg.Msg) -> Bool -> ExpModel.TrialModel -> List (Html.Html Ap
 trial lift loading trialModel =
     case trialModel.state of
         ExpModel.Reading ->
-            [ Html.text "Read"
-            , Html.p [] [ Html.text trialModel.current.text ]
-            , Clock.view trialModel.clock
+            [ Html.div [ class [ Styles.Header ] ]
+                [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
+                , Html.h4 [] [ Html.text Strings.expReadMemorize ]
+                ]
+            , Html.blockquote [] [ Html.text trialModel.current.text ]
             ]
 
         ExpModel.Tasking ->
