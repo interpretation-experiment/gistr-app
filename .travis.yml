@@ -3,7 +3,7 @@ node_js:
   - "node"
 
 before_install:
-  - "npm install elm elm-test"
+  - npm install -g elm elm-test
 
 script:
   - elm make --yes
