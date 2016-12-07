@@ -271,3 +271,131 @@ homeInstructionsProfileTestsWhenever =
 homeInstructionsGetGoing : String
 homeInstructionsGetGoing =
     "Get going on the experiment now! You'll get to know all about it afterwards."
+
+
+aboutAboutTitle : String
+aboutAboutTitle =
+    "The game and experiment"
+
+
+aboutAboutTeaserHowGood : String
+aboutAboutTeaserHowGood =
+    "How good is your memory? How well do you remember what you read?"
+
+
+aboutAboutTeaserShows : String
+aboutAboutTeaserShows =
+    "This experiment shows you how you unconsciously transform what you read: you'll see detailed statistics on how you transform what you read, and see how you compare to the other participants. It lasts about 1 hour and it helps scientific research!"
+
+
+aboutAboutTeaserMore : List (Html.Html Msg)
+aboutAboutTeaserMore =
+    [ Html.text "Want to read more about this? Please "
+    , Helpers.navA [] Router.Experiment "pass the experiment"
+    , Html.text " first!"
+    ]
+
+
+aboutAboutFullSay : List (Html.Html Msg)
+aboutAboutFullSay =
+    [ Html.strong [] [ Html.text "Say something:" ]
+    , Html.text " it means one thing to your partner, another thing to your closest friend, something else to your parents, and something different again to the stranger you meet in the street. When a politician says something on television, members of his party and the opposition hear different meanings in what was said."
+    ]
+
+
+aboutAboutFullWhat : String
+aboutAboutFullWhat =
+    "What are the processes involved in these interpretations? How do we make sense of the world around us?"
+
+
+aboutAboutFullGistr : String
+aboutAboutFullGistr =
+    "Gistr is both a game and an experiment on how we interpret and make sense in certain contexts, and what consequences this has at large scale. The goal is to collect high quality data on repeated interpretations of content, allowing participants to experiment with texts and contexts of their own also."
+
+
+aboutAboutFullOpen : List (Html.Html Msg)
+aboutAboutFullOpen =
+    [ Html.text "This experiment is entirely Free Software, and the development is an "
+    , Html.a
+        [ Attributes.href "https://github.com/interpretation-experiment"
+        , Attributes.title "Gistr Repositories"
+        ]
+        [ Html.text "open process" ]
+    , Html.text ". Learn more more on "
+    , Html.a
+        [ Attributes.href "https://github.com/interpretation-experiment/gistr-app/wiki"
+        , Attributes.title "Gistr Wiki"
+        ]
+        [ Html.text "the wiki" ]
+    , Html.text "!"
+    ]
+
+
+aboutPrivacyTitle : String
+aboutPrivacyTitle =
+    "Privacy"
+
+
+aboutPrivacyCollects : String
+aboutPrivacyCollects =
+    "The experiment collects mostly public data: texts and their reformulations, along with the time used to write them."
+
+
+aboutPrivacyDont : String
+aboutPrivacyDont =
+    "We don't ask for your name or any other personally identifying information. Your profile, however, contains sensitive data:"
+
+
+aboutPrivacyQuestionnaire : String
+aboutPrivacyQuestionnaire =
+    "A questionnaire you fill during the experiment,"
+
+
+aboutPrivacyWordSpan : String
+aboutPrivacyWordSpan =
+    "A word span test you may pass later on,"
+
+
+aboutPrivacyEmail : String
+aboutPrivacyEmail =
+    "Your email address if you choose to enter it (that's optional)."
+
+
+aboutPrivacyPrivate : String
+aboutPrivacyPrivate =
+    "This information is carefully kept private: no one but our team will ever have access to it, and as with all the data collected here it is only used for the purposes of the experiment."
+
+
+aboutAuthorsTitle : String
+aboutAuthorsTitle =
+    "The authors"
+
+
+aboutAuthorsCreated : List (Html.Html Msg)
+aboutAuthorsCreated =
+    [ Html.text "Created and developed by "
+    , Html.a
+        [ Attributes.href "https://slvh.fr/"
+        , Attributes.title "Sébastien Lerique's Homepage"
+        ]
+        [ Html.text "Sébastien Lerique" ]
+    , Html.text " as part of his PhD, advised by and thoroughly discussed with "
+    , Html.a
+        [ Attributes.href "http://camille.roth.free.fr/index.php"
+        , Attributes.title "Camille Roth's Homepage"
+        ]
+        [ Html.text "Camille Roth" ]
+    , Html.text ". Both are at the "
+    , Html.a
+        [ Attributes.href "https://cmb.hu-berlin.de/"
+        , Attributes.title "Centre Marc Bloch Webpage"
+        ]
+        [ Html.text "Centre Marc Bloch" ]
+    , Html.text " in Berlin, and the "
+    , Html.a
+        [ Attributes.href "http://cams.ehess.fr/"
+        , Attributes.title "CAMS Webpage"
+        ]
+        [ Html.text "CAMS" ]
+    , Html.text " in Paris."
+    ]
