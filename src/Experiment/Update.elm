@@ -5,6 +5,7 @@ import Clock
 import Cmds
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Experiment.Shaping as Shaping
 import Experiment.View as View
 import Feedback
 import Form
@@ -16,8 +17,6 @@ import List.Nonempty as Nonempty
 import Maybe.Extra exposing (maybeToList)
 import Model exposing (Model)
 import Msg as AppMsg
-import Random
-import String
 import Strings
 import Task
 import Time
@@ -161,88 +160,7 @@ update lift auth msg model =
            TRIAL
         -}
         LoadTrial ->
-            -- TODO: select branch in tree, not root
             let
-                -- LANGUAGE VARIABLES
-                mothertongue =
-                    auth.user.profile.mothertongue
-
-                isOthertongue =
-                    mothertongue == auth.meta.otherLanguage
-
-                rootLanguage =
-                    if isOthertongue then
-                        auth.meta.otherLanguage
-                    else
-                        mothertongue
-
-                -- LANGUAGE AND BUCKET FILTER
-                preFilter =
-                    [ ( "root_language", rootLanguage )
-                    , ( "with_other_mothertongue"
-                      , String.toLower <| toString isOthertongue
-                      )
-                    , ( "without_other_mothertongue"
-                      , String.toLower <| toString <| not isOthertongue
-                      )
-                    , ( "root_bucket", Lifecycle.bucket auth.meta auth.user.profile )
-                    ]
-
-                -- SEVERAL-SENTENCES FILTER
-                severalFilter =
-                    preFilter ++ [ ( "sample", toString auth.meta.trainingWork ) ]
-
-                -- SINGLE-SENTENCE FILTERS
-                unshapedSingleFilter =
-                    preFilter
-                        ++ [ ( "untouched_by_profile", toString auth.user.profile.id )
-                           , ( "sample", toString 1 )
-                           ]
-
-                shapedSingleFilter =
-                    unshapedSingleFilter
-                        ++ [ ( "branches_count_lte"
-                             , toString auth.meta.targetBranchCount
-                             )
-                           , ( "shortest_branch_depth_lte"
-                             , toString auth.meta.targetBranchDepth
-                             )
-                           ]
-
-                -- SEVERAL-SENTENCES FETCHING TASKS
-                fetchSeveralSentences =
-                    Api.getTrees auth Nothing severalFilter
-                        |> Task.map (\page -> List.map .root page.items)
-
-                seed =
-                    Time.now
-                        |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
-
-                fetchRandomizedSentences =
-                    Task.map2 Helpers.shuffle seed fetchSeveralSentences
-
-                -- SINGLE-SENTENCE FETCHING TASKS
-                firstRootOr default page =
-                    case page.items of
-                        tree :: _ ->
-                            Task.succeed tree.root
-
-                        [] ->
-                            default
-
-                fetchUnshapedSingleSentence =
-                    Api.getTrees auth Nothing unshapedSingleFilter
-                        |> Task.andThen
-                            (firstRootOr <|
-                                Task.fail <|
-                                    Types.Unrecoverable "Found no suitable tree for profile"
-                            )
-
-                fetchSingleSentence =
-                    Api.getTrees auth Nothing shapedSingleFilter
-                        |> Task.andThen (firstRootOr fetchUnshapedSingleSentence)
-
-                -- LOADING AND PRELOADING HELPERS
                 selectPreloaded preLoaded =
                     case preLoaded of
                         [] ->
@@ -251,13 +169,15 @@ update lift auth msg model =
                         head :: rest ->
                             Ok ( rest, head )
 
-                preloadAndSelect =
-                    fetchRandomizedSentences
+                preloadTrainingAndSelect =
+                    Shaping.fetchRandomizedUnshapedTrees auth.meta.trainingWork auth
+                        |> Task.map (List.map .root)
                         |> Task.andThen (selectPreloaded >> Helpers.resultToTask)
                         |> Task.attempt (lift << LoadTrialResult)
 
-                loadSingle =
-                    fetchSingleSentence
+                loadSentence =
+                    Shaping.fetchPossiblyShapedUntouchedTree auth
+                        |> Task.andThen (Shaping.selectTipSentence auth)
                         |> Task.attempt (lift << LoadTrialResult << Result.map ((,) []))
 
                 loadingModel =
@@ -267,16 +187,16 @@ update lift auth msg model =
                     Lifecycle.Training _ ->
                         case model.experiment.state of
                             ExpModel.JustFinished ->
-                                -- Preload training sentences
-                                ( loadingModel
-                                , preloadAndSelect
+                                -- Ignore, this should never happen
+                                ( model
+                                , Cmd.none
                                 , []
                                 )
 
                             ExpModel.Instructions _ ->
                                 -- Preload training sentences
                                 ( loadingModel
-                                , preloadAndSelect
+                                , preloadTrainingAndSelect
                                 , []
                                 )
 
@@ -285,7 +205,7 @@ update lift auth msg model =
                                     Err error ->
                                         -- Load one remote sentence
                                         ( loadingModel
-                                        , loadSingle
+                                        , loadSentence
                                         , []
                                         )
 
@@ -302,7 +222,7 @@ update lift auth msg model =
                     Lifecycle.Experiment _ ->
                         -- Load one remote sentence
                         ( loadingModel
-                        , loadSingle
+                        , loadSentence
                         , []
                         )
 

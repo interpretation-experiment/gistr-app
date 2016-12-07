@@ -1,8 +1,10 @@
 module Experiment.Shaping
     exposing
         ( Tree(Tree)
-        , selectSentence
+        , fetchPossiblyShapedUntouchedTree
+        , fetchRandomizedUnshapedTrees
         , selectTip
+        , selectTipSentence
         , tips
         , tree
         )
@@ -16,7 +18,6 @@ import List.Nonempty exposing (Nonempty(Nonempty))
 import Maybe.Extra exposing (unwrap)
 import Random
 import Task
-import Time
 import Types
 
 
@@ -81,7 +82,6 @@ type alias Task a =
 
 fetchUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
 fetchUnshapedTrees num auth =
-    -- |> Task.map (\page -> List.map .root page.items)
     Api.getTrees auth Nothing (unshapedSeveralFilter num auth) |> Task.map .items
 
 
@@ -248,25 +248,11 @@ selectTip seed auth tree =
                     |> Helpers.sample newSeed
 
 
-selectSentence : Types.Auth -> Types.Tree -> Task Types.Sentence
-selectSentence auth apiTree =
+selectTipSentence : Types.Auth -> Types.Tree -> Task Types.Sentence
+selectTipSentence auth apiTree =
     let
         networkTree =
             tree apiTree.root.id apiTree.networkEdges
     in
         Task.map (\seed -> selectTip seed auth networkTree) Helpers.seed
             |> Task.andThen (Api.getSentence auth)
-
-
-
--- LOADING AND PRELOADING HELPERS
-
-
-selectPreloaded : List a -> Result Types.Error ( List a, a )
-selectPreloaded preLoaded =
-    case preLoaded of
-        [] ->
-            Err <| Types.Unrecoverable "No preloaded trees to select from"
-
-        head :: rest ->
-            Ok ( rest, head )
