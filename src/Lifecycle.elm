@@ -60,7 +60,9 @@ stateIsCompletable meta profile =
             meta.trainingWork <= profile.availableTreeCounts.training
 
         Experiment _ ->
-            meta.experimentWork <= profile.availableTreeCounts.experiment
+            ((meta.experimentWork - profile.reformulationsCount)
+                <= profile.availableTreeCounts.experiment
+            )
 
         Done ->
             True
