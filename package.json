@@ -6,7 +6,8 @@
   "author": "Sébastien Lerique <sl@mehho.net>",
   "license": "GPL-3.0",
   "scripts": {
-    "serve": "cd build && live-server --port=3000 --no-browser --entry-file=index.html --wait=100 "
+    "serve": "cd build && live-server --port=3000 --no-browser --entry-file=index.html --wait=100",
+    "test": "elm-test"
   },
   "dependencies": {
     "babel-cli": "^6.18.0",
