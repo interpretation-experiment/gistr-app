@@ -1,8 +1,18 @@
-module Experiment.Shaping exposing (..)
+module Experiment.Shaping
+    exposing
+        ( Tree(Tree)
+        , selectSentence
+        , selectTip
+        , tips
+        , tree
+        )
 
 import Api
 import Helpers
+import Helpers
 import Lifecycle
+import List.Nonempty as Nonempty
+import List.Nonempty exposing (Nonempty(Nonempty))
 import Maybe.Extra exposing (unwrap)
 import Random
 import Task
@@ -77,7 +87,7 @@ fetchUnshapedTrees num auth =
 
 fetchRandomizedUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
 fetchRandomizedUnshapedTrees num auth =
-    Task.map2 Helpers.shuffle seed (fetchUnshapedTrees num auth)
+    Task.map2 Helpers.shuffle Helpers.seed (fetchUnshapedTrees num auth)
 
 
 
@@ -133,14 +143,9 @@ type Tree a
     = Tree a (List (Tree a))
 
 
-value : Tree a -> a
-value (Tree a _) =
+root : Tree a -> a
+root (Tree a _) =
     a
-
-
-children : Tree a -> List (Tree a)
-children (Tree _ children) =
-    children
 
 
 tree : a -> List (Types.Edge a) -> Tree a
@@ -172,16 +177,85 @@ treeHelp root edges =
                 ( Tree root subTrees, remEdges )
 
 
+tips : Tree a -> Nonempty ( Int, Nonempty a )
+tips (Tree root children) =
+    case children of
+        [] ->
+            Nonempty.fromElement ( 0, Nonempty.fromElement root )
 
---tips : Tree a -> List ( Int, List a )
---selectTip : Types.Auth -> Random.Seed -> Tree a -> a
---selectSentence : Types.Auth -> Types.Tree -> Task Types.Sentence
--- RANDOM TASKS
+        head :: tail ->
+            Nonempty.map maxTips (Nonempty head tail)
+                |> Nonempty.map (Tuple.mapFirst ((+) 1))
 
 
-seed : Task Random.Seed
-seed =
-    Task.map (Random.initialSeed << round << Time.inMilliseconds) Time.now
+maxTips : Tree a -> ( Int, Nonempty a )
+maxTips (Tree root children) =
+    case children of
+        [] ->
+            ( 0, Nonempty.fromElement root )
+
+        head :: tail ->
+            let
+                childrenTips =
+                    Nonempty.map maxTips (Nonempty head tail)
+
+                maxDepth =
+                    Nonempty.map Tuple.first childrenTips
+                        |> Helpers.nonemptyMaximum
+            in
+                ( maxDepth + 1
+                , Nonempty.filter
+                    (\( depth, _ ) -> depth == maxDepth)
+                    (Nonempty.head childrenTips)
+                    childrenTips
+                    |> Nonempty.map Tuple.second
+                    |> Nonempty.concat
+                )
+
+
+branchOrNot : Random.Seed -> Types.Auth -> Tree a -> ( Bool, Random.Seed )
+branchOrNot seed auth (Tree _ children) =
+    if List.length children < auth.meta.targetBranchCount then
+        Random.step (Random.float 0 1) seed
+            |> Tuple.mapFirst (\f -> f < auth.meta.branchProbability)
+    else
+        ( False, seed )
+
+
+selectTip : Random.Seed -> Types.Auth -> Tree a -> a
+selectTip seed auth tree =
+    let
+        ( branch, newSeed ) =
+            branchOrNot seed auth tree
+    in
+        if branch then
+            root tree
+        else
+            let
+                treeTips =
+                    tips tree
+
+                minDepth =
+                    Nonempty.map Tuple.first treeTips
+                        |> Helpers.nonemptyMinimum
+            in
+                Nonempty.filter
+                    (\( depth, _ ) -> depth == minDepth)
+                    (Nonempty.head treeTips)
+                    treeTips
+                    |> Nonempty.map Tuple.second
+                    |> Nonempty.concat
+                    |> Helpers.sample newSeed
+
+
+selectSentence : Types.Auth -> Types.Tree -> Task Types.Sentence
+selectSentence auth apiTree =
+    let
+        networkTree =
+            tree apiTree.root.id apiTree.networkEdges
+    in
+        Task.map (\seed -> selectTip seed auth networkTree) Helpers.seed
+            |> Task.andThen (Api.getSentence auth)
 
 
 

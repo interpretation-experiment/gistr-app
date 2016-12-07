@@ -23,11 +23,15 @@ module Helpers
         , navButton
         , navIcon
         , navigateTo
+        , nonemptyMaximum
+        , nonemptyMinimum
         , notAuthed
         , notify
         , onInputContent
         , readTime
         , resultToTask
+        , sample
+        , seed
         , shuffle
         , textarea
         , tooltip
@@ -50,6 +54,8 @@ import Http
 import Json.Decode as JD
 import List
 import List.Extra exposing (splitAt)
+import List.Nonempty as Nonempty
+import List.Nonempty exposing (Nonempty(Nonempty))
 import MD5
 import Maybe.Extra exposing ((?), unwrap)
 import Model exposing (Model)
@@ -378,7 +384,19 @@ ifThenValidate condition validator subject =
 
 
 
--- MISC
+-- RANDOMNESS
+
+
+seed : Task.Task x Random.Seed
+seed =
+    Task.map (Random.initialSeed << round << Time.inMilliseconds) Time.now
+
+
+sample : Random.Seed -> Nonempty a -> a
+sample seed nonempty =
+    Random.step (Random.int 0 <| Nonempty.length nonempty - 1) seed
+        |> Tuple.first
+        |> (\i -> Nonempty.get i nonempty)
 
 
 shuffle : Random.Seed -> List a -> List a
@@ -414,6 +432,28 @@ shuffleHelp ( list, seed ) =
                 ( finalList, finalSeed )
 
 
+
+-- NONEMPTY
+
+
+nonemptyMaximum : Nonempty comparable -> comparable
+nonemptyMaximum (Nonempty head tail) =
+    List.maximum tail
+        |> Maybe.withDefault head
+        |> max head
+
+
+nonemptyMinimum : Nonempty comparable -> comparable
+nonemptyMinimum (Nonempty head tail) =
+    List.minimum tail
+        |> Maybe.withDefault head
+        |> min head
+
+
+
+-- EXPERIMENT FACTORS
+
+
 readTime : { a | readFactor : Int } -> { b | text : String } -> Time.Time
 readTime { readFactor } { text } =
     toFloat (List.length (String.words text) * readFactor) * Time.second
@@ -422,6 +462,10 @@ readTime { readFactor } { text } =
 writeTime : { a | writeFactor : Int } -> { b | text : String } -> Time.Time
 writeTime { writeFactor } { text } =
     toFloat (List.length (String.words text) * writeFactor) * Time.second
+
+
+
+-- MISC
 
 
 resultToTask : Result a b -> Task.Task a b
