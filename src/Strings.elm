@@ -175,7 +175,7 @@ sentenceTooShort minTokens =
 homeSubtitle1 : List (Html.Html msg)
 homeSubtitle1 =
     [ Html.text "A "
-    , Html.strong [] [ Html.text "GWAP" ]
+    , Html.strong [ Helpers.tooltip "Game With a Purpose" ] [ Html.text "GWAP" ]
     , Html.text " on Memory and Interpretation"
     ]
 
