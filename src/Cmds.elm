@@ -86,7 +86,11 @@ nonFocusCmds model =
         Router.Home ->
             authenticatedOrIgnore model <|
                 \auth ->
-                    if not auth.user.profile.introducedExpHome then
+                    if
+                        (not auth.user.profile.introducedExpHome
+                            && (Lifecycle.state auth.meta auth.user.profile /= Lifecycle.Done)
+                        )
+                    then
                         [ Task.perform
                             (always <| Msg.HomeMsg HomeMsg.InstructionsStart)
                             (Task.succeed ())

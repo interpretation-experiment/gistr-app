@@ -14,6 +14,7 @@ import Router
 import Strings
 import Styles exposing (class, classList, id)
 import Types
+import View.Common as Common
 
 
 -- INSTRUCTIONS
@@ -54,7 +55,10 @@ instructionsConfig lift =
 view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
 view lift model =
     [ Html.header [] (header lift model)
-    , Html.main_ [] [ Html.div [ class [ Styles.SuperNarrow ] ] (body lift model) ]
+    , Html.main_ []
+        [ Html.div [ class [ Styles.SuperNarrow ] ]
+            [ Html.div [] [ greeting lift model, controls lift model ] ]
+        ]
     , Html.footer [] (footer lift model)
     , Intro.overlay model.home
     ]
@@ -85,57 +89,76 @@ header lift model =
             ]
 
 
-body : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
-body lift model =
-    [ Html.div []
-        [ Intro.node
-            (instructionsConfig lift)
-            model.home
-            HomeModel.Greeting
-            Html.div
-            [ id Styles.Greeting ]
-            [ Html.h1 [] [ Html.text "Gistr" ]
-            , Html.p []
-                (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
-            ]
-        , Intro.node
-            (instructionsConfig lift)
-            model.home
-            HomeModel.Body
-            Html.div
-            []
-            [ Html.div [] Strings.homeQuestions
-            , buttons model
-            ]
+greeting : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+greeting lift model =
+    Intro.node
+        (instructionsConfig lift)
+        model.home
+        HomeModel.Greeting
+        Html.div
+        [ id Styles.Greeting ]
+        [ Html.h1 [] [ Html.text "Gistr" ]
+        , Html.p []
+            (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
         ]
-    ]
 
 
-buttons : Model -> Html.Html AppMsg.Msg
-buttons model =
-    case model.auth of
-        Types.Anonymous ->
+controls : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
+controls lift model =
+    let
+        introBlock buttons =
             Html.div []
-                [ Helpers.navButton
-                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
-                    (Router.Register Nothing)
-                    "Pass the experiment"
-                , Helpers.navButton
-                    [ class [ Styles.Btn ] ]
-                    (Router.Login Nothing)
-                    "Sign in"
+                [ Intro.node
+                    (instructionsConfig lift)
+                    model.home
+                    HomeModel.Body
+                    Html.div
+                    []
+                    [ Html.div [] Strings.homeQuestions
+                    , buttons
+                    ]
                 ]
+    in
+        case model.auth of
+            Types.Anonymous ->
+                introBlock <|
+                    Html.div []
+                        [ Html.p [] <|
+                            (Helpers.navButton
+                                [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                                (Router.Register Nothing)
+                                "Pass the experiment"
+                            )
+                                :: Strings.homeGetPaid
+                        , Html.p []
+                            [ Helpers.navButton
+                                [ class [ Styles.Btn ] ]
+                                (Router.Login Nothing)
+                                "Sign in"
+                            , Html.text Strings.homeIfStarted
+                            ]
+                        ]
 
-        Types.Authenticating ->
-            Helpers.loading Styles.Big
+            Types.Authenticating ->
+                Helpers.loading Styles.Big
 
-        Types.Authenticated _ ->
-            Html.div []
-                [ Helpers.navButton
-                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
-                    Router.Experiment
-                    "Pass the experiment"
-                ]
+            Types.Authenticated { user, meta } ->
+                case Lifecycle.state meta user.profile of
+                    Lifecycle.Done ->
+                        Html.div []
+                            ((Html.h3 [] [ Html.text Strings.expDone ])
+                                :: (Common.prolificCompletion user.profile)
+                                ++ [ Html.p [] Strings.homeReadAbout ]
+                            )
+
+                    _ ->
+                        introBlock <|
+                            Html.div []
+                                [ Helpers.navButton
+                                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                                    Router.Experiment
+                                    "Pass the experiment"
+                                ]
 
 
 footer : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)

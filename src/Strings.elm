@@ -1,5 +1,6 @@
 module Strings exposing (..)
 
+import Config
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -94,7 +95,7 @@ completeProfile =
 
 expDone : String
 expDone =
-    "You finished the experiment!"
+    "You finished the experiment! Thanks for participating."
 
 
 prolificCompletion : String
@@ -195,6 +196,31 @@ homeQuestions =
     [ Html.h3 [] [ Html.text "How good is your memory?" ]
     , Html.p [] [ Html.text "How well do you remember what you read?" ]
     , Html.p [] [ Html.text "With this experiment you'll learn how you unconsciously transform what you read. It lasts about 1 hour and it helps scientific research!" ]
+    ]
+
+
+homeGetPaid : List (Html.Html msg)
+homeGetPaid =
+    [ Html.text " — "
+    , Html.a
+        [ Attributes.href Config.prolificStudyUrl
+        , Attributes.title "Gistr on Prolific Academic"
+        ]
+        [ Html.text "get paid for it" ]
+    , Html.text " if you want"
+    ]
+
+
+homeIfStarted : String
+homeIfStarted =
+    " — if you've already started"
+
+
+homeReadAbout : List (Html.Html Msg)
+homeReadAbout =
+    [ Html.text "If you're interested, you can find out more about the experiment in the "
+    , Helpers.navA [] Router.About "About"
+    , Html.text " page."
     ]
 
 
@@ -336,7 +362,7 @@ aboutAboutFullOpen =
         , Attributes.title "Gistr Repositories"
         ]
         [ Html.text "open process" ]
-    , Html.text ". Learn more more on "
+    , Html.text ". Find out more on "
     , Html.a
         [ Attributes.href "https://github.com/interpretation-experiment/gistr-app/wiki"
         , Attributes.title "Gistr Wiki"
