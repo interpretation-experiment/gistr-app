@@ -205,8 +205,10 @@ trial lift loading trialModel =
             ]
 
         ExpModel.Tasking ->
-            [ Html.text "Tasking"
-            , Clock.view trialModel.clock
+            [ Html.div [ class [ Styles.Header ] ]
+                [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
+                , Html.h4 [] [ Html.text Strings.expTask ]
+                ]
             ]
 
         ExpModel.Writing form ->

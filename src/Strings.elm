@@ -445,3 +445,8 @@ aboutAuthorsCreated =
 expReadMemorize : String
 expReadMemorize =
     "Read and memorize the following sentence"
+
+
+expTask : String
+expTask =
+    "Pause a few seconds"

@@ -59,6 +59,8 @@ update lift auth msg model =
                     let
                         outMsg =
                             case trial.state of
+                                -- TODO: move this into clock state, when
+                                -- refactoring to animate with CSS
                                 ExpModel.Reading ->
                                     TrialTask
 

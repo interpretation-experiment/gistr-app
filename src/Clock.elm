@@ -171,7 +171,6 @@ progress (Model model) =
 
 view : Model -> Html.Html msg
 view model =
-    -- TODO: provide hues and opacities lists
     let
         modelProgress =
             progress model
