@@ -2,6 +2,7 @@ module Profile.View exposing (view)
 
 import Animation
 import Auth.Msg as AuthMsg
+import Config
 import Feedback
 import Form
 import Helpers
@@ -165,7 +166,29 @@ lifecycle meta profile =
 
             Lifecycle.Done ->
                 Html.div [ class [ Styles.InfoBox ] ]
-                    [ Html.div [] [ Html.text "TODO: exp done! Show completion code if we have a prolific id. Show stats and point to profile/tree exploration." ] ]
+                    [ Html.div []
+                        ([ Html.p [] [ Html.text Strings.expDone ] ]
+                            ++ prolificCompletion profile
+                        )
+                    ]
+
+
+prolificCompletion : Types.Profile -> List (Html.Html AppMsg.Msg)
+prolificCompletion profile =
+    case profile.prolificId of
+        Nothing ->
+            []
+
+        Just _ ->
+            [ Html.p [] [ Html.text Strings.prolificCompletion ]
+            , Html.p []
+                [ Html.a
+                    [ Attributes.href Config.prolificCompletionUrl
+                    , class [ Styles.Btn ]
+                    ]
+                    [ Html.text Strings.prolificCompletionButton ]
+                ]
+            ]
 
 
 questionnaireSummary : Maybe Int -> Html.Html AppMsg.Msg

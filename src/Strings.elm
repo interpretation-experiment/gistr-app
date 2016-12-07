@@ -74,7 +74,7 @@ testWordSpan =
 
 startTraining : List (Html.Html Msg)
 startTraining =
-    [ Html.text "Start the experiment "
+    [ Html.text "Your profile is complete, you can start the experiment "
     , Helpers.navA [] Router.Experiment "right now"
     , Html.text "!"
     ]
@@ -90,6 +90,21 @@ profileComplete =
 completeProfile : String
 completeProfile =
     "Please complete your profile!"
+
+
+expDone : String
+expDone =
+    "You finished the experiment!"
+
+
+prolificCompletion : String
+prolificCompletion =
+    "Now, click the following button to tell Prolific Academic you finished the study, so you can get paid."
+
+
+prolificCompletionButton : String
+prolificCompletionButton =
+    "Complete with Prolific Academic"
 
 
 questionnaireIntro : List String
