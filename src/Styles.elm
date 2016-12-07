@@ -842,10 +842,10 @@ css =
           -- Tooltip Animation
         , selector "[data-tooltip]:hover:before, [data-tooltip]:hover:after"
             [ property "visibility" "visible"
+            , property "transition-delay" ".3s"
             , property "pointer-events" "auto"
+            , opacity (num 1)
             ]
-        , selector "[data-tooltip]:hover:before" [ opacity (num 1) ]
-        , selector "[data-tooltip]:hover:after" [ opacity (num 1) ]
           -- FONTS
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]
