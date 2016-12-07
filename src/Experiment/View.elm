@@ -212,7 +212,12 @@ trial lift loading trialModel =
             ]
 
         ExpModel.Writing form ->
-            write lift loading trialModel form
+            [ Html.div [ class [ Styles.Header ] ]
+                [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
+                , Html.h4 [] [ Html.text Strings.expWrite ]
+                ]
+            , write lift loading form
+            ]
 
         ExpModel.Timeout ->
             [ Html.text "TODO: timeout"
@@ -234,18 +239,15 @@ trial lift loading trialModel =
 write :
     (Msg -> AppMsg.Msg)
     -> Bool
-    -> ExpModel.TrialModel
     -> Form.Model String
-    -> List (Html.Html AppMsg.Msg)
-write lift loading trialModel { input, feedback, status } =
-    [ Html.text "Write"
-    , Html.form [ class [ Styles.FormPage ], Events.onSubmit (lift <| WriteSubmit input) ]
+    -> Html.Html AppMsg.Msg
+write lift loading { input, feedback, status } =
+    Html.form [ class [ Styles.FormPage ], Events.onSubmit (lift <| WriteSubmit input) ]
         [ Html.div
             [ class [ Styles.FormBlock ]
             , Helpers.feedbackStyles "global" feedback
             ]
-            [ Html.label [ Helpers.forId Styles.InputAutofocus ] [ Html.text "Write:" ]
-            , Helpers.textarea
+            [ Helpers.textarea
                 [ id Styles.InputAutofocus
                 , Attributes.autofocus True
                 , classList [ ( Styles.Disabled, (loading || (status /= Form.Entering)) ) ]
@@ -260,5 +262,3 @@ write lift loading trialModel { input, feedback, status } =
             ]
             [ Html.text "Send" ]
         ]
-    , Clock.view trialModel.clock
-    ]

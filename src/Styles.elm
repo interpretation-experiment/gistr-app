@@ -309,6 +309,7 @@ css =
                     [ opacity (num 0.8)
                     , displayFlex
                     , alignItems center
+                    , marginBottom (em 1)
                     ]
                 , (.) Clock [ marginRight (em 1), width (px 50) ]
                 , selector "blockquote"

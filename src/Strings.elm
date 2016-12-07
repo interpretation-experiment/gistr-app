@@ -169,7 +169,7 @@ questionnaireComment =
 
 sentenceTooShort : Int -> String
 sentenceTooShort minTokens =
-    "Please type a longer sentence (at least " ++ toString minTokens ++ " words)"
+    "Please type a little more (at least " ++ toString minTokens ++ " words altogether)"
 
 
 homeSubtitle1 : List (Html.Html msg)
@@ -444,9 +444,14 @@ aboutAuthorsCreated =
 
 expReadMemorize : String
 expReadMemorize =
-    "Read and memorize the following sentence"
+    "Read and memorize the following"
 
 
 expTask : String
 expTask =
     "Pause a few seconds"
+
+
+expWrite : String
+expWrite =
+    "Write down the text as you remember it"
