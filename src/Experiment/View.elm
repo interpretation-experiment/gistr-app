@@ -220,11 +220,14 @@ trial lift loading trialModel =
             ]
 
         ExpModel.Timeout ->
-            [ Html.text "TODO: timeout"
-            , Helpers.evButton
-                [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
-                (lift LoadTrial)
-                "Next"
+            [ Html.h3 [] [ Html.text Strings.expTimeoutTitle ]
+            , Html.p [] [ Html.text Strings.expTimeoutExplanation ]
+            , Html.p []
+                [ Helpers.evButton
+                    [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    (lift LoadTrial)
+                    "Start again"
+                ]
             ]
 
         ExpModel.Pause ->

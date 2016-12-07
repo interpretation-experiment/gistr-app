@@ -455,3 +455,13 @@ expTask =
 expWrite : String
 expWrite =
     "Write down the text as you remember it"
+
+
+expTimeoutTitle : String
+expTimeoutTitle =
+    "Time's up!"
+
+
+expTimeoutExplanation : String
+expTimeoutExplanation =
+    "You need to be quicker next time, check the progress circle!"
