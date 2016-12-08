@@ -19,8 +19,8 @@ type State
 
 
 type Test
-    = Questionnaire
-    | WordSpan
+    = --| WORDSPAN: WordSpan
+      Questionnaire
 
 
 state : Types.Meta -> Types.Profile -> State
@@ -72,5 +72,5 @@ testsRemaining : Types.Profile -> List Test
 testsRemaining =
     Validate.all
         [ .questionnaireId >> Validate.ifNothing Questionnaire
-        , .wordSpanId >> Validate.ifNothing WordSpan
+          -- WORDSPAN: , .wordSpanId >> Validate.ifNothing WordSpan
         ]

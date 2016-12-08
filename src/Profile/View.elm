@@ -15,7 +15,6 @@ import Profile.Msg exposing (Msg(..))
 import Profile.View.Questionnaire as Questionnaire
 import Profile.View.WordSpan as WordSpan
 import Router
-import Store
 import Strings
 import Styles exposing (class, classList, id)
 import Types
@@ -125,7 +124,7 @@ dashboard : Model -> Types.Meta -> Types.Profile -> List (Html.Html AppMsg.Msg)
 dashboard model meta profile =
     [ lifecycle meta profile
     , Html.div [ class [ Styles.Well ] ] [ questionnaireSummary profile.questionnaireId ]
-    , Html.div [ class [ Styles.Well ] ] [ wordSpanSummary profile.wordSpanId model.store ]
+      -- WORDSPAN: , Html.div [ class [ Styles.Well ] ] [ wordSpanSummary profile.wordSpanId model.store ]
     ]
 
 
@@ -137,9 +136,10 @@ lifecycle meta profile =
                 Lifecycle.Questionnaire ->
                     [ Html.text Strings.fillQuestionnaire ]
 
-                Lifecycle.WordSpan ->
-                    [ Html.text Strings.testWordSpan ]
-
+        {- WORDSPAN
+           Lifecycle.WordSpan ->
+               [ Html.text Strings.testWordSpan ]
+        -}
         describeTests tests =
             Html.div [ class [ Styles.RequestBox ] ]
                 [ Html.div []
@@ -189,29 +189,32 @@ questionnaireSummary maybeId =
             Html.h4 [] [ Html.text "Questionnaire — ✓ Done" ]
 
 
-wordSpanSummary : Maybe Int -> Store.Store -> Html.Html AppMsg.Msg
-wordSpanSummary maybeId store =
-    case maybeId of
-        Nothing ->
-            Html.h4 []
-                [ Html.text "Word span test — Not yet done "
-                , Helpers.navButton
-                    [ class [ Styles.Btn, Styles.BtnPrimary ] ]
-                    (Router.Profile Router.WordSpan)
-                    "Pass the test"
-                ]
 
-        Just id ->
-            let
-                detail =
-                    case store.wordSpan of
-                        Nothing ->
-                            Helpers.loading Styles.Small
+{- WORDSPAN
+   wordSpanSummary : Maybe Int -> Store.Store -> Html.Html AppMsg.Msg
+   wordSpanSummary maybeId store =
+       case maybeId of
+           Nothing ->
+               Html.h4 []
+                   [ Html.text "Word span test — Not yet done "
+                   , Helpers.navButton
+                       [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                       (Router.Profile Router.WordSpan)
+                       "Pass the test"
+                   ]
 
-                        Just wordSpan ->
-                            Html.text (" " ++ (toString wordSpan.span) ++ " words")
-            in
-                Html.h4 [] [ Html.text ("Word span test — ✓"), detail ]
+           Just id ->
+               let
+                   detail =
+                       case store.wordSpan of
+                           Nothing ->
+                               Helpers.loading Styles.Small
+
+                           Just wordSpan ->
+                               Html.text (" " ++ (toString wordSpan.span) ++ " words")
+               in
+                   Html.h4 [] [ Html.text ("Word span test — ✓"), detail ]
+-}
 
 
 passwordChange :
