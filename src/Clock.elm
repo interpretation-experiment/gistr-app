@@ -243,7 +243,7 @@ view model =
                 []
             , Svg.path
                 [ Attributes.stroke <| "hsla(" ++ (toString hue) ++ ",82%,50%," ++ (toString modelProgress) ++ ")"
-                , Attributes.strokeWidth "3"
+                , Attributes.strokeWidth "2"
                 , Attributes.fill "transparent"
                 , Attributes.d
                     ("M"
