@@ -493,3 +493,35 @@ expPauseTitle =
 expPauseExplanation : String
 expPauseExplanation =
     "You're doing great! Take a few seconds to relax before continuing."
+
+
+expUncompletableTitle : String
+expUncompletableTitle =
+    "Oops, we have no more texts for you!"
+
+
+expUncompletableExplanation : List (Html.Html msg)
+expUncompletableExplanation =
+    [ Html.p [] [ Html.text "Either you arrived a bit early, or you've worked real hard and used up all our texts!" ]
+    , Html.p []
+        [ Html.text "You can wait for more texts to appear. If it's been like this for a long time, don't hesitate to "
+        , Html.a
+            [ Attributes.href "https://twitter.com/gistrexp"
+            , Attributes.title "Contact on Twitter"
+            ]
+            [ Html.text "contact" ]
+        , Html.text " "
+        , Html.a
+            [ Attributes.href "mailto:sl@mehho.net"
+            , Attributes.title "Email the lead developer"
+            ]
+            [ Html.text "the" ]
+        , Html.text " "
+        , Html.a
+            [ Attributes.href "https://github.com/interpretation-experiment/gistr-app/issues/new"
+            , Attributes.title "File a bug on GitHub"
+            ]
+            [ Html.text "developers" ]
+        , Html.text "!"
+        ]
+    ]

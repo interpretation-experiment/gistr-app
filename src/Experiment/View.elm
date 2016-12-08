@@ -153,7 +153,11 @@ body lift profile meta model =
 
         uncompletableView =
             Html.div [ class [ Styles.SuperNarrow ] ]
-                [ Html.div [] [ Html.text "TODO: state uncompletable error" ] ]
+                [ Html.div []
+                    ((Html.h3 [] [ Html.text Strings.expUncompletableTitle ])
+                        :: Strings.expUncompletableExplanation
+                    )
+                ]
     in
         case Lifecycle.state meta profile of
             Lifecycle.Experiment tests ->
