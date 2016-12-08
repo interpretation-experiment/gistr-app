@@ -45,6 +45,7 @@ type CssClasses
     | BtnLink
     | Btn
     | BtnPrimary
+    | BtnWarning
     | BtnLight
     | BtnDark
     | BtnSmall
@@ -190,6 +191,19 @@ btnPrimaryHoverFocus =
     mixin
         [ backgroundColor (hex "#0063aa")
         , borderColor (hex "#0063aa")
+        ]
+
+
+btnWarning : Mixin
+btnWarning =
+    mixin [ color (hex "#fff"), backgroundColor (hex "#ee930e") ]
+
+
+btnWarningHoverFocus : Mixin
+btnWarningHoverFocus =
+    mixin
+        [ backgroundColor (hex "#d78714")
+        , borderColor (hex "#d78714")
         ]
 
 
@@ -546,6 +560,17 @@ css =
                     [ color (hex "#fff")
                     , backgroundColor (hex "#001f3f")
                     , borderColor (hex "#001f3f")
+                    ]
+                ]
+            , withClass BtnWarning
+                [ btnWarning
+                , link [ btnWarning ]
+                , hover [ btnWarningHoverFocus ]
+                , focus [ btnWarningHoverFocus ]
+                , active
+                    [ color (hex "#fff")
+                    , backgroundColor (hex "#3b2404")
+                    , borderColor (hex "#3b2404")
                     ]
                 ]
             , withClass BtnLight

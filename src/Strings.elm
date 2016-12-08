@@ -465,3 +465,31 @@ expTimeoutTitle =
 expTimeoutExplanation : String
 expTimeoutExplanation =
     "You need to be quicker next time, check the progress circle!"
+
+
+expTrainingFinishedTitle : String
+expTrainingFinishedTitle =
+    "You finished training!"
+
+
+expTrainingFinishedCompleteProfile : String
+expTrainingFinishedCompleteProfile =
+    "Please complete your profile before starting the experiment."
+
+
+expTrainingFinishedExpStarts : List (Html.Html msg)
+expTrainingFinishedExpStarts =
+    [ Html.text "The experiment starts "
+    , Html.strong [] [ Html.text "now" ]
+    , Html.text "."
+    ]
+
+
+expPauseTitle : String
+expPauseTitle =
+    "Take a break!"
+
+
+expPauseExplanation : String
+expPauseExplanation =
+    "You're doing great! Take a few seconds to relax before continuing."

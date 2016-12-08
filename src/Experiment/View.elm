@@ -108,11 +108,23 @@ body :
     -> Html.Html AppMsg.Msg
 body lift profile meta model =
     let
-        expView =
+        expOrTrainingView =
             case model.state of
                 ExpModel.JustFinished ->
                     Html.div [ class [ Styles.Narrow ] ]
-                        [ Html.div [] [ Html.text "TODO: just finished previous run" ] ]
+                        [ Html.div [ class [ Styles.Trial ] ]
+                            [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
+                            , Html.p [] Strings.expTrainingFinishedExpStarts
+                            , Html.p []
+                                [ Helpers.evButton
+                                    [ Attributes.disabled model.loadingNext
+                                    , class [ Styles.Btn, Styles.BtnWarning ]
+                                    ]
+                                    (lift LoadTrial)
+                                    "On to the Experiment"
+                                ]
+                            ]
+                        ]
 
                 ExpModel.Instructions introState ->
                     Html.div [ class [ Styles.Normal ] ]
@@ -126,7 +138,17 @@ body lift profile meta model =
 
         finishProfileView =
             Html.div [ class [ Styles.Narrow ] ]
-                [ Html.div [] [ Html.text "TODO: go finish your profile" ] ]
+                [ Html.div [ class [ Styles.Trial ] ]
+                    [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
+                    , Html.p [] [ Html.text Strings.expTrainingFinishedCompleteProfile ]
+                    , Html.p []
+                        [ Helpers.navA
+                            [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+                            (Router.Profile Router.Dashboard)
+                            "Complete your Profile"
+                        ]
+                    ]
+                ]
 
         uncompletableView =
             Html.div [ class [ Styles.Narrow ] ]
@@ -136,7 +158,7 @@ body lift profile meta model =
             Lifecycle.Experiment tests ->
                 if List.length tests == 0 then
                     if Lifecycle.stateIsCompletable meta profile then
-                        expView
+                        expOrTrainingView
                     else
                         uncompletableView
                 else
@@ -144,7 +166,7 @@ body lift profile meta model =
 
             Lifecycle.Training _ ->
                 if Lifecycle.stateIsCompletable meta profile then
-                    expView
+                    expOrTrainingView
                 else
                     uncompletableView
 
@@ -231,11 +253,14 @@ trial lift loading trialModel =
             ]
 
         ExpModel.Pause ->
-            [ Html.text "TODO: pause"
-            , Helpers.evButton
-                [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
-                (lift LoadTrial)
-                "Next"
+            [ Html.h3 [] [ Html.text Strings.expPauseTitle ]
+            , Html.p [] [ Html.text Strings.expPauseExplanation ]
+            , Html.p []
+                [ Helpers.evButton
+                    [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    (lift LoadTrial)
+                    "Continue"
+                ]
             ]
 
 
