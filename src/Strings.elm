@@ -216,8 +216,8 @@ homeIfStarted =
     " — if you've already started"
 
 
-homeReadAbout : List (Html.Html Msg)
-homeReadAbout =
+expDoneReadAbout : List (Html.Html Msg)
+expDoneReadAbout =
     [ Html.text "If you're interested, you can find out more about the experiment in the "
     , Helpers.navA [] Router.About "About"
     , Html.text " page."

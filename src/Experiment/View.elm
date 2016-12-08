@@ -19,6 +19,7 @@ import Router
 import Strings
 import Styles exposing (class, classList, id)
 import Types
+import View.Common as Common
 
 
 -- INSTRUCTIONS
@@ -111,8 +112,8 @@ body lift profile meta model =
         expOrTrainingView =
             case model.state of
                 ExpModel.JustFinished ->
-                    Html.div [ class [ Styles.Narrow ] ]
-                        [ Html.div [ class [ Styles.Trial ] ]
+                    Html.div [ class [ Styles.SuperNarrow ] ]
+                        [ Html.div []
                             [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
                             , Html.p [] Strings.expTrainingFinishedExpStarts
                             , Html.p []
@@ -137,8 +138,8 @@ body lift profile meta model =
                         ]
 
         finishProfileView =
-            Html.div [ class [ Styles.Narrow ] ]
-                [ Html.div [ class [ Styles.Trial ] ]
+            Html.div [ class [ Styles.SuperNarrow ] ]
+                [ Html.div []
                     [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
                     , Html.p [] [ Html.text Strings.expTrainingFinishedCompleteProfile ]
                     , Html.p []
@@ -151,7 +152,7 @@ body lift profile meta model =
                 ]
 
         uncompletableView =
-            Html.div [ class [ Styles.Narrow ] ]
+            Html.div [ class [ Styles.SuperNarrow ] ]
                 [ Html.div [] [ Html.text "TODO: state uncompletable error" ] ]
     in
         case Lifecycle.state meta profile of
@@ -171,8 +172,13 @@ body lift profile meta model =
                     uncompletableView
 
             Lifecycle.Done ->
-                Html.div [ class [ Styles.Narrow ] ]
-                    [ Html.div [] [ Html.text "TODO: exp done" ] ]
+                Html.div [ class [ Styles.SuperNarrow ] ]
+                    [ Html.div []
+                        ((Html.h3 [] [ Html.text Strings.expDone ])
+                            :: (Common.prolificCompletion profile)
+                            ++ [ Html.p [] Strings.expDoneReadAbout ]
+                        )
+                    ]
 
 
 

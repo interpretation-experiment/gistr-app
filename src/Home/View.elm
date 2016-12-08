@@ -148,7 +148,7 @@ controls lift model =
                         Html.div []
                             ((Html.h3 [] [ Html.text Strings.expDone ])
                                 :: (Common.prolificCompletion user.profile)
-                                ++ [ Html.p [] Strings.homeReadAbout ]
+                                ++ [ Html.p [] Strings.expDoneReadAbout ]
                             )
 
                     _ ->
