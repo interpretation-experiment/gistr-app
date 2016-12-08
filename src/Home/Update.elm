@@ -48,7 +48,6 @@ update lift auth msg model =
                 )
 
         InstructionsStart ->
-            -- TODO: differentiate training/exp and done, and set intro path accordingly
             ( { model | home = Intro.start (Nonempty.map Tuple.first View.instructions) }
             , Cmd.none
             , []
