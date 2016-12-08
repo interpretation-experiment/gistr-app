@@ -23,6 +23,46 @@ passwordsDontMatch =
     "The two password don't match"
 
 
+registerProlificYourIdIs : String
+registerProlificYourIdIs =
+    "Your ID is"
+
+
+registerProlificSignUp : List (Html.Html msg)
+registerProlificSignUp =
+    [ Html.text "Now, "
+    , Html.strong [] [ Html.text "sign up to start the experiment" ]
+    ]
+
+
+registerProlificGoBack : List (Html.Html Msg)
+registerProlificGoBack =
+    [ Html.text "(Made a mistake? "
+    , Helpers.navA [] Router.Prolific "Go back"
+    , Html.text ")"
+    ]
+
+
+registerProlificQuestion : List (Html.Html Msg)
+registerProlificQuestion =
+    [ Html.text "Prolific Academic participant? "
+    , Helpers.navA [] Router.Prolific "Please enter your ID"
+    , Html.text " first"
+    ]
+
+
+registerAlreadyAccount : List (Html.Html Msg)
+registerAlreadyAccount =
+    [ Html.text "Already have an account? "
+    , Helpers.navA [] (Router.Login Nothing) "Sign in here"
+    ]
+
+
+registerEmailVerify : String
+registerEmailVerify =
+    "Once you've registered, we'll send you a verification email to make sure this works."
+
+
 intPlease : String
 intPlease =
     "Please enter a number"

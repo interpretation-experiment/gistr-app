@@ -10,6 +10,7 @@ import Html.Events as Events
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
+import Strings
 import Styles exposing (class, classList, id)
 import Types
 
@@ -91,6 +92,11 @@ form lift { input, feedback, status } maybeProlific =
                     ]
                     []
                 ]
+            , Html.div [] <|
+                if String.length input.email > 0 then
+                    [ Html.text Strings.registerEmailVerify ]
+                else
+                    []
             , Html.div [] [ Html.text (Feedback.getError "email" feedback) ]
             ]
         , Html.div
@@ -159,35 +165,20 @@ prolificLogin maybeProlific =
             Html.div [ class [ Styles.InfoBox ] ]
                 [ Html.div []
                     [ Html.p []
-                        [ Html.text "Your ID is "
+                        [ Html.text Strings.registerProlificYourIdIs
+                        , Html.text " "
                         , Html.span [ class [ Styles.BadgeDefault ] ]
                             [ Html.text prolificId ]
                         ]
-                    , Html.p []
-                        [ Html.text "Now, "
-                        , Html.strong [] [ Html.text "sign up to start the experiment" ]
-                        ]
-                    , Html.p []
-                        [ Html.text "(Made a mistake? "
-                        , Helpers.navA [] Router.Prolific "Go back"
-                        , Html.text ")"
-                        ]
+                    , Html.p [] Strings.registerProlificSignUp
+                    , Html.p [] Strings.registerProlificGoBack
                     ]
                 ]
 
         Nothing ->
             Html.div []
                 [ Html.div [ class [ Styles.RequestBox ] ]
-                    [ Html.div []
-                        [ Html.text "Prolific Academic participant? "
-                        , Helpers.navA [] Router.Prolific "Please enter your ID"
-                        , Html.text " first"
-                        ]
-                    ]
+                    [ Html.div [] Strings.registerProlificQuestion ]
                 , Html.div [ class [ Styles.InfoBox ] ]
-                    [ Html.div []
-                        [ Html.text "Already have an account? "
-                        , Helpers.navA [] (Router.Login Nothing) "Sign in here"
-                        ]
-                    ]
+                    [ Html.div [] Strings.registerAlreadyAccount ]
                 ]
