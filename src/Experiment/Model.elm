@@ -60,9 +60,12 @@ type TrialState
 
 type Node
     = Title
+    | Read1
+    | Read2
+    | Task
+    | Write
+    | Images
     | Progress
-    | A
-    | B
 
 
 

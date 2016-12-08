@@ -138,6 +138,60 @@ expDone =
     "You finished the experiment! Thanks for participating."
 
 
+expInstructionsWelcome : String
+expInstructionsWelcome =
+    "Welcome to the Gistr Experiment!"
+
+
+expInstructionsReadText : String
+expInstructionsReadText =
+    "You're going to read some text, which can be from a sentence up to several paragraphs"
+
+
+expInstructionsReadTime : List (Html.Html msg)
+expInstructionsReadTime =
+    [ Html.text "In limited time — "
+    , Html.strong [] [ Html.text "Try to read as fast as possible!" ]
+    ]
+
+
+expInstructionsPause : String
+expInstructionsPause =
+    "Then there's a pause"
+
+
+expInstructionsRewrite : String
+expInstructionsRewrite =
+    "And you must rewrite what you remember"
+
+
+expInstructionsCapsPunct : List (Html.Html msg)
+expInstructionsCapsPunct =
+    [ Html.text "Pay attention to "
+    , Html.strong [] [ Html.text "capitalization" ]
+    , Html.text " and "
+    , Html.strong [] [ Html.text "punctuation" ]
+    ]
+
+
+expInstructionsLoop : String
+expInstructionsLoop =
+    "The whole process loops once you're done"
+
+
+expInstructionsTraining : List (Html.Html msg)
+expInstructionsTraining =
+    [ Html.text "Right now you're in "
+    , Html.strong [] [ Html.text "training" ]
+    , Html.text ": nothing you do is recorded"
+    ]
+
+
+expInstructionsRealStart : Int -> String
+expInstructionsRealStart num =
+    "The real experiment starts after " ++ (toString num) ++ " trials"
+
+
 prolificCompletion : String
 prolificCompletion =
     "Now, click the following button to tell Prolific Academic you finished the study, so you can get paid."

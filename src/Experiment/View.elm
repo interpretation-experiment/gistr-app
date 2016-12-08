@@ -22,30 +22,6 @@ import Types
 import View.Common as Common
 
 
--- INSTRUCTIONS
-
-
-instructionsConfig : (Msg -> AppMsg.Msg) -> Intro.ViewConfig ExpModel.Node AppMsg.Msg
-instructionsConfig lift =
-    Intro.viewConfig
-        { liftMsg = lift << InstructionsMsg
-        , tooltip = (\i -> Tuple.second (Nonempty.get i instructions))
-        }
-
-
-instructions : Nonempty ( ExpModel.Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
-instructions =
-    -- TODO: move to Strings.elm
-    Nonempty.Nonempty
-        ( ExpModel.Title, ( Intro.Bottom, Html.p [] [ Html.text "This is the title!" ] ) )
-        [ ( ExpModel.Progress, ( Intro.Left, Html.p [] [ Html.text "This is progress" ] ) )
-        , ( ExpModel.A, ( Intro.Right, Html.p [] [ Html.text "This is stuff A" ] ) )
-        , ( ExpModel.A, ( Intro.Top, Html.p [] [ Html.text "This is stuff A again" ] ) )
-        , ( ExpModel.B, ( Intro.Left, Html.p [] [ Html.text "And finally stuff B" ] ) )
-        ]
-
-
-
 -- VIEW
 
 
@@ -95,13 +71,153 @@ header lift profile meta model =
     in
         [ Html.nav [] [ Helpers.navIcon [ class [ Styles.Big ] ] Router.Home "home" ]
         , Intro.node
-            (instructionsConfig lift)
+            (instructionsConfig lift profile meta)
             (ExpModel.instructionsState model)
             ExpModel.Title
             Html.h1
             []
             [ Html.text title ]
         ]
+
+
+
+-- INSTRUCTIONS
+
+
+instructionsConfig :
+    (Msg -> AppMsg.Msg)
+    -> Types.Profile
+    -> Types.Meta
+    -> Intro.ViewConfig ExpModel.Node AppMsg.Msg
+instructionsConfig lift profile meta =
+    Intro.viewConfig
+        { liftMsg = lift << InstructionsMsg
+        , tooltip = (\i -> Tuple.second <| Nonempty.get i <| instructions profile meta)
+        }
+
+
+instructions :
+    Types.Profile
+    -> Types.Meta
+    -> Nonempty ( ExpModel.Node, ( Intro.Position, Html.Html AppMsg.Msg ) )
+instructions profile meta =
+    let
+        trainingDetails =
+            case Lifecycle.state meta profile of
+                Lifecycle.Training _ ->
+                    [ ( ExpModel.Title
+                      , ( Intro.Right, Html.p [] Strings.expInstructionsTraining )
+                      )
+                    , ( ExpModel.Progress
+                      , ( Intro.Left
+                        , Html.p [] [ Html.text <| Strings.expInstructionsRealStart 5 ]
+                        )
+                      )
+                    ]
+
+                _ ->
+                    []
+    in
+        Nonempty.Nonempty
+            ( ExpModel.Title
+            , ( Intro.Right, Html.p [] [ Html.text Strings.expInstructionsWelcome ] )
+            )
+        <|
+            [ ( ExpModel.Read1
+              , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsReadText ] )
+              )
+            , ( ExpModel.Read2
+              , ( Intro.Left, Html.p [] Strings.expInstructionsReadTime )
+              )
+            , ( ExpModel.Task
+              , ( Intro.Top, Html.p [] [ Html.text Strings.expInstructionsPause ] )
+              )
+            , ( ExpModel.Write
+              , ( Intro.Left, Html.p [] [ Html.text Strings.expInstructionsRewrite ] )
+              )
+            , ( ExpModel.Write
+              , ( Intro.Top, Html.p [] Strings.expInstructionsCapsPunct )
+              )
+            , ( ExpModel.Images
+              , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )
+              )
+            ]
+                ++ trainingDetails
+
+
+instructionsView :
+    (Msg -> AppMsg.Msg)
+    -> Types.Profile
+    -> Types.Meta
+    -> Bool
+    -> Intro.State ExpModel.Node
+    -> List (Html.Html AppMsg.Msg)
+instructionsView lift profile meta loading state =
+    [ Intro.node
+        (instructionsConfig lift profile meta)
+        state
+        ExpModel.Images
+        Html.div
+        [ class [ Styles.InstructionImages, Styles.Center ]
+        , Attributes.style [ ( "width", "475px" ), ( "height", "247px" ) ]
+        ]
+        [ Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Read1
+            Html.div
+            [ Attributes.style [ ( "top", "0" ), ( "left", "0" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read1 state ) ]
+            ]
+            [ Html.img [ Attributes.src "/assets/img/instructions-read1.png" ] [] ]
+        , Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Read2
+            Html.div
+            [ Attributes.style [ ( "top", "0" ), ( "left", "0" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read2 state ) ]
+            ]
+            [ Html.img [ Attributes.src "/assets/img/instructions-read2.png" ] [] ]
+        , Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Task
+            Html.div
+            [ Attributes.style [ ( "top", "85px" ), ( "left", "60px" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Task state ) ]
+            ]
+            [ Html.img [ Attributes.src "/assets/img/instructions-task.png" ] [] ]
+        , Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Write
+            Html.div
+            [ Attributes.style [ ( "top", "130px" ), ( "left", "120px" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Write state ) ]
+            ]
+            [ Html.img [ Attributes.src "/assets/img/instructions-write.png" ] [] ]
+        ]
+    , Html.div
+        [ class [ Styles.Center, Styles.CenterText, Styles.SmoothAppearing ]
+        , classList [ ( Styles.Hidden, Intro.isRunning state ) ]
+        ]
+        [ Html.h2 [] [ Html.text "Ready to go?" ]
+        , Helpers.evButton
+            [ Attributes.disabled loading, class [ Styles.Btn ] ]
+            (lift InstructionsStart)
+            "Replay instructions"
+        , Helpers.evButton
+            [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+            (lift LoadTrial)
+            "Start"
+        ]
+    , Intro.overlay state
+    ]
 
 
 
@@ -172,12 +288,12 @@ progress lift profile meta model =
                     []
     in
         [ Intro.node
-            (instructionsConfig lift)
+            (instructionsConfig lift profile meta)
             (ExpModel.instructionsState model)
             ExpModel.Progress
             Html.div
-            [ class [ Styles.Meta, Styles.Progress ] ]
-            contents
+            [ class [ Styles.Meta, Styles.Wide ] ]
+            [ Html.div [ class [ Styles.Progress ] ] contents ]
         ]
 
 
@@ -211,7 +327,9 @@ contents lift profile meta model =
 
                 ExpModel.Instructions introState ->
                     ( Html.div [ class [ Styles.Normal ] ]
-                        [ Html.div [] (instructionsView lift model.loadingNext introState) ]
+                        [ Html.div [] <|
+                            instructionsView lift profile meta model.loadingNext introState
+                        ]
                     , progress lift profile meta model
                     )
 
@@ -275,42 +393,6 @@ contents lift profile meta model =
                     ]
                 , []
                 )
-
-
-
--- INSTRUCTIONS
-
-
-instructionsView :
-    (Msg -> AppMsg.Msg)
-    -> Bool
-    -> Intro.State ExpModel.Node
-    -> List (Html.Html AppMsg.Msg)
-instructionsView lift loading state =
-    [ Intro.node
-        (instructionsConfig lift)
-        state
-        ExpModel.A
-        Html.p
-        []
-        [ Html.text "First stuff" ]
-    , Intro.node
-        (instructionsConfig lift)
-        state
-        ExpModel.B
-        Html.p
-        []
-        [ Html.text "Second stuff" ]
-    , Helpers.evButton
-        [ Attributes.disabled loading, class [ Styles.Btn ] ]
-        (lift InstructionsStart)
-        "Replay instructions"
-    , Helpers.evButton
-        [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
-        (lift LoadTrial)
-        "Start"
-    , Intro.overlay state
-    ]
 
 
 

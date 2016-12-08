@@ -102,11 +102,12 @@ update lift auth msg model =
                         )
 
         InstructionsStart ->
-            -- TODO: differentiate training and exp, and set intro path accordingly
             let
                 instructions =
-                    ExpModel.Instructions
-                        (Intro.start <| Nonempty.map Tuple.first View.instructions)
+                    ExpModel.Instructions <|
+                        Intro.start <|
+                            Nonempty.map Tuple.first <|
+                                View.instructions auth.user.profile auth.meta
             in
                 ( { model | experiment = ExpModel.setState instructions model.experiment }
                 , Cmd.none
@@ -114,7 +115,11 @@ update lift auth msg model =
                 )
 
         InstructionsQuit index ->
-            if Nonempty.length View.instructions == index + 1 then
+            if
+                (Nonempty.length (View.instructions auth.user.profile auth.meta)
+                    == (index + 1)
+                )
+            then
                 ( model
                 , Cmd.none
                 , [ lift InstructionsDone ]

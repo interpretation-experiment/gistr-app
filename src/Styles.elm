@@ -80,6 +80,7 @@ type CssClasses
     | SmoothAppearing
     | Hidden
     | Trial
+    | InstructionImages
     | Header
     | Clock
     | Progress
@@ -170,6 +171,8 @@ btn =
         , color (hex "#265c83")
         , display inlineBlock
         , padding2 (em 0.5) (em 0.75)
+        , marginLeft (em 0.2)
+        , marginRight (em 0.2)
         , textDecoration none
         , cursor pointer
         , property
@@ -276,18 +279,25 @@ css =
                     [ marginLeft auto
                     , marginTop (px 10)
                     , children [ (.) Avatar [ margin2 (px 0) (px 10) ] ]
-                    , withClass Progress [ flex3 (num 0) (num 1) (pct 30) ]
+                    , withClass Wide [ flex3 (num 0) (num 1) (pct 30) ]
                     ]
                 ]
             ]
         , main_
             [ marginBottom (px 60)
               -- Apply SuperNarrow/Narrow/Normal/Wide to this div
-            , children [ div [ centerElement, displayFlex ] ]
-            , descendants
-                [ nav
-                    [ flex3 (num 0) (num 1) (pct 20)
-                    , adjacentSiblings [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
+            , children
+                [ div
+                    [ centerElement
+                    , displayFlex
+                    , flexWrap wrap
+                    , children
+                        [ div [ flex3 (num 0) (num 0) (pct 100) ]
+                        , nav
+                            [ flex3 (num 0) (num 1) (pct 20)
+                            , adjacentSiblings [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
+                            ]
+                        ]
                     ]
                 ]
             ]
@@ -357,6 +367,19 @@ css =
                     ]
                 ]
             ]
+        , (.) InstructionImages
+            [ position relative
+            , margin2 (em 3) (em 0)
+            , children [ div [ position absolute, display inlineBlock ] ]
+            , descendants
+                [ img
+                    [ width (px 350)
+                    , border3 (px 2) solid (hex "#ccc")
+                    , borderRadius (px 5)
+                    , boxShadow4 (px 0) (px 0) (px 2) (hex "#ccc")
+                    ]
+                ]
+            ]
           -- UTILITIES
         , (.) Center [ centerElement ]
         , (.) CenterText [ textAlign center ]
@@ -391,6 +414,7 @@ css =
         , (.) Loader
             [ margin2 (px 0) auto
             , position relative
+            , flex unset
             , withClass Small
                 [ width (em 1)
                 , height (em 1)
