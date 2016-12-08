@@ -234,7 +234,7 @@ view model =
             ]
             [ Svg.circle
                 [ Attributes.stroke "#ccc"
-                , Attributes.strokeWidth "3"
+                , Attributes.strokeWidth "2"
                 , Attributes.fill "transparent"
                 , Attributes.cx (toString centerX)
                 , Attributes.cy (toString centerY)
