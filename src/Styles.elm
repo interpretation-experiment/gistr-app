@@ -82,6 +82,8 @@ type CssClasses
     | Trial
     | Header
     | Clock
+    | Progress
+    | Bar
 
 
 type CssIds
@@ -274,6 +276,7 @@ css =
                     [ marginLeft auto
                     , marginTop (px 10)
                     , children [ (.) Avatar [ margin2 (px 0) (px 10) ] ]
+                    , withClass Progress [ flex3 (num 0) (num 1) (pct 30) ]
                     ]
                 ]
             ]
@@ -330,6 +333,27 @@ css =
                     [ paddingLeft (em 1)
                     , borderLeft3 (px 3) solid (rgba 200 200 200 0.6)
                     , fontSize (em 1.2)
+                    ]
+                ]
+            ]
+        , (.) Progress
+            [ backgroundColor (rgba 0 0 0 0.05)
+            , color (hex "#888")
+            , textAlign center
+            , borderRadius (em 0.2)
+            , overflow hidden
+            , position relative
+            , padding2 (em 0.5) (em 1)
+            , children
+                [ (.) Bar
+                    [ backgroundColor (hex "#00b5ad4d")
+                    , minWidth (pct 5)
+                    , height (pct 100)
+                    , position absolute
+                    , top (px 0)
+                    , left (px 0)
+                    , property "z-index" "-1"
+                    , property "transition" "width .1s ease"
                     ]
                 ]
             ]

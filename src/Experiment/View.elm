@@ -38,7 +38,8 @@ instructions =
     -- TODO: move to Strings.elm
     Nonempty.Nonempty
         ( ExpModel.Title, ( Intro.Bottom, Html.p [] [ Html.text "This is the title!" ] ) )
-        [ ( ExpModel.A, ( Intro.Right, Html.p [] [ Html.text "This is stuff A" ] ) )
+        [ ( ExpModel.Progress, ( Intro.Left, Html.p [] [ Html.text "This is progress" ] ) )
+        , ( ExpModel.A, ( Intro.Right, Html.p [] [ Html.text "This is stuff A" ] ) )
         , ( ExpModel.A, ( Intro.Top, Html.p [] [ Html.text "This is stuff A again" ] ) )
         , ( ExpModel.B, ( Intro.Left, Html.p [] [ Html.text "And finally stuff B" ] ) )
         ]
@@ -52,9 +53,15 @@ view : (Msg -> AppMsg.Msg) -> Model -> List (Html.Html AppMsg.Msg)
 view lift model =
     case model.auth of
         Types.Authenticated { user, meta } ->
-            [ Html.header [] (header lift user.profile meta model.experiment)
-            , Html.main_ [] [ (body lift user.profile meta model.experiment) ]
-            ]
+            let
+                ( body, progressView ) =
+                    contents lift user.profile meta model.experiment
+            in
+                [ Html.header [] <|
+                    (header lift user.profile meta model.experiment)
+                        ++ progressView
+                , Html.main_ [] [ body ]
+                ]
 
         Types.Authenticating ->
             [ Helpers.loading Styles.Big ]
@@ -98,21 +105,94 @@ header lift profile meta model =
 
 
 
--- BODY
+-- BODY AND PROGRESS
 
 
-body :
+progress :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
     -> Types.Meta
     -> ExpModel.Model
-    -> Html.Html AppMsg.Msg
-body lift profile meta model =
+    -> List (Html.Html AppMsg.Msg)
+progress lift profile meta model =
+    let
+        widthStyle completed total =
+            Attributes.style
+                [ ( "width"
+                  , (toString <| 100 * (toFloat completed) / (toFloat total)) ++ "%"
+                  )
+                ]
+
+        contents =
+            case Lifecycle.state meta profile of
+                Lifecycle.Training _ ->
+                    let
+                        completed =
+                            case model.state of
+                                ExpModel.Trial trialState ->
+                                    trialState.streak
+
+                                _ ->
+                                    0
+                    in
+                        [ Html.text
+                            ("Completed "
+                                ++ (toString completed)
+                                ++ " / "
+                                ++ (toString meta.trainingWork)
+                                ++ " training texts"
+                            )
+                        , Html.div
+                            [ class [ Styles.Bar ]
+                            , widthStyle completed meta.trainingWork
+                            ]
+                            []
+                        ]
+
+                Lifecycle.Experiment _ ->
+                    let
+                        completed =
+                            profile.reformulationsCount
+                    in
+                        [ Html.text
+                            ("Completed "
+                                ++ (toString completed)
+                                ++ " / "
+                                ++ (toString meta.experimentWork)
+                                ++ " texts"
+                            )
+                        , Html.div
+                            [ class [ Styles.Bar ]
+                            , widthStyle completed meta.experimentWork
+                            ]
+                            []
+                        ]
+
+                Lifecycle.Done ->
+                    []
+    in
+        [ Intro.node
+            (instructionsConfig lift)
+            (ExpModel.instructionsState model)
+            ExpModel.Progress
+            Html.div
+            [ class [ Styles.Meta, Styles.Progress ] ]
+            contents
+        ]
+
+
+contents :
+    (Msg -> AppMsg.Msg)
+    -> Types.Profile
+    -> Types.Meta
+    -> ExpModel.Model
+    -> ( Html.Html AppMsg.Msg, List (Html.Html AppMsg.Msg) )
+contents lift profile meta model =
     let
         expOrTrainingView =
             case model.state of
                 ExpModel.JustFinished ->
-                    Html.div [ class [ Styles.SuperNarrow ] ]
+                    ( Html.div [ class [ Styles.SuperNarrow ] ]
                         [ Html.div []
                             [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
                             , Html.p [] Strings.expTrainingFinishedExpStarts
@@ -126,19 +206,25 @@ body lift profile meta model =
                                 ]
                             ]
                         ]
+                    , []
+                    )
 
                 ExpModel.Instructions introState ->
-                    Html.div [ class [ Styles.Normal ] ]
+                    ( Html.div [ class [ Styles.Normal ] ]
                         [ Html.div [] (instructionsView lift model.loadingNext introState) ]
+                    , progress lift profile meta model
+                    )
 
                 ExpModel.Trial trialModel ->
-                    Html.div [ class [ Styles.Narrow ] ]
+                    ( Html.div [ class [ Styles.Narrow ] ]
                         [ Html.div [ class [ Styles.Trial ] ]
                             (trial lift model.loadingNext trialModel)
                         ]
+                    , progress lift profile meta model
+                    )
 
         finishProfileView =
-            Html.div [ class [ Styles.SuperNarrow ] ]
+            ( Html.div [ class [ Styles.SuperNarrow ] ]
                 [ Html.div []
                     [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
                     , Html.p [] [ Html.text Strings.expTrainingFinishedCompleteProfile ]
@@ -150,14 +236,18 @@ body lift profile meta model =
                         ]
                     ]
                 ]
+            , []
+            )
 
         uncompletableView =
-            Html.div [ class [ Styles.SuperNarrow ] ]
+            ( Html.div [ class [ Styles.SuperNarrow ] ]
                 [ Html.div []
                     ((Html.h3 [] [ Html.text Strings.expUncompletableTitle ])
                         :: Strings.expUncompletableExplanation
                     )
                 ]
+            , []
+            )
     in
         case Lifecycle.state meta profile of
             Lifecycle.Experiment tests ->
@@ -176,13 +266,15 @@ body lift profile meta model =
                     uncompletableView
 
             Lifecycle.Done ->
-                Html.div [ class [ Styles.SuperNarrow ] ]
+                ( Html.div [ class [ Styles.SuperNarrow ] ]
                     [ Html.div []
                         ((Html.h3 [] [ Html.text Strings.expDone ])
                             :: (Common.prolificCompletion profile)
                             ++ [ Html.p [] Strings.expDoneReadAbout ]
                         )
                     ]
+                , []
+                )
 
 
 

@@ -60,6 +60,7 @@ type TrialState
 
 type Node
     = Title
+    | Progress
     | A
     | B
 
