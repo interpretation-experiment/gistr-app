@@ -19,8 +19,8 @@ type State
 
 
 type Test
-    = Questionnaire
-    | WordSpan
+    = --| WORDSPAN: WordSpan
+      Questionnaire
 
 
 state : Types.Meta -> Types.Profile -> State
@@ -60,7 +60,9 @@ stateIsCompletable meta profile =
             meta.trainingWork <= profile.availableTreeCounts.training
 
         Experiment _ ->
-            meta.experimentWork <= profile.availableTreeCounts.experiment
+            ((meta.experimentWork - profile.reformulationsCount)
+                <= profile.availableTreeCounts.experiment
+            )
 
         Done ->
             True
@@ -70,5 +72,5 @@ testsRemaining : Types.Profile -> List Test
 testsRemaining =
     Validate.all
         [ .questionnaireId >> Validate.ifNothing Questionnaire
-        , .wordSpanId >> Validate.ifNothing WordSpan
+          -- WORDSPAN: , .wordSpanId >> Validate.ifNothing WordSpan
         ]

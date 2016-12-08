@@ -28,6 +28,7 @@ module Api.Calls
         , putUser
         )
 
+import Config
 import Decoders
 import Encoders
 import Http
@@ -36,15 +37,6 @@ import Json.Encode as JE
 import Maybe.Extra exposing (unwrap)
 import Task
 import Types
-
-
--- CONFIG: TODO: move to a Config.elm with other config values
-
-
-baseUrl : String
-baseUrl =
-    "//127.0.0.1:8000/api"
-
 
 
 -- CALL BUILDING
@@ -80,7 +72,7 @@ builder :
     }
     -> RequestBuilder a
 builder { method, path, query, token, expect } =
-    method (baseUrl ++ path)
+    method (Config.baseUrl ++ path)
         |> HttpBuilder.withQueryParams query
         |> HttpBuilder.withHeader "Accept" "application/json"
         |> unwrap identity (HttpBuilder.withHeader "Authorization" << (++) "Token ") token

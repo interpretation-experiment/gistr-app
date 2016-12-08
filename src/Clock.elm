@@ -172,6 +172,9 @@ progress (Model model) =
 view : Model -> Html.Html msg
 view model =
     let
+        modelProgress =
+            progress model
+
         radius =
             10
 
@@ -195,7 +198,7 @@ view model =
                 ( centerX + x, centerY - y )
 
         arc =
-            offset + (progress model) * (radians (2 * pi) - offset)
+            offset + modelProgress * (radians (2 * pi) - offset)
 
         ( tipX, tipY ) =
             let
@@ -209,15 +212,38 @@ view model =
                 "0"
             else
                 "1"
+
+        hue =
+            let
+                split =
+                    0.75
+
+                startHue =
+                    44
+
+                endHue =
+                    0
+            in
+                if modelProgress < split then
+                    120
+                else
+                    startHue + (modelProgress - split) * (endHue - startHue) / (1 - split)
     in
         Svg.svg
             [ Attributes.viewBox ("0 0 " ++ toString (2 * centerX) ++ " " ++ toString (2 * centerY))
-            , Attributes.width "150px"
             ]
-            [ Svg.path
-                [ Attributes.stroke "red"
-                , Attributes.strokeLinecap "round"
-                , Attributes.strokeWidth "1"
+            [ Svg.circle
+                [ Attributes.stroke "#ccc"
+                , Attributes.strokeWidth "2"
+                , Attributes.fill "transparent"
+                , Attributes.cx (toString centerX)
+                , Attributes.cy (toString centerY)
+                , Attributes.r (toString radius)
+                ]
+                []
+            , Svg.path
+                [ Attributes.stroke <| "hsla(" ++ (toString hue) ++ ",82%,50%," ++ (toString modelProgress) ++ ")"
+                , Attributes.strokeWidth "2"
                 , Attributes.fill "transparent"
                 , Attributes.d
                     ("M"

@@ -41,9 +41,11 @@ type CssClasses
     | CenterText
     | FlexCenter
     | BtnIcon
+    | BtnIconBtn
     | BtnLink
     | Btn
     | BtnPrimary
+    | BtnWarning
     | BtnLight
     | BtnDark
     | BtnSmall
@@ -74,6 +76,15 @@ type CssClasses
     | Loader
     | WarningNotification
     | InfoNotification
+    | SuccessNotification
+    | SmoothAppearing
+    | Hidden
+    | Trial
+    | InstructionImages
+    | Header
+    | Clock
+    | Progress
+    | Bar
 
 
 type CssIds
@@ -98,10 +109,10 @@ notification =
                 , width (px 12)
                 , height (px 12)
                 , lineHeight (px 0)
-                , display none
+                , property "visibility" "hidden"
                 ]
             ]
-        , hover [ children [ button [ display unset ] ] ]
+        , hover [ children [ button [ property "visibility" "visible" ] ] ]
         ]
 
 
@@ -111,6 +122,11 @@ box =
         [ borderBottom3 (px 1) solid (rgba 214 217 221 0.5)
         , marginBottom (em 1.43)
         , borderRadius (px 2)
+          -- Pad divs inside this element, since we use it in flex boxes, where
+          -- layout is computed without padding (so adding padding on this
+          -- element ruins the flex layout, therefore we put the padding in a
+          -- child element). This is fixed by using Grid Layout, once it's in
+          -- most browsers.
         , children [ div [ padding (em 0.86) ] ]
         ]
 
@@ -155,6 +171,8 @@ btn =
         , color (hex "#265c83")
         , display inlineBlock
         , padding2 (em 0.5) (em 0.75)
+        , marginLeft (em 0.2)
+        , marginRight (em 0.2)
         , textDecoration none
         , cursor pointer
         , property
@@ -178,6 +196,19 @@ btnPrimaryHoverFocus =
     mixin
         [ backgroundColor (hex "#0063aa")
         , borderColor (hex "#0063aa")
+        ]
+
+
+btnWarning : Mixin
+btnWarning =
+    mixin [ color (hex "#fff"), backgroundColor (hex "#ee930e") ]
+
+
+btnWarningHoverFocus : Mixin
+btnWarningHoverFocus =
+    mixin
+        [ backgroundColor (hex "#d78714")
+        , borderColor (hex "#d78714")
         ]
 
 
@@ -244,17 +275,29 @@ css =
             , minHeight (px 60)
             , children
                 [ nav [ flex3 (num 0) (num 1) (pct 10), textAlign center ]
-                , (.) Meta [ marginLeft auto ]
+                , (.) Meta
+                    [ marginLeft auto
+                    , marginTop (px 10)
+                    , children [ (.) Avatar [ margin2 (px 0) (px 10) ] ]
+                    , withClass Wide [ flex3 (num 0) (num 1) (pct 30) ]
+                    ]
                 ]
             ]
         , main_
             [ marginBottom (px 60)
               -- Apply SuperNarrow/Narrow/Normal/Wide to this div
-            , children [ div [ centerElement, displayFlex ] ]
-            , descendants
-                [ nav
-                    [ flex3 (num 0) (num 1) (pct 20)
-                    , adjacentSiblings [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
+            , children
+                [ div
+                    [ centerElement
+                    , displayFlex
+                    , flexWrap wrap
+                    , children
+                        [ div [ flex3 (num 0) (num 0) (pct 100) ]
+                        , nav
+                            [ flex3 (num 0) (num 1) (pct 20)
+                            , adjacentSiblings [ div [ flex3 (num 0) (num 1) (pct 80) ] ]
+                            ]
+                        ]
                     ]
                 ]
             ]
@@ -285,13 +328,64 @@ css =
                     ]
                 ]
             ]
+          -- EXPERIMENT LAYOUT
+        , (.) Trial
+            [ marginTop (em 2)
+            , descendants
+                [ (.) Header
+                    [ opacity (num 0.8)
+                    , displayFlex
+                    , alignItems center
+                    , marginBottom (em 1)
+                    ]
+                , (.) Clock [ marginRight (em 1), width (px 50) ]
+                , selector "blockquote"
+                    [ paddingLeft (em 1)
+                    , borderLeft3 (px 3) solid (rgba 200 200 200 0.6)
+                    , fontSize (em 1.2)
+                    ]
+                ]
+            ]
+        , (.) Progress
+            [ backgroundColor (rgba 0 0 0 0.05)
+            , color (hex "#888")
+            , textAlign center
+            , borderRadius (em 0.2)
+            , overflow hidden
+            , position relative
+            , padding2 (em 0.5) (em 1)
+            , children
+                [ (.) Bar
+                    [ backgroundColor (hex "#00b5ad4d")
+                    , minWidth (pct 5)
+                    , height (pct 100)
+                    , position absolute
+                    , top (px 0)
+                    , left (px 0)
+                    , property "z-index" "-1"
+                    , property "transition" "width .1s ease"
+                    ]
+                ]
+            ]
+        , (.) InstructionImages
+            [ position relative
+            , margin2 (em 3) (em 0)
+            , children [ div [ position absolute, display inlineBlock ] ]
+            , descendants
+                [ img
+                    [ width (px 350)
+                    , border3 (px 2) solid (hex "#ccc")
+                    , borderRadius (px 5)
+                    , boxShadow4 (px 0) (px 0) (px 2) (hex "#ccc")
+                    ]
+                ]
+            ]
           -- UTILITIES
         , (.) Center [ centerElement ]
         , (.) CenterText [ textAlign center ]
         , (.) FlexCenter [ displayFlex, alignItems center ]
         , (.) Avatar
-            [ margin (px 10)
-            , width (px 40)
+            [ width (px 40)
             , height (px 40)
             , borderRadius (pct 100)
             , overflow hidden
@@ -320,6 +414,7 @@ css =
         , (.) Loader
             [ margin2 (px 0) auto
             , position relative
+            , flex unset
             , withClass Small
                 [ width (em 1)
                 , height (em 1)
@@ -365,6 +460,18 @@ css =
             , backgroundColor (hex "#dfd9f7")
             , property "fill" "#54318f"
             ]
+        , (.) SuccessNotification
+            [ notification
+            , color (hex "#389f48")
+            , backgroundColor (hex "#f6fff6")
+            , property "fill" "#389f48"
+            ]
+        , (.) SmoothAppearing
+            [ property "transition" "opacity .3s ease-in-out, max-height .3s ease-in-out"
+            , boxSizing borderBox
+            , maxHeight (px 500)
+            ]
+        , (.) Hidden [ maxHeight (px 0), opacity (num 0), property "pointer-events" "none" ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]
@@ -455,15 +562,10 @@ css =
         , (.) BtnLink [ linkMixin ]
         , (.) BtnIcon
             [ border (px 0)
-            , backgroundColor unset
+            , backgroundColor initial
             , padding (px 0)
-            , margin (em 0.2)
             , cursor pointer
-            , opacity (num 0.65)
             , property "transition" "opacity 0.3s, fill 0.3s"
-            , hover [ opacity (num 1) ]
-            , focus [ opacity (num 1) ]
-            , active [ opacity (num 1) ]
             , disabled
                 [ cursor default
                 , opacity (num 0.65)
@@ -471,6 +573,13 @@ css =
                 ]
             , withClass Small [ width (px 18), height (px 18) ]
             , withClass Big [ width (px 30), height (px 30) ]
+            ]
+        , (.) BtnIconBtn
+            [ margin (em 0.2)
+            , opacity (num 0.65)
+            , hover [ opacity (num 1) ]
+            , focus [ opacity (num 1) ]
+            , active [ opacity (num 1) ]
             ]
         , (.) Btn
             [ btn
@@ -499,6 +608,17 @@ css =
                     [ color (hex "#fff")
                     , backgroundColor (hex "#001f3f")
                     , borderColor (hex "#001f3f")
+                    ]
+                ]
+            , withClass BtnWarning
+                [ btnWarning
+                , link [ btnWarning ]
+                , hover [ btnWarningHoverFocus ]
+                , focus [ btnWarningHoverFocus ]
+                , active
+                    [ color (hex "#fff")
+                    , backgroundColor (hex "#3b2404")
+                    , borderColor (hex "#3b2404")
                     ]
                 ]
             , withClass BtnLight
@@ -816,10 +936,10 @@ css =
           -- Tooltip Animation
         , selector "[data-tooltip]:hover:before, [data-tooltip]:hover:after"
             [ property "visibility" "visible"
+            , property "transition-delay" ".3s"
             , property "pointer-events" "auto"
+            , opacity (num 1)
             ]
-        , selector "[data-tooltip]:hover:before" [ opacity (num 1) ]
-        , selector "[data-tooltip]:hover:after" [ opacity (num 1) ]
           -- FONTS
         , selector "@font-face"
             [ fontFamilies [ (qt "Libre Franklin") ]

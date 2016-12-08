@@ -5,5 +5,4 @@ import Html
 
 view : List (Html.Html msg)
 view =
-    -- TODO: word span once exp part is done
-    [ Html.text "Word Span, to be done." ]
+    [ Html.text "Word Span, TODO." ]

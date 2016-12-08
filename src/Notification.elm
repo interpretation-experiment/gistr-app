@@ -25,7 +25,7 @@ import Time
 
 config : { widthPx : Float, maxHeightPx : Float }
 config =
-    { widthPx = 200
+    { widthPx = 300
     , maxHeightPx = 500
     }
 

@@ -5,6 +5,8 @@ import Auth.Msg as AuthMsg
 import Dict
 import Experiment.Subscription as ExpSub
 import Form
+import Home.Msg as HomeMsg
+import Intro
 import LocalStorage
 import Model exposing (Model)
 import Msg exposing (Msg)
@@ -44,6 +46,7 @@ subscriptions model =
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
                 ]
+        , Intro.subscription (Msg.HomeMsg << HomeMsg.InstructionsMsg) model.home
         , ExpSub.subscription Msg.ExperimentMsg model
         , Notification.subscription Msg.Notify model.notifications
         ]

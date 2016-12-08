@@ -10,7 +10,7 @@ type Msg
     | ChangePassword Types.PasswordCredentials
     | ChangePasswordResult (Api.Result Types.Auth)
     | ChangePasswordRecover
-    | ChangePasswordRecoverResult (Api.Result ())
+    | ChangePasswordRecoverResult String (Api.Result ())
       -- USERNAME MANAGEMENT
     | ChangeUsernameFormInput String
     | ChangeUsername String
@@ -25,7 +25,7 @@ type Msg
     | DeleteEmailResult (Api.Result Types.User)
     | AddEmailFormInput String
     | AddEmail String
-    | AddEmailResult (Api.Result Types.User)
+    | AddEmailResult String (Api.Result Types.User)
       -- QUESTIONNAIRE
     | QuestionnaireFormInput Types.QuestionnaireForm
     | QuestionnaireFormConfirm Types.QuestionnaireForm

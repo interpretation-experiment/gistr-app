@@ -3,9 +3,10 @@ module Experiment.Update exposing (update)
 import Api
 import Clock
 import Cmds
-import Experiment.Instructions as Instructions
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
+import Experiment.Shaping as Shaping
+import Experiment.View as View
 import Feedback
 import Form
 import Helpers
@@ -13,10 +14,9 @@ import Intro
 import Lifecycle
 import List
 import List.Nonempty as Nonempty
+import Maybe.Extra exposing (maybeToList)
 import Model exposing (Model)
 import Msg as AppMsg
-import Random
-import String
 import Strings
 import Task
 import Time
@@ -24,18 +24,33 @@ import Types
 import Validate
 
 
+-- INSTRUCTIONS
+
+
+instructionsConfig : (Msg -> AppMsg.Msg) -> Intro.UpdateConfig ExpModel.Node AppMsg.Msg
+instructionsConfig lift =
+    Intro.updateConfig
+        { onQuit = lift << InstructionsQuit
+        , onDone = lift InstructionsDone
+        }
+
+
+
+-- UPDATE
+
+
 update :
     (Msg -> AppMsg.Msg)
     -> Types.Auth
     -> Msg
     -> Model
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 update lift auth msg model =
     case msg of
         NoOp ->
             ( model
             , Cmd.none
-            , Nothing
+            , []
             )
 
         ClockMsg msg ->
@@ -44,6 +59,8 @@ update lift auth msg model =
                     let
                         outMsg =
                             case trial.state of
+                                -- TODO: move this into clock state, when
+                                -- refactoring to animate with CSS
                                 ExpModel.Reading ->
                                     TrialTask
 
@@ -66,7 +83,7 @@ update lift auth msg model =
                     in
                         ( { trial | clock = newClock }
                         , Cmd.none
-                        , maybeOut
+                        , maybeToList maybeOut
                         )
 
         {-
@@ -77,36 +94,42 @@ update lift auth msg model =
                 \state ->
                     let
                         ( newState, maybeOut ) =
-                            Intro.update (Instructions.updateConfig lift) msg state
+                            Intro.update (instructionsConfig lift) msg state
                     in
                         ( newState
                         , Cmd.none
-                        , maybeOut
+                        , maybeToList maybeOut
                         )
 
         InstructionsStart ->
-            -- TODO: differentiate training and exp, and set intro path accordingly
             let
                 instructions =
-                    ExpModel.Instructions (Intro.start Instructions.order)
+                    ExpModel.Instructions <|
+                        Intro.start <|
+                            Nonempty.map Tuple.first <|
+                                View.instructions auth.user.profile auth.meta
             in
-                ( { model | experiment = model.experiment |> ExpModel.setState instructions }
+                ( { model | experiment = ExpModel.setState instructions model.experiment }
                 , Cmd.none
-                , Nothing
+                , []
                 )
 
         InstructionsQuit index ->
-            if Nonempty.length Instructions.order == index + 1 then
+            if
+                (Nonempty.length (View.instructions auth.user.profile auth.meta)
+                    == (index + 1)
+                )
+            then
                 ( model
                 , Cmd.none
-                , Just <| lift <| InstructionsDone
+                , [ lift InstructionsDone ]
                 )
             else
                 updateInstructionsOrIgnore model <|
                     \state ->
                         ( Intro.hide
                         , Cmd.none
-                        , Nothing
+                        , []
                         )
 
         InstructionsDone ->
@@ -125,107 +148,26 @@ update lift auth msg model =
                             updateProfile
                           else
                             Cmd.none
-                        , Nothing
+                        , []
                         )
 
         InstructionsDoneResult (Ok profile) ->
             ( Helpers.updateProfile model profile
             , Cmd.none
-            , Nothing
+            , []
             )
 
         InstructionsDoneResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         {-
            TRIAL
         -}
         LoadTrial ->
-            -- TODO: select branch in tree, not root
             let
-                -- LANGUAGE VARIABLES
-                mothertongue =
-                    auth.user.profile.mothertongue
-
-                isOthertongue =
-                    mothertongue == auth.meta.otherLanguage
-
-                rootLanguage =
-                    if isOthertongue then
-                        auth.meta.otherLanguage
-                    else
-                        mothertongue
-
-                -- LANGUAGE AND BUCKET FILTER
-                preFilter =
-                    [ ( "root_language", rootLanguage )
-                    , ( "with_other_mothertongue"
-                      , String.toLower <| toString isOthertongue
-                      )
-                    , ( "without_other_mothertongue"
-                      , String.toLower <| toString <| not isOthertongue
-                      )
-                    , ( "root_bucket", Lifecycle.bucket auth.meta auth.user.profile )
-                    ]
-
-                -- SEVERAL-SENTENCES FILTER
-                severalFilter =
-                    preFilter ++ [ ( "sample", toString auth.meta.trainingWork ) ]
-
-                -- SINGLE-SENTENCE FILTERS
-                unshapedSingleFilter =
-                    preFilter
-                        ++ [ ( "untouched_by_profile", toString auth.user.profile.id )
-                           , ( "sample", toString 1 )
-                           ]
-
-                shapedSingleFilter =
-                    unshapedSingleFilter
-                        ++ [ ( "branches_count_lte"
-                             , toString auth.meta.targetBranchCount
-                             )
-                           , ( "shortest_branch_depth_lte"
-                             , toString auth.meta.targetBranchDepth
-                             )
-                           ]
-
-                -- SEVERAL-SENTENCES FETCHING TASKS
-                fetchSeveralSentences =
-                    Api.getTrees auth Nothing severalFilter
-                        |> Task.map (\page -> List.map .root page.items)
-
-                seed =
-                    Time.now
-                        |> Task.map (Random.initialSeed << round << Time.inMilliseconds)
-
-                fetchRandomizedSentences =
-                    Task.map2 Helpers.shuffle seed fetchSeveralSentences
-
-                -- SINGLE-SENTENCE FETCHING TASKS
-                firstRootOr default page =
-                    case page.items of
-                        tree :: _ ->
-                            Task.succeed tree.root
-
-                        [] ->
-                            default
-
-                fetchUnshapedSingleSentence =
-                    Api.getTrees auth Nothing unshapedSingleFilter
-                        |> Task.andThen
-                            (firstRootOr <|
-                                Task.fail <|
-                                    Types.Unrecoverable "Found no suitable tree for profile"
-                            )
-
-                fetchSingleSentence =
-                    Api.getTrees auth Nothing shapedSingleFilter
-                        |> Task.andThen (firstRootOr fetchUnshapedSingleSentence)
-
-                -- LOADING AND PRELOADING HELPERS
                 selectPreloaded preLoaded =
                     case preLoaded of
                         [] ->
@@ -234,13 +176,15 @@ update lift auth msg model =
                         head :: rest ->
                             Ok ( rest, head )
 
-                preloadAndSelect =
-                    fetchRandomizedSentences
+                preloadTrainingAndSelect =
+                    Shaping.fetchRandomizedUnshapedTrees auth.meta.trainingWork auth
+                        |> Task.map (List.map .root)
                         |> Task.andThen (selectPreloaded >> Helpers.resultToTask)
                         |> Task.attempt (lift << LoadTrialResult)
 
-                loadSingle =
-                    fetchSingleSentence
+                loadSentence =
+                    Shaping.fetchPossiblyShapedUntouchedTree auth
+                        |> Task.andThen (Shaping.selectTipSentence auth)
                         |> Task.attempt (lift << LoadTrialResult << Result.map ((,) []))
 
                 loadingModel =
@@ -250,17 +194,17 @@ update lift auth msg model =
                     Lifecycle.Training _ ->
                         case model.experiment.state of
                             ExpModel.JustFinished ->
-                                -- Preload training sentences
-                                ( loadingModel
-                                , preloadAndSelect
-                                , Nothing
+                                -- Ignore, this should never happen
+                                ( model
+                                , Cmd.none
+                                , []
                                 )
 
                             ExpModel.Instructions _ ->
                                 -- Preload training sentences
                                 ( loadingModel
-                                , preloadAndSelect
-                                , Nothing
+                                , preloadTrainingAndSelect
+                                , []
                                 )
 
                             ExpModel.Trial trial ->
@@ -268,32 +212,32 @@ update lift auth msg model =
                                     Err error ->
                                         -- Load one remote sentence
                                         ( loadingModel
-                                        , loadSingle
-                                        , Nothing
+                                        , loadSentence
+                                        , []
                                         )
 
                                     Ok ( preLoaded, selected ) ->
                                         -- Use preloaded sentence
                                         ( model
                                         , Cmd.none
-                                        , Ok ( preLoaded, selected )
-                                            |> LoadTrialResult
-                                            |> lift
-                                            |> Just
+                                        , [ Ok ( preLoaded, selected )
+                                                |> LoadTrialResult
+                                                |> lift
+                                          ]
                                         )
 
                     Lifecycle.Experiment _ ->
                         -- Load one remote sentence
                         ( loadingModel
-                        , loadSingle
-                        , Nothing
+                        , loadSentence
+                        , []
                         )
 
                     Lifecycle.Done ->
                         -- Ignore
                         ( model
                         , Cmd.none
-                        , Nothing
+                        , []
                         )
 
         LoadTrialResult (Ok ( preLoaded, current )) ->
@@ -323,13 +267,13 @@ update lift auth msg model =
                             |> ExpModel.setState (ExpModel.Trial newTrial)
                   }
                 , Cmd.none
-                , Nothing
+                , []
                 )
 
         LoadTrialResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
         TrialTask ->
@@ -340,7 +284,7 @@ update lift auth msg model =
                         , clock = Clock.init <| 2 * Time.second
                       }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         TrialWrite ->
@@ -351,7 +295,7 @@ update lift auth msg model =
                         , clock = Clock.init <| Helpers.writeTime auth.meta trial.current
                       }
                     , Cmds.autofocus
-                    , Nothing
+                    , []
                     )
 
         TrialTimeout ->
@@ -359,7 +303,7 @@ update lift auth msg model =
                 \trial ->
                     ( { trial | state = ExpModel.Timeout, clock = Clock.disabled }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         TrialPause ->
@@ -367,7 +311,7 @@ update lift auth msg model =
                 \trial ->
                     ( { trial | state = ExpModel.Pause, clock = Clock.disabled }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
 
         WriteInput input ->
@@ -377,13 +321,13 @@ update lift auth msg model =
                         ExpModel.Writing form ->
                             ( { trial | state = ExpModel.Writing (Form.input input form) }
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
                         _ ->
                             ( trial
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
         WriteSubmit input ->
@@ -430,13 +374,13 @@ update lift auth msg model =
                                 ( trialState trial form
                                 , Api.updateProfile auth { profile | trained = True }
                                     |> Task.attempt (lift << WriteResult)
-                                , Nothing
+                                , []
                                 )
                             else
                                 -- Move directly to next training trial
                                 ( trialState trial form
                                 , Cmd.none
-                                , Just <| lift <| WriteResult <| Ok profile
+                                , [ lift <| WriteResult <| Ok profile ]
                                 )
 
                         Lifecycle.Experiment _ ->
@@ -444,13 +388,13 @@ update lift auth msg model =
                             ( trialState trial form
                             , Api.postSentence auth (newSentence trial)
                                 |> Task.attempt (lift << WriteResult)
-                            , Nothing
+                            , []
                             )
 
                         Lifecycle.Done ->
                             ( trial
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
 
                 inputInvalid trial form =
@@ -459,7 +403,7 @@ update lift auth msg model =
                         , clock = Clock.resume trial.clock
                       }
                     , Cmd.none
-                    , Nothing
+                    , []
                     )
             in
                 updateTrialOrIgnore model <|
@@ -474,7 +418,7 @@ update lift auth msg model =
                             _ ->
                                 ( trial
                                 , Cmd.none
-                                , Nothing
+                                , []
                                 )
 
         WriteResult (Ok profile) ->
@@ -506,7 +450,7 @@ update lift auth msg model =
                                         model.experiment
                               }
                             , Cmd.none
-                            , Nothing
+                            , []
                             )
                         else
                             let
@@ -526,13 +470,13 @@ update lift auth msg model =
                     _ ->
                         ( model
                         , Cmd.none
-                        , Nothing
+                        , []
                         )
 
         WriteResult (Err error) ->
             ( model
             , Cmd.none
-            , Just <| AppMsg.Error <| error
+            , [ AppMsg.Error error ]
             )
 
 
@@ -542,10 +486,10 @@ update lift auth msg model =
 
 updateTrialOrIgnore :
     Model
-    -> (ExpModel.TrialModel -> ( ExpModel.TrialModel, Cmd AppMsg.Msg, Maybe AppMsg.Msg ))
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> (ExpModel.TrialModel -> ( ExpModel.TrialModel, Cmd AppMsg.Msg, List AppMsg.Msg ))
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 updateTrialOrIgnore model updater =
-    Helpers.trialOr model ( model, Cmd.none, Nothing ) <|
+    Helpers.trialOr model ( model, Cmd.none, [] ) <|
         \trial ->
             let
                 ( newTrial, cmd, maybeOut ) =
@@ -565,10 +509,10 @@ updateTrialOrIgnore model updater =
 
 updateInstructionsOrIgnore :
     Model
-    -> (Intro.State Instructions.Node
-        -> ( Intro.State Instructions.Node, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> (Intro.State ExpModel.Node
+        -> ( Intro.State ExpModel.Node, Cmd AppMsg.Msg, List AppMsg.Msg )
        )
-    -> ( Model, Cmd AppMsg.Msg, Maybe AppMsg.Msg )
+    -> ( Model, Cmd AppMsg.Msg, List AppMsg.Msg )
 updateInstructionsOrIgnore model updater =
     case model.experiment.state of
         ExpModel.Instructions state ->
@@ -590,5 +534,5 @@ updateInstructionsOrIgnore model updater =
         _ ->
             ( model
             , Cmd.none
-            , Nothing
+            , []
             )

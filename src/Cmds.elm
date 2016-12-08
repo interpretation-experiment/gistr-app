@@ -3,6 +3,7 @@ module Cmds exposing (autofocus, cmdsForModel)
 import Api
 import Dom
 import Experiment.Msg as ExperimentMsg
+import Home.Msg as HomeMsg
 import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg)
@@ -77,6 +78,21 @@ nonFocusCmds model =
                     then
                         [ Task.perform
                             (always <| Msg.ExperimentMsg ExperimentMsg.InstructionsStart)
+                            (Task.succeed ())
+                        ]
+                    else
+                        []
+
+        Router.Home ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    if
+                        (not auth.user.profile.introducedExpHome
+                            && (Lifecycle.state auth.meta auth.user.profile /= Lifecycle.Done)
+                        )
+                    then
+                        [ Task.perform
+                            (always <| Msg.HomeMsg HomeMsg.InstructionsStart)
                             (Task.succeed ())
                         ]
                     else

@@ -8,9 +8,9 @@ module Intro
         , customViewConfig
         , hide
         , isActive
-        , isFuture
         , isPast
         , isRunning
+        , isUnseen
         , node
         , overlay
         , start
@@ -20,7 +20,6 @@ module Intro
         , viewConfig
         )
 
-import AnimationFrame
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
@@ -31,6 +30,7 @@ import List.Nonempty exposing (Nonempty)
 import List.Zipper as Zipper
 import List.Zipper exposing (Zipper)
 import Styles exposing (class, classList, id)
+import Time
 
 
 -- CONFIG
@@ -135,14 +135,14 @@ isActive id state =
             Zipper.current zipper == id
 
 
-isFuture : id -> State id -> Bool
-isFuture id state =
+isUnseen : id -> State id -> Bool
+isUnseen id state =
     case state of
         Hidden ->
             False
 
-        Running _ zipper ->
-            List.member id (Zipper.after zipper)
+        Running _ _ ->
+            not (isPast id state) && not (isActive id state)
 
 
 
@@ -220,7 +220,7 @@ subscription lift state =
         Running Start _ ->
             Sub.batch
                 [ Keyboard.downs (lift << KeyDown)
-                , AnimationFrame.times (always <| lift FinishTransition)
+                , Time.every (100 * Time.millisecond) (always <| lift FinishTransition)
                 ]
 
         Running End _ ->
@@ -418,7 +418,7 @@ tooltip config state id =
 
                             End ->
                                 [ ( "opacity", "1" )
-                                , ( "transition", "opacity 0.5s ease-in-out" )
+                                , ( "transition", "opacity 0.3s ease-in-out" )
                                 ]
                 in
                     [ Html.div
@@ -432,10 +432,11 @@ tooltip config state id =
                             , ( "boxSizing", "border-box" )
                             , ( "backgroundColor", "white" )
                             , ( "borderRadius", "3px" )
+                            , ( "border", "none" )
                             , ( "boxShadow", "0 1px 10px rgba(0, 0, 0, .4)" )
-                            , ( "fontSize", "initial" )
-                            , ( "fontWeight", "initial" )
-                            , ( "fontHeight", "initial" )
+                            , ( "fontSize", "0.85rem" )
+                            , ( "fontWeight", "400" )
+                            , ( "textAlign", "left" )
                             ]
                         ]
                         (tooltipContent config zipper)
@@ -469,6 +470,7 @@ tooltipPositionAttributes (ViewConfig config) zipper =
             Attributes.style
                 [ ( "marginTop", "10px" )
                 , ( "marginLeft", "-137px" )
+                , ( "top", "100%" )
                 , ( "left", "50%" )
                 , ( "width", "275px" )
                 ]

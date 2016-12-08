@@ -9,7 +9,9 @@ module Model
 
 import Experiment.Model as ExpModel
 import Form
+import Home.Model as HomeModel
 import Html
+import Intro
 import Msg exposing (Msg)
 import Notification
 import Router
@@ -26,6 +28,8 @@ type alias Model =
     , store : Store.Store
     , error : Maybe Types.Error
     , notifications : Notification.Model ( String, Html.Html Msg, Types.Notification )
+    , -- Page-related data
+      home : Intro.State HomeModel.Node
     , login : Form.Model Types.Credentials
     , recover : FinishableForm String String
     , reset : FinishableForm Types.ResetCredentials ()
@@ -47,6 +51,8 @@ initialModel route =
     , store = Store.emptyStore
     , error = Nothing
     , notifications = Notification.empty
+    , -- Page-related data
+      home = Intro.hide
     , login = Form.empty Types.emptyCredentials
     , recover = Form (Form.empty "")
     , reset = Form (Form.empty Types.emptyResetCredentials)

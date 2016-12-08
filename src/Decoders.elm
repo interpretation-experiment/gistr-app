@@ -14,13 +14,15 @@ module Decoders
         , wordSpan
         )
 
+import Config
 import Date
 import Dict
+import Feedback
 import Json.Decode as JD
 import Json.Decode.Pipeline as Pipeline
 import Maybe.Extra exposing ((?))
+import Regex
 import Types
-import Feedback
 
 
 token : JD.Decoder String
@@ -164,29 +166,54 @@ choice =
 
 meta : JD.Decoder Types.Meta
 meta =
-    Pipeline.decode Types.Meta
-        |> Pipeline.required "target_branch_depth" JD.int
-        |> Pipeline.required "target_branch_count" JD.int
-        |> -- branchProbability. TODO: move to backend
-           Pipeline.hardcoded 0.8
-        |> -- readFactor. TODO: move to backend
-           Pipeline.hardcoded 1
-        |> -- writeFactor. TODO: move to backend
-           Pipeline.hardcoded 5
-        |> -- minTokens. TODO: move to backend
-           Pipeline.hardcoded 10
-        |> -- pausePeriod. TODO: move to backend
-           Pipeline.hardcoded 10
-        |> Pipeline.required "gender_choices" (JD.list choice)
-        |> Pipeline.required "job_type_choices" (JD.list choice)
-        |> Pipeline.required "experiment_work" JD.int
-        |> Pipeline.required "training_work" JD.int
-        |> Pipeline.required "tree_cost" JD.int
-        |> Pipeline.required "base_credit" JD.int
-        |> Pipeline.required "default_language" JD.string
-        |> Pipeline.required "supported_languages" (JD.list choice)
-        |> Pipeline.required "other_language" JD.string
-        |> Pipeline.required "version" JD.string
+    let
+        versionCheckedMeta parsedVersion =
+            if parsedVersion >= Config.minServerVersion then
+                JD.succeed Types.Meta
+            else
+                JD.fail "This JSON is from a deprecated source. Please upgrade!"
+    in
+        Pipeline.decode versionCheckedMeta
+            |> Pipeline.required "version" version
+            |> -- Check version before anything else
+               Pipeline.resolve
+            |> Pipeline.required "target_branch_depth" JD.int
+            |> Pipeline.required "target_branch_count" JD.int
+            |> Pipeline.required "branch_probability" JD.float
+            |> Pipeline.required "read_factor" JD.int
+            |> Pipeline.required "write_factor" JD.int
+            |> Pipeline.required "min_tokens" JD.int
+            |> Pipeline.required "pause_period" JD.int
+            |> Pipeline.required "gender_choices" (JD.list choice)
+            |> Pipeline.required "job_type_choices" (JD.list choice)
+            |> Pipeline.required "experiment_work" JD.int
+            |> Pipeline.required "training_work" JD.int
+            |> Pipeline.required "tree_cost" JD.int
+            |> Pipeline.required "base_credit" JD.int
+            |> Pipeline.required "default_language" JD.string
+            |> Pipeline.required "supported_languages" (JD.list choice)
+            |> Pipeline.required "other_language" JD.string
+
+
+version : JD.Decoder ( Int, Int, Int )
+version =
+    let
+        fromString string =
+            let
+                parts =
+                    Regex.split (Regex.AtMost 1) (Regex.regex "\\+|-") string
+                        |> List.head
+                        |> Maybe.map (String.split ".")
+                        |> Maybe.map (List.map String.toInt)
+            in
+                case parts of
+                    Just [ Ok major, Ok minor, Ok patch ] ->
+                        JD.succeed ( major, minor, patch )
+
+                    _ ->
+                        JD.fail ("Badly formatted version string: \"" ++ string ++ "\"")
+    in
+        JD.string |> JD.andThen fromString
 
 
 sentence : JD.Decoder Types.Sentence
