@@ -619,3 +619,8 @@ expUncompletableExplanation =
         , Html.text "!"
         ]
     ]
+
+
+pressCtrlEnter : String
+pressCtrlEnter =
+    "Press Ctrl+Enter!"

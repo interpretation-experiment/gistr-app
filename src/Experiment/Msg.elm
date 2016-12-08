@@ -9,6 +9,7 @@ import Types
 type Msg
     = NoOp
     | ClockMsg Clock.Msg
+    | CtrlEnter
       -- INSTRUCTIONS
     | InstructionsMsg Intro.Msg
     | InstructionsStart

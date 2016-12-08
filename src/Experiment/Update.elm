@@ -3,6 +3,7 @@ module Experiment.Update exposing (update)
 import Api
 import Clock
 import Cmds
+import Dom.Extra
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
 import Experiment.Shaping as Shaping
@@ -18,6 +19,7 @@ import Maybe.Extra exposing (maybeToList)
 import Model exposing (Model)
 import Msg as AppMsg
 import Strings
+import Styles
 import Task
 import Time
 import Types
@@ -85,6 +87,12 @@ update lift auth msg model =
                         , Cmd.none
                         , maybeToList maybeOut
                         )
+
+        CtrlEnter ->
+            ( model
+            , Dom.Extra.click (toString Styles.CtrlNext)
+            , []
+            )
 
         {-
            INSTRUCTIONS

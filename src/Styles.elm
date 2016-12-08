@@ -91,6 +91,7 @@ type CssIds
     = Page
     | Greeting
     | InputAutofocus
+    | CtrlNext
 
 
 notification : Mixin
