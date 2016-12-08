@@ -19,4 +19,13 @@
   app.ports.localStorageRemove.subscribe(function(key) {
     localStorage.removeItem(key);
   });
+
+  app.ports.click.subscribe(function(id) {
+    var el = document.getElementById(id);
+    if (!!el && typeof el.click === "function") { el.click(); }
+  });
+
+  document.addEventListener("keydown", function(ev) {
+    if (ev.ctrlKey && ev.which == 13) { app.ports.ctrlEnter.send(null); }
+  });
 })();

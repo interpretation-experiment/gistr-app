@@ -212,7 +212,11 @@ instructionsView lift profile meta loading state =
             (lift InstructionsStart)
             "Replay instructions"
         , Helpers.evButton
-            [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+            [ Attributes.disabled loading
+            , class [ Styles.Btn, Styles.BtnPrimary ]
+            , id Styles.CtrlNext
+            , Helpers.tooltip Strings.pressCtrlEnter
+            ]
             (lift LoadTrial)
             "Start"
         ]
@@ -316,6 +320,7 @@ contents lift profile meta model =
                                 [ Helpers.evButton
                                     [ Attributes.disabled model.loadingNext
                                     , class [ Styles.Btn, Styles.BtnWarning ]
+                                    , id Styles.CtrlNext
                                     ]
                                     (lift LoadTrial)
                                     "On to the Experiment"
@@ -430,7 +435,10 @@ trial lift loading trialModel =
             , Html.p [] [ Html.text Strings.expTimeoutExplanation ]
             , Html.p []
                 [ Helpers.evButton
-                    [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    [ Attributes.disabled loading
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , id Styles.CtrlNext
+                    ]
                     (lift LoadTrial)
                     "Start again"
                 ]
@@ -441,7 +449,10 @@ trial lift loading trialModel =
             , Html.p [] [ Html.text Strings.expPauseExplanation ]
             , Html.p []
                 [ Helpers.evButton
-                    [ Attributes.disabled loading, class [ Styles.Btn, Styles.BtnPrimary ] ]
+                    [ Attributes.disabled loading
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , id Styles.CtrlNext
+                    ]
                     (lift LoadTrial)
                     "Continue"
                 ]
@@ -471,6 +482,7 @@ write lift loading { input, feedback, status } =
             [ Attributes.type_ "submit"
             , Attributes.disabled (loading || (status /= Form.Entering))
             , class [ Styles.Btn, Styles.BtnPrimary ]
+            , id Styles.CtrlNext
             ]
             [ Html.text "Send" ]
         ]
