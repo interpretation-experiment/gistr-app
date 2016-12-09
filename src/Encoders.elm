@@ -18,6 +18,7 @@ module Encoders
 
 import Json.Encode as JE
 import Maybe.Extra exposing (unwrap)
+import Time
 import Types
 
 
@@ -140,8 +141,8 @@ newSentence sentence =
         , ( "language", JE.string sentence.language )
         , ( "bucket", JE.string sentence.bucket )
         , ( "read_time_proportion", JE.float sentence.readTimeProportion )
-        , ( "read_time_allotted", JE.float sentence.readTimeAllotted )
+        , ( "read_time_allotted", JE.float <| Time.inSeconds sentence.readTimeAllotted )
         , ( "write_time_proportion", JE.float sentence.writeTimeProportion )
-        , ( "write_time_allotted", JE.float sentence.writeTimeAllotted )
+        , ( "write_time_allotted", JE.float <| Time.inSeconds sentence.writeTimeAllotted )
         , ( "parent", unwrap JE.null JE.int sentence.parentId )
         ]
