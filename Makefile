@@ -66,8 +66,13 @@ app_css_final       = $(output)/app$(app_css_hash).css
 app_js_final        = $(output)/app$(app_js_hash).js
 html               := $(output)/index.html
 
+# Deploy files
+git_rev            := $(shell git rev-parse HEAD)
+deploy_folder      := /home/gistr/$(DEPLOY_TARGET)/gistr/$(git_rev)
+gistr_active       := /home/gistr/$(DEPLOY_TARGET)/gistr/active
 
-.PHONY: all prod clean clean-elm clean-javascript
+
+.PHONY: all prod deploy deploy-root deploy-next clean clean-elm clean-javascript
 
 
 define hash-asset-paths =
@@ -79,11 +84,29 @@ define hash-asset-paths =
   done
 endef
 
+
 all: $(html)
 	@echo -e "$(GREEN)$(BOLD)App built$(NORMAL)$(BOLD) → $(output)/$(NORMAL)\n"
 
+
 prod: clean
 	@TARGET=prod $(MAKE) --no-print-directory
+
+
+deploy: prod
+	@echo -e "$(LOW)Deploying app$(NORMAL)"
+	@scp -r dist ggistr:$(deploy_folder)
+	@echo -e "$(LOW)Activating deployed app$(NORMAL)"
+	@ssh ggistr "ln -s $(deploy_folder) $(gistr_active)"
+	@echo -e "$(GREEN)$(BOLD)App deployed and activated$(NORMAL), marked as current revision $(BOLD)$(git_rev)$(NORMAL)\n"
+
+
+deploy-root:
+	@DEPLOY_TARGET=root $(MAKE) --no-print-directory deploy
+
+
+deploy-next:
+	@DEPLOY_TARGET=next $(MAKE) --no-print-directory deploy
 
 
 $(vendor_css): $(sources_vendor_css) $(assets)
