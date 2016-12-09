@@ -173,6 +173,20 @@ expInstructionsAccurately =
     ]
 
 
+expInstructionsSentOther : String
+expInstructionsSentOther =
+    "What you write is sent to the next participant in the experiment"
+
+
+expInstructionsMakeSense : List (Html.Html msg)
+expInstructionsMakeSense =
+    [ Html.text "So "
+    , Html.strong [] [ Html.text "whatever happens" ]
+    , Html.text ", even if you don't remember the text too well, put in your best effort to "
+    , Html.strong [] [ Html.text "write something that makes sense" ]
+    ]
+
+
 expInstructionsLoop : String
 expInstructionsLoop =
     "The whole process loops once you're done"
