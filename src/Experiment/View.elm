@@ -133,10 +133,16 @@ instructions profile meta =
               , ( Intro.Top, Html.p [] [ Html.text Strings.expInstructionsPause ] )
               )
             , ( ExpModel.Write
-              , ( Intro.Left, Html.p [] [ Html.text Strings.expInstructionsRewrite ] )
+              , ( Intro.Right, Html.p [] [ Html.text Strings.expInstructionsRewrite ] )
               )
             , ( ExpModel.Write
-              , ( Intro.Top, Html.p [] Strings.expInstructionsCapsPunct )
+              , ( Intro.Top, Html.p [] Strings.expInstructionsAccurately )
+              )
+            , ( ExpModel.Tree
+              , ( Intro.TopRight, Html.p [] [ Html.text Strings.expInstructionsSentOther ] )
+              )
+            , ( ExpModel.Tree
+              , ( Intro.Left, Html.p [] Strings.expInstructionsMakeSense )
               )
             , ( ExpModel.Images
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )
@@ -159,14 +165,14 @@ instructionsView lift profile meta loading state =
         ExpModel.Images
         Html.div
         [ class [ Styles.InstructionImages, Styles.Center ]
-        , Attributes.style [ ( "width", "475px" ), ( "height", "247px" ) ]
+        , Attributes.style [ ( "width", "515px" ), ( "height", "300px" ) ]
         ]
         [ Intro.node
             (instructionsConfig lift profile meta)
             state
             ExpModel.Read1
             Html.div
-            [ Attributes.style [ ( "top", "0" ), ( "left", "0" ) ]
+            [ Attributes.style [ ( "top", "0" ), ( "left", "140px" ) ]
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read1 state ) ]
             ]
@@ -176,7 +182,7 @@ instructionsView lift profile meta loading state =
             state
             ExpModel.Read2
             Html.div
-            [ Attributes.style [ ( "top", "0" ), ( "left", "0" ) ]
+            [ Attributes.style [ ( "top", "0" ), ( "left", "140px" ) ]
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read2 state ) ]
             ]
@@ -186,7 +192,7 @@ instructionsView lift profile meta loading state =
             state
             ExpModel.Task
             Html.div
-            [ Attributes.style [ ( "top", "85px" ), ( "left", "60px" ) ]
+            [ Attributes.style [ ( "top", "85px" ), ( "left", "70px" ) ]
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Task state ) ]
             ]
@@ -196,11 +202,26 @@ instructionsView lift profile meta loading state =
             state
             ExpModel.Write
             Html.div
-            [ Attributes.style [ ( "top", "130px" ), ( "left", "120px" ) ]
+            [ Attributes.style [ ( "top", "130px" ), ( "left", "0" ) ]
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Write state ) ]
             ]
             [ Html.img [ Attributes.src "/assets/img/instructions-write.png" ] [] ]
+        , Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Tree
+            Html.div
+            [ Attributes.style [ ( "top", "150px" ), ( "left", "330px" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Tree state ) ]
+            ]
+            [ Html.img
+                [ Attributes.src "/assets/img/instructions-tree.png"
+                , Attributes.style [ ( "width", "180px" ) ]
+                ]
+                []
+            ]
         ]
     , Html.div
         [ class [ Styles.Center, Styles.CenterText, Styles.SmoothAppearing ]

@@ -17,8 +17,8 @@ import Html.CssHelpers
 {-
    Credits:
    - Buttons are inspired by http://mrmrs.io/btns/
-   - Tooltips are inspired by http://semantic-ui.com/modules/popup.html#tooltip
-   - Inputs are inspired by http://semantic-ui.com/elements/input.html
+   - Tooltips, inputs, progress bars and much more are inspired by
+     http://semantic-ui.com/
 -}
 
 
@@ -937,7 +937,7 @@ css =
           -- Tooltip Animation
         , selector "[data-tooltip]:hover:before, [data-tooltip]:hover:after"
             [ property "visibility" "visible"
-            , property "transition-delay" ".3s"
+            , property "transition-delay" ".1s"
             , property "pointer-events" "auto"
             , opacity (num 1)
             ]

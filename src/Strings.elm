@@ -165,12 +165,25 @@ expInstructionsRewrite =
     "And you must rewrite what you remember"
 
 
-expInstructionsCapsPunct : List (Html.Html msg)
-expInstructionsCapsPunct =
-    [ Html.text "Pay attention to "
-    , Html.strong [] [ Html.text "capitalization" ]
-    , Html.text " and "
-    , Html.strong [] [ Html.text "punctuation" ]
+expInstructionsAccurately : List (Html.Html msg)
+expInstructionsAccurately =
+    [ Html.text "Please write "
+    , Html.strong [] [ Html.text "as accurately and properly as you can" ]
+    , Html.text ", mimicking the style of the original text"
+    ]
+
+
+expInstructionsSentOther : String
+expInstructionsSentOther =
+    "What you write is sent to the next participant in the experiment"
+
+
+expInstructionsMakeSense : List (Html.Html msg)
+expInstructionsMakeSense =
+    [ Html.text "So "
+    , Html.strong [] [ Html.text "whatever happens" ]
+    , Html.text ", even if you don't remember the text too well, put in your best effort to "
+    , Html.strong [] [ Html.text "write something that makes sense" ]
     ]
 
 

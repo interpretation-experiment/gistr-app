@@ -34,6 +34,7 @@ module Types
 
 import Date
 import Http
+import Time
 
 
 -- API
@@ -271,9 +272,9 @@ type alias Sentence =
     , language : String
     , bucket : String
     , readTimeProportion : Float
-    , readTimeAllotted : Float
+    , readTimeAllotted : Time.Time
     , writeTimeProportion : Float
-    , writeTimeAllotted : Float
+    , writeTimeAllotted : Time.Time
     , -- RELATIONSHIPS
       treeId : Int
     , profileId : Int
@@ -290,9 +291,9 @@ type alias NewSentence =
     , language : String
     , bucket : String
     , readTimeProportion : Float
-    , readTimeAllotted : Float
+    , readTimeAllotted : Time.Time
     , writeTimeProportion : Float
-    , writeTimeAllotted : Float
+    , writeTimeAllotted : Time.Time
     , -- RELATIONSHIPS
       parentId : Maybe Int
     }

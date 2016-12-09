@@ -233,8 +233,12 @@ subscription lift state =
 
 type Position
     = Top
+    | TopLeft
+    | TopRight
     | Right
     | Bottom
+    | BottomLeft
+    | BottomRight
     | Left
 
 
@@ -457,6 +461,24 @@ tooltipPositionAttributes (ViewConfig config) zipper =
                 , ( "width", "275px" )
                 ]
 
+        TopLeft ->
+            Attributes.style
+                [ ( "marginBottom", "10px" )
+                , ( "marginLeft", "-4px" )
+                , ( "left", "0" )
+                , ( "bottom", "100%" )
+                , ( "width", "275px" )
+                ]
+
+        TopRight ->
+            Attributes.style
+                [ ( "marginBottom", "10px" )
+                , ( "marginRight", "-4px" )
+                , ( "right", "0" )
+                , ( "bottom", "100%" )
+                , ( "width", "275px" )
+                ]
+
         Right ->
             Attributes.style
                 [ ( "marginLeft", "10px" )
@@ -472,6 +494,24 @@ tooltipPositionAttributes (ViewConfig config) zipper =
                 , ( "marginLeft", "-137px" )
                 , ( "top", "100%" )
                 , ( "left", "50%" )
+                , ( "width", "275px" )
+                ]
+
+        BottomLeft ->
+            Attributes.style
+                [ ( "marginTop", "10px" )
+                , ( "marginLeft", "-4px" )
+                , ( "top", "100%" )
+                , ( "left", "0" )
+                , ( "width", "275px" )
+                ]
+
+        BottomRight ->
+            Attributes.style
+                [ ( "marginTop", "10px" )
+                , ( "marginRight", "-4px" )
+                , ( "top", "100%" )
+                , ( "right", "0" )
                 , ( "width", "275px" )
                 ]
 
@@ -546,7 +586,29 @@ arrowPositionAttributes (ViewConfig config) zipper =
             Attributes.style
                 [ ( "bottom", "-10px" )
                 , ( "left", "50%" )
-                , ( "margin-left", "-130px" )
+                , ( "marginLeft", "-130px" )
+                , ( "borderTopColor", "white" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "transparent" )
+                , ( "borderLeftColor", "transparent" )
+                ]
+
+        TopLeft ->
+            Attributes.style
+                [ ( "bottom", "-10px" )
+                , ( "left", "50%" )
+                , ( "marginLeft", "-130px" )
+                , ( "borderTopColor", "white" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "transparent" )
+                , ( "borderLeftColor", "transparent" )
+                ]
+
+        TopRight ->
+            Attributes.style
+                [ ( "bottom", "-10px" )
+                , ( "right", "50%" )
+                , ( "marginRight", "-130px" )
                 , ( "borderTopColor", "white" )
                 , ( "borderRightColor", "transparent" )
                 , ( "borderBottomColor", "transparent" )
@@ -567,7 +629,29 @@ arrowPositionAttributes (ViewConfig config) zipper =
             Attributes.style
                 [ ( "top", "-10px" )
                 , ( "left", "50%" )
-                , ( "margin-left", "-130px" )
+                , ( "marginLeft", "-130px" )
+                , ( "borderTopColor", "transparent" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "white" )
+                , ( "borderLeftColor", "transparent" )
+                ]
+
+        BottomLeft ->
+            Attributes.style
+                [ ( "top", "-10px" )
+                , ( "left", "50%" )
+                , ( "marginLeft", "-130px" )
+                , ( "borderTopColor", "transparent" )
+                , ( "borderRightColor", "transparent" )
+                , ( "borderBottomColor", "white" )
+                , ( "borderLeftColor", "transparent" )
+                ]
+
+        BottomRight ->
+            Attributes.style
+                [ ( "top", "-10px" )
+                , ( "right", "50%" )
+                , ( "marginRight", "-130px" )
                 , ( "borderTopColor", "transparent" )
                 , ( "borderRightColor", "transparent" )
                 , ( "borderBottomColor", "white" )

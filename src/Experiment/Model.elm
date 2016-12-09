@@ -64,6 +64,7 @@ type Node
     | Read2
     | Task
     | Write
+    | Tree
     | Images
     | Progress
 
