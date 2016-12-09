@@ -412,7 +412,11 @@ trial lift loading trialModel =
                 [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
                 , Html.h4 [] [ Html.text Strings.expReadMemorize ]
                 ]
-            , Html.blockquote [] [ Html.text trialModel.current.text ]
+            , Html.blockquote
+                [ Helpers.onEventPreventMsg "copy" (lift CopyPasteEvent)
+                , Helpers.onEventPreventMsg "cut" (lift CopyPasteEvent)
+                ]
+                [ Html.text trialModel.current.text ]
             ]
 
         ExpModel.Tasking ->
@@ -465,7 +469,11 @@ write :
     -> Form.Model String
     -> Html.Html AppMsg.Msg
 write lift loading { input, feedback, status } =
-    Html.form [ class [ Styles.FormPage ], Events.onSubmit (lift <| WriteSubmit input) ]
+    Html.form
+        [ class [ Styles.FormPage ]
+        , Events.onSubmit (lift <| WriteSubmit input)
+        , Helpers.onEventPreventMsg "paste" (lift CopyPasteEvent)
+        ]
         [ Html.div
             [ class [ Styles.FormBlock ]
             , Helpers.feedbackStyles "global" feedback
