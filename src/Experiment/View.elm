@@ -136,7 +136,7 @@ instructions profile meta =
               , ( Intro.Left, Html.p [] [ Html.text Strings.expInstructionsRewrite ] )
               )
             , ( ExpModel.Write
-              , ( Intro.Top, Html.p [] Strings.expInstructionsCapsPunct )
+              , ( Intro.Top, Html.p [] Strings.expInstructionsAccurately )
               )
             , ( ExpModel.Images
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )

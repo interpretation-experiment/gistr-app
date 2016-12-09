@@ -165,12 +165,11 @@ expInstructionsRewrite =
     "And you must rewrite what you remember"
 
 
-expInstructionsCapsPunct : List (Html.Html msg)
-expInstructionsCapsPunct =
-    [ Html.text "Pay attention to "
-    , Html.strong [] [ Html.text "capitalization" ]
-    , Html.text " and "
-    , Html.strong [] [ Html.text "punctuation" ]
+expInstructionsAccurately : List (Html.Html msg)
+expInstructionsAccurately =
+    [ Html.text "Please write "
+    , Html.strong [] [ Html.text "as accurately and properly as you can" ]
+    , Html.text ", mimicking the style of the original text"
     ]
 
 
