@@ -27,6 +27,7 @@ module Helpers
         , nonemptyMinimum
         , notAuthed
         , notify
+        , onEventPreventMsg
         , onInputContent
         , readTime
         , resultToTask
@@ -313,12 +314,16 @@ icon name =
         ]
 
 
+onEventPreventMsg : String -> a -> Html.Attribute a
+onEventPreventMsg name msg =
+    Events.onWithOptions name
+        { stopPropagation = True, preventDefault = True }
+        (JD.succeed msg)
+
+
 onClickMsg : a -> Html.Attribute a
 onClickMsg msg =
-    Events.onWithOptions
-        "click"
-        { stopPropagation = True, preventDefault = True }
-        (msg |> JD.succeed)
+    onEventPreventMsg "click" msg
 
 
 loading : Styles.CssClasses -> Html.Html msg

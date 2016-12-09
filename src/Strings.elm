@@ -192,6 +192,16 @@ expInstructionsRealStart num =
     "The real experiment starts after " ++ (toString num) ++ " trials"
 
 
+expNoCopyPasteTitle : String
+expNoCopyPasteTitle =
+    "No copy-pasting"
+
+
+expNoCopyPaste : Html.Html msg
+expNoCopyPaste =
+    Html.text "Please don't copy-paste the text, it won't work!"
+
+
 prolificCompletion : String
 prolificCompletion =
     "Now, click the following button to tell Prolific Academic you finished the study, so you can get paid."

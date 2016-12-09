@@ -10,6 +10,8 @@ type Msg
     = NoOp
     | ClockMsg Clock.Msg
     | CtrlEnter
+      -- COPY-PASTE PREVENTION
+    | CopyPasteEvent
       -- INSTRUCTIONS
     | InstructionsMsg Intro.Msg
     | InstructionsStart
