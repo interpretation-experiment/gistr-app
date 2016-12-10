@@ -53,7 +53,6 @@ type CssClasses
     | NavIcon
     | Small
     | Big
-    | Textarea
     | TextareaHiddenContent
     | Input
     | Error
@@ -688,34 +687,6 @@ css =
                 ]
             ]
           -- INPUTS
-        , (.) Textarea
-            [ display block
-            , fontWeight normal
-            , fontStyle normal
-            , margin (px 0)
-            , maxWidth (pct 100)
-            , minHeight (em 1.29)
-            , outline none
-            , textAlign left
-            , fontFamilies [ (qt "Libre Franklin"), .value sansSerif ]
-            , fontSize (em 1)
-            , padding2 (em 0.45) (em 0.85)
-            , backgroundColor (hex "#fff")
-            , border3 (px 1) solid (rgba 33 35 37 0.2)
-            , color (rgba 0 0 0 0.87)
-            , borderRadius (em 0.2)
-            , property "transition" "box-shadow .1s ease, border-color .1s ease"
-            , boxShadow none
-            , focus [ borderColor (hex "#85b7d9"), color (rgba 0 0 0 0.8) ]
-            , withClass Disabled
-                [ opacity (num 0.45)
-                , property "pointer-events" "none"
-                , property "-webkit-user-select" "none"
-                , property "-moz-user-select" "none"
-                , property "-ms-user-select" "none"
-                , property "user-select" "none"
-                ]
-            ]
         , (.) TextareaHiddenContent
             [ textareaMixin
             , position absolute
