@@ -97,6 +97,7 @@ deploy: prod
 	@echo -e "$(LOW)Deploying app$(NORMAL)"
 	@scp -r dist ggistr:$(deploy_folder)
 	@echo -e "$(LOW)Activating deployed app$(NORMAL)"
+	@-ssh ggistr "unlink $(gistr_active)"
 	@ssh ggistr "ln -s $(deploy_folder) $(gistr_active)"
 	@echo -e "$(GREEN)$(BOLD)App deployed and activated$(NORMAL), marked as current revision $(BOLD)$(git_rev)$(NORMAL)\n"
 
