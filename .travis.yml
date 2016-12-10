@@ -8,5 +8,5 @@ before_install:
 script:
   - elm-github-install
   - elm make
-  - cd tests && elm-github-install
+  - cd tests && elm-github-install && cd ..
   - elm test
