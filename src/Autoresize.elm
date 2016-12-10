@@ -31,12 +31,14 @@ initialModel =
 
 type alias Textarea =
     { contentHeight : Float
+    , contentWidth : Float
     }
 
 
 initialTextarea : Textarea
 initialTextarea =
     { contentHeight = 0
+    , contentWidth = 0
     }
 
 
@@ -60,7 +62,7 @@ modelUpdate id (Model model) update =
 
 type Msg msg
     = InputText String msg
-    | GotDetails String (Result Dom.Error Float)
+    | GotDetails String (Result Dom.Error ( Float, Float ))
 
 
 update : (Msg msg -> msg) -> Msg msg -> Model -> ( Model, Cmd msg, Maybe msg )
@@ -68,20 +70,28 @@ update lift msg model =
     case msg of
         InputText id outMsg ->
             ( model
-            , Dom.Size.height Dom.Size.Content (hiddenId id)
+            , Task.map2 (,)
+                (Dom.Size.height Dom.Size.Content (hiddenId id))
+                (Dom.Size.width Dom.Size.Content id)
                 |> Task.attempt (GotDetails id)
                 |> Cmd.map lift
             , Just outMsg
             )
 
         GotDetails id (Err _) ->
-            update lift (GotDetails id <| Ok 0) model
+            update lift (GotDetails id <| Ok ( 0, 0 )) model
 
-        GotDetails id (Ok height) ->
+        GotDetails id (Ok ( height, width )) ->
             ( modelUpdate id
                 model
-                -- heightWithPadding + borders
-                (\textarea -> { textarea | contentHeight = height + 2 })
+                (\textarea ->
+                    { textarea
+                        | -- heightWithPadding + borders
+                          contentHeight = height + 2
+                        , -- widthWithPadding + borders
+                          contentWidth = width + 2
+                    }
+                )
             , Cmd.none
             , Nothing
             )
@@ -120,8 +130,10 @@ textarea { lift, model, id, onInput } attrs content =
                 )
                 []
             , Html.div
-                [ class [ Styles.TextareaHiddenContent ]
+                [ Attributes.style
+                    [ ( "width", toString details.contentWidth ++ "px" ) ]
                 , Attributes.id (hiddenId id)
+                , class [ Styles.TextareaHiddenContent ]
                 ]
                 (content
                     |> String.split "\n"
