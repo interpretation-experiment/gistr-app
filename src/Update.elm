@@ -1,5 +1,6 @@
 module Update exposing (update)
 
+import Admin.Update as AdminUpdate
 import Auth.Update as AuthUpdate
 import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
@@ -45,6 +46,7 @@ doUpdate msg model =
                 | password = Form.animate msg model.password
                 , username = Form.animate msg model.username
                 , emails = Form.animate msg model.emails
+                , admin = Form.animate msg model.admin
             }
                 ! []
 
@@ -148,6 +150,14 @@ doUpdate msg model =
             Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     (ExperimentUpdate.update ExperimentMsg auth msg model |> processMsgs)
+
+        {-
+           ADMIN
+        -}
+        AdminMsg msg ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    (AdminUpdate.update AdminMsg auth msg model |> processMsgs)
 
 
 

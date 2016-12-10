@@ -59,6 +59,7 @@ meta =
             , pausePeriod = 10
             , genderChoices = []
             , jobTypeChoices = []
+            , bucketChoices = []
             , experimentWork = 50
             , trainingWork = 5
             , treeCost = 50

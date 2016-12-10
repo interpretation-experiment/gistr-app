@@ -62,6 +62,7 @@ type alias Meta =
     , -- FORM PARAMETERS
       genderChoices : List Choice
     , jobTypeChoices : List Choice
+    , bucketChoices : List Choice
     , -- EXPERIMENT COSTS
       experimentWork : Int
     , trainingWork : Int

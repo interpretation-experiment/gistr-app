@@ -1,5 +1,6 @@
 module Msg exposing (Msg(..))
 
+import Admin.Msg as Admin
 import Animation
 import Api
 import Auth.Msg as Auth
@@ -31,3 +32,5 @@ type Msg
     | ProfileMsg Profile.Msg
       -- EXPERIMENT
     | ExperimentMsg Experiment.Msg
+      -- ADMIN
+    | AdminMsg Admin.Msg
