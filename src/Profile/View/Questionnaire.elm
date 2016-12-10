@@ -133,10 +133,14 @@ form lift { input, feedback, status } meta =
                     ]
                 , Html.div [] [ Html.text (Feedback.getError "age" feedback) ]
                 ]
-            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "gender" feedback ]
+            , Html.div
+                [ class [ Styles.FormBlock ]
+                , Helpers.feedbackStyles "gender" feedback
+                ]
                 [ Html.label [ Attributes.for "inputGender" ]
                     [ Html.strong [] [ Html.text "Gender" ] ]
-                , Html.div [] (List.map genderRadio meta.genderChoices)
+                , Html.div [ Attributes.id "inputGender" ]
+                    (List.map genderRadio meta.genderChoices)
                 , Html.div [] [ Html.text (Feedback.getError "gender" feedback) ]
                 ]
             , Html.div [ class [ Styles.FormBlock ] ]

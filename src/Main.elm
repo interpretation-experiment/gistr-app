@@ -45,6 +45,7 @@ subscriptions model =
                 [ Form.successAnimations model.password
                 , Form.successAnimations model.username
                 , Form.successAnimations model.emails
+                , Form.successAnimations model.admin
                 ]
         , Intro.subscription (Msg.HomeMsg << HomeMsg.InstructionsMsg) model.home
         , ExpSub.subscription Msg.ExperimentMsg model

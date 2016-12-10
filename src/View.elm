@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Admin.View
 import Auth.View.Login
 import Auth.View.Prolific
 import Auth.View.Recover
@@ -86,3 +87,6 @@ routeView model =
 
         Router.Experiment ->
             Experiment.View.view Msg.ExperimentMsg model
+
+        Router.Admin ->
+            Admin.View.view Msg.AdminMsg model

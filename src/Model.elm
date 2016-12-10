@@ -7,6 +7,7 @@ module Model
         , initialModel
         )
 
+import Admin.Model as AdminModel
 import Experiment.Model as ExpModel
 import Form
 import Home.Model as HomeModel
@@ -41,6 +42,7 @@ type alias Model =
     , username : Form.Model String
     , questionnaire : Form.Model Types.QuestionnaireForm
     , experiment : ExpModel.Model
+    , admin : AdminModel.Model
     }
 
 
@@ -64,6 +66,7 @@ initialModel route =
     , username = Form.empty ""
     , questionnaire = Form.empty Types.emptyQuestionnaireForm
     , experiment = ExpModel.initialModel
+    , admin = AdminModel.initialModel
     }
 
 

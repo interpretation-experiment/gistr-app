@@ -40,6 +40,7 @@ type Route
     | Prolific
     | Profile ProfileRoute
     | Experiment
+    | Admin
 
 
 type ProfileRoute
@@ -84,6 +85,9 @@ normalize auth route =
                     Login (Just route)
 
                 Experiment ->
+                    Login (Just route)
+
+                Admin ->
                     Login (Just route)
 
         Types.Authenticated { user } ->
@@ -138,6 +142,12 @@ normalize auth route =
                 Experiment ->
                     route
 
+                Admin ->
+                    if user.isStaff then
+                        route
+                    else
+                        Home
+
         Types.Authenticating ->
             route
 
@@ -179,6 +189,7 @@ urlParser items formatter =
         , format (Profile Dashboard) (s "profile")
         , format Profile (s "profile" </> profileUrlParser)
         , format Experiment (s "experiment")
+        , format Admin (s "admin")
         ]
         items
         formatter
@@ -242,6 +253,9 @@ toUrl route =
 
         Experiment ->
             "/experiment"
+
+        Admin ->
+            "/admin"
 
 
 toProfileUrl : ProfileRoute -> String

@@ -647,3 +647,28 @@ expUncompletableExplanation =
 pressCtrlEnter : String
 pressCtrlEnter =
     "Press Ctrl+Enter!"
+
+
+adminCreateBucket : String
+adminCreateBucket =
+    "Select a bucket in which to create your sentence"
+
+
+adminAddSentence : String
+adminAddSentence =
+    "Add a new sentence"
+
+
+adminTypeSentence : String
+adminTypeSentence =
+    "Type in your sentence"
+
+
+adminSentenceCreated : String
+adminSentenceCreated =
+    "Sentence created!"
+
+
+bucketPlease : String
+bucketPlease =
+    "Please select a bucket"

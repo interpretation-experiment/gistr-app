@@ -26,6 +26,7 @@ module Helpers
         , nonemptyMaximum
         , nonemptyMinimum
         , notAuthed
+        , notStaff
         , notify
         , onEventPreventMsg
         , onInputContent
@@ -80,6 +81,7 @@ cmd msg =
 
 
 
+-- TODO: break out Update helpers and View helpers
 -- UPDATES
 
 
@@ -334,6 +336,22 @@ loading size =
 notAuthed : Html.Html msg
 notAuthed =
     Html.p [] [ Html.text "Not signed in" ]
+
+
+notStaff : Html.Html msg
+notStaff =
+    Html.div []
+        [ Html.h3 [] [ Html.text "Oops, you're not staff!" ]
+        , Html.p []
+            [ Html.text "If you think you should have access to this page, you'd better"
+            , Html.a
+                [ Attributes.href "mailto:sl@mehho.net"
+                , Attributes.title "Email the Developers"
+                ]
+                [ Html.text "contact the developers" ]
+            , Html.text "."
+            ]
+        ]
 
 
 alreadyAuthed : Types.User -> Html.Html msg

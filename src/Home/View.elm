@@ -74,19 +74,29 @@ header lift model =
             []
 
         Types.Authenticated { user } ->
-            [ Intro.node
-                (instructionsConfig lift)
-                model.home
-                HomeModel.Profile
-                Html.div
-                [ class [ Styles.Meta, Styles.FlexCenter ] ]
-                [ Html.span []
-                    [ Html.text "Howdy, "
-                    , Html.strong [] [ Html.text user.username ]
+            let
+                admin =
+                    if user.isStaff then
+                        -- TODO: add bottom tooltip
+                        Helpers.navIcon [ class [ Styles.Big ] ] Router.Admin "user-md"
+                    else
+                        Html.div [] []
+            in
+                [ Intro.node
+                    (instructionsConfig lift)
+                    model.home
+                    HomeModel.Profile
+                    Html.div
+                    [ class [ Styles.Meta, Styles.FlexCenter ] ]
+                    [ Html.span []
+                        [ Html.text "Howdy, "
+                        , Html.strong [] [ Html.text user.username ]
+                        ]
+                      -- TODO: add bottom tooltip
+                    , Helpers.avatar user (Router.Profile Router.Dashboard)
+                    , admin
                     ]
-                , Helpers.avatar user (Router.Profile Router.Dashboard)
                 ]
-            ]
 
 
 greeting : (Msg -> AppMsg.Msg) -> Model -> Html.Html AppMsg.Msg
