@@ -54,6 +54,7 @@ type CssClasses
     | Small
     | Big
     | Textarea
+    | TextareaHiddenContent
     | Input
     | Error
     | Success
@@ -160,6 +161,41 @@ linkMixin =
         , backgroundColor unset
         , border unset
         , cursor pointer
+        ]
+
+
+inputMixin : Mixin
+inputMixin =
+    mixin
+        [ margin (px 0)
+        , maxWidth (pct 100)
+        , flex2 (num 1) (num 0)
+        , flexBasis auto
+        , outline none
+        , textAlign left
+        , fontFamilies [ (qt "Libre Franklin"), .value sansSerif ]
+        , fontSize (em 1)
+        , padding2 (em 0.45) (em 0.85)
+        , backgroundColor (hex "#fff")
+        , border3 (px 1) solid (rgba 33 35 37 0.2)
+        , color (rgba 0 0 0 0.87)
+        , borderRadius (em 0.2)
+        , property "transition" "box-shadow .1s ease, border-color .1s ease"
+        , boxShadow5 inset (px 0) (px 1) (px 1) (rgba 0 0 0 0.075)
+        , disabled [ opacity (num 0.45), property "pointer-events" "none" ]
+        , focus [ borderColor (hex "#85b7d9"), color (rgba 0 0 0 0.8) ]
+        ]
+
+
+textareaMixin : Mixin
+textareaMixin =
+    mixin
+        [ inputMixin
+        , boxSizing borderBox
+        , minHeight (em 2.5)
+        , width (pct 100)
+        , overflow hidden
+        , property "resize" "vertical"
         ]
 
 
@@ -680,6 +716,14 @@ css =
                 , property "user-select" "none"
                 ]
             ]
+        , (.) TextareaHiddenContent
+            [ textareaMixin
+            , position absolute
+            , left (px -9999)
+            , property "white-space" "pre-wrap"
+            , property "word-wrap" "break-word"
+            ]
+        , selector "textarea" [ textareaMixin ]
         , (.) Input
             [ position relative
             , fontWeight normal
@@ -687,25 +731,7 @@ css =
             , displayFlex
             , color (hex "#000000e6")
             , descendants
-                [ input
-                    [ margin (px 0)
-                    , maxWidth (pct 100)
-                    , flex2 (num 1) (num 0)
-                    , flexBasis auto
-                    , outline none
-                    , textAlign left
-                    , fontFamilies [ (qt "Libre Franklin"), .value sansSerif ]
-                    , fontSize (em 1)
-                    , padding2 (em 0.45) (em 0.85)
-                    , backgroundColor (hex "#fff")
-                    , border3 (px 1) solid (rgba 33 35 37 0.2)
-                    , color (rgba 0 0 0 0.87)
-                    , borderRadius (em 0.2)
-                    , property "transition" "box-shadow .1s ease, border-color .1s ease"
-                    , boxShadow5 inset (px 0) (px 1) (px 1) (rgba 0 0 0 0.075)
-                    , disabled [ opacity (num 0.45), property "pointer-events" "none" ]
-                    , focus [ borderColor (hex "#85b7d9"), color (rgba 0 0 0 0.8) ]
-                    ]
+                [ input [ inputMixin ]
                   -- Placeholder
                 , selector "input::-moz-placeholder"
                     [ color (rgba 191 191 191 0.87) ]
@@ -730,7 +756,7 @@ css =
                     , backgroundColor (hex "#fff6f6")
                     , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
                     ]
-                , (.) Textarea
+                , selector "textarea"
                     [ borderColor (hex "#e0b4b4")
                     , backgroundColor (hex "#fff6f6")
                     , focus [ color (hex "#9f3a38"), borderColor (hex "#ce4242") ]
@@ -757,7 +783,7 @@ css =
                     , backgroundColor (hex "#f6fff6")
                     , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]
                     ]
-                , (.) Textarea
+                , selector "textarea"
                     [ borderColor (hex "#b4e0b8")
                     , backgroundColor (hex "#f6fff6")
                     , focus [ color (hex "#389f48"), borderColor (hex "#42ce61") ]

@@ -2,11 +2,13 @@ module Update exposing (update)
 
 import Admin.Update as AdminUpdate
 import Auth.Update as AuthUpdate
+import Autoresize
 import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
 import Form
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
+import Maybe.Extra exposing (maybeToList)
 import Model exposing (Model)
 import Msg exposing (Msg(..))
 import Navigation
@@ -61,6 +63,20 @@ doUpdate msg model =
                 ( { model | notifications = notifications }
                 , cmd
                 )
+
+        {-
+           AUTORESIZE TEXTAREAS
+        -}
+        Autoresize msg ->
+            let
+                ( autoresize, cmd, maybeOut ) =
+                    Autoresize.update Autoresize msg model.autoresize
+            in
+                processMsgs
+                    ( { model | autoresize = autoresize }
+                    , cmd
+                    , maybeToList maybeOut
+                    )
 
         {-
            NAVIGATION
