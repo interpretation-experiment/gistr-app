@@ -35,7 +35,6 @@ module Helpers
         , sample
         , seed
         , shuffle
-        , textarea
         , tooltip
         , trialOr
         , updateAuth
@@ -357,11 +356,6 @@ notStaff =
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
-
-
-textarea : List (Html.Attribute msg) -> Html.Html msg
-textarea attrs =
-    Html.div ([ class [ Styles.Textarea ], Attributes.contenteditable True ] ++ attrs) []
 
 
 onInputContent : (String -> msg) -> Html.Attribute msg

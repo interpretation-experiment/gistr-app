@@ -1,8 +1,8 @@
 module Admin.View exposing (view)
 
-import Admin.Model as AdminModel
 import Admin.Msg exposing (Msg(..))
 import Animation
+import Autoresize
 import Feedback
 import Feedback
 import Form
@@ -26,7 +26,7 @@ view lift model =
                 [ Html.header [] header
                 , Html.main_ []
                     [ Html.div [ class [ Styles.Narrow ] ]
-                        (body lift model.admin auth.meta)
+                        (body lift model auth.meta)
                     ]
                 ]
             else
@@ -48,11 +48,14 @@ header =
 
 body :
     (Msg -> AppMsg.Msg)
-    -> AdminModel.Model
+    -> Model
     -> Types.Meta
     -> List (Html.Html AppMsg.Msg)
-body lift { input, feedback, status } meta =
+body lift model meta =
     let
+        { input, feedback, status } =
+            model.admin
+
         bucketRadio bucket =
             Html.label []
                 [ Html.input
@@ -78,15 +81,19 @@ body lift { input, feedback, status } meta =
                 ]
                 [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                     [ Html.text Strings.adminTypeSentence ]
-                , Helpers.textarea
-                    [ id Styles.InputAutofocus
-                    , Attributes.autofocus True
-                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
-                    , Helpers.onInputContent <|
+                , Autoresize.textarea
+                    { lift = AppMsg.Autoresize
+                    , model = model.autoresize
+                    , id = toString Styles.InputAutofocus
+                    , onInput =
                         lift
                             << WriteInput
                             << \t -> { input | text = t }
+                    }
+                    [ Attributes.autofocus True
+                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
                     ]
+                    input.text
                 , Html.div [] [ Html.text (Feedback.getError "text" feedback) ]
                 ]
             , Html.div

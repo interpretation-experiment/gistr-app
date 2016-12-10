@@ -17,6 +17,7 @@ You need a recent version of node and GNU Make. Then:
 
 ```
 npm install
+node_modules/.bin/elm-github-install
 make              # For development, output in build/
 make prod         # For production, output in dist/
 ```

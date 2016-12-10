@@ -8,6 +8,7 @@ module Model
         )
 
 import Admin.Model as AdminModel
+import Autoresize
 import Experiment.Model as ExpModel
 import Form
 import Home.Model as HomeModel
@@ -43,6 +44,8 @@ type alias Model =
     , questionnaire : Form.Model Types.QuestionnaireForm
     , experiment : ExpModel.Model
     , admin : AdminModel.Model
+    , -- Page-related utils
+      autoresize : Autoresize.Model
     }
 
 
@@ -67,6 +70,8 @@ initialModel route =
     , questionnaire = Form.empty Types.emptyQuestionnaireForm
     , experiment = ExpModel.initialModel
     , admin = AdminModel.initialModel
+    , -- Page-related utils
+      autoresize = Autoresize.initialModel
     }
 
 

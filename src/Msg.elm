@@ -4,6 +4,7 @@ import Admin.Msg as Admin
 import Animation
 import Api
 import Auth.Msg as Auth
+import Autoresize
 import Experiment.Msg as Experiment
 import Home.Msg as Home
 import Html
@@ -18,6 +19,8 @@ type Msg
     | Animate Animation.Msg
       -- NOTIFICATIONS
     | Notify (Notification.Msg ( String, Html.Html Msg, Types.Notification ))
+      -- AUTORESIZE TEXTAREAS
+    | Autoresize (Autoresize.Msg Msg)
       -- NAVIGATION
     | UrlUpdate String Router.Route
     | NavigateTo Router.Route

@@ -1,5 +1,6 @@
 module Experiment.View exposing (view, instructions)
 
+import Autoresize
 import Clock
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
@@ -31,7 +32,7 @@ view lift model =
         Types.Authenticated { user, meta } ->
             let
                 ( body, progressView ) =
-                    contents lift user.profile meta model.experiment
+                    contents lift user.profile meta model
             in
                 [ Html.header [] <|
                     (header lift user.profile meta model.experiment)
@@ -326,12 +327,12 @@ contents :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
     -> Types.Meta
-    -> ExpModel.Model
+    -> Model
     -> ( Html.Html AppMsg.Msg, List (Html.Html AppMsg.Msg) )
 contents lift profile meta model =
     let
         expOrTrainingView =
-            case model.state of
+            case model.experiment.state of
                 ExpModel.JustFinished ->
                     ( Html.div [ class [ Styles.SuperNarrow ] ]
                         [ Html.div []
@@ -339,7 +340,7 @@ contents lift profile meta model =
                             , Html.p [] Strings.expTrainingFinishedExpStarts
                             , Html.p []
                                 [ Helpers.evButton
-                                    [ Attributes.disabled model.loadingNext
+                                    [ Attributes.disabled model.experiment.loadingNext
                                     , class [ Styles.Btn, Styles.BtnWarning ]
                                     , id Styles.CtrlNext
                                     ]
@@ -354,17 +355,17 @@ contents lift profile meta model =
                 ExpModel.Instructions introState ->
                     ( Html.div [ class [ Styles.Normal ] ]
                         [ Html.div [] <|
-                            instructionsView lift profile meta model.loadingNext introState
+                            instructionsView lift profile meta model.experiment.loadingNext introState
                         ]
-                    , progress lift profile meta model
+                    , progress lift profile meta model.experiment
                     )
 
                 ExpModel.Trial trialModel ->
                     ( Html.div [ class [ Styles.Narrow ] ]
                         [ Html.div [ class [ Styles.Trial ] ]
-                            (trial lift model.loadingNext trialModel)
+                            (trial lift model trialModel)
                         ]
-                    , progress lift profile meta model
+                    , progress lift profile meta model.experiment
                     )
 
         finishProfileView =
@@ -425,8 +426,8 @@ contents lift profile meta model =
 -- TRIAL
 
 
-trial : (Msg -> AppMsg.Msg) -> Bool -> ExpModel.TrialModel -> List (Html.Html AppMsg.Msg)
-trial lift loading trialModel =
+trial : (Msg -> AppMsg.Msg) -> Model -> ExpModel.TrialModel -> List (Html.Html AppMsg.Msg)
+trial lift model trialModel =
     case trialModel.state of
         ExpModel.Reading ->
             [ Html.div [ class [ Styles.Header ] ]
@@ -452,7 +453,7 @@ trial lift loading trialModel =
                 [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
                 , Html.h4 [] [ Html.text Strings.expWrite ]
                 ]
-            , write lift loading form
+            , write lift model form
             ]
 
         ExpModel.Timeout ->
@@ -460,7 +461,7 @@ trial lift loading trialModel =
             , Html.p [] [ Html.text Strings.expTimeoutExplanation ]
             , Html.p []
                 [ Helpers.evButton
-                    [ Attributes.disabled loading
+                    [ Attributes.disabled model.experiment.loadingNext
                     , class [ Styles.Btn, Styles.BtnPrimary ]
                     , id Styles.CtrlNext
                     ]
@@ -474,7 +475,7 @@ trial lift loading trialModel =
             , Html.p [] [ Html.text Strings.expPauseExplanation ]
             , Html.p []
                 [ Helpers.evButton
-                    [ Attributes.disabled loading
+                    [ Attributes.disabled model.experiment.loadingNext
                     , class [ Styles.Btn, Styles.BtnPrimary ]
                     , id Styles.CtrlNext
                     ]
@@ -486,10 +487,10 @@ trial lift loading trialModel =
 
 write :
     (Msg -> AppMsg.Msg)
-    -> Bool
+    -> Model
     -> Form.Model String
     -> Html.Html AppMsg.Msg
-write lift loading { input, feedback, status } =
+write lift model { input, feedback, status } =
     Html.form
         [ class [ Styles.FormPage ]
         , Events.onSubmit (lift <| WriteSubmit input)
@@ -499,17 +500,25 @@ write lift loading { input, feedback, status } =
             [ class [ Styles.FormBlock ]
             , Helpers.feedbackStyles "global" feedback
             ]
-            [ Helpers.textarea
-                [ id Styles.InputAutofocus
-                , Attributes.autofocus True
-                , classList [ ( Styles.Disabled, (loading || (status /= Form.Entering)) ) ]
-                , Helpers.onInputContent (lift << WriteInput)
+            [ Autoresize.textarea
+                { lift = AppMsg.Autoresize
+                , model = model.autoresize
+                , id = toString Styles.InputAutofocus
+                , onInput = lift << WriteInput
+                }
+                [ Attributes.autofocus True
+                , classList
+                    [ ( Styles.Disabled
+                      , (model.experiment.loadingNext || (status /= Form.Entering))
+                      )
+                    ]
                 ]
+                input
             , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         , Html.button
             [ Attributes.type_ "submit"
-            , Attributes.disabled (loading || (status /= Form.Entering))
+            , Attributes.disabled (model.experiment.loadingNext || (status /= Form.Entering))
             , class [ Styles.Btn, Styles.BtnPrimary ]
             , id Styles.CtrlNext
             ]

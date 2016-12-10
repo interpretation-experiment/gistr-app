@@ -1,5 +1,6 @@
 module Profile.View.Questionnaire exposing (view)
 
+import Autoresize
 import Feedback
 import Form
 import Helpers
@@ -19,17 +20,20 @@ view : (Msg -> AppMsg.Msg) -> Model -> Types.Meta -> List (Html.Html AppMsg.Msg)
 view lift model meta =
     [ Html.h2 [] [ Html.text "General questionnaire" ]
     , Html.div [] (List.map (\p -> Html.p [] [ Html.text p ]) Strings.questionnaireIntro)
-    , form lift model.questionnaire meta
+    , form lift model meta
     ]
 
 
 form :
     (Msg -> AppMsg.Msg)
-    -> Form.Model Types.QuestionnaireForm
+    -> Model
     -> Types.Meta
     -> Html.Html AppMsg.Msg
-form lift { input, feedback, status } meta =
+form lift model meta =
     let
+        { input, feedback, status } =
+            model.questionnaire
+
         genderRadio gender =
             Html.label []
                 [ Html.input
@@ -51,27 +55,33 @@ form lift { input, feedback, status } meta =
                 [ Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedHow" feedback ]
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
-                    , Helpers.textarea
-                        [ Attributes.id "inputInformedHow"
-                        , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
-                        , Helpers.onInputContent <|
+                    , Autoresize.textarea
+                        { lift = AppMsg.Autoresize
+                        , model = model.autoresize
+                        , id = "inputInformedHow"
+                        , onInput =
                             lift
                                 << QuestionnaireFormInput
                                 << \h -> { input | informedHow = h }
-                        ]
+                        }
+                        [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                        input.informedHow
                     , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
                 , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedWhat" feedback ]
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
-                    , Helpers.textarea
-                        [ Attributes.id "inputInformedWhat"
-                        , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
-                        , Helpers.onInputContent <|
+                    , Autoresize.textarea
+                        { lift = AppMsg.Autoresize
+                        , model = model.autoresize
+                        , id = "inputInformedWhat"
+                        , onInput =
                             lift
                                 << QuestionnaireFormInput
                                 << \w -> { input | informedWhat = w }
-                        ]
+                        }
+                        [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                        input.informedWhat
                     , Html.div [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
                     ]
                 ]
@@ -183,14 +193,17 @@ form lift { input, feedback, status } meta =
             , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobFreetext" feedback ]
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
-                , Helpers.textarea
-                    [ Attributes.id "inputJobFreetext"
-                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
-                    , Helpers.onInputContent <|
+                , Autoresize.textarea
+                    { lift = AppMsg.Autoresize
+                    , model = model.autoresize
+                    , id = "inputJobFreetext"
+                    , onInput =
                         lift
                             << QuestionnaireFormInput
                             << \t -> { input | jobFreetext = t }
-                    ]
+                    }
+                    [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                    input.jobFreetext
                 , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]
             , Html.div
