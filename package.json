@@ -14,6 +14,7 @@
     "babel-preset-latest": "^6.16.0",
     "babili": "0.0.9",
     "elm-css": "^0.6.0",
+    "elm-github-install": "^0.2.0",
     "handlebars-render": "^1.0.1",
     "live-server": "^1.1.0",
     "uglifycss": "0.0.25"
