@@ -186,6 +186,10 @@ meta =
             |> Pipeline.required "pause_period" JD.int
             |> Pipeline.required "gender_choices" (JD.list choice)
             |> Pipeline.required "job_type_choices" (JD.list choice)
+            |> Pipeline.hardcoded
+                [ { name = "experiment", label = "Experiment" }
+                , { name = "training", label = "Training" }
+                ]
             |> Pipeline.required "experiment_work" JD.int
             |> Pipeline.required "training_work" JD.int
             |> Pipeline.required "tree_cost" JD.int
