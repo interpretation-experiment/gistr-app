@@ -111,7 +111,7 @@ instructions profile meta =
                       )
                     , ( ExpModel.Progress
                       , ( Intro.Left
-                        , Html.p [] [ Html.text <| Strings.expInstructionsRealStart 5 ]
+                        , Html.p [] [ Html.text <| Strings.expInstructionsRealStart meta.trainingWork ]
                         )
                       )
                     ]
