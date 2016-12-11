@@ -67,5 +67,12 @@ init location =
     let
         ( _, route ) =
             Router.parse location
+
+        -- Don't let the user load the /error route initially
+        nonErrorRoute =
+            if route == Router.Error then
+                Router.Home
+            else
+                route
     in
-        Model.initialModel route ! [ LocalStorage.tokenGet ]
+        Model.initialModel nonErrorRoute ! [ LocalStorage.tokenGet ]

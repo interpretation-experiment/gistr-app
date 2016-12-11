@@ -23,7 +23,7 @@ body model =
             , Html.text "."
             ]
         , Html.p []
-            [ Html.text "If the problem perists, please "
+            [ Html.text "If the problem persists, please "
             , Html.a [ Attributes.href ("mailto:sl@mehho.net?subject=Gistr error report&body=Error details:%0A%0A" ++ toString model) ] [ Html.text "click here to send an automated email report" ]
             , Html.text " to the developers. Thanks for your cooperation!"
             ]
