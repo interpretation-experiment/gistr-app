@@ -31,7 +31,8 @@ prod               := prod
 ifeq ($(TARGET), $(prod))
   ELMFLAGS         := --yes --warn
   CATCSS           := uglifycss
-  CATJS            := babel --no-babelrc --presets=babili
+  CATJS            := uglifyjs
+  CATJS_OPTIONS    := -c --screw-ie8
   output           := $(dist)
   vendor_css_hash   = -$(shell cat $(vendor_css) | $(HASH))
   app_css_hash      = -$(shell cat $(app_css) | $(HASH))
@@ -41,6 +42,7 @@ else
   ELMFLAGS         := --yes --warn --debug
   CATCSS           := cat
   CATJS            := cat
+  CATJS_OPTIONS    :=
   output           := $(build)
   ASSET_PATH_HASH   = $(ASSET_PATH)
 endif
@@ -132,7 +134,7 @@ $(app_js): $(index_js) $(sources_elm) $(assets)
 	@mkdir -p $(@D)
 	@$(ELM) $(main_elm) $(ELMFLAGS) --output $(main_elm_js)
 	@$(BABEL) -o $(babel_index_js) $(index_js)
-	@$(CATJS) $(main_elm_js) $(babel_index_js) > $@
+	@$(CATJS) $(main_elm_js) $(babel_index_js) $(CATJS_OPTIONS) > $@
 	@$(hash-asset-paths)
 	@echo -ne "$(NORMAL)"
 
