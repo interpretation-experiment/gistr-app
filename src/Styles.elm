@@ -79,6 +79,7 @@ type CssClasses
     | SuccessNotification
     | SmoothAppearing
     | Hidden
+    | Transient
     | Trial
     | InstructionImages
     | Header
@@ -508,6 +509,11 @@ css =
             , maxHeight (px 500)
             ]
         , (.) Hidden [ maxHeight (px 0), opacity (num 0), property "pointer-events" "none" ]
+        , (.) Transient
+            [ property "visibility" "hidden"
+            , property "animation" "flash 2s linear"
+            , empty [ property "animation" "none" ]
+            ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]

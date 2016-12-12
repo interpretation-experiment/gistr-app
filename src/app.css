@@ -6,3 +6,10 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes flash {
+  0% { visibility: visible; opacity: 1; }
+  90% { visibility: visible; opacity: 1; }
+  99% { visibility: visible; opacity: 0; }
+  100% { visibility: hidden; opacity: 0; }
+}
