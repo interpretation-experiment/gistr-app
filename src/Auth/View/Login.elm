@@ -60,7 +60,7 @@ form lift { input, feedback, status } =
             ]
         , Html.div
             [ class [ Styles.FormBlock ]
-            , Helpers.feedbackStyles "username" feedback
+            , Helpers.errorStyle "username" feedback
             ]
             [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                 [ Html.text "Username" ]
@@ -82,7 +82,7 @@ form lift { input, feedback, status } =
             ]
         , Html.div
             [ class [ Styles.FormBlock ]
-            , Helpers.feedbackStyles "password" feedback
+            , Helpers.errorStyle "password" feedback
             ]
             [ Html.label [ Attributes.for "inputPassword" ] [ Html.text "Password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]

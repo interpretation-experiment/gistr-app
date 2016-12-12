@@ -5,7 +5,6 @@ import Auth.Update as AuthUpdate
 import Autoresize
 import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
-import Form
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
 import Maybe.Extra exposing (maybeToList)
@@ -20,9 +19,6 @@ import Router
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Animate _ ->
-            doUpdate msg model
-
         ExperimentMsg (ExpMsg.ClockMsg _) ->
             doUpdate msg model
 
@@ -42,15 +38,6 @@ doUpdate msg model =
     case msg of
         NoOp ->
             model ! []
-
-        Animate msg ->
-            { model
-                | password = Form.animate msg model.password
-                , username = Form.animate msg model.username
-                , emails = Form.animate msg model.emails
-                , admin = Form.animate msg model.admin
-            }
-                ! []
 
         {-
            NOTIFICATIONS

@@ -7,11 +7,11 @@ module Helpers
         , authenticatedOrIgnore
         , avatar
         , cmd
+        , errorStyle
         , evA
         , evButton
         , evIconButton
         , extractFeedback
-        , feedbackStyles
         , forId
         , hrefIcon
         , icon
@@ -373,8 +373,8 @@ forId =
     Attributes.for << toString
 
 
-feedbackStyles : String -> Feedback.Feedback -> Html.Attribute msg
-feedbackStyles key feedback =
+errorStyle : String -> Feedback.Feedback -> Html.Attribute msg
+errorStyle key feedback =
     classList [ ( Styles.Error, Feedback.hasError key feedback ) ]
 
 

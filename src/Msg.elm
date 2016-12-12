@@ -1,7 +1,6 @@
 module Msg exposing (Msg(..))
 
 import Admin.Msg as Admin
-import Animation
 import Api
 import Auth.Msg as Auth
 import Autoresize
@@ -16,7 +15,6 @@ import Types
 
 type Msg
     = NoOp
-    | Animate Animation.Msg
       -- NOTIFICATIONS
     | Notify (Notification.Msg ( String, Html.Html Msg, Types.Notification ))
       -- AUTORESIZE TEXTAREAS

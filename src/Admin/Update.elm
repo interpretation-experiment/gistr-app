@@ -55,7 +55,8 @@ update lift auth msg model =
         WriteResult (Ok profile) ->
             let
                 feedback =
-                    Feedback.globalSuccess model.admin.feedback
+                    Feedback.setGlobalSuccess Strings.adminSentenceCreated
+                        model.admin.feedback
 
                 newForm =
                     Form.succeed AdminModel.emptyForm feedback model.admin
