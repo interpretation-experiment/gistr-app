@@ -65,7 +65,7 @@ form lift { input, feedback, status } maybeProlific =
                     [ id Styles.InputAutofocus
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
-                    , Attributes.placeholder "joey"
+                    , Attributes.placeholder Strings.usernamePlaceholder
                     , Attributes.type_ "text"
                     , Attributes.value input.username
                     , Events.onInput <|
@@ -83,7 +83,7 @@ form lift { input, feedback, status } maybeProlific =
                 , Html.input
                     [ Attributes.id "inputEmail"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "joey@example.com (optional)"
+                    , Attributes.placeholder Strings.optionalEmailPlaceholder
                     , Attributes.type_ "email"
                     , Attributes.value input.email
                     , Events.onInput <|
@@ -109,7 +109,7 @@ form lift { input, feedback, status } maybeProlific =
                 , Html.input
                     [ Attributes.id "inputPassword1"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.placeholder Strings.passwordPlaceholder1
                     , Attributes.type_ "password"
                     , Attributes.value input.password1
                     , Events.onInput <|
@@ -131,7 +131,7 @@ form lift { input, feedback, status } maybeProlific =
                 , Html.input
                     [ Attributes.id "inputPassword2"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.placeholder Strings.passwordPlaceholder2
                     , Attributes.type_ "password"
                     , Attributes.value input.password2
                     , Events.onInput <|

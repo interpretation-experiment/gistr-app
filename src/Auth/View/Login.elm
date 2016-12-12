@@ -10,6 +10,7 @@ import Html.Events as Events
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
+import Strings
 import Styles exposing (class, classList, id)
 import Types
 
@@ -69,7 +70,7 @@ form lift { input, feedback, status } =
                     [ id Styles.InputAutofocus
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
-                    , Attributes.placeholder "joey"
+                    , Attributes.placeholder Strings.usernamePlaceholder
                     , Attributes.type_ "text"
                     , Attributes.value input.username
                     , Events.onInput
@@ -89,7 +90,7 @@ form lift { input, feedback, status } =
                 , Html.input
                     [ Attributes.id "inputPassword"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Attributes.placeholder "ubA1oh"
+                    , Attributes.placeholder Strings.passwordPlaceholder1
                     , Attributes.type_ "password"
                     , Attributes.value input.password
                     , Events.onInput

@@ -238,7 +238,7 @@ passwordChange lift { input, feedback, status } =
                     , Html.input
                         [ Attributes.id "inputOldPassword"
                         , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.placeholder "Your old password"
+                        , Attributes.placeholder Strings.oldPasswordPlaceholder
                         , Attributes.type_ "password"
                         , Attributes.value input.oldPassword
                         , Events.onInput <|
@@ -262,7 +262,7 @@ passwordChange lift { input, feedback, status } =
                     , Html.input
                         [ Attributes.id "inputPassword1"
                         , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.placeholder "ubA1oh"
+                        , Attributes.placeholder Strings.passwordPlaceholder1
                         , Attributes.type_ "password"
                         , Attributes.value input.password1
                         , Events.onInput <|
@@ -287,7 +287,7 @@ passwordChange lift { input, feedback, status } =
                     , Html.input
                         [ Attributes.id "inputPassword2"
                         , Attributes.disabled (status /= Form.Entering)
-                        , Attributes.placeholder "ubA1oh"
+                        , Attributes.placeholder Strings.passwordPlaceholder2
                         , Attributes.type_ "password"
                         , Attributes.value input.password2
                         , Events.onInput <|

@@ -10,6 +10,7 @@ import Html.Events as Events
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
+import Strings
 import Styles exposing (class, classList, id)
 import Types
 
@@ -72,7 +73,7 @@ form lift { input, feedback, status } =
                     [ id Styles.InputAutofocus
                     , Attributes.disabled (status /= Form.Entering)
                     , Attributes.autofocus True
-                    , Attributes.placeholder "joey@example.com"
+                    , Attributes.placeholder Strings.emailPlaceholder
                     , Attributes.type_ "mail"
                     , Attributes.value input
                     , Events.onInput (lift << RecoverFormInput)

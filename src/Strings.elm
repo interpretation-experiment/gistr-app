@@ -63,6 +63,41 @@ registerEmailVerify =
     "Once you've registered, we'll send you a verification email to make sure this works."
 
 
+passwordPlaceholder1 : String
+passwordPlaceholder1 =
+    "Elaborate password"
+
+
+passwordPlaceholder2 : String
+passwordPlaceholder2 =
+    "Same old, same old"
+
+
+oldPasswordPlaceholder : String
+oldPasswordPlaceholder =
+    "Your old password"
+
+
+emailPlaceholder : String
+emailPlaceholder =
+    "joey@example.com"
+
+
+optionalEmailPlaceholder : String
+optionalEmailPlaceholder =
+    "joey@example.com (optional)"
+
+
+usernamePlaceholder : String
+usernamePlaceholder =
+    "e.g. joey"
+
+
+prolificIdPlaceholder : String
+prolificIdPlaceholder =
+    "e.g. 5381d3c8717b341db325eec3"
+
+
 intPlease : String
 intPlease =
     "Please enter a number"

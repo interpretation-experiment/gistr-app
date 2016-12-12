@@ -10,6 +10,7 @@ import Html.Events as Events
 import Model exposing (Model)
 import Msg as AppMsg
 import Router
+import Strings
 import Styles exposing (class, classList, id)
 import Types
 
@@ -74,7 +75,7 @@ form lift { input, feedback } =
                 , Html.input
                     [ id Styles.InputAutofocus
                     , Attributes.autofocus True
-                    , Attributes.placeholder "5381d3c8717b341db325eec3"
+                    , Attributes.placeholder Strings.prolificIdPlaceholder
                     , Attributes.type_ "text"
                     , Attributes.value input
                     , Events.onInput (lift << SetProlificFormInput)
