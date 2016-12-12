@@ -324,19 +324,21 @@ sentenceTooShort minTokens =
     "Please type a little more (at least " ++ toString minTokens ++ " words altogether)"
 
 
-homeSubtitle1 : List (Html.Html msg)
-homeSubtitle1 =
+homeSubtitle : List (Html.Html Msg)
+homeSubtitle =
     [ Html.text "A "
     , Html.strong [ Helpers.tooltip "Game With a Purpose" ] [ Html.text "GWAP" ]
     , Html.text " on Memory and Interpretation"
-    ]
-
-
-homeSubtitle2 : List (Html.Html Msg)
-homeSubtitle2 =
-    [ Html.text "by the "
+    , Html.br [] []
+    , Html.text "by the "
     , Html.a [ Attributes.href "https://cmb.hu-berlin.de/" ]
         [ Html.text "Centre Marc Bloch" ]
+    , Html.text "'s "
+    , Html.a
+        [ Attributes.href "http://cmb.huma-num.fr/"
+        , Attributes.title "CMB's Computational Social Sciences Team"
+        ]
+        [ Html.text "CSS Team" ]
     , Html.text " in Berlin. "
     , Helpers.navA [] Router.About "Learn more"
     , Html.text "."
@@ -584,6 +586,12 @@ aboutAuthorsCreated =
         , Attributes.title "Centre Marc Bloch Webpage"
         ]
         [ Html.text "Centre Marc Bloch" ]
+    , Html.text "'s "
+    , Html.a
+        [ Attributes.href "http://cmb.huma-num.fr/"
+        , Attributes.title "CMB's Computational Social Sciences Webpage"
+        ]
+        [ Html.text "Computational Social Sciences Team" ]
     , Html.text " in Berlin, and the "
     , Html.a
         [ Attributes.href "http://cams.ehess.fr/"

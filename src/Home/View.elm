@@ -108,8 +108,7 @@ greeting lift model =
         Html.div
         [ id Styles.Greeting ]
         [ Html.h1 [] [ Html.text "Gistr" ]
-        , Html.p []
-            (Strings.homeSubtitle1 ++ [ Html.br [] [] ] ++ Strings.homeSubtitle2)
+        , Html.p [] Strings.homeSubtitle
         ]
 
 
