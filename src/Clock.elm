@@ -27,30 +27,33 @@ type Status
     | Finished
 
 
-type Model
+type Model msg
     = Model
         { status : Status
         , duration : Time.Time
+        , endMsg : Maybe msg
         }
 
 
-init : Time.Time -> Model
-init duration =
+init : Time.Time -> msg -> Model msg
+init duration endMsg =
     Model
         { status = Init
         , duration = duration
+        , endMsg = Just endMsg
         }
 
 
-disabled : Model
+disabled : Model msg
 disabled =
     Model
         { status = Finished
         , duration = 1
+        , endMsg = Nothing
         }
 
 
-pause : Model -> Model
+pause : Model msg -> Model msg
 pause (Model model) =
     case model.status of
         Init ->
@@ -69,7 +72,7 @@ pause (Model model) =
             Model model
 
 
-resume : Model -> Model
+resume : Model msg -> Model msg
 resume (Model model) =
     case model.status of
         Init ->
@@ -92,46 +95,44 @@ type Msg
     = Tick Time.Time
 
 
-update : a -> Msg -> Model -> ( Model, Maybe a )
-update endMsg msg (Model model) =
-    case msg of
-        Tick now ->
-            case model.status of
-                Init ->
-                    ( Model { model | status = Running now now }
-                    , Nothing
-                    )
+update : Msg -> Model msg -> ( Model msg, Maybe msg )
+update (Tick now) (Model model) =
+    case model.status of
+        Init ->
+            ( Model { model | status = Running now now }
+            , Nothing
+            )
 
-                Running start _ ->
-                    if now < start + model.duration then
-                        ( Model { model | status = Running start now }
-                        , Nothing
-                        )
-                    else
-                        ( Model { model | status = Finished }
-                        , Just endMsg
-                        )
+        Running start _ ->
+            if now < start + model.duration then
+                ( Model { model | status = Running start now }
+                , Nothing
+                )
+            else
+                ( Model { model | status = Finished }
+                , model.endMsg
+                )
 
-                Paused _ ->
-                    ( Model model
-                    , Nothing
-                    )
+        Paused _ ->
+            ( Model model
+            , Nothing
+            )
 
-                Resuming elapsed ->
-                    -- Elapsed is always computed as (current - start), which
-                    -- is always < duration, so no need to check if we've
-                    -- finished the duration
-                    ( Model { model | status = Running (now - elapsed) now }
-                    , Nothing
-                    )
+        Resuming elapsed ->
+            -- Elapsed is always computed as (current - start), which
+            -- is always < duration, so no need to check if we've
+            -- finished the duration
+            ( Model { model | status = Running (now - elapsed) now }
+            , Nothing
+            )
 
-                Finished ->
-                    ( Model model
-                    , Nothing
-                    )
+        Finished ->
+            ( Model model
+            , Nothing
+            )
 
 
-subscription : (Msg -> a) -> Model -> Sub a
+subscription : (Msg -> a) -> Model msg -> Sub a
 subscription lift (Model model) =
     case model.status of
         Init ->
@@ -150,7 +151,7 @@ subscription lift (Model model) =
             Sub.none
 
 
-progress : Model -> Float
+progress : Model msg -> Float
 progress (Model model) =
     case model.status of
         Init ->
@@ -169,7 +170,7 @@ progress (Model model) =
             1
 
 
-view : Model -> Html.Html msg
+view : Model msg -> Html.Html a
 view model =
     let
         modelProgress =

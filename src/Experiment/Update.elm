@@ -59,33 +59,12 @@ update lift auth msg model =
             updateTrialOrIgnore model <|
                 \trial ->
                     let
-                        outMsg =
-                            case trial.state of
-                                -- TODO: move this into clock state, when
-                                -- refactoring to animate with CSS
-                                ExpModel.Reading ->
-                                    TrialTask
-
-                                ExpModel.Tasking ->
-                                    TrialWrite
-
-                                ExpModel.Writing _ ->
-                                    TrialTimeout
-
-                                ExpModel.Timeout ->
-                                    -- There's no clock in Timeout
-                                    NoOp
-
-                                ExpModel.Pause ->
-                                    -- There's no clock in Pause
-                                    NoOp
-
                         ( newClock, maybeOut ) =
-                            Clock.update (lift outMsg) msg trial.clock
+                            Clock.update msg trial.clock
                     in
                         ( { trial | clock = newClock }
                         , Cmd.none
-                        , maybeToList maybeOut
+                        , maybeToList <| Maybe.map lift maybeOut
                         )
 
         CtrlEnter ->
@@ -263,6 +242,9 @@ update lift auth msg model =
 
         LoadTrialResult (Ok ( preLoaded, current )) ->
             let
+                clock =
+                    Clock.init (Helpers.readTime auth.meta current) TrialTask
+
                 newTrial =
                     case model.experiment.state of
                         ExpModel.Trial trial ->
@@ -270,16 +252,13 @@ update lift auth msg model =
                             { trial
                                 | preLoaded = preLoaded
                                 , current = current
-                                , clock = (Clock.init <| Helpers.readTime auth.meta current)
+                                , clock = clock
                                 , state = ExpModel.Reading
                             }
 
                         _ ->
                             -- Create a new trial
-                            ExpModel.trial
-                                preLoaded
-                                current
-                                (Clock.init <| Helpers.readTime auth.meta current)
+                            ExpModel.trial preLoaded current clock
             in
                 ( { model
                     | experiment =
@@ -302,7 +281,7 @@ update lift auth msg model =
                 \trial ->
                     ( { trial
                         | state = ExpModel.Tasking
-                        , clock = Clock.init <| 2 * Time.second
+                        , clock = Clock.init (2 * Time.second) TrialWrite
                       }
                     , Cmd.none
                     , []
@@ -313,7 +292,9 @@ update lift auth msg model =
                 \trial ->
                     ( { trial
                         | state = ExpModel.Writing <| Form.empty ""
-                        , clock = Clock.init <| Helpers.writeTime auth.meta trial.current
+                        , clock =
+                            Clock.init (Helpers.writeTime auth.meta trial.current)
+                                TrialTimeout
                       }
                     , Cmds.autofocus
                     , []

@@ -13,6 +13,7 @@ module Experiment.Model
         )
 
 import Clock
+import Experiment.Msg
 import Form
 import Intro
 import Types
@@ -41,7 +42,7 @@ type alias TrialModel =
     { preLoaded : List Types.Sentence
     , streak : Int
     , current : Types.Sentence
-    , clock : Clock.Model
+    , clock : Clock.Model Experiment.Msg.Msg
     , state : TrialState
     }
 
@@ -93,7 +94,7 @@ setState state model =
     { model | state = state }
 
 
-trial : List Types.Sentence -> Types.Sentence -> Clock.Model -> TrialModel
+trial : List Types.Sentence -> Types.Sentence -> Clock.Model Experiment.Msg.Msg -> TrialModel
 trial preLoaded current clock =
     { preLoaded = preLoaded
     , streak = 0
