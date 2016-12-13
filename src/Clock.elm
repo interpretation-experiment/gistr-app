@@ -3,10 +3,10 @@ module Clock
         ( Model
         , Msg
         , disabled
-        , init
         , pause
         , progress
         , resume
+        , start
         , subscription
         , update
         , view
@@ -16,30 +16,35 @@ import AnimationFrame
 import Html
 import Svg
 import Svg.Attributes as Attributes
+import Task
 import Time
 
 
 type Status
-    = Init
-    | Running Time.Time Time.Time
-    | Paused Time.Time
-    | Resuming Time.Time
+    = Starting
+    | -- start time
+      Running Time.Time
+    | -- start time
+      Pausing Time.Time
+    | Paused
     | Finished
 
 
 type Model msg
     = Model
         { status : Status
-        , duration : Time.Time
+        , fullDuration : Time.Time
+        , remaining : Time.Time
         , endMsg : Maybe msg
         }
 
 
-init : Time.Time -> msg -> Model msg
-init duration endMsg =
+start : Time.Time -> msg -> Model msg
+start duration endMsg =
     Model
-        { status = Init
-        , duration = duration
+        { status = Starting
+        , fullDuration = duration
+        , remaining = duration
         , endMsg = Just endMsg
         }
 
@@ -48,7 +53,8 @@ disabled : Model msg
 disabled =
     Model
         { status = Finished
-        , duration = 1
+        , fullDuration = 0
+        , remaining = 0
         , endMsg = Nothing
         }
 
@@ -56,17 +62,17 @@ disabled =
 pause : Model msg -> Model msg
 pause (Model model) =
     case model.status of
-        Init ->
+        Starting ->
+            Model { model | status = Paused }
+
+        Running start ->
+            Model { model | status = Pausing start }
+
+        Pausing _ ->
             Model model
 
-        Running start current ->
-            Model { model | status = Paused (current - start) }
-
-        Paused _ ->
+        Paused ->
             Model model
-
-        Resuming elapsed ->
-            Model { model | status = Paused elapsed }
 
         Finished ->
             Model model
@@ -75,20 +81,41 @@ pause (Model model) =
 resume : Model msg -> Model msg
 resume (Model model) =
     case model.status of
-        Init ->
+        Starting ->
             Model model
 
-        Running _ _ ->
+        Running _ ->
             Model model
 
-        Paused elapsed ->
-            Model { model | status = Resuming elapsed }
+        Pausing start ->
+            Model { model | status = Running start }
 
-        Resuming _ ->
-            Model model
+        Paused ->
+            Model { model | status = Starting }
 
         Finished ->
             Model model
+
+
+progress : Model msg -> Task.Task x Float
+progress (Model model) =
+    case model.status of
+        Starting ->
+            Task.succeed ((model.fullDuration - model.remaining) / model.fullDuration)
+
+        Running start ->
+            Time.now
+                |> Task.map (\now -> (model.fullDuration - model.remaining - (now - start)) / model.fullDuration)
+
+        Pausing start ->
+            Time.now
+                |> Task.map (\now -> (model.fullDuration - model.remaining - (now - start)) / model.fullDuration)
+
+        Paused ->
+            Task.succeed ((model.fullDuration - model.remaining) / model.fullDuration)
+
+        Finished ->
+            Task.succeed 1
 
 
 type Msg
@@ -98,31 +125,37 @@ type Msg
 update : Msg -> Model msg -> ( Model msg, Maybe msg )
 update (Tick now) (Model model) =
     case model.status of
-        Init ->
-            ( Model { model | status = Running now now }
+        Starting ->
+            ( Model { model | status = Running now }
             , Nothing
             )
 
-        Running start _ ->
-            if now < start + model.duration then
-                ( Model { model | status = Running start now }
+        Running start ->
+            if now < start + model.remaining then
+                ( Model model
                 , Nothing
                 )
             else
-                ( Model { model | status = Finished }
+                ( Model { model | status = Finished, remaining = 0 }
                 , model.endMsg
                 )
 
-        Paused _ ->
-            ( Model model
-            , Nothing
-            )
+        Pausing start ->
+            let
+                remaining =
+                    model.remaining - (now - start)
+            in
+                if remaining > 0 then
+                    ( Model { model | status = Paused, remaining = remaining }
+                    , Nothing
+                    )
+                else
+                    ( Model { model | status = Finished, remaining = 0 }
+                    , model.endMsg
+                    )
 
-        Resuming elapsed ->
-            -- Elapsed is always computed as (current - start), which
-            -- is always < duration, so no need to check if we've
-            -- finished the duration
-            ( Model { model | status = Running (now - elapsed) now }
+        Paused ->
+            ( Model model
             , Nothing
             )
 
@@ -135,103 +168,99 @@ update (Tick now) (Model model) =
 subscription : (Msg -> a) -> Model msg -> Sub a
 subscription lift (Model model) =
     case model.status of
-        Init ->
+        Starting ->
             AnimationFrame.times (lift << Tick)
 
-        Running _ _ ->
+        Running _ ->
+            Time.every model.remaining (lift << Tick)
+
+        Pausing _ ->
             AnimationFrame.times (lift << Tick)
 
-        Paused _ ->
+        Paused ->
             Sub.none
-
-        Resuming _ ->
-            AnimationFrame.times (lift << Tick)
 
         Finished ->
             Sub.none
-
-
-progress : Model msg -> Float
-progress (Model model) =
-    case model.status of
-        Init ->
-            0
-
-        Running start current ->
-            (current - start) / model.duration
-
-        Paused elapsed ->
-            elapsed / model.duration
-
-        Resuming elapsed ->
-            elapsed / model.duration
-
-        Finished ->
-            1
 
 
 view : Model msg -> Html.Html a
-view model =
+view (Model model) =
     let
-        modelProgress =
-            progress model
+        scaling =
+            0.8
 
         radius =
             10
 
-        scaling =
-            0.8
+        perimeter =
+            -- This must match the initial stroke-dashoffset value in the
+            -- "clock" keyframes animation (see app.css)
+            2 * pi * radius
 
         ( centerX, centerY ) =
             ( radius / scaling, radius / scaling )
 
-        zero =
-            radians (pi / 2)
+        animation =
+            "clock "
+                ++ toString (Time.inSeconds model.fullDuration)
+                ++ "s linear "
+                ++ toString (Time.inSeconds (model.remaining - model.fullDuration))
+                ++ "s"
 
-        offset =
-            radians (pi / 6)
+        ( statusAttrs, statusStyle ) =
+            case model.status of
+                Starting ->
+                    ( [ Attributes.stroke "#555"
+                      , Attributes.strokeDashoffset <|
+                            toString <|
+                                perimeter
+                                    * model.remaining
+                                    / model.fullDuration
+                      ]
+                    , []
+                    )
 
-        ( offsetX, offsetY ) =
-            let
-                ( x, y ) =
-                    fromPolar ( radius, zero - offset )
-            in
-                ( centerX + x, centerY - y )
+                Running _ ->
+                    ( [ Attributes.stroke "red"
+                      , Attributes.strokeDashoffset "0"
+                      ]
+                    , [ ( "animation", animation ) ]
+                    )
 
-        arc =
-            offset + modelProgress * (radians (2 * pi) - offset)
+                Pausing _ ->
+                    ( [ Attributes.stroke "red"
+                      , Attributes.strokeDashoffset "0"
+                      ]
+                    , [ ( "animation", animation ) ]
+                    )
 
-        ( tipX, tipY ) =
-            let
-                ( x, y ) =
-                    fromPolar ( radius, zero - arc )
-            in
-                ( centerX + x, centerY - y )
+                Paused ->
+                    ( [ Attributes.stroke "#555"
+                      , Attributes.strokeDashoffset <|
+                            toString <|
+                                perimeter
+                                    * model.remaining
+                                    / model.fullDuration
+                      ]
+                    , []
+                    )
 
-        largeFlag =
-            if (arc - offset) < (radians pi) then
-                "0"
-            else
-                "1"
+                Finished ->
+                    ( [ Attributes.stroke "red"
+                      , Attributes.strokeDashoffset "0"
+                      ]
+                    , []
+                    )
 
-        hue =
-            let
-                split =
-                    0.75
-
-                startHue =
-                    44
-
-                endHue =
-                    0
-            in
-                if modelProgress < split then
-                    120
-                else
-                    startHue + (modelProgress - split) * (endHue - startHue) / (1 - split)
+        toStyle listTuples =
+            listTuples
+                |> List.map (\( k, v ) -> k ++ ": " ++ v)
+                |> String.join "; "
     in
         Svg.svg
-            [ Attributes.viewBox ("0 0 " ++ toString (2 * centerX) ++ " " ++ toString (2 * centerY))
+            [ Attributes.viewBox
+                ("0 0 " ++ toString (2 * centerX) ++ " " ++ toString (2 * centerY))
             ]
             [ Svg.circle
                 [ Attributes.stroke "#ccc"
@@ -242,34 +271,22 @@ view model =
                 , Attributes.r (toString radius)
                 ]
                 []
-            , Svg.path
-                [ Attributes.stroke <| "hsla(" ++ (toString hue) ++ ",82%,50%," ++ (toString modelProgress) ++ ")"
-                , Attributes.strokeWidth "2"
-                , Attributes.fill "transparent"
-                , Attributes.d
-                    ("M"
-                        ++ toString centerX
-                        ++ " "
-                        ++ toString (centerY - radius)
-                        ++ " A "
-                        ++ toString radius
-                        ++ " "
-                        ++ toString radius
-                        ++ " 0 0 1 "
-                        ++ toString offsetX
-                        ++ " "
-                        ++ toString offsetY
-                        ++ " A "
-                        ++ toString radius
-                        ++ " "
-                        ++ toString radius
-                        ++ " 0 "
-                        ++ largeFlag
-                        ++ " 1 "
-                        ++ toString tipX
-                        ++ " "
-                        ++ toString tipY
-                    )
-                ]
+            , Svg.circle
+                ([ Attributes.strokeWidth "2"
+                 , Attributes.fill "transparent"
+                 , Attributes.cx (toString centerX)
+                 , Attributes.cy (toString centerY)
+                 , Attributes.r (toString radius)
+                 , Attributes.strokeDasharray (toString perimeter)
+                 , [ ( "transform-origin", "center" )
+                   , ( "transform", "rotate(-90deg)" )
+                   , ( "transition", "stroke .1s ease-in-out" )
+                   ]
+                    ++ statusStyle
+                    |> toStyle
+                    |> Attributes.style
+                 ]
+                    ++ statusAttrs
+                )
                 []
             ]

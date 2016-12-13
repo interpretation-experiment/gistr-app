@@ -243,7 +243,7 @@ update lift auth msg model =
         LoadTrialResult (Ok ( preLoaded, current )) ->
             let
                 clock =
-                    Clock.init (Helpers.readTime auth.meta current) TrialTask
+                    Clock.start (Helpers.readTime auth.meta current) TrialTask
 
                 newTrial =
                     case model.experiment.state of
@@ -281,7 +281,7 @@ update lift auth msg model =
                 \trial ->
                     ( { trial
                         | state = ExpModel.Tasking
-                        , clock = Clock.init (2 * Time.second) TrialWrite
+                        , clock = Clock.start (2 * Time.second) TrialWrite
                       }
                     , Cmd.none
                     , []
@@ -293,7 +293,7 @@ update lift auth msg model =
                     ( { trial
                         | state = ExpModel.Writing <| Form.empty ""
                         , clock =
-                            Clock.init (Helpers.writeTime auth.meta trial.current)
+                            Clock.start (Helpers.writeTime auth.meta trial.current)
                                 TrialTimeout
                       }
                     , Cmds.autofocus
@@ -351,13 +351,13 @@ update lift auth msg model =
                         |> Validate.all
                         |> Feedback.fromValidator input
 
-                newSentence trial =
+                newSentence trial progress =
                     { text = input
                     , language = trial.current.language
                     , bucket = trial.current.bucket
                     , readTimeProportion = 1
                     , readTimeAllotted = Helpers.readTime auth.meta trial.current
-                    , writeTimeProportion = Clock.progress trial.clock
+                    , writeTimeProportion = progress
                     , writeTimeAllotted = Helpers.writeTime auth.meta trial.current
                     , parentId = Just trial.current.id
                     }
@@ -388,7 +388,8 @@ update lift auth msg model =
                         Lifecycle.Experiment _ ->
                             -- Post the new sentence
                             ( trialState trial form
-                            , Api.postSentence auth (newSentence trial)
+                            , Clock.progress trial.clock
+                                |> Task.andThen (Api.postSentence auth << newSentence trial)
                                 |> Task.attempt (lift << WriteResult)
                             , []
                             )
