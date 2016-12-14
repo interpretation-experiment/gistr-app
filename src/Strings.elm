@@ -4,6 +4,7 @@ import Config
 import Helpers
 import Html
 import Html.Attributes as Attributes
+import Styles exposing (class, classList, id)
 import Msg exposing (Msg)
 import Router
 
@@ -150,16 +151,19 @@ testWordSpan =
 
 startTraining : List (Html.Html Msg)
 startTraining =
-    [ Html.text "Your profile is complete, you can start the experiment "
-    , Helpers.navA [] Router.Experiment "right now"
-    , Html.text "!"
+    [ Html.text "Your profile is complete — "
+    , Helpers.navButton [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+        Router.Experiment
+        "Start the Experiment"
     ]
 
 
 profileComplete : List (Html.Html Msg)
 profileComplete =
-    [ Html.text "Your profile is complete, you can keep going with "
-    , Helpers.navA [] Router.Experiment "the experiment"
+    [ Html.text "Your profile is complete — "
+    , Helpers.navButton [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+        Router.Experiment
+        "Continue with the Experiment"
     ]
 
 
