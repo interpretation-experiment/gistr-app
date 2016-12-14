@@ -498,7 +498,7 @@ write lift model { input, feedback, status } =
         ]
         [ Html.div
             [ class [ Styles.FormBlock ]
-            , Helpers.feedbackStyles "global" feedback
+            , Helpers.errorStyle "global" feedback
             ]
             [ Autoresize.textarea
                 { lift = AppMsg.Autoresize

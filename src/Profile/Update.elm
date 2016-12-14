@@ -46,7 +46,8 @@ update lift auth msg model =
                     Types.PasswordCredentials "" "" ""
 
                 feedback =
-                    Feedback.globalSuccess model.password.feedback
+                    Feedback.setGlobalSuccess Strings.passwordSaved
+                        model.password.feedback
             in
                 ( { model | password = Form.succeed emptyInput feedback model.password }
                 , Cmd.none
@@ -133,7 +134,8 @@ update lift auth msg model =
         ChangeUsernameResult (Ok user) ->
             let
                 feedback =
-                    Feedback.globalSuccess model.username.feedback
+                    Feedback.setGlobalSuccess Strings.usernameSaved
+                        model.username.feedback
             in
                 ( Helpers.updateUser
                     { model | username = Form.succeed "" feedback model.username }
@@ -298,7 +300,8 @@ update lift auth msg model =
         AddEmailResult email (Ok user) ->
             let
                 feedback =
-                    Feedback.globalSuccess model.emails.feedback
+                    Feedback.setGlobalSuccess Strings.emailAdded
+                        model.emails.feedback
             in
                 ( Helpers.updateUser
                     { model | emails = Form.succeed "" feedback model.emails }

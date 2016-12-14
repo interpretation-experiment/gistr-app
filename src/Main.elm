@@ -1,17 +1,14 @@
 module Main exposing (..)
 
-import Animation
 import Auth.Msg as AuthMsg
 import Dict
 import Experiment.Subscription as ExpSub
-import Form
 import Home.Msg as HomeMsg
 import Intro
 import LocalStorage
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
-import Notification
 import Router
 import Update
 import View
@@ -40,16 +37,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ LocalStorage.subscribe localStorageTags Msg.NoOp
-        , Animation.subscription Msg.Animate <|
-            List.concat
-                [ Form.successAnimations model.password
-                , Form.successAnimations model.username
-                , Form.successAnimations model.emails
-                , Form.successAnimations model.admin
-                ]
         , Intro.subscription (Msg.HomeMsg << HomeMsg.InstructionsMsg) model.home
         , ExpSub.subscription Msg.ExperimentMsg model
-        , Notification.subscription Msg.Notify model.notifications
         ]
 
 

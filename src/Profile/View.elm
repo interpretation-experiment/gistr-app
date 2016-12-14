@@ -1,6 +1,5 @@
 module Profile.View exposing (view)
 
-import Animation
 import Auth.Msg as AuthMsg
 import Feedback
 import Form
@@ -228,7 +227,7 @@ passwordChange lift { input, feedback, status } =
             [ class [ Styles.FormPage ], Events.onSubmit <| lift (ChangePassword input) ]
             [ Html.div
                 [ class [ Styles.FormBlock ]
-                , Helpers.feedbackStyles "oldPassword" feedback
+                , Helpers.errorStyle "oldPassword" feedback
                 ]
                 [ Html.label
                     [ Attributes.for "inputOldPassword" ]
@@ -253,7 +252,7 @@ passwordChange lift { input, feedback, status } =
                 ]
             , Html.div
                 [ class [ Styles.FormBlock ]
-                , Helpers.feedbackStyles "password1" feedback
+                , Helpers.errorStyle "password1" feedback
                 ]
                 [ Html.label [ Attributes.for "inputPassword1" ]
                     [ Html.text "New password" ]
@@ -277,7 +276,7 @@ passwordChange lift { input, feedback, status } =
                 ]
             , Html.div
                 [ class [ Styles.FormBlock ]
-                , Helpers.feedbackStyles "password2" feedback
+                , Helpers.errorStyle "password2" feedback
                 ]
                 [ Html.label
                     [ Attributes.for "inputPassword2" ]
@@ -313,11 +312,8 @@ passwordChange lift { input, feedback, status } =
                     [ class [ Styles.BtnLink ] ]
                     (lift ChangePasswordRecover)
                     "I forgot my current password"
-                , Html.span
-                    ((Animation.render <| Feedback.getSuccess "global" feedback)
-                        ++ [ class [ Styles.BadgeSuccess ] ]
-                    )
-                    [ Html.text Strings.passwordSaved ]
+                , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
+                    [ Html.text (Feedback.getSuccess "global" feedback) ]
                 ]
             ]
         ]
@@ -335,7 +331,7 @@ usernameChange lift { input, feedback, status } { user } =
             [ class [ Styles.FormInline ], Events.onSubmit <| lift (ChangeUsername input) ]
             [ Html.div
                 [ class [ Styles.Input, Styles.Label ]
-                , Helpers.feedbackStyles "global" feedback
+                , Helpers.errorStyle "global" feedback
                 ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
                 , Html.input
@@ -354,12 +350,10 @@ usernameChange lift { input, feedback, status } { user } =
                 , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Update username" ]
-            , Html.span
-                ((Animation.render <| Feedback.getSuccess "global" feedback)
-                    ++ [ class [ Styles.BadgeSuccess ] ]
-                )
-                [ Html.text Strings.usernameSaved ]
-            , Html.span [ class [ Styles.Error ] ] [ Html.text (Feedback.getError "global" feedback) ]
+            , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
+                [ Html.text (Feedback.getSuccess "global" feedback) ]
+            , Html.span [ class [ Styles.Error ] ]
+                [ Html.text (Feedback.getError "global" feedback) ]
             ]
         ]
 
@@ -391,7 +385,7 @@ emails lift { input, feedback, status } emails_ =
             [ class [ Styles.FormInline ], Events.onSubmit <| lift (AddEmail input) ]
             [ Html.div
                 [ class [ Styles.Input, Styles.Label ]
-                , Helpers.feedbackStyles "global" feedback
+                , Helpers.errorStyle "global" feedback
                 ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
                 , Html.input
@@ -409,11 +403,8 @@ emails lift { input, feedback, status } emails_ =
                 , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Add" ]
-            , Html.span
-                ((Animation.render <| Feedback.getSuccess "global" feedback)
-                    ++ [ class [ Styles.BadgeSuccess ] ]
-                )
-                [ Html.text Strings.emailAdded ]
+            , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
+                [ Html.text (Feedback.getSuccess "global" feedback) ]
             , Html.span [ class [ Styles.Error ] ]
                 [ Html.text (Feedback.getError "global" feedback) ]
             ]

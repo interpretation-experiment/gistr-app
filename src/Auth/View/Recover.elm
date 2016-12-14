@@ -65,7 +65,7 @@ form lift { input, feedback, status } =
                     ]
                 ]
             ]
-        , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "global" feedback ]
+        , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "global" feedback ]
             [ Html.label [ Helpers.forId Styles.InputAutofocus ] [ Html.text "Email" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]

@@ -57,7 +57,7 @@ form lift { input, feedback, status } maybeProlific =
         , Events.onSubmit <| lift (Register maybeProlific input)
         ]
         [ Html.div [ class [ Styles.FormBlock ] ] [ prolificLogin maybeProlific ]
-        , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "username" feedback ]
+        , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "username" feedback ]
             [ Html.label [ Helpers.forId Styles.InputAutofocus ] [ Html.text "Username" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "user" ]
@@ -76,7 +76,7 @@ form lift { input, feedback, status } maybeProlific =
                 ]
             , Html.div [] [ Html.text (Feedback.getError "username" feedback) ]
             ]
-        , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "email" feedback ]
+        , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "email" feedback ]
             [ Html.label [ Attributes.for "inputEmail" ] [ Html.text "Email" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
                 [ Html.span [ class [ Styles.Label ] ] [ Helpers.icon "envelope" ]
@@ -101,7 +101,7 @@ form lift { input, feedback, status } maybeProlific =
             ]
         , Html.div
             [ class [ Styles.FormBlock ]
-            , Helpers.feedbackStyles "password1" feedback
+            , Helpers.errorStyle "password1" feedback
             ]
             [ Html.label [ Attributes.for "inputPassword1" ] [ Html.text "Password" ]
             , Html.div [ class [ Styles.Input, Styles.Label ] ]
@@ -122,7 +122,7 @@ form lift { input, feedback, status } maybeProlific =
             ]
         , Html.div
             [ class [ Styles.FormBlock ]
-            , Helpers.feedbackStyles "password2" feedback
+            , Helpers.errorStyle "password2" feedback
             ]
             [ Html.label [ Attributes.for "inputPassword2" ]
                 [ Html.text "Confirm password" ]

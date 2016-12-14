@@ -3,9 +3,7 @@ module Update exposing (update)
 import Admin.Update as AdminUpdate
 import Auth.Update as AuthUpdate
 import Autoresize
-import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
-import Form
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
 import Maybe.Extra exposing (maybeToList)
@@ -19,46 +17,24 @@ import Router
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        Animate _ ->
-            doUpdate msg model
-
-        ExperimentMsg (ExpMsg.ClockMsg _) ->
-            doUpdate msg model
-
-        Notify (Notification.Animate _) ->
-            doUpdate msg model
-
-        _ ->
-            let
-                _ =
-                    Debug.log "msg" msg
-            in
-                doUpdate msg model
-
-
-doUpdate : Msg -> Model -> ( Model, Cmd Msg )
-doUpdate msg model =
-    case msg of
+    case (Debug.log "msg" msg) of
         NoOp ->
             model ! []
 
-        Animate msg ->
-            { model
-                | password = Form.animate msg model.password
-                , username = Form.animate msg model.username
-                , emails = Form.animate msg model.emails
-                , admin = Form.animate msg model.admin
-            }
-                ! []
+        Log log ->
+            let
+                _ =
+                    Debug.log "info" log
+            in
+                model ! []
 
         {-
            NOTIFICATIONS
         -}
-        Notify msg ->
+        NotificationMsg msg ->
             let
                 ( notifications, cmd ) =
-                    Notification.update Notify msg model.notifications
+                    Notification.update NotificationMsg msg model.notifications
             in
                 ( { model | notifications = notifications }
                 , cmd

@@ -1,8 +1,22 @@
 @keyframes loader {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes flash {
+  0% { visibility: visible; opacity: 1; }
+  90% { visibility: visible; opacity: 1; }
+  99% { visibility: visible; opacity: 0; }
+  100% { visibility: hidden; opacity: 0; }
+}
+
+/*
+ * 62.831853 is the perimeter of a circle of radius 10, which is what Clock.elm
+ * specifies.
+ */
+@keyframes clock {
+  0% { stroke-dashoffset: 62.831853; stroke: green; }
+  75% { stroke: green; }
+  90% { stroke: red; }
+  100% { stroke-dashoffset: 0; stroke: red; }
 }

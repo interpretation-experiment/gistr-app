@@ -52,7 +52,7 @@ form lift model meta =
 
         informedDetails =
             Html.div [ class [ Styles.FormPage ] ]
-                [ Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedHow" feedback ]
+                [ Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "informedHow" feedback ]
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
                     , Autoresize.textarea
@@ -68,7 +68,7 @@ form lift model meta =
                         input.informedHow
                     , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
-                , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "informedWhat" feedback ]
+                , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "informedWhat" feedback ]
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
                     , Autoresize.textarea
@@ -125,7 +125,7 @@ form lift model meta =
     in
         Html.form [ class [ Styles.FormPage ], Events.onSubmit submitMsg ]
             [ Html.h3 [] [ Html.text "About you" ]
-            , Html.div [ class [ Styles.FormInline ], Helpers.feedbackStyles "age" feedback ]
+            , Html.div [ class [ Styles.FormInline ], Helpers.errorStyle "age" feedback ]
                 [ Html.label [ Attributes.for "inputAge" ]
                     [ Html.strong [] [ Html.text "Age" ] ]
                 , Html.div [ class [ Styles.Input ] ]
@@ -145,7 +145,7 @@ form lift model meta =
                 ]
             , Html.div
                 [ class [ Styles.FormBlock ]
-                , Helpers.feedbackStyles "gender" feedback
+                , Helpers.errorStyle "gender" feedback
                 ]
                 [ Html.label [ Attributes.for "inputGender" ]
                     [ Html.strong [] [ Html.text "Gender" ] ]
@@ -176,7 +176,7 @@ form lift model meta =
                 Html.div [] []
             , Html.h3 [] [ Html.text "What you do" ]
             , Html.p [] [ Html.text Strings.questionnaireJobIntro ]
-            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobType" feedback ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "jobType" feedback ]
                 [ Html.label [ Attributes.for "inputJobType" ]
                     [ Html.strong [] [ Html.text Strings.questionnaireJobType ] ]
                 , Html.select
@@ -190,7 +190,7 @@ form lift model meta =
                     (List.map jobOption ({ name = "", label = Strings.selectPlease } :: meta.jobTypeChoices))
                 , Html.div [] [ Html.text (Feedback.getError "jobType" feedback) ]
                 ]
-            , Html.div [ class [ Styles.FormBlock ], Helpers.feedbackStyles "jobFreetext" feedback ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "jobFreetext" feedback ]
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
                 , Autoresize.textarea

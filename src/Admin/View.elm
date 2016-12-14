@@ -1,7 +1,6 @@
 module Admin.View exposing (view)
 
 import Admin.Msg exposing (Msg(..))
-import Animation
 import Autoresize
 import Feedback
 import Feedback
@@ -77,7 +76,7 @@ body lift model meta =
             [ class [ Styles.FormPage ], Events.onSubmit (lift <| WriteSubmit input) ]
             [ Html.div
                 [ class [ Styles.FormBlock ]
-                , Helpers.feedbackStyles "text" feedback
+                , Helpers.errorStyle "text" feedback
                 ]
                 [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                     [ Html.text Strings.adminTypeSentence ]
@@ -98,7 +97,7 @@ body lift model meta =
                 ]
             , Html.div
                 [ class [ Styles.FormBlock ]
-                , Helpers.feedbackStyles "bucket" feedback
+                , Helpers.errorStyle "bucket" feedback
                 ]
                 [ Html.label [ Attributes.for "inputBucket" ]
                     [ Html.strong [] [ Html.text Strings.adminCreateBucket ] ]
@@ -114,10 +113,7 @@ body lift model meta =
                 , class [ Styles.Btn, Styles.BtnPrimary ]
                 ]
                 [ Html.text "Create sentence" ]
-            , Html.span
-                ((Animation.render <| Feedback.getSuccess "global" feedback)
-                    ++ [ class [ Styles.BadgeSuccess ] ]
-                )
-                [ Html.text Strings.adminSentenceCreated ]
+            , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
+                [ Html.text (Feedback.getSuccess "global" feedback) ]
             ]
         ]

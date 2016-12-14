@@ -119,6 +119,10 @@ textarea { lift, model, id, onInput } attrs content =
                 modelGet id model
     in
         Html.div []
+            -- Styles are mixed in here, because we need to apply the exact
+            -- same styling to the textarea and the hidden div. This doesn't
+            -- achieve good separation of concerns, but it's hard to do
+            -- otherwise without access to width-and-height-without-padding
             [ Html.textarea
                 ([ Events.onInput (lift << InputText id << onInput)
                  , Attributes.style
