@@ -56,7 +56,6 @@ meta =
             , readFactor = 1
             , writeFactor = 5
             , minTokens = 10
-            , pausePeriod = 10
             , genderChoices = []
             , jobTypeChoices = []
             , bucketChoices = []
