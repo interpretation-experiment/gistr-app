@@ -66,6 +66,7 @@ type Node
     | Task
     | Write
     | Tree
+    | Break
     | Images
     | Progress
 

@@ -231,6 +231,19 @@ expInstructionsLoop =
     "The whole process loops once you're done"
 
 
+expInstructionsBreak : String
+expInstructionsBreak =
+    "And there's a break after each sentence you enter"
+
+
+expInstructionsDontInterrupt : List (Html.Html msg)
+expInstructionsDontInterrupt =
+    [ Html.text "Make sure you're "
+    , Html.strong [] [ Html.text "not interrupted" ]
+    , Html.text " while reading or writing a sentence! You can always talk to other people during one of the breaks."
+    ]
+
+
 expInstructionsTraining : List (Html.Html msg)
 expInstructionsTraining =
     [ Html.text "Right now you're in "

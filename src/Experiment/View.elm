@@ -151,6 +151,12 @@ instructions profile meta =
             , ( ExpModel.Images
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )
               )
+            , ( ExpModel.Break
+              , ( Intro.TopLeft, Html.p [] [ Html.text Strings.expInstructionsBreak ] )
+              )
+            , ( ExpModel.Images
+              , ( Intro.Bottom, Html.p [] Strings.expInstructionsDontInterrupt )
+              )
             ]
                 ++ trainingDetails
 
@@ -169,7 +175,7 @@ instructionsView lift profile meta loading state =
         ExpModel.Images
         Html.div
         [ class [ Styles.InstructionImages, Styles.Center ]
-        , Attributes.style [ ( "width", "515px" ), ( "height", "300px" ) ]
+        , Attributes.style [ ( "width", "515px" ), ( "height", "340px" ) ]
         ]
         [ Intro.node
             (instructionsConfig lift profile meta)
@@ -223,6 +229,21 @@ instructionsView lift profile meta loading state =
             [ Html.img
                 [ Attributes.src "/assets/img/instructions-tree.png"
                 , Attributes.style [ ( "width", "180px" ) ]
+                ]
+                []
+            ]
+        , Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Break
+            Html.div
+            [ Attributes.style [ ( "top", "236px" ), ( "left", "60px" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Break state ) ]
+            ]
+            [ Html.img
+                [ Attributes.src "/assets/img/instructions-break.png"
+                , Attributes.style [ ( "width", "237px" ) ]
                 ]
                 []
             ]
