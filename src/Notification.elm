@@ -1,32 +1,40 @@
 module Notification
     exposing
         ( Model
-        , Msg(Notify, Animate)
+        , Msg(New)
         , Notification
         , ViewConfig
         , empty
-        , notification
-        , subscription
+        , new
         , update
         , view
         , viewConfig
         )
 
-import Animation
-import Animation.Messenger as Messenger
 import Html
 import Html.Attributes as Attributes
 import List
+import Process
+import Task
 import Time
 
 
 -- CONFIG
 
 
-config : { widthPx : Float, maxHeightPx : Float }
+config :
+    { widthPx : Float
+    , maxHeightPx : Float
+    , enterDelay : Time.Time
+    , enterDuration : Time.Time
+    , dismissDuration : Time.Time
+    }
 config =
     { widthPx = 300
     , maxHeightPx = 500
+    , enterDelay = Time.millisecond * 50
+    , enterDuration = Time.millisecond * 500
+    , dismissDuration = Time.millisecond * 700
     }
 
 
@@ -52,7 +60,7 @@ empty =
 type alias DisplayedNotification a =
     { id : Int
     , content : a
-    , display : Messenger.State (Msg a)
+    , style : List ( String, String )
     }
 
 
@@ -63,42 +71,37 @@ type Notification a
         }
 
 
-notification : a -> Maybe Time.Time -> Notification a
-notification content maybeDuration =
+new : a -> Maybe Time.Time -> Notification a
+new content maybeDuration =
     Notification
         { content = content
         , duration = maybeDuration
         }
 
 
-displayNotification : Int -> Notification a -> DisplayedNotification a
-displayNotification id (Notification specs) =
+create : Int -> Notification a -> ( DisplayedNotification a, Cmd (Msg a) )
+create id (Notification specs) =
     let
-        disappearance =
+        autoDismiss =
             case specs.duration of
                 Nothing ->
-                    []
+                    Cmd.none
 
                 Just duration ->
-                    [ Animation.wait duration
-                    , Messenger.send (Dismiss id)
-                    ]
+                    delayMsg (Dismiss id) <|
+                        config.enterDelay
+                            + config.enterDuration
+                            + duration
     in
-        { id = id
-        , content = specs.content
-        , display =
-            Animation.style
-                [ Animation.opacity 1
-                , Animation.translate (Animation.px (config.widthPx + 200)) (Animation.px 0)
-                , Animation.custom "max-height" config.maxHeightPx "px"
-                ]
-                |> Animation.interrupt
-                    ([ Animation.to
-                        [ Animation.translate (Animation.px 0) (Animation.px 0) ]
-                     ]
-                        ++ disappearance
-                    )
-        }
+        ( { id = id
+          , content = specs.content
+          , style = styleCreate
+          }
+        , Cmd.batch
+            [ delayMsg (Enter id) config.enterDelay
+            , autoDismiss
+            ]
+        )
 
 
 
@@ -106,8 +109,8 @@ displayNotification id (Notification specs) =
 
 
 type Msg a
-    = Animate Animation.Msg
-    | Notify (Notification a)
+    = New (Notification a)
+    | Enter Int
     | Dismiss Int
     | Remove Int
 
@@ -115,63 +118,41 @@ type Msg a
 update : (Msg a -> msg) -> Msg a -> Model a -> ( Model a, Cmd msg )
 update lift msg (Model model) =
     case msg of
-        Animate msg ->
+        New specs ->
             let
-                ( displayStates, cmds ) =
-                    model.notifications
-                        |> List.map (.display >> Messenger.update msg)
-                        |> List.unzip
-
-                notifications =
-                    List.map2 (\n d -> { n | display = d })
-                        model.notifications
-                        displayStates
-            in
-                ( Model { model | notifications = notifications }
-                , Cmd.map lift (Cmd.batch cmds)
-                )
-
-        Notify specs ->
-            let
-                notifications =
-                    model.notifications ++ [ displayNotification model.nextId specs ]
+                ( newNotification, cmds ) =
+                    create model.nextId specs
             in
                 ( Model
                     { model
-                        | notifications = notifications
+                        | notifications = model.notifications ++ [ newNotification ]
                         , nextId = model.nextId + 1
                     }
+                , Cmd.map lift cmds
+                )
+
+        Enter id ->
+            let
+                enter id notification =
+                    if notification.id == id then
+                        { notification | style = styleEnter }
+                    else
+                        notification
+            in
+                ( Model { model | notifications = List.map (enter id) model.notifications }
                 , Cmd.none
                 )
 
         Dismiss id ->
             let
-                dismiss =
-                    Animation.interrupt
-                        [ Animation.to
-                            [ Animation.opacity 0
-                            , Animation.custom "max-height" 0 "px"
-                            ]
-                        , Messenger.send (Remove id)
-                        ]
-
-                displayStates =
-                    model.notifications
-                        |> List.map
-                            (\n ->
-                                if n.id == id then
-                                    dismiss n.display
-                                else
-                                    n.display
-                            )
-
-                notifications =
-                    List.map2 (\n d -> { n | display = d })
-                        model.notifications
-                        displayStates
+                dismiss id notification =
+                    if notification.id == id then
+                        { notification | style = styleDismiss }
+                    else
+                        notification
             in
-                ( Model { model | notifications = notifications }
-                , Cmd.none
+                ( Model { model | notifications = List.map (dismiss id) model.notifications }
+                , delayMsg (lift <| Remove id) config.dismissDuration
                 )
 
         Remove id ->
@@ -184,13 +165,48 @@ update lift msg (Model model) =
                 )
 
 
+delayMsg : msg -> Time.Time -> Cmd msg
+delayMsg msg delay =
+    Task.perform (\_ -> msg) (Process.sleep delay)
 
--- SUBSCRIPTION
 
 
-subscription : (Msg a -> msg) -> Model a -> Sub msg
-subscription lift (Model model) =
-    Animation.subscription (lift << Animate) (List.map .display model.notifications)
+-- DISPLAY STYLES
+
+
+styleCreate : List ( String, String )
+styleCreate =
+    [ ( "opacity", "1" )
+    , ( "max-height", toString config.maxHeightPx ++ "px" )
+    , ( "transform", "translate(" ++ toString (config.widthPx + 200) ++ "px, 0px)" )
+    ]
+
+
+styleEnter : List ( String, String )
+styleEnter =
+    [ ( "opacity", "1" )
+    , ( "max-height", toString config.maxHeightPx ++ "px" )
+    , ( "transform", "translate(0px, 0px)" )
+    , ( "transition"
+      , "transform " ++ toString (Time.inSeconds config.enterDuration) ++ "s ease-out"
+      )
+    ]
+
+
+styleDismiss : List ( String, String )
+styleDismiss =
+    [ ( "opacity", "0" )
+    , ( "max-height", "0px" )
+    , ( "transform", "translate(0px, 0px)" )
+    , ( "transition"
+      , "opacity "
+            ++ toString (Time.inSeconds config.dismissDuration)
+            ++ "s ease-out"
+            ++ ", max-height "
+            ++ toString (Time.inSeconds config.dismissDuration)
+            ++ "s ease-out"
+      )
+    ]
 
 
 
@@ -236,9 +252,8 @@ view viewConfig (Model model) =
 notificationView : ViewConfig a msg -> DisplayedNotification a -> Html.Html msg
 notificationView (ViewConfig config) notification =
     Html.div
-        ((Animation.render notification.display)
-            ++ [ Attributes.style
-                    [ ( "padding", "0.01px" ), ( "pointer-events", "auto" ) ]
-               ]
-        )
+        [ Attributes.style <|
+            [ ( "padding", "0.01px" ), ( "pointer-events", "auto" ) ]
+                ++ notification.style
+        ]
         [ config.template notification.content (config.liftMsg <| Dismiss notification.id) ]

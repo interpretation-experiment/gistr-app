@@ -126,6 +126,7 @@ controls lift model =
                     [ Html.div [] Strings.homeQuestions
                     , buttons
                     ]
+                , Helpers.evButton [] (Helpers.notify "Title" (Html.text "Body") Types.Info) "Notify"
                 ]
     in
         case model.auth of

@@ -60,7 +60,7 @@ import List.Nonempty exposing (Nonempty(Nonempty))
 import MD5
 import Maybe.Extra exposing ((?), unwrap)
 import Model exposing (Model)
-import Msg exposing (Msg(NavigateTo, Error, Notify))
+import Msg exposing (Msg(NavigateTo, Error, NotificationMsg))
 import Notification
 import Random
 import Router
@@ -190,9 +190,9 @@ extractFeedback error model fields feedbackFunc =
 
 notify : String -> Html.Html Msg -> Types.Notification -> Msg
 notify title content tipe =
-    Notify <|
-        Notification.Notify <|
-            Notification.notification ( title, content, tipe ) (Just <| 10 * Time.second)
+    NotificationMsg <|
+        Notification.New <|
+            Notification.new ( title, content, tipe ) (Just <| 10 * Time.second)
 
 
 

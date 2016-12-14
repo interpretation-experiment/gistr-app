@@ -22,9 +22,6 @@ update msg model =
         ExperimentMsg (ExpMsg.ClockMsg _) ->
             doUpdate msg model
 
-        Notify (Notification.Animate _) ->
-            doUpdate msg model
-
         _ ->
             let
                 _ =
@@ -42,10 +39,10 @@ doUpdate msg model =
         {-
            NOTIFICATIONS
         -}
-        Notify msg ->
+        NotificationMsg msg ->
             let
                 ( notifications, cmd ) =
-                    Notification.update Notify msg model.notifications
+                    Notification.update NotificationMsg msg model.notifications
             in
                 ( { model | notifications = notifications }
                 , cmd

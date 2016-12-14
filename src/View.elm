@@ -23,7 +23,7 @@ import View.Error
 
 notificationConfig : Notification.ViewConfig ( String, Html.Html Msg, Types.Notification ) Msg
 notificationConfig =
-    Notification.viewConfig Msg.Notify notificationTemplate
+    Notification.viewConfig Msg.NotificationMsg notificationTemplate
 
 
 notificationTemplate : ( String, Html.Html Msg, Types.Notification ) -> Msg -> Html.Html Msg

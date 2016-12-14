@@ -9,7 +9,6 @@ import LocalStorage
 import Model exposing (Model)
 import Msg exposing (Msg)
 import Navigation
-import Notification
 import Router
 import Update
 import View
@@ -40,7 +39,6 @@ subscriptions model =
         [ LocalStorage.subscribe localStorageTags Msg.NoOp
         , Intro.subscription (Msg.HomeMsg << HomeMsg.InstructionsMsg) model.home
         , ExpSub.subscription Msg.ExperimentMsg model
-        , Notification.subscription Msg.Notify model.notifications
         ]
 
 
