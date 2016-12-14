@@ -357,7 +357,7 @@ nodeAttributes state id =
                                     ++ "0 2px 15px 4px rgba(0, 0, 0, .4)"
                               )
                             , ( "borderRadius", "1px" )
-                            , ( "transition", "all .3s ease-in-out" )
+                            , ( "transition", "background-color .3s ease-in-out, box-shadow .3s ease-in-out" )
                             ]
                         ]
                     else
