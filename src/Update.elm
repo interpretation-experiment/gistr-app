@@ -3,7 +3,6 @@ module Update exposing (update)
 import Admin.Update as AdminUpdate
 import Auth.Update as AuthUpdate
 import Autoresize
-import Experiment.Msg as ExpMsg
 import Experiment.Update as ExperimentUpdate
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
@@ -18,23 +17,16 @@ import Router
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        ExperimentMsg (ExpMsg.ClockMsg _) ->
-            doUpdate msg model
-
-        _ ->
-            let
-                _ =
-                    Debug.log "msg" msg
-            in
-                doUpdate msg model
-
-
-doUpdate : Msg -> Model -> ( Model, Cmd Msg )
-doUpdate msg model =
-    case msg of
+    case (Debug.log "msg" msg) of
         NoOp ->
             model ! []
+
+        Log log ->
+            let
+                _ =
+                    Debug.log "info" log
+            in
+                model ! []
 
         {-
            NOTIFICATIONS

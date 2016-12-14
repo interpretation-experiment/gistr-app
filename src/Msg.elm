@@ -15,6 +15,7 @@ import Types
 
 type Msg
     = NoOp
+    | Log String
       -- NOTIFICATIONS
     | NotificationMsg (Notification.Msg ( String, Html.Html Msg, Types.Notification ))
       -- AUTORESIZE TEXTAREAS

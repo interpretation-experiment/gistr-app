@@ -22,15 +22,12 @@ autofocus =
                 log =
                     case result of
                         Err _ ->
-                            "none found"
+                            "no autofocus found"
 
                         Ok _ ->
-                            "ok"
-
-                _ =
-                    Debug.log "autofocus" log
+                            "autofocused"
             in
-                Msg.NoOp
+                Msg.Log log
     in
         toString Styles.InputAutofocus
             |> Dom.focus
