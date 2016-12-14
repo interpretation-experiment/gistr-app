@@ -10,7 +10,7 @@ module Types
         , Meta
         , NewSentence
         , NewWordSpan
-        , Notification(..)
+        , NotificationId(..)
         , Page
         , PasswordCredentials
         , PreUser
@@ -382,7 +382,10 @@ emptyPasswordCredentials =
 -- NOTIFICATION
 
 
-type Notification
-    = Info
-    | Warning
-    | Success
+type NotificationId
+    = RecoverPasswordNoEmail
+    | RecoverPasswordSent String
+    | VerifyEmailSent String
+    | EmailConfirmed
+    | QuestionnaireCompleted
+    | NoCopyPaste

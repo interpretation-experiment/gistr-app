@@ -80,11 +80,7 @@ update lift auth msg model =
                     Nothing ->
                         ( model
                         , Cmd.none
-                        , [ Helpers.notify
-                                Strings.recoverPasswordNoEmailTitle
-                                Strings.recoverPasswordNoEmail
-                                Types.Warning
-                          ]
+                        , [ Helpers.notify Types.RecoverPasswordNoEmail ]
                         )
 
                     Just email ->
@@ -98,11 +94,7 @@ update lift auth msg model =
         ChangePasswordRecoverResult email (Ok ()) ->
             ( model
             , Cmd.none
-            , [ Helpers.notify
-                    Strings.recoverPasswordSentTitle
-                    (Strings.recoverPasswordSent email)
-                    Types.Info
-              ]
+            , [ Helpers.notify <| Types.RecoverPasswordSent email ]
             )
 
         ChangePasswordRecoverResult _ (Err error) ->
@@ -184,11 +176,7 @@ update lift auth msg model =
             in
                 ( Helpers.updateUser model { user | emails = emails }
                 , Cmd.none
-                , [ Helpers.notify
-                        Strings.verifyEmailSentTitle
-                        (Strings.verifyEmailSent email.email)
-                        Types.Info
-                  ]
+                , [ Helpers.notify <| Types.VerifyEmailSent email.email ]
                 )
 
         VerifyEmailResult _ (Err error) ->
@@ -201,10 +189,7 @@ update lift auth msg model =
             ( Helpers.updateUser model user
             , Cmd.none
             , [ AppMsg.NavigateTo <| Router.Profile Router.Emails
-              , Helpers.notify
-                    Strings.emailConfirmedTitle
-                    Strings.emailConfirmed
-                    Types.Success
+              , Helpers.notify Types.EmailConfirmed
               ]
             )
 
@@ -307,11 +292,7 @@ update lift auth msg model =
                     { model | emails = Form.succeed "" feedback model.emails }
                     user
                 , Cmd.none
-                , [ Helpers.notify
-                        Strings.verifyEmailSentTitle
-                        (Strings.verifyEmailSent email)
-                        Types.Info
-                  ]
+                , [ Helpers.notify <| Types.VerifyEmailSent email ]
                 )
 
         AddEmailResult _ (Err error) ->
@@ -401,10 +382,7 @@ update lift auth msg model =
             ( Helpers.updateProfile model profile
             , Cmd.none
             , [ AppMsg.NavigateTo <| Router.Profile Router.Dashboard
-              , Helpers.notify
-                    Strings.questionnaireCompletedTitle
-                    Strings.questionnaireCompleted
-                    Types.Success
+              , Helpers.notify Types.QuestionnaireCompleted
               ]
             )
 

@@ -6,7 +6,6 @@ import Auth.Msg as Auth
 import Autoresize
 import Experiment.Msg as Experiment
 import Home.Msg as Home
-import Html
 import Notification
 import Profile.Msg as Profile
 import Router
@@ -17,7 +16,7 @@ type Msg
     = NoOp
     | Log String
       -- NOTIFICATIONS
-    | NotificationMsg (Notification.Msg ( String, Html.Html Msg, Types.Notification ))
+    | NotificationMsg (Notification.Msg Types.NotificationId)
       -- AUTORESIZE TEXTAREAS
     | Autoresize (Autoresize.Msg Msg)
       -- NAVIGATION

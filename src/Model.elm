@@ -12,9 +12,7 @@ import Autoresize
 import Experiment.Model as ExpModel
 import Form
 import Home.Model as HomeModel
-import Html
 import Intro
-import Msg exposing (Msg)
 import Notification
 import Router
 import Store
@@ -29,7 +27,7 @@ type alias Model =
     , auth : Types.AuthStatus
     , store : Store.Store
     , error : Maybe Types.Error
-    , notifications : Notification.Model ( String, Html.Html Msg, Types.Notification )
+    , notifications : Notification.Model Types.NotificationId
     , -- Page-related data
       home : Intro.State HomeModel.Node
     , login : Form.Model Types.Credentials

@@ -188,11 +188,11 @@ extractFeedback error model fields feedbackFunc =
             ( model, Cmd.none, [ Error error ] )
 
 
-notify : String -> Html.Html Msg -> Types.Notification -> Msg
-notify title content tipe =
+notify : Types.NotificationId -> Msg
+notify id =
     NotificationMsg <|
         Notification.New <|
-            Notification.new ( title, content, tipe ) (Just <| 10 * Time.second)
+            Notification.new id (Just <| 10 * Time.second)
 
 
 

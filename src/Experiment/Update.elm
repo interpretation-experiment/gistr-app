@@ -79,11 +79,7 @@ update lift auth msg model =
         CopyPasteEvent ->
             ( model
             , Cmd.none
-            , [ Helpers.notify
-                    Strings.expNoCopyPasteTitle
-                    Strings.expNoCopyPaste
-                    Types.Warning
-              ]
+            , [ Helpers.notify Types.NoCopyPaste ]
             )
 
         {-
