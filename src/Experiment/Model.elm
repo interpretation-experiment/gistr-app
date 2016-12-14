@@ -52,7 +52,7 @@ type TrialState
     | Tasking
     | Writing (Form.Model String)
     | Timeout
-    | Pause
+    | Standby
 
 
 

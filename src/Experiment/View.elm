@@ -111,7 +111,10 @@ instructions profile meta =
                       )
                     , ( ExpModel.Progress
                       , ( Intro.Left
-                        , Html.p [] [ Html.text <| Strings.expInstructionsRealStart meta.trainingWork ]
+                        , Html.p []
+                            [ Html.text <|
+                                Strings.expInstructionsRealStart meta.trainingWork
+                            ]
                         )
                       )
                     ]
@@ -470,14 +473,15 @@ trial lift model trialModel =
                 ]
             ]
 
-        ExpModel.Pause ->
-            [ Html.h3 [] [ Html.text Strings.expPauseTitle ]
-            , Html.p [] [ Html.text Strings.expPauseExplanation ]
+        ExpModel.Standby ->
+            [ Html.h3 [] [ Html.text Strings.expStandbyTitle ]
+            , Html.p [] [ Html.text Strings.expStandbyExplanation ]
             , Html.p []
                 [ Helpers.evButton
                     [ Attributes.disabled model.experiment.loadingNext
                     , class [ Styles.Btn, Styles.BtnPrimary ]
                     , id Styles.CtrlNext
+                    , Helpers.tooltip Strings.pressCtrlEnter
                     ]
                     (lift LoadTrial)
                     "Continue"
@@ -508,17 +512,14 @@ write lift model { input, feedback, status } =
                 }
                 [ Attributes.autofocus True
                 , classList
-                    [ ( Styles.Disabled
-                      , (model.experiment.loadingNext || (status /= Form.Entering))
-                      )
-                    ]
+                    [ ( Styles.Disabled, status /= Form.Entering ) ]
                 ]
                 input
             , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
         , Html.button
             [ Attributes.type_ "submit"
-            , Attributes.disabled (model.experiment.loadingNext || (status /= Form.Entering))
+            , Attributes.disabled (status /= Form.Entering)
             , class [ Styles.Btn, Styles.BtnPrimary ]
             , id Styles.CtrlNext
             ]

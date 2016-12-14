@@ -183,7 +183,6 @@ meta =
             |> Pipeline.required "read_factor" JD.int
             |> Pipeline.required "write_factor" JD.int
             |> Pipeline.required "min_tokens" JD.int
-            |> Pipeline.required "pause_period" JD.int
             |> Pipeline.required "gender_choices" (JD.list choice)
             |> Pipeline.required "job_type_choices" (JD.list choice)
             |> Pipeline.hardcoded

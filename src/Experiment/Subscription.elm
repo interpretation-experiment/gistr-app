@@ -29,7 +29,7 @@ subscription lift model =
                         ExpModel.Timeout ->
                             Sub.none
 
-                        ExpModel.Pause ->
+                        ExpModel.Standby ->
                             Sub.none
 
         ctrlEnter =

@@ -649,14 +649,14 @@ expTrainingFinishedExpStarts =
     ]
 
 
-expPauseTitle : String
-expPauseTitle =
-    "Take a break!"
+expStandbyTitle : String
+expStandbyTitle =
+    "Sentence saved!"
 
 
-expPauseExplanation : String
-expPauseExplanation =
-    "You're doing great! Take a few seconds to relax before continuing."
+expStandbyExplanation : String
+expStandbyExplanation =
+    "Whenever you're ready, continue with the next sentence."
 
 
 expUncompletableTitle : String
