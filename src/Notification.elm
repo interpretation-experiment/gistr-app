@@ -188,7 +188,7 @@ styleEnter =
     , ( "max-height", toString config.maxHeightPx ++ "px" )
     , ( "transform", "translate(0px, 0px)" )
     , ( "transition"
-      , "transform " ++ toString (Time.inSeconds config.enterDuration) ++ "s ease-out"
+      , "transform " ++ toString (Time.inSeconds config.enterDuration) ++ "s ease"
       )
     ]
 
@@ -201,10 +201,10 @@ styleDismiss =
     , ( "transition"
       , "opacity "
             ++ toString (Time.inSeconds config.dismissDuration)
-            ++ "s ease-out"
+            ++ "s ease"
             ++ ", max-height "
             ++ toString (Time.inSeconds config.dismissDuration)
-            ++ "s ease-out"
+            ++ "s ease"
       )
     ]
 
