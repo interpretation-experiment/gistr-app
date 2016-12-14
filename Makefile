@@ -29,7 +29,6 @@ build_tmp          := build_tmp
 # Parameters
 prod               := prod
 ifeq ($(TARGET), $(prod))
-  ELMFLAGS         := --yes --warn
   CATCSS           := uglifycss
   CATJS            := uglifyjs
   CATJS_OPTIONS    := -c --screw-ie8
@@ -39,12 +38,24 @@ ifeq ($(TARGET), $(prod))
   app_js_hash       = -$(shell cat $(app_js) | $(HASH))
   ASSET_PATH_HASH   = sed "s/^$(src)\/\(.*\)\.\([^\.]*\)$$/\1-$${hash}.\2/"
 else
-  ELMFLAGS         := --yes --warn --debug
   CATCSS           := cat
   CATJS            := cat
   CATJS_OPTIONS    :=
   output           := $(build)
   ASSET_PATH_HASH   = $(ASSET_PATH)
+endif
+
+# Deploy parameters
+next               := next
+root               := root
+ifeq ($(TARGET), $(prod))
+  ifeq ($(DEPLOY_TARGET), $(next))
+    ELMFLAGS         := --yes --warn --debug
+  else
+    ELMFLAGS         := --yes --warn
+  endif
+else
+  ELMFLAGS         := --yes --warn --debug
 endif
 
 # Source files
@@ -92,7 +103,7 @@ all: $(html)
 
 
 prod: clean
-	@TARGET=prod $(MAKE) --no-print-directory
+	@TARGET=$(prod) $(MAKE) --no-print-directory
 
 
 deploy: prod
@@ -105,11 +116,11 @@ deploy: prod
 
 
 deploy-root:
-	@DEPLOY_TARGET=root $(MAKE) --no-print-directory deploy
+	@DEPLOY_TARGET=$(root) $(MAKE) --no-print-directory deploy
 
 
 deploy-next:
-	@DEPLOY_TARGET=next $(MAKE) --no-print-directory deploy
+	@DEPLOY_TARGET=$(next) $(MAKE) --no-print-directory deploy
 
 
 $(vendor_css): $(sources_vendor_css) $(assets)
