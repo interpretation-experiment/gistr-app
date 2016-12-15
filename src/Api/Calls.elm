@@ -82,8 +82,7 @@ builder { method, path, query, token, expect } =
 toTask : RequestBuilder a -> Task a
 toTask builder =
     builder
-        |> HttpBuilder.toRequest
-        |> Http.toTask
+        |> HttpBuilder.toTask
         |> Task.mapError Types.HttpError
 
 
