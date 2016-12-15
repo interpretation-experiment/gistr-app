@@ -90,7 +90,7 @@ body lift model meta =
                             << \t -> { input | text = t }
                     }
                     [ Attributes.autofocus True
-                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     input.text
                 , Html.div [] [ Html.text (Feedback.getError "text" feedback) ]

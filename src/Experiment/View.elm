@@ -532,8 +532,7 @@ write lift model { input, feedback, status } =
                 , onInput = lift << WriteInput
                 }
                 [ Attributes.autofocus True
-                , classList
-                    [ ( Styles.Disabled, status /= Form.Entering ) ]
+                , Attributes.disabled (status /= Form.Entering)
                 ]
                 input
             , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]

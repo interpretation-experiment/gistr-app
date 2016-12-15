@@ -57,7 +57,6 @@ type CssClasses
     | Input
     | Error
     | Success
-    | Disabled
     | Icon
     | Left
     | Label
