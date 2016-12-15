@@ -398,6 +398,8 @@ update lift auth msg model =
                 , ( "gender", "gender" )
                 , ( "informed_how", "informedHow" )
                 , ( "informed_what", "informedWhat" )
+                , ( "education_level", "educationLevel" )
+                , ( "education_freetext", "educationFreetext" )
                 , ( "job_type", "jobType" )
                 , ( "job_freetext", "jobFreetext" )
                 ]
