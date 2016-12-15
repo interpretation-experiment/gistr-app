@@ -57,6 +57,7 @@ meta =
             , writeFactor = 5
             , minTokens = 10
             , genderChoices = []
+            , educationLevelChoices = []
             , jobTypeChoices = []
             , bucketChoices = []
             , experimentWork = 50
