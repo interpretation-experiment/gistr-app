@@ -114,6 +114,11 @@ selectPlease =
     "Please select from the list"
 
 
+educationLevelPlease : String
+educationLevelPlease =
+    "Please select an education level"
+
+
 jobTypePlease : String
 jobTypePlease =
     "Please select a profession or main daily activity"
@@ -311,9 +316,21 @@ questionnaireInformedWhat =
     ]
 
 
-questionnaireJobIntro : String
-questionnaireJobIntro =
-    "We'd like to know what type of job you work in, or what is your main daily activity."
+questionnaireEducationJobIntro : String
+questionnaireEducationJobIntro =
+    "We'd like to know how much you've studied, as well as what type of job you work in, or what your main daily activity is."
+
+
+questionnaireEducationLevel : String
+questionnaireEducationLevel =
+    "What is the highest level of education you attained?"
+
+
+questionnaireEducationFreetext : List (Html.Html msg)
+questionnaireEducationFreetext =
+    [ Html.strong [] [ Html.text "Please describe, in your own words, the highest level of education you attained." ]
+    , Html.text " You can use several sentences if necessary."
+    ]
 
 
 questionnaireJobType : String
@@ -331,7 +348,7 @@ questionnaireJobFreetext =
 questionnaireComment : List (Html.Html msg)
 questionnaireComment =
     [ Html.text "Is there something wrong with this questionnaire, or a comment you would like to share? Please "
-    , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "contact us" ]
+    , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "tell us about it" ]
     , Html.text "!"
     ]
 

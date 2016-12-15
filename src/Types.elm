@@ -60,6 +60,7 @@ type alias Meta =
     , minTokens : Int
     , -- FORM PARAMETERS
       genderChoices : List Choice
+    , educationLevelChoices : List Choice
     , jobTypeChoices : List Choice
     , bucketChoices : List Choice
     , -- EXPERIMENT COSTS
@@ -242,6 +243,8 @@ type alias QuestionnaireForm =
     , informed : Bool
     , informedHow : String
     , informedWhat : String
+    , educationLevel : String
+    , educationFreetext : String
     , jobType : String
     , jobFreetext : String
     }
@@ -254,6 +257,8 @@ emptyQuestionnaireForm =
     , informed = False
     , informedHow = ""
     , informedWhat = ""
+    , educationLevel = ""
+    , educationFreetext = ""
     , jobType = ""
     , jobFreetext = ""
     }

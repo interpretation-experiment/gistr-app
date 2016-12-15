@@ -184,6 +184,7 @@ meta =
             |> Pipeline.required "write_factor" JD.int
             |> Pipeline.required "min_tokens" JD.int
             |> Pipeline.required "gender_choices" (JD.list choice)
+            |> Pipeline.required "education_level_choices" (JD.list choice)
             |> Pipeline.required "job_type_choices" (JD.list choice)
             |> Pipeline.hardcoded
                 [ { name = "experiment", label = "Experiment" }

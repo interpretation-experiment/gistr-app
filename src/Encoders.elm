@@ -129,6 +129,8 @@ newQuestionnaire questionnaire =
         , ( "informed", JE.bool questionnaire.informed )
         , ( "informed_how", JE.string questionnaire.informedHow )
         , ( "informed_what", JE.string questionnaire.informedWhat )
+        , ( "education_level", JE.string questionnaire.educationLevel )
+        , ( "education_freetext", JE.string questionnaire.educationFreetext )
         , ( "job_type", JE.string questionnaire.jobType )
         , ( "job_freetext", JE.string questionnaire.jobFreetext )
         ]

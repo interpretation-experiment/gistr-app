@@ -64,7 +64,7 @@ form lift model meta =
                                 << QuestionnaireFormInput
                                 << \h -> { input | informedHow = h }
                         }
-                        [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                        [ Attributes.disabled (status /= Form.Entering) ]
                         input.informedHow
                     , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
@@ -80,11 +80,19 @@ form lift model meta =
                                 << QuestionnaireFormInput
                                 << \w -> { input | informedWhat = w }
                         }
-                        [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                        [ Attributes.disabled (status /= Form.Entering) ]
                         input.informedWhat
                     , Html.div [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
                     ]
                 ]
+
+        educationOption education =
+            Html.option
+                [ Attributes.disabled (String.isEmpty education.name)
+                , Attributes.value education.name
+                , Attributes.selected (input.educationLevel == education.name)
+                ]
+                [ Html.text education.label ]
 
         jobOption job =
             Html.option
@@ -174,8 +182,38 @@ form lift model meta =
                 informedDetails
               else
                 Html.div [] []
-            , Html.h3 [] [ Html.text "What you do" ]
-            , Html.p [] [ Html.text Strings.questionnaireJobIntro ]
+            , Html.h3 [] [ Html.text "Your schooling and what you do" ]
+            , Html.p [] [ Html.text Strings.questionnaireEducationJobIntro ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "educationLevel" feedback ]
+                [ Html.label [ Attributes.for "inputEducationLevel" ]
+                    [ Html.strong [] [ Html.text Strings.questionnaireEducationLevel ] ]
+                , Html.select
+                    [ Attributes.id "inputEducationLevel"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Events.onInput <|
+                        lift
+                            << QuestionnaireFormInput
+                            << \e -> { input | educationLevel = e }
+                    ]
+                    (List.map educationOption ({ name = "", label = Strings.selectPlease } :: meta.educationLevelChoices))
+                , Html.div [] [ Html.text (Feedback.getError "educationLevel" feedback) ]
+                ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "educationFreetext" feedback ]
+                [ Html.label [ Attributes.for "inputEducationFreetext" ]
+                    Strings.questionnaireEducationFreetext
+                , Autoresize.textarea
+                    { lift = AppMsg.Autoresize
+                    , model = model.autoresize
+                    , id = "inputEducationFreetext"
+                    , onInput =
+                        lift
+                            << QuestionnaireFormInput
+                            << \t -> { input | educationFreetext = t }
+                    }
+                    [ Attributes.disabled (status /= Form.Entering) ]
+                    input.educationFreetext
+                , Html.div [] [ Html.text (Feedback.getError "educationFreetext" feedback) ]
+                ]
             , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "jobType" feedback ]
                 [ Html.label [ Attributes.for "inputJobType" ]
                     [ Html.strong [] [ Html.text Strings.questionnaireJobType ] ]
@@ -202,7 +240,7 @@ form lift model meta =
                             << QuestionnaireFormInput
                             << \t -> { input | jobFreetext = t }
                     }
-                    [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                    [ Attributes.disabled (status /= Form.Entering) ]
                     input.jobFreetext
                 , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]

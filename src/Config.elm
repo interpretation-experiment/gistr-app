@@ -9,7 +9,7 @@ baseUrl =
 
 minServerVersion : ( Int, Int, Int )
 minServerVersion =
-    ( 0, 11, 0 )
+    ( 0, 12, 0 )
 
 
 prolificStudyUrl : String
@@ -21,4 +21,4 @@ prolificStudyUrl =
 prolificCompletionUrl : String
 prolificCompletionUrl =
     -- DEPLOYMENT
-    "https://prolificacademic.co.uk/submissions/551aa5c3fdf99b2c58162de9/complete?cc=COCBA68J"
+    "https://prolificacademic.co.uk/submissions/demo"
