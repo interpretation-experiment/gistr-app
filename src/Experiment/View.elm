@@ -526,7 +526,7 @@ write lift model { input, feedback, status } =
             , Helpers.errorStyle "global" feedback
             ]
             [ Autoresize.textarea
-                { lift = AppMsg.Autoresize
+                { lift = AppMsg.AutoresizeMsg
                 , model = model.autoresize
                 , id = toString Styles.InputAutofocus
                 , onInput = lift << WriteInput

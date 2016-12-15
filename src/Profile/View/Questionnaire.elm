@@ -56,7 +56,7 @@ form lift model meta =
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
                     , Autoresize.textarea
-                        { lift = AppMsg.Autoresize
+                        { lift = AppMsg.AutoresizeMsg
                         , model = model.autoresize
                         , id = "inputInformedHow"
                         , onInput =
@@ -72,7 +72,7 @@ form lift model meta =
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
                     , Autoresize.textarea
-                        { lift = AppMsg.Autoresize
+                        { lift = AppMsg.AutoresizeMsg
                         , model = model.autoresize
                         , id = "inputInformedWhat"
                         , onInput =
@@ -202,7 +202,7 @@ form lift model meta =
                 [ Html.label [ Attributes.for "inputEducationFreetext" ]
                     Strings.questionnaireEducationFreetext
                 , Autoresize.textarea
-                    { lift = AppMsg.Autoresize
+                    { lift = AppMsg.AutoresizeMsg
                     , model = model.autoresize
                     , id = "inputEducationFreetext"
                     , onInput =
@@ -232,7 +232,7 @@ form lift model meta =
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
                 , Autoresize.textarea
-                    { lift = AppMsg.Autoresize
+                    { lift = AppMsg.AutoresizeMsg
                     , model = model.autoresize
                     , id = "inputJobFreetext"
                     , onInput =

@@ -81,7 +81,7 @@ body lift model meta =
                 [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                     [ Html.text Strings.adminTypeSentence ]
                 , Autoresize.textarea
-                    { lift = AppMsg.Autoresize
+                    { lift = AppMsg.AutoresizeMsg
                     , model = model.autoresize
                     , id = toString Styles.InputAutofocus
                     , onInput =

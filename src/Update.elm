@@ -43,10 +43,10 @@ update msg model =
         {-
            AUTORESIZE TEXTAREAS
         -}
-        Autoresize msg ->
+        AutoresizeMsg msg ->
             let
                 ( autoresize, cmd, maybeOut ) =
-                    Autoresize.update Autoresize msg model.autoresize
+                    Autoresize.update AutoresizeMsg msg model.autoresize
             in
                 processMsgs
                     ( { model | autoresize = autoresize }

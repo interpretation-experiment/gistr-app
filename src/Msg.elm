@@ -18,7 +18,7 @@ type Msg
       -- NOTIFICATIONS
     | NotificationMsg (Notification.Msg Types.NotificationId)
       -- AUTORESIZE TEXTAREAS
-    | Autoresize (Autoresize.Msg Msg)
+    | AutoresizeMsg (Autoresize.Msg Msg)
       -- NAVIGATION
     | UrlUpdate String Router.Route
     | NavigateTo Router.Route
