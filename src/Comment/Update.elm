@@ -1,11 +1,13 @@
 module Comment.Update exposing (update)
 
+import Api
 import Comment.Model as CommentModel
 import Comment.Msg exposing (Msg(..))
 import Form
 import Helpers
 import Model exposing (Model)
 import Msg as AppMsg
+import Task
 import Types
 
 
@@ -50,17 +52,18 @@ update lift auth msg model =
                     )
 
         CommentSubmit comment ->
-            ( model
-              -- TODO: send comment and get back profile
-            , Cmd.none
-            , []
-            )
+            showingOrIgnore model <|
+                \form ->
+                    ( Form.setStatus Form.Sending form
+                    , Api.postComment auth comment
+                        |> Task.attempt (lift << CommentResult)
+                    , []
+                    )
 
         CommentResult (Ok profile) ->
             ( Helpers.updateProfile { model | comment = CommentModel.Hidden } profile
             , Cmd.none
-              -- TODO: notify comment sent
-            , []
+            , [ Helpers.notify Types.CommentSent ]
             )
 
         CommentResult (Err error) ->

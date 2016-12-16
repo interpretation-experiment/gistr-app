@@ -166,7 +166,9 @@ form lift { input, feedback, status } =
                     [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.div []
                     [ Helpers.evButton
-                        [ class [ Styles.Btn ] ]
+                        [ Attributes.disabled (status /= Form.Entering)
+                        , class [ Styles.Btn ]
+                        ]
                         (lift Hide)
                         "Cancel"
                     , Html.button

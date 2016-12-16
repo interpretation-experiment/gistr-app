@@ -3,6 +3,7 @@ module Encoders
         ( credentials
         , email
         , emailConfirmationKey
+        , newComment
         , newEmail
         , newProfile
         , newQuestionnaire
@@ -147,4 +148,12 @@ newSentence sentence =
         , ( "write_time_proportion", JE.float sentence.writeTimeProportion )
         , ( "write_time_allotted", JE.float <| Time.inSeconds sentence.writeTimeAllotted )
         , ( "parent", unwrap JE.null JE.int sentence.parentId )
+        ]
+
+
+newComment : Types.Comment -> JE.Value
+newComment comment =
+    JE.object
+        [ ( "email", JE.string comment.email )
+        , ( "text", JE.string comment.text )
         ]

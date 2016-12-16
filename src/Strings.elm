@@ -767,3 +767,16 @@ adminSentenceCreated =
 bucketPlease : String
 bucketPlease =
     "Please select a bucket"
+
+
+commentSentTitle : String
+commentSentTitle =
+    "Comment sent!"
+
+
+commentSent : Html.Html msg
+commentSent =
+    Html.div []
+        [ Html.p [] [ Html.text "Thanks for submitting this, it really helps us!" ]
+        , Html.p [] [ Html.text "We'll get back at you if necessary." ]
+        ]

@@ -397,6 +397,7 @@ type NotificationId
     | EmailConfirmed
     | QuestionnaireCompleted
     | NoCopyPaste
+    | CommentSent
 
 
 
