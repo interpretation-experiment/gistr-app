@@ -439,7 +439,7 @@ contents lift profile meta model =
                     [ Html.div []
                         ((Html.h3 [] [ Html.text Strings.expDone ])
                             :: (Common.prolificCompletion profile)
-                            ++ [ Html.p [] Strings.expDoneReadAbout ]
+                            ++ Strings.expDoneReadAbout
                         )
                     ]
                 , []

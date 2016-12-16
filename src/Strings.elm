@@ -1,12 +1,13 @@
 module Strings exposing (..)
 
+import Comment.Msg as CommentMsg
 import Config
 import Helpers
 import Html
 import Html.Attributes as Attributes
-import Styles exposing (class, classList, id)
 import Msg exposing (Msg)
 import Router
+import Styles exposing (class, classList, id)
 
 
 invalidProlific : String
@@ -355,10 +356,10 @@ questionnaireJobFreetext =
     ]
 
 
-questionnaireComment : List (Html.Html msg)
+questionnaireComment : List (Html.Html Msg)
 questionnaireComment =
     [ Html.text "Is there something wrong with this questionnaire, or a comment you would like to share? Please "
-    , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "tell us about it" ]
+    , Helpers.evA [] "#" (Msg.CommentMsg CommentMsg.Show) "tell us about it"
     , Html.text "!"
     ]
 
@@ -416,9 +417,16 @@ homeIfStarted =
 
 expDoneReadAbout : List (Html.Html Msg)
 expDoneReadAbout =
-    [ Html.text "If you're interested, you can find out more about the experiment in the "
-    , Helpers.navA [] Router.About "About"
-    , Html.text " page."
+    [ Html.p []
+        [ Html.text "If you're interested, you can find out more about the experiment in the "
+        , Helpers.navA [] Router.About "About"
+        , Html.text " page."
+        ]
+    , Html.p []
+        [ Html.text "If you have any comments or feedback, please "
+        , Helpers.evA [] "#" (Msg.CommentMsg CommentMsg.Show) "tell us about it"
+        , Html.text "!"
+        ]
     ]
 
 
