@@ -38,6 +38,7 @@ staticProfile { userId, userUsername } =
     , userId = userId
     , questionnaireId = Nothing
     , wordSpanId = Nothing
+    , commentsIds = []
     , sentencesIds = []
     , treesIds = []
     , userUsername = userUsername
