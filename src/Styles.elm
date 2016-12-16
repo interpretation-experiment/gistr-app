@@ -85,6 +85,10 @@ type CssClasses
     | Clock
     | Progress
     | Bar
+    | CommentBoxOverlay
+    | CommentBox
+    | CommentBoxHidden
+    | CommentBoxActive
 
 
 type CssIds
@@ -415,6 +419,86 @@ css =
                     , boxShadow4 (px 0) (px 0) (px 2) (hex "#ccc")
                     ]
                 ]
+            ]
+          -- COMMENT BOX
+        , (.) CommentBoxOverlay
+            [ position fixed
+            , top (px 0)
+            , right (px 0)
+            , left (px 0)
+            , bottom (px 0)
+            , overflow hidden
+            , backgroundColor transparent
+            , property "z-index" "5"
+            , property "pointer-events" "none"
+            , property "transition" "background-color .3s ease"
+            , withClass CommentBoxActive
+                [ backgroundColor (rgba 0 0 0 0.5)
+                , property "pointer-events" "auto"
+                ]
+            ]
+        , (.) CommentBox
+            [ position absolute
+            , backgroundColor (hex "#eff1f3")
+            , width (px 500)
+            , maxWidth (px 500)
+            , top (vh 40)
+            , maxHeight (px 100)
+            , right (px -460)
+            , borderRadius4 (px 5) (px 0) (px 0) (px 5)
+            , overflow hidden
+            , property "pointer-events" "auto"
+            , property "transition" "margin-right .3s ease, max-height .3s ease, max-width .3s ease"
+            , displayFlex
+            , children
+                [ header
+                    [ flex3 (num 0) (num 0) (px 40)
+                    , cursor pointer
+                    , opacity (num 0.5)
+                    , backgroundColor (hex "#888")
+                    , color (hex "#eff1f3")
+                    , hover [ opacity (num 1), backgroundColor (hex "#666") ]
+                    , active [ opacity (num 1), backgroundColor (hex "#333") ]
+                    , property "transition" "background-color .1s ease, opacity .1s ease, color .1s ease"
+                    , position relative
+                    , property "-webkit-user-select" "none"
+                    , property "-moz-user-select" "none"
+                    , property "-ms-user-select" "none"
+                    , property "user-select" "none"
+                    , children
+                        [ div
+                            [ transforms
+                                [ translateX (pct -50)
+                                , translateY (pct -50)
+                                , rotateZ (deg -90)
+                                ]
+                            , position absolute
+                            , top (pct 50)
+                            , left (pct 50)
+                            ]
+                        ]
+                    ]
+                , div
+                    [ flex3 (num 1) (num 1) (pct 100)
+                    , padding (em 1)
+                    ]
+                ]
+            , withClass CommentBoxActive
+                [ marginRight (px 460)
+                , maxHeight (px 400)
+                , maxWidth (vw 80)
+                , boxShadow4 (px 0) (px 1) (px 10) (rgba 0 0 0 0.4)
+                , children
+                    [ header
+                        [ opacity (num 1)
+                        , backgroundColor (hex "#e3e3e4")
+                        , color (hex "#616469")
+                        , hover [ backgroundColor (hex "#dbdbdb") ]
+                        , active [ backgroundColor (hex "#d2d2d2") ]
+                        ]
+                    ]
+                ]
+            , withClass CommentBoxHidden [ marginRight (px -40) ]
             ]
           -- UTILITIES
         , (.) Center [ centerElement ]

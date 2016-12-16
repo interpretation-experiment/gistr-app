@@ -3,6 +3,7 @@ module Update exposing (update)
 import Admin.Update as AdminUpdate
 import Auth.Update as AuthUpdate
 import Autoresize
+import Comment.Update as CommentUpdate
 import Experiment.Update as ExperimentUpdate
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
@@ -53,6 +54,14 @@ update msg model =
                     , cmd
                     , maybeToList maybeOut
                     )
+
+        {-
+           COMMENT
+        -}
+        CommentMsg msg ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    (CommentUpdate.update CommentMsg auth msg model |> processMsgs)
 
         {-
            NAVIGATION

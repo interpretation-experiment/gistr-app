@@ -3,6 +3,7 @@ module Types
         ( Auth
         , AuthStatus(..)
         , Choice
+        , Comment
         , Credentials
         , Edge
         , Email
@@ -25,6 +26,8 @@ module Types
         , TreeCounts
         , User
         , WordSpan
+        , commentFromUser
+        , emptyComment
         , emptyCredentials
         , emptyPasswordCredentials
         , emptyQuestionnaireForm
@@ -189,6 +192,7 @@ type alias Profile =
       userId : Int
     , questionnaireId : Maybe Int
     , wordSpanId : Maybe Int
+    , commentsIds : List Int
     , sentencesIds : List Int
     , treesIds : List Int
     , -- COMPUTED
@@ -393,3 +397,28 @@ type NotificationId
     | EmailConfirmed
     | QuestionnaireCompleted
     | NoCopyPaste
+
+
+
+-- COMMENT
+
+
+type alias Comment =
+    { email : String
+    , text : String
+    }
+
+
+emptyComment : Comment
+emptyComment =
+    Comment "" ""
+
+
+commentFromUser : User -> Comment
+commentFromUser user =
+    case List.head (List.filter .primary user.emails) of
+        Nothing ->
+            emptyComment
+
+        Just email ->
+            Comment email.email ""

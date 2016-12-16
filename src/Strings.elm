@@ -81,12 +81,22 @@ oldPasswordPlaceholder =
 
 emailPlaceholder : String
 emailPlaceholder =
-    "joey@example.com"
+    "e.g. joey@example.com"
 
 
 optionalEmailPlaceholder : String
 optionalEmailPlaceholder =
-    "joey@example.com (optional)"
+    "e.g. joey@example.com (optional)"
+
+
+commentPlaceholder : String
+commentPlaceholder =
+    "Please detail exactly what your concern is"
+
+
+commentIntro : String
+commentIntro =
+    "Want to submit feedback or a comment? Thanks, we're thrilled! Please fill in the following fields"
 
 
 usernamePlaceholder : String

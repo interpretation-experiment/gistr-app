@@ -6,6 +6,7 @@ import Auth.View.Prolific
 import Auth.View.Recover
 import Auth.View.Register
 import Auth.View.Reset
+import Comment.View
 import Experiment.View
 import Home.View
 import Html
@@ -24,6 +25,7 @@ view : Model -> Html.Html Msg
 view model =
     Html.div []
         [ Notification.view View.Notification.config model.notifications
+        , Comment.View.view Msg.CommentMsg model
         , Html.div [ id Styles.Page ] (routeView model)
         ]
 

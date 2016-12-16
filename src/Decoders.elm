@@ -70,6 +70,7 @@ profile =
         |> Pipeline.required "user" JD.int
         |> Pipeline.required "questionnaire" (JD.nullable JD.int)
         |> Pipeline.required "word_span" (JD.nullable JD.int)
+        |> Pipeline.required "comments" (JD.list JD.int)
         |> Pipeline.required "sentences" (JD.list JD.int)
         |> Pipeline.required "trees" (JD.list JD.int)
         |> Pipeline.required "user_username" JD.string
