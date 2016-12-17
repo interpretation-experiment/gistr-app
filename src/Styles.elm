@@ -213,6 +213,8 @@ btn =
         , padding2 (em 0.5) (em 0.75)
         , marginLeft (em 0.2)
         , marginRight (em 0.2)
+        , fontFamilies [ (qt "Libre Franklin"), .value sansSerif ]
+        , fontSize (px 14)
         , textDecoration none
         , cursor pointer
         , property
@@ -619,8 +621,14 @@ css =
                 ]
             ]
         , ul [ margin2 (em 0.5) (em 0) ]
-          -- Fix for buttons appearing differently in Chrome vs. Firefox
-        , selector "button::-moz-focus-inner" [ border (px 0), padding (px 0) ]
+          -- Fixes for buttons appearing differently in Chrome vs. Firefox
+        , selector
+            ("button::-moz-focus-inner"
+                ++ ", input[type=\"button\"]::-moz-focus-inner"
+                ++ ", input[type=\"submit\"]::-moz-focus-inner"
+                ++ ", input[type=\"reset\"]::-moz-focus-inner"
+            )
+            [ border (px 0), padding (px 0) ]
         , a [ linkMixin ]
           -- MENU
         , (.) Menu

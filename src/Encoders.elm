@@ -155,5 +155,6 @@ newComment : Types.Comment -> JE.Value
 newComment comment =
     JE.object
         [ ( "email", JE.string comment.email )
+        , ( "meta", JE.string comment.meta )
         , ( "text", JE.string comment.text )
         ]

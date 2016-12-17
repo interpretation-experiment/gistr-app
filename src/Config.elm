@@ -4,6 +4,7 @@ module Config exposing (..)
 baseUrl : String
 baseUrl =
     -- DEPLOYMENT
+    --"//next-api.gistr.io/api"
     "//127.0.0.1:8000/api"
 
 

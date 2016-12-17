@@ -26,7 +26,7 @@ module Types
         , TreeCounts
         , User
         , WordSpan
-        , commentFromUser
+        , commentFromUserMeta
         , emptyComment
         , emptyCredentials
         , emptyPasswordCredentials
@@ -406,20 +406,21 @@ type NotificationId
 
 type alias Comment =
     { email : String
+    , meta : String
     , text : String
     }
 
 
 emptyComment : Comment
 emptyComment =
-    Comment "" ""
+    Comment "" "" ""
 
 
-commentFromUser : User -> Comment
-commentFromUser user =
+commentFromUserMeta : User -> String -> Comment
+commentFromUserMeta user meta =
     case List.head (List.filter .primary user.emails) of
         Nothing ->
-            emptyComment
+            Comment "" meta ""
 
         Just email ->
-            Comment email.email ""
+            Comment email.email meta ""

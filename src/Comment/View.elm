@@ -165,18 +165,21 @@ form lift { input, feedback, status } =
                 [ Html.div [ class [ Styles.Error ] ]
                     [ Html.text (Feedback.getError "global" feedback) ]
                 , Html.div []
-                    [ Helpers.evButton
-                        [ Attributes.disabled (status /= Form.Entering)
+                    [ Html.input
+                        [ Attributes.type_ "button"
+                        , Attributes.disabled (status /= Form.Entering)
                         , class [ Styles.Btn ]
+                        , Events.onClick (lift Hide)
+                        , Attributes.value "Cancel"
                         ]
-                        (lift Hide)
-                        "Cancel"
-                    , Html.button
+                        []
+                    , Html.input
                         [ Attributes.type_ "submit"
                         , Attributes.disabled (status /= Form.Entering)
                         , class [ Styles.Btn, Styles.BtnPrimary ]
+                        , Attributes.value "Send comment"
                         ]
-                        [ Html.text "Send comment" ]
+                        []
                     ]
                 ]
             ]

@@ -28,7 +28,10 @@ update lift auth msg model =
         Show ->
             let
                 newComment =
-                    CommentModel.Showing <| Form.empty <| Types.commentFromUser auth.user
+                    CommentModel.Showing <|
+                        Form.empty <|
+                            Types.commentFromUserMeta auth.user
+                                ("route: " ++ toString model.route)
             in
                 ( { model | comment = newComment }
                 , Cmd.none
