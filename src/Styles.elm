@@ -461,7 +461,10 @@ css =
                     , color (hex "#eff1f3")
                     , hover [ opacity (num 1), backgroundColor (hex "#666") ]
                     , active [ opacity (num 1), backgroundColor (hex "#333") ]
-                    , property "transition" "background-color .1s ease, opacity .1s ease, color .1s ease"
+                      -- Setting maxHeight (and animating it) is necessary for
+                      -- a bug in Firefox 50, fixed in later releases
+                    , maxHeight (px 100)
+                    , property "transition" "background-color .1s ease, max-height .3s ease, opacity .1s ease, color .1s ease"
                     , position relative
                     , property "-webkit-user-select" "none"
                     , property "-moz-user-select" "none"
@@ -493,6 +496,9 @@ css =
                 , children
                     [ header
                         [ opacity (num 1)
+                          -- Setting maxHeight (and animating it) is necessary
+                          -- for a bug in Firefox 50, fixed in later releases
+                        , maxHeight (px 400)
                         , backgroundColor (hex "#e3e3e4")
                         , color (hex "#616469")
                         , hover [ backgroundColor (hex "#dbdbdb") ]
