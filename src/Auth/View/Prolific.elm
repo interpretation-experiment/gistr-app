@@ -90,9 +90,12 @@ form lift { input, feedback } =
                     [ Html.text "You will now be taken to a registration page. "
                     , Html.strong [] [ Html.text "Simply follow the steps presented to get started with the experiment." ]
                     ]
-                , Html.button
-                    [ Attributes.type_ "submit", class [ Styles.Btn, Styles.BtnPrimary ] ]
-                    [ Html.text "Go to registration" ]
+                , Html.input
+                    [ Attributes.type_ "submit"
+                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , Attributes.value "Go to registration"
+                    ]
+                    []
                 ]
             ]
         ]

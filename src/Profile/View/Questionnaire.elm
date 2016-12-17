@@ -105,28 +105,32 @@ form lift model meta =
         ( submitButtons, submitMsg ) =
             case status of
                 Form.Entering ->
-                    ( [ Html.button
+                    ( [ Html.input
                             [ Attributes.type_ "submit"
                             , class [ Styles.Btn, Styles.BtnPrimary ]
+                            , Attributes.value "Confirm answers"
                             ]
-                            [ Html.text "Confirm answers" ]
+                            []
                       ]
                     , lift <| QuestionnaireFormConfirm input
                     )
 
                 _ ->
-                    ( [ Helpers.evButton
-                            [ Attributes.disabled (status /= Form.Confirming)
+                    ( [ Html.input
+                            [ Attributes.type_ "button"
+                            , Attributes.disabled (status /= Form.Confirming)
                             , class [ Styles.Btn ]
+                            , Events.onClick (lift QuestionnaireFormCorrect)
+                            , Attributes.value "Correct answers"
                             ]
-                            (lift QuestionnaireFormCorrect)
-                            "Correct answers"
-                      , Html.button
+                            []
+                      , Html.input
                             [ Attributes.type_ "submit"
                             , Attributes.disabled (status /= Form.Confirming)
                             , class [ Styles.Btn, Styles.BtnPrimary ]
+                            , Attributes.value "Send answers"
                             ]
-                            [ Html.text "Send answers" ]
+                            []
                       ]
                     , lift <| QuestionnaireFormSubmit input
                     )
@@ -250,6 +254,7 @@ form lift model meta =
                 ]
                 [ Html.div [] [ Html.p [] Strings.questionnaireCheck ] ]
             , Html.div [ class [ Styles.Error ] ]
-                ((Html.div [] [ Html.text (Feedback.getError "global" feedback) ]) :: submitButtons)
+                [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ] ]
+            , Html.div [ class [ Styles.FormBlock ] ] submitButtons
             , Html.p [] Strings.questionnaireComment
             ]

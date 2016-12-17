@@ -107,12 +107,13 @@ body lift model meta =
                 ]
             , Html.div [ class [ Styles.Error ] ]
                 [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ] ]
-            , Html.button
+            , Html.input
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
                 , class [ Styles.Btn, Styles.BtnPrimary ]
+                , Attributes.value "Create sentence"
                 ]
-                [ Html.text "Create sentence" ]
+                []
             , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
                 [ Html.text (Feedback.getSuccess "global" feedback) ]
             ]

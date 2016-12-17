@@ -537,11 +537,12 @@ write lift model { input, feedback, status } =
                 input
             , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
-        , Html.button
+        , Html.input
             [ Attributes.type_ "submit"
             , Attributes.disabled (status /= Form.Entering)
             , class [ Styles.Btn, Styles.BtnPrimary ]
             , id Styles.CtrlNext
+            , Attributes.value "Send"
             ]
-            [ Html.text "Send" ]
+            []
         ]

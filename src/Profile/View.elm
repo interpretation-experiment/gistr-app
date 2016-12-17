@@ -302,16 +302,21 @@ passwordChange lift { input, feedback, status } =
             , Html.div []
                 [ Html.div [ class [ Styles.Error ] ]
                     [ Html.text (Feedback.getError "global" feedback) ]
-                , Html.button
+                , Html.input
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , Attributes.value "Update password"
                     ]
-                    [ Html.text "Update password" ]
-                , Helpers.evButton
-                    [ class [ Styles.BtnLink ] ]
-                    (lift ChangePasswordRecover)
-                    "I forgot my current password"
+                    []
+                , Html.input
+                    [ Attributes.type_ "button"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , class [ Styles.BtnLink ]
+                    , Events.onClick (lift ChangePasswordRecover)
+                    , Attributes.value "I forgot my current password"
+                    ]
+                    []
                 , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
                     [ Html.text (Feedback.getSuccess "global" feedback) ]
                 ]
@@ -344,12 +349,13 @@ usernameChange lift { input, feedback, status } { user } =
                     ]
                     []
                 ]
-            , Html.button
+            , Html.input
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
                 , class [ Styles.Btn, Styles.BtnPrimary ]
+                , Attributes.value "Update username"
                 ]
-                [ Html.text "Update username" ]
+                []
             , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
                 [ Html.text (Feedback.getSuccess "global" feedback) ]
             , Html.span [ class [ Styles.Error ] ]
@@ -397,12 +403,13 @@ emails lift { input, feedback, status } emails_ =
                     ]
                     []
                 ]
-            , Html.button
+            , Html.input
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
                 , class [ Styles.Btn, Styles.BtnPrimary ]
+                , Attributes.value "Add"
                 ]
-                [ Html.text "Add" ]
+                []
             , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
                 [ Html.text (Feedback.getSuccess "global" feedback) ]
             , Html.span [ class [ Styles.Error ] ]

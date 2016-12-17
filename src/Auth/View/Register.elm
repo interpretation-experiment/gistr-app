@@ -146,12 +146,13 @@ form lift { input, feedback, status } maybeProlific =
             [ Html.div [ class [ Styles.Error ] ]
                 [ Html.text (Feedback.getError "global" feedback) ]
             , Html.div []
-                [ Html.button
+                [ Html.input
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , Attributes.value "Sign up"
                     ]
-                    [ Html.text "Sign up" ]
+                    []
                 ]
             ]
         ]

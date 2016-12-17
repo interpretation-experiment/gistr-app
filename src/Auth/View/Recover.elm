@@ -84,12 +84,13 @@ form lift { input, feedback, status } =
             ]
         , Html.div [ class [ Styles.FormBlock ] ]
             [ Html.div []
-                [ Html.button
+                [ Html.input
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , Attributes.value "Request password reset"
                     ]
-                    [ Html.text "Request password reset" ]
+                    []
                 ]
             ]
         ]

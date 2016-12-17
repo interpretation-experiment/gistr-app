@@ -97,12 +97,13 @@ form lift { input, feedback, status } tokens =
                 , Html.span [] [ Html.text (Feedback.getError "resetCredentials" feedback) ]
                 ]
             , Html.div []
-                [ Html.button
+                [ Html.input
                     [ Attributes.type_ "submit"
                     , Attributes.disabled (status /= Form.Entering)
                     , class [ Styles.Btn, Styles.BtnPrimary ]
+                    , Attributes.value "Set new password"
                     ]
-                    [ Html.text "Set new password" ]
+                    []
                 ]
             ]
         ]
