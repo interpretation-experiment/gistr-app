@@ -3,9 +3,8 @@ module Config exposing (..)
 
 baseUrl : String
 baseUrl =
-    -- DEPLOYMENT
-    --"//next-api.gistr.io/api"
-    "//127.0.0.1:8000/api"
+    -- Set through Makefile according to config/<target>.json
+    "{{config-baseUrl}}"
 
 
 minServerVersion : ( Int, Int, Int )
@@ -15,11 +14,11 @@ minServerVersion =
 
 prolificStudyUrl : String
 prolificStudyUrl =
-    -- DEPLOYMENT
-    "https://prolificacademic.co.uk/studies/demo"
+    -- Set through Makefile according to config/<target>.json
+    "{{config-prolificStudyUrl}}"
 
 
 prolificCompletionUrl : String
 prolificCompletionUrl =
-    -- DEPLOYMENT
-    "https://prolificacademic.co.uk/submissions/demo"
+    -- Set through Makefile according to config/<target>.json
+    "{{config-prolificCompletionUrl}}"

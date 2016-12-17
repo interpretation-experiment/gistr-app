@@ -20,6 +20,7 @@ NORMAL             := \033[0m
 
 # Folders
 src                := src
+config             := config
 src_assets         := $(src)/assets
 elm_artifacts      := elm-stuff/build-artifacts
 build              := build
@@ -45,17 +46,18 @@ else
   ASSET_PATH_HASH   = $(ASSET_PATH)
 endif
 
-# Deploy parameters
+# Deploy-dependent parameters
 next               := next
 root               := root
-ifeq ($(TARGET), $(prod))
-  ifeq ($(DEPLOY_TARGET), $(next))
-    ELMFLAGS         := --yes --warn --debug
-  else
-    ELMFLAGS         := --yes --warn
-  endif
+ifeq ($(DEPLOY_TARGET), $(next))
+  ELMFLAGS         := --yes --warn --debug
+  config_json      := $(config)/$(DEPLOY_TARGET).json
+else ifeq ($(DEPLOY_TARGET), $(root))
+  ELMFLAGS         := --yes --warn
+  config_json      := $(config)/$(DEPLOY_TARGET).json
 else
   ELMFLAGS         := --yes --warn --debug
+  config_json      := $(config)/default.json
 endif
 
 # Source files
@@ -123,31 +125,39 @@ deploy-next:
 	@DEPLOY_TARGET=$(next) $(MAKE) --no-print-directory deploy
 
 
-$(vendor_css): $(sources_vendor_css) $(assets)
+$(vendor_css): $(build_tmp)/$(output) $(sources_vendor_css) $(assets)
 	@echo -e "$(LOW)Generating vendor.css$(NORMAL)"
-	@mkdir -p $(@D)
 	@$(CATCSS) $(sources_vendor_css) > $@
 	@$(hash-asset-paths)
 
 
 # Suppress chattiness of elm-css, we already have progress report with elm-make
-$(app_css): $(sources_elm) $(sources_app_css) $(assets)
+$(app_css): $(build_tmp)/$(output) $(sources_elm) $(sources_app_css) $(assets)
 	@echo -e "$(LOW)Generating app.css$(NORMAL)"
-	@$(eval css_tmp := $(shell mktemp -d -p $(build_tmp)))
-	@$(ELMCSS) $(stylesheets_elm) --output $(css_tmp) 1> /dev/null
-	@$(CATCSS) $(sources_app_css) $(css_tmp)/* > $@
+	@$(eval elm_css_dir := $(shell mktemp -d -p $(build_tmp)))
+	@$(ELMCSS) $(stylesheets_elm) --output $(elm_css_dir) 1> /dev/null
+	@$(eval preconfig_app_css := $(shell mktemp --suffix=.css -p $(build_tmp)))
+	@$(CATCSS) $(sources_app_css) $(elm_css_dir)/* > $(preconfig_app_css)
+	@cat $(config_json) | $(HB) $(preconfig_app_css) > $@
+	@rm $(preconfig_app_css)
 	@$(hash-asset-paths)
-	@rm -rf $(css_tmp)
+	@rm -rf $(elm_css_dir)
 
 
-$(app_js): $(index_js) $(sources_elm) $(assets)
+$(app_js): $(build_tmp)/$(output) $(index_js) $(sources_elm) $(assets)
 	@echo -e "$(LOW)Generating app.js"
-	@mkdir -p $(@D)
-	@$(ELM) $(main_elm) $(ELMFLAGS) --output $(main_elm_js)
+	@$(eval preconfig_elm_js := $(shell mktemp --suffix=.js -p $(build_tmp)))
+	@$(ELM) $(main_elm) $(ELMFLAGS) --output $(preconfig_elm_js)
+	@cat $(config_json) | $(HB) $(preconfig_elm_js) > $(main_elm_js)
+	@rm $(preconfig_elm_js)
 	@$(BABEL) -o $(babel_index_js) $(index_js)
 	@$(CATJS) $(main_elm_js) $(babel_index_js) $(CATJS_OPTIONS) > $@
 	@$(hash-asset-paths)
 	@echo -ne "$(NORMAL)"
+
+
+$(build_tmp)/$(output):
+	@mkdir -p $(build_tmp)/$(output)
 
 
 $(html): $(app_js) $(vendor_css) $(app_css) $(index_html)
