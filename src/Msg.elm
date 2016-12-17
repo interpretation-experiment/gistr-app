@@ -4,6 +4,7 @@ import Admin.Msg as Admin
 import Api
 import Auth.Msg as Auth
 import Autoresize
+import Comment.Msg as Comment
 import Experiment.Msg as Experiment
 import Home.Msg as Home
 import Notification
@@ -18,7 +19,9 @@ type Msg
       -- NOTIFICATIONS
     | NotificationMsg (Notification.Msg Types.NotificationId)
       -- AUTORESIZE TEXTAREAS
-    | Autoresize (Autoresize.Msg Msg)
+    | AutoresizeMsg (Autoresize.Msg Msg)
+      -- COMMENT
+    | CommentMsg Comment.Msg
       -- NAVIGATION
     | UrlUpdate String Router.Route
     | NavigateTo Router.Route

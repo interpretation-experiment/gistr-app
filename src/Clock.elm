@@ -105,11 +105,11 @@ progress (Model model) =
 
         Running start ->
             Time.now
-                |> Task.map (\now -> (model.fullDuration - model.remaining - (now - start)) / model.fullDuration)
+                |> Task.map (\now -> (model.fullDuration - model.remaining + (now - start)) / model.fullDuration)
 
         Pausing start ->
             Time.now
-                |> Task.map (\now -> (model.fullDuration - model.remaining - (now - start)) / model.fullDuration)
+                |> Task.map (\now -> (model.fullDuration - model.remaining + (now - start)) / model.fullDuration)
 
         Paused ->
             Task.succeed ((model.fullDuration - model.remaining) / model.fullDuration)

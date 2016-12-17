@@ -65,3 +65,9 @@ elements id =
             , Strings.expNoCopyPaste
             , Styles.WarningNotification
             )
+
+        Types.CommentSent ->
+            ( Strings.commentSentTitle
+            , Strings.commentSent
+            , Styles.SuccessNotification
+            )

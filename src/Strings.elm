@@ -1,11 +1,13 @@
 module Strings exposing (..)
 
+import Comment.Msg as CommentMsg
 import Config
 import Helpers
 import Html
 import Html.Attributes as Attributes
 import Msg exposing (Msg)
 import Router
+import Styles exposing (class, classList, id)
 
 
 invalidProlific : String
@@ -80,12 +82,22 @@ oldPasswordPlaceholder =
 
 emailPlaceholder : String
 emailPlaceholder =
-    "joey@example.com"
+    "e.g. joey@example.com"
 
 
 optionalEmailPlaceholder : String
 optionalEmailPlaceholder =
-    "joey@example.com (optional)"
+    "e.g. joey@example.com (optional)"
+
+
+commentPlaceholder : String
+commentPlaceholder =
+    "Please detail exactly what your concern is"
+
+
+commentIntro : String
+commentIntro =
+    "Want to submit feedback or a comment? Thanks, we're thrilled! Please fill in the following fields"
 
 
 usernamePlaceholder : String
@@ -111,6 +123,11 @@ genderPlease =
 selectPlease : String
 selectPlease =
     "Please select from the list"
+
+
+educationLevelPlease : String
+educationLevelPlease =
+    "Please select an education level"
 
 
 jobTypePlease : String
@@ -150,16 +167,19 @@ testWordSpan =
 
 startTraining : List (Html.Html Msg)
 startTraining =
-    [ Html.text "Your profile is complete, you can start the experiment "
-    , Helpers.navA [] Router.Experiment "right now"
-    , Html.text "!"
+    [ Html.text "Your profile is complete — "
+    , Helpers.navButton [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+        Router.Experiment
+        "Start the Experiment"
     ]
 
 
 profileComplete : List (Html.Html Msg)
 profileComplete =
-    [ Html.text "Your profile is complete, you can keep going with "
-    , Helpers.navA [] Router.Experiment "the experiment"
+    [ Html.text "Your profile is complete — "
+    , Helpers.navButton [ class [ Styles.Btn, Styles.BtnPrimary ] ]
+        Router.Experiment
+        "Continue with the Experiment"
     ]
 
 
@@ -225,6 +245,19 @@ expInstructionsMakeSense =
 expInstructionsLoop : String
 expInstructionsLoop =
     "The whole process loops once you're done"
+
+
+expInstructionsBreak : String
+expInstructionsBreak =
+    "And there's a break after each sentence you enter"
+
+
+expInstructionsDontInterrupt : List (Html.Html msg)
+expInstructionsDontInterrupt =
+    [ Html.text "Make sure you're "
+    , Html.strong [] [ Html.text "not interrupted" ]
+    , Html.text " while reading or writing a sentence! You can always talk to other people during one of the breaks."
+    ]
 
 
 expInstructionsTraining : List (Html.Html msg)
@@ -294,9 +327,21 @@ questionnaireInformedWhat =
     ]
 
 
-questionnaireJobIntro : String
-questionnaireJobIntro =
-    "We'd like to know what type of job you work in, or what is your main daily activity."
+questionnaireEducationJobIntro : String
+questionnaireEducationJobIntro =
+    "We'd like to know how much you've studied, as well as what type of job you work in, or what your main daily activity is."
+
+
+questionnaireEducationLevel : String
+questionnaireEducationLevel =
+    "What is the highest level of education you attained?"
+
+
+questionnaireEducationFreetext : List (Html.Html msg)
+questionnaireEducationFreetext =
+    [ Html.strong [] [ Html.text "Please describe, in your own words, the highest level of education you attained." ]
+    , Html.text " You can use several sentences if necessary."
+    ]
 
 
 questionnaireJobType : String
@@ -311,10 +356,10 @@ questionnaireJobFreetext =
     ]
 
 
-questionnaireComment : List (Html.Html msg)
+questionnaireComment : List (Html.Html Msg)
 questionnaireComment =
     [ Html.text "Is there something wrong with this questionnaire, or a comment you would like to share? Please "
-    , Html.a [ Attributes.href "mailto:sl@mehho.net" ] [ Html.text "contact us" ]
+    , Helpers.evA [] "#" (Msg.CommentMsg CommentMsg.Show) "tell us about it"
     , Html.text "!"
     ]
 
@@ -372,9 +417,16 @@ homeIfStarted =
 
 expDoneReadAbout : List (Html.Html Msg)
 expDoneReadAbout =
-    [ Html.text "If you're interested, you can find out more about the experiment in the "
-    , Helpers.navA [] Router.About "About"
-    , Html.text " page."
+    [ Html.p []
+        [ Html.text "If you're interested, you can find out more about the experiment in the "
+        , Helpers.navA [] Router.About "About"
+        , Html.text " page."
+        ]
+    , Html.p []
+        [ Html.text "If you have any comments or feedback, please "
+        , Helpers.evA [] "#" (Msg.CommentMsg CommentMsg.Show) "tell us about it"
+        , Html.text "!"
+        ]
     ]
 
 
@@ -645,14 +697,14 @@ expTrainingFinishedExpStarts =
     ]
 
 
-expPauseTitle : String
-expPauseTitle =
-    "Take a break!"
+expStandbyTitle : String
+expStandbyTitle =
+    "Sentence saved!"
 
 
-expPauseExplanation : String
-expPauseExplanation =
-    "You're doing great! Take a few seconds to relax before continuing."
+expStandbyExplanation : String
+expStandbyExplanation =
+    "Whenever you're ready, continue with the next sentence."
 
 
 expUncompletableTitle : String
@@ -715,3 +767,16 @@ adminSentenceCreated =
 bucketPlease : String
 bucketPlease =
     "Please select a bucket"
+
+
+commentSentTitle : String
+commentSentTitle =
+    "Comment sent!"
+
+
+commentSent : Html.Html msg
+commentSent =
+    Html.div []
+        [ Html.p [] [ Html.text "Thanks for submitting this, it really helps us!" ]
+        , Html.p [] [ Html.text "We'll get back at you if necessary." ]
+        ]

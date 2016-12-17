@@ -330,6 +330,11 @@ update lift auth msg model =
                     , .gender
                         >> Validate.ifBlank ( "gender", Strings.genderPlease )
                     , Helpers.ifThenValidate .informed informedValidator
+                    , .educationLevel
+                        >> Validate.ifBlank ( "educationLevel", Strings.educationLevelPlease )
+                    , .educationFreetext
+                        >> Helpers.ifShorterThan 5
+                            ( "educationFreetext", Strings.fiveCharactersPlease )
                     , .jobType
                         >> Validate.ifBlank ( "jobType", Strings.jobTypePlease )
                     , .jobFreetext
@@ -393,6 +398,8 @@ update lift auth msg model =
                 , ( "gender", "gender" )
                 , ( "informed_how", "informedHow" )
                 , ( "informed_what", "informedWhat" )
+                , ( "education_level", "educationLevel" )
+                , ( "education_freetext", "educationFreetext" )
                 , ( "job_type", "jobType" )
                 , ( "job_freetext", "jobFreetext" )
                 ]

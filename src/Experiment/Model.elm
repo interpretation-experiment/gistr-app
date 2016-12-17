@@ -52,7 +52,7 @@ type TrialState
     | Tasking
     | Writing (Form.Model String)
     | Timeout
-    | Pause
+    | Standby
 
 
 
@@ -66,6 +66,7 @@ type Node
     | Task
     | Write
     | Tree
+    | Break
     | Images
     | Progress
 

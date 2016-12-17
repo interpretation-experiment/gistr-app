@@ -70,6 +70,7 @@ profile =
         |> Pipeline.required "user" JD.int
         |> Pipeline.required "questionnaire" (JD.nullable JD.int)
         |> Pipeline.required "word_span" (JD.nullable JD.int)
+        |> Pipeline.required "comments" (JD.list JD.int)
         |> Pipeline.required "sentences" (JD.list JD.int)
         |> Pipeline.required "trees" (JD.list JD.int)
         |> Pipeline.required "user_username" JD.string
@@ -183,8 +184,8 @@ meta =
             |> Pipeline.required "read_factor" JD.int
             |> Pipeline.required "write_factor" JD.int
             |> Pipeline.required "min_tokens" JD.int
-            |> Pipeline.required "pause_period" JD.int
             |> Pipeline.required "gender_choices" (JD.list choice)
+            |> Pipeline.required "education_level_choices" (JD.list choice)
             |> Pipeline.required "job_type_choices" (JD.list choice)
             |> Pipeline.hardcoded
                 [ { name = "experiment", label = "Experiment" }

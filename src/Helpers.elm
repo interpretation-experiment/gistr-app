@@ -165,10 +165,10 @@ authenticatedOrIgnore model authFunc =
 
 extractFeedback :
     Types.Error
-    -> Model
+    -> model
     -> List ( String, String )
-    -> (Feedback.Feedback -> ( Model, Cmd Msg, List Msg ))
-    -> ( Model, Cmd Msg, List Msg )
+    -> (Feedback.Feedback -> ( model, Cmd Msg, List Msg ))
+    -> ( model, Cmd Msg, List Msg )
 extractFeedback error model fields feedbackFunc =
     case error of
         Types.HttpError httpError ->

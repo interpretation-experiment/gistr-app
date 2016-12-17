@@ -3,6 +3,7 @@ module Update exposing (update)
 import Admin.Update as AdminUpdate
 import Auth.Update as AuthUpdate
 import Autoresize
+import Comment.Update as CommentUpdate
 import Experiment.Update as ExperimentUpdate
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
@@ -43,16 +44,24 @@ update msg model =
         {-
            AUTORESIZE TEXTAREAS
         -}
-        Autoresize msg ->
+        AutoresizeMsg msg ->
             let
                 ( autoresize, cmd, maybeOut ) =
-                    Autoresize.update Autoresize msg model.autoresize
+                    Autoresize.update AutoresizeMsg msg model.autoresize
             in
                 processMsgs
                     ( { model | autoresize = autoresize }
                     , cmd
                     , maybeToList maybeOut
                     )
+
+        {-
+           COMMENT
+        -}
+        CommentMsg msg ->
+            Helpers.authenticatedOrIgnore model <|
+                \auth ->
+                    (CommentUpdate.update CommentMsg auth msg model |> processMsgs)
 
         {-
            NAVIGATION

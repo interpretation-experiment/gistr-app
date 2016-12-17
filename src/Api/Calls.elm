@@ -11,6 +11,7 @@ module Api.Calls
         , getTree
         , getTrees
         , getWordSpan
+        , postComment
         , postEmail
         , postEmailConfirm
         , postEmailVerify
@@ -82,8 +83,7 @@ builder { method, path, query, token, expect } =
 toTask : RequestBuilder a -> Task a
 toTask builder =
     builder
-        |> HttpBuilder.toRequest
-        |> Http.toTask
+        |> HttpBuilder.toTask
         |> Task.mapError Types.HttpError
 
 
@@ -383,6 +383,21 @@ postEmailConfirm { token } key =
         , query = []
         , token = Just token
         , body = Just <| Encoders.emailConfirmationKey key
+        , expect = expectNothing
+        }
+
+
+
+-- COMMENT
+
+
+postComment : Types.Auth -> Types.Comment -> Task ()
+postComment { token } comment =
+    post
+        { path = "/comments/"
+        , query = []
+        , token = Just token
+        , body = Just <| Encoders.newComment comment
         , expect = expectNothing
         }
 

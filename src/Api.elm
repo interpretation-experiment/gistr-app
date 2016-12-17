@@ -13,6 +13,7 @@ module Api
         , getWordSpan
         , login
         , logout
+        , postComment
         , postQuestionnaire
         , postSentence
         , recover
@@ -160,6 +161,16 @@ confirmEmail : Types.Auth -> String -> Calls.Task Types.User
 confirmEmail auth key =
     Calls.postEmailConfirm auth key
         |> Task.andThen (always <| getSelf auth.token)
+
+
+
+-- COMMENT
+
+
+postComment : Types.Auth -> Types.Comment -> Calls.Task Types.Profile
+postComment auth comment =
+    Calls.postComment auth comment
+        |> Task.andThen (always <| Task.map .profile <| getSelf auth.token)
 
 
 

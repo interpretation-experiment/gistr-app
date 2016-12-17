@@ -56,7 +56,7 @@ form lift model meta =
                     [ Html.label [ Attributes.for "inputInformedHow" ]
                         Strings.questionnaireInformedHow
                     , Autoresize.textarea
-                        { lift = AppMsg.Autoresize
+                        { lift = AppMsg.AutoresizeMsg
                         , model = model.autoresize
                         , id = "inputInformedHow"
                         , onInput =
@@ -64,7 +64,7 @@ form lift model meta =
                                 << QuestionnaireFormInput
                                 << \h -> { input | informedHow = h }
                         }
-                        [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                        [ Attributes.disabled (status /= Form.Entering) ]
                         input.informedHow
                     , Html.div [] [ Html.text (Feedback.getError "informedHow" feedback) ]
                     ]
@@ -72,7 +72,7 @@ form lift model meta =
                     [ Html.label [ Attributes.for "inputInformedWhat" ]
                         Strings.questionnaireInformedWhat
                     , Autoresize.textarea
-                        { lift = AppMsg.Autoresize
+                        { lift = AppMsg.AutoresizeMsg
                         , model = model.autoresize
                         , id = "inputInformedWhat"
                         , onInput =
@@ -80,11 +80,19 @@ form lift model meta =
                                 << QuestionnaireFormInput
                                 << \w -> { input | informedWhat = w }
                         }
-                        [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                        [ Attributes.disabled (status /= Form.Entering) ]
                         input.informedWhat
                     , Html.div [] [ Html.text (Feedback.getError "informedWhat" feedback) ]
                     ]
                 ]
+
+        educationOption education =
+            Html.option
+                [ Attributes.disabled (String.isEmpty education.name)
+                , Attributes.value education.name
+                , Attributes.selected (input.educationLevel == education.name)
+                ]
+                [ Html.text education.label ]
 
         jobOption job =
             Html.option
@@ -97,28 +105,32 @@ form lift model meta =
         ( submitButtons, submitMsg ) =
             case status of
                 Form.Entering ->
-                    ( [ Html.button
+                    ( [ Html.input
                             [ Attributes.type_ "submit"
                             , class [ Styles.Btn, Styles.BtnPrimary ]
+                            , Attributes.value "Confirm answers"
                             ]
-                            [ Html.text "Confirm answers" ]
+                            []
                       ]
                     , lift <| QuestionnaireFormConfirm input
                     )
 
                 _ ->
-                    ( [ Helpers.evButton
-                            [ Attributes.disabled (status /= Form.Confirming)
+                    ( [ Html.input
+                            [ Attributes.type_ "button"
+                            , Attributes.disabled (status /= Form.Confirming)
                             , class [ Styles.Btn ]
+                            , Events.onClick (lift QuestionnaireFormCorrect)
+                            , Attributes.value "Correct answers"
                             ]
-                            (lift QuestionnaireFormCorrect)
-                            "Correct answers"
-                      , Html.button
+                            []
+                      , Html.input
                             [ Attributes.type_ "submit"
                             , Attributes.disabled (status /= Form.Confirming)
                             , class [ Styles.Btn, Styles.BtnPrimary ]
+                            , Attributes.value "Send answers"
                             ]
-                            [ Html.text "Send answers" ]
+                            []
                       ]
                     , lift <| QuestionnaireFormSubmit input
                     )
@@ -174,8 +186,38 @@ form lift model meta =
                 informedDetails
               else
                 Html.div [] []
-            , Html.h3 [] [ Html.text "What you do" ]
-            , Html.p [] [ Html.text Strings.questionnaireJobIntro ]
+            , Html.h3 [] [ Html.text "Your schooling and what you do" ]
+            , Html.p [] [ Html.text Strings.questionnaireEducationJobIntro ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "educationLevel" feedback ]
+                [ Html.label [ Attributes.for "inputEducationLevel" ]
+                    [ Html.strong [] [ Html.text Strings.questionnaireEducationLevel ] ]
+                , Html.select
+                    [ Attributes.id "inputEducationLevel"
+                    , Attributes.disabled (status /= Form.Entering)
+                    , Events.onInput <|
+                        lift
+                            << QuestionnaireFormInput
+                            << \e -> { input | educationLevel = e }
+                    ]
+                    (List.map educationOption ({ name = "", label = Strings.selectPlease } :: meta.educationLevelChoices))
+                , Html.div [] [ Html.text (Feedback.getError "educationLevel" feedback) ]
+                ]
+            , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "educationFreetext" feedback ]
+                [ Html.label [ Attributes.for "inputEducationFreetext" ]
+                    Strings.questionnaireEducationFreetext
+                , Autoresize.textarea
+                    { lift = AppMsg.AutoresizeMsg
+                    , model = model.autoresize
+                    , id = "inputEducationFreetext"
+                    , onInput =
+                        lift
+                            << QuestionnaireFormInput
+                            << \t -> { input | educationFreetext = t }
+                    }
+                    [ Attributes.disabled (status /= Form.Entering) ]
+                    input.educationFreetext
+                , Html.div [] [ Html.text (Feedback.getError "educationFreetext" feedback) ]
+                ]
             , Html.div [ class [ Styles.FormBlock ], Helpers.errorStyle "jobType" feedback ]
                 [ Html.label [ Attributes.for "inputJobType" ]
                     [ Html.strong [] [ Html.text Strings.questionnaireJobType ] ]
@@ -194,7 +236,7 @@ form lift model meta =
                 [ Html.label [ Attributes.for "inputJobFreetext" ]
                     Strings.questionnaireJobFreetext
                 , Autoresize.textarea
-                    { lift = AppMsg.Autoresize
+                    { lift = AppMsg.AutoresizeMsg
                     , model = model.autoresize
                     , id = "inputJobFreetext"
                     , onInput =
@@ -202,7 +244,7 @@ form lift model meta =
                             << QuestionnaireFormInput
                             << \t -> { input | jobFreetext = t }
                     }
-                    [ classList [ ( Styles.Disabled, status /= Form.Entering ) ] ]
+                    [ Attributes.disabled (status /= Form.Entering) ]
                     input.jobFreetext
                 , Html.div [] [ Html.text (Feedback.getError "jobFreetext" feedback) ]
                 ]
@@ -212,6 +254,7 @@ form lift model meta =
                 ]
                 [ Html.div [] [ Html.p [] Strings.questionnaireCheck ] ]
             , Html.div [ class [ Styles.Error ] ]
-                ((Html.div [] [ Html.text (Feedback.getError "global" feedback) ]) :: submitButtons)
+                [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ] ]
+            , Html.div [ class [ Styles.FormBlock ] ] submitButtons
             , Html.p [] Strings.questionnaireComment
             ]

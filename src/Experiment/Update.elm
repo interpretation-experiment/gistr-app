@@ -304,10 +304,10 @@ update lift auth msg model =
                     , []
                     )
 
-        TrialPause ->
+        TrialStandby ->
             updateTrialOrIgnore model <|
                 \trial ->
-                    ( { trial | state = ExpModel.Pause, clock = Clock.disabled }
+                    ( { trial | state = ExpModel.Standby, clock = Clock.disabled }
                     , Cmd.none
                     , []
                     )
@@ -421,10 +421,10 @@ update lift auth msg model =
                                 )
 
         WriteResult (Ok profile) ->
-            -- get previous profile lifecycle
+            -- compare previous profile lifecycle to current
             -- update profile
             -- if lifecycle has changed, JustFinished
-            -- if not, LoadTrial or Pause
+            -- if not, Standby
             let
                 stateChanged =
                     Lifecycle.state auth.meta auth.user.profile
@@ -432,12 +432,6 @@ update lift auth msg model =
 
                 profileModel =
                     Helpers.updateProfile model profile
-
-                next trial =
-                    if trial.streak % auth.meta.pausePeriod == 0 then
-                        TrialPause
-                    else
-                        LoadTrial
             in
                 case model.experiment.state of
                     ExpModel.Trial trial ->
@@ -464,7 +458,7 @@ update lift auth msg model =
                                                 profileModel.experiment
                                     }
                             in
-                                update lift auth (next newTrial) newModel
+                                update lift auth TrialStandby newModel
 
                     _ ->
                         ( model

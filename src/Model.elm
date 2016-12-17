@@ -12,6 +12,7 @@ import Autoresize
 import Experiment.Model as ExpModel
 import Form
 import Home.Model as HomeModel
+import Comment.Model as CommentModel
 import Intro
 import Notification
 import Router
@@ -44,6 +45,7 @@ type alias Model =
     , admin : AdminModel.Model
     , -- Page-related utils
       autoresize : Autoresize.Model
+    , comment : CommentModel.Model
     }
 
 
@@ -70,6 +72,7 @@ initialModel route =
     , admin = AdminModel.initialModel
     , -- Page-related utils
       autoresize = Autoresize.initialModel
+    , comment = CommentModel.initialModel
     }
 
 

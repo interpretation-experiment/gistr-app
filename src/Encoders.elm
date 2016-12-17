@@ -3,6 +3,7 @@ module Encoders
         ( credentials
         , email
         , emailConfirmationKey
+        , newComment
         , newEmail
         , newProfile
         , newQuestionnaire
@@ -129,6 +130,8 @@ newQuestionnaire questionnaire =
         , ( "informed", JE.bool questionnaire.informed )
         , ( "informed_how", JE.string questionnaire.informedHow )
         , ( "informed_what", JE.string questionnaire.informedWhat )
+        , ( "education_level", JE.string questionnaire.educationLevel )
+        , ( "education_freetext", JE.string questionnaire.educationFreetext )
         , ( "job_type", JE.string questionnaire.jobType )
         , ( "job_freetext", JE.string questionnaire.jobFreetext )
         ]
@@ -145,4 +148,13 @@ newSentence sentence =
         , ( "write_time_proportion", JE.float sentence.writeTimeProportion )
         , ( "write_time_allotted", JE.float <| Time.inSeconds sentence.writeTimeAllotted )
         , ( "parent", unwrap JE.null JE.int sentence.parentId )
+        ]
+
+
+newComment : Types.Comment -> JE.Value
+newComment comment =
+    JE.object
+        [ ( "email", JE.string comment.email )
+        , ( "meta", JE.string comment.meta )
+        , ( "text", JE.string comment.text )
         ]

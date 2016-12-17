@@ -111,7 +111,10 @@ instructions profile meta =
                       )
                     , ( ExpModel.Progress
                       , ( Intro.Left
-                        , Html.p [] [ Html.text <| Strings.expInstructionsRealStart meta.trainingWork ]
+                        , Html.p []
+                            [ Html.text <|
+                                Strings.expInstructionsRealStart meta.trainingWork
+                            ]
                         )
                       )
                     ]
@@ -148,6 +151,12 @@ instructions profile meta =
             , ( ExpModel.Images
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )
               )
+            , ( ExpModel.Break
+              , ( Intro.TopLeft, Html.p [] [ Html.text Strings.expInstructionsBreak ] )
+              )
+            , ( ExpModel.Images
+              , ( Intro.Bottom, Html.p [] Strings.expInstructionsDontInterrupt )
+              )
             ]
                 ++ trainingDetails
 
@@ -166,7 +175,7 @@ instructionsView lift profile meta loading state =
         ExpModel.Images
         Html.div
         [ class [ Styles.InstructionImages, Styles.Center ]
-        , Attributes.style [ ( "width", "515px" ), ( "height", "300px" ) ]
+        , Attributes.style [ ( "width", "515px" ), ( "height", "340px" ) ]
         ]
         [ Intro.node
             (instructionsConfig lift profile meta)
@@ -220,6 +229,21 @@ instructionsView lift profile meta loading state =
             [ Html.img
                 [ Attributes.src "/assets/img/instructions-tree.png"
                 , Attributes.style [ ( "width", "180px" ) ]
+                ]
+                []
+            ]
+        , Intro.node
+            (instructionsConfig lift profile meta)
+            state
+            ExpModel.Break
+            Html.div
+            [ Attributes.style [ ( "top", "236px" ), ( "left", "60px" ) ]
+            , class [ Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Break state ) ]
+            ]
+            [ Html.img
+                [ Attributes.src "/assets/img/instructions-break.png"
+                , Attributes.style [ ( "width", "237px" ) ]
                 ]
                 []
             ]
@@ -415,7 +439,7 @@ contents lift profile meta model =
                     [ Html.div []
                         ((Html.h3 [] [ Html.text Strings.expDone ])
                             :: (Common.prolificCompletion profile)
-                            ++ [ Html.p [] Strings.expDoneReadAbout ]
+                            ++ Strings.expDoneReadAbout
                         )
                     ]
                 , []
@@ -470,14 +494,15 @@ trial lift model trialModel =
                 ]
             ]
 
-        ExpModel.Pause ->
-            [ Html.h3 [] [ Html.text Strings.expPauseTitle ]
-            , Html.p [] [ Html.text Strings.expPauseExplanation ]
+        ExpModel.Standby ->
+            [ Html.h3 [] [ Html.text Strings.expStandbyTitle ]
+            , Html.p [] [ Html.text Strings.expStandbyExplanation ]
             , Html.p []
                 [ Helpers.evButton
                     [ Attributes.disabled model.experiment.loadingNext
                     , class [ Styles.Btn, Styles.BtnPrimary ]
                     , id Styles.CtrlNext
+                    , Helpers.tooltip Strings.pressCtrlEnter
                     ]
                     (lift LoadTrial)
                     "Continue"
@@ -501,26 +526,23 @@ write lift model { input, feedback, status } =
             , Helpers.errorStyle "global" feedback
             ]
             [ Autoresize.textarea
-                { lift = AppMsg.Autoresize
+                { lift = AppMsg.AutoresizeMsg
                 , model = model.autoresize
                 , id = toString Styles.InputAutofocus
                 , onInput = lift << WriteInput
                 }
                 [ Attributes.autofocus True
-                , classList
-                    [ ( Styles.Disabled
-                      , (model.experiment.loadingNext || (status /= Form.Entering))
-                      )
-                    ]
+                , Attributes.disabled (status /= Form.Entering)
                 ]
                 input
             , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
             ]
-        , Html.button
+        , Html.input
             [ Attributes.type_ "submit"
-            , Attributes.disabled (model.experiment.loadingNext || (status /= Form.Entering))
+            , Attributes.disabled (status /= Form.Entering)
             , class [ Styles.Btn, Styles.BtnPrimary ]
             , id Styles.CtrlNext
+            , Attributes.value "Send"
             ]
-            [ Html.text "Send" ]
+            []
         ]

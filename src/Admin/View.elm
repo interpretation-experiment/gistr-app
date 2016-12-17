@@ -81,7 +81,7 @@ body lift model meta =
                 [ Html.label [ Helpers.forId Styles.InputAutofocus ]
                     [ Html.text Strings.adminTypeSentence ]
                 , Autoresize.textarea
-                    { lift = AppMsg.Autoresize
+                    { lift = AppMsg.AutoresizeMsg
                     , model = model.autoresize
                     , id = toString Styles.InputAutofocus
                     , onInput =
@@ -90,7 +90,7 @@ body lift model meta =
                             << \t -> { input | text = t }
                     }
                     [ Attributes.autofocus True
-                    , classList [ ( Styles.Disabled, status /= Form.Entering ) ]
+                    , Attributes.disabled (status /= Form.Entering)
                     ]
                     input.text
                 , Html.div [] [ Html.text (Feedback.getError "text" feedback) ]
@@ -107,12 +107,13 @@ body lift model meta =
                 ]
             , Html.div [ class [ Styles.Error ] ]
                 [ Html.div [] [ Html.text (Feedback.getError "global" feedback) ] ]
-            , Html.button
+            , Html.input
                 [ Attributes.type_ "submit"
                 , Attributes.disabled (status /= Form.Entering)
                 , class [ Styles.Btn, Styles.BtnPrimary ]
+                , Attributes.value "Create sentence"
                 ]
-                [ Html.text "Create sentence" ]
+                []
             , Html.span [ class [ Styles.Transient, Styles.BadgeSuccess ] ]
                 [ Html.text (Feedback.getSuccess "global" feedback) ]
             ]

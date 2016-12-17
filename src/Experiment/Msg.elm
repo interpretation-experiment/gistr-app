@@ -24,7 +24,7 @@ type Msg
     | TrialTask
     | TrialWrite
     | TrialTimeout
-    | TrialPause
+    | TrialStandby
     | WriteInput String
     | WriteSubmit String
     | WriteResult (Api.Result Types.Profile)

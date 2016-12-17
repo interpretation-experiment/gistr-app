@@ -3,6 +3,7 @@ module Types
         ( Auth
         , AuthStatus(..)
         , Choice
+        , Comment
         , Credentials
         , Edge
         , Email
@@ -25,6 +26,8 @@ module Types
         , TreeCounts
         , User
         , WordSpan
+        , commentFromUserMeta
+        , emptyComment
         , emptyCredentials
         , emptyPasswordCredentials
         , emptyQuestionnaireForm
@@ -58,9 +61,9 @@ type alias Meta =
       readFactor : Int
     , writeFactor : Int
     , minTokens : Int
-    , pausePeriod : Int
     , -- FORM PARAMETERS
       genderChoices : List Choice
+    , educationLevelChoices : List Choice
     , jobTypeChoices : List Choice
     , bucketChoices : List Choice
     , -- EXPERIMENT COSTS
@@ -189,6 +192,7 @@ type alias Profile =
       userId : Int
     , questionnaireId : Maybe Int
     , wordSpanId : Maybe Int
+    , commentsIds : List Int
     , sentencesIds : List Int
     , treesIds : List Int
     , -- COMPUTED
@@ -243,6 +247,8 @@ type alias QuestionnaireForm =
     , informed : Bool
     , informedHow : String
     , informedWhat : String
+    , educationLevel : String
+    , educationFreetext : String
     , jobType : String
     , jobFreetext : String
     }
@@ -255,6 +261,8 @@ emptyQuestionnaireForm =
     , informed = False
     , informedHow = ""
     , informedWhat = ""
+    , educationLevel = ""
+    , educationFreetext = ""
     , jobType = ""
     , jobFreetext = ""
     }
@@ -389,3 +397,30 @@ type NotificationId
     | EmailConfirmed
     | QuestionnaireCompleted
     | NoCopyPaste
+    | CommentSent
+
+
+
+-- COMMENT
+
+
+type alias Comment =
+    { email : String
+    , meta : String
+    , text : String
+    }
+
+
+emptyComment : Comment
+emptyComment =
+    Comment "" "" ""
+
+
+commentFromUserMeta : User -> String -> Comment
+commentFromUserMeta user meta =
+    case List.head (List.filter .primary user.emails) of
+        Nothing ->
+            Comment "" meta ""
+
+        Just email ->
+            Comment email.email meta ""
