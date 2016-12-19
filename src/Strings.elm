@@ -659,6 +659,34 @@ aboutAuthorsCreated =
     ]
 
 
+aboutToolsTitle : String
+aboutToolsTitle =
+    "Tools"
+
+
+aboutToolsGeneric : List (Html.Html msg)
+aboutToolsGeneric =
+    [ Html.text "Gistr is developed using "
+    , Html.a
+        [ Attributes.href "http://elm-lang.org/"
+        , Attributes.title "Elm Website"
+        ]
+        [ Html.text "Elm" ]
+    , Html.text " for the frontend, and the "
+    , Html.a
+        [ Attributes.href "http://www.django-rest-framework.org/"
+        , Attributes.title "Django Rest Framework Website"
+        ]
+        [ Html.text "Django Rest Framework" ]
+    , Html.text " for the backend."
+    ]
+
+
+aboutToolsCompanies : String
+aboutToolsCompanies =
+    "The following companies have also donated access to their products, used throughout the development."
+
+
 expReadMemorize : String
 expReadMemorize =
     "Read and memorize the following"

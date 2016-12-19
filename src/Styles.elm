@@ -89,6 +89,7 @@ type CssClasses
     | CommentBox
     | CommentBoxHidden
     | CommentBoxActive
+    | Companies
 
 
 type CssIds
@@ -604,6 +605,14 @@ css =
             [ property "visibility" "hidden"
             , property "animation" "flash 2s linear"
             , empty [ property "animation" "none" ]
+            ]
+        , (.) Companies
+            [ displayFlex
+            , alignItems center
+            , property "justify-content" "space-evenly"
+            , marginTop (em 2)
+            , descendants [ img [ maxWidth (px 130) ] ]
+            , flexWrap wrap
             ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
