@@ -2,6 +2,7 @@ module View.About exposing (view)
 
 import Helpers
 import Html
+import Html.Attributes as Attributes
 import Lifecycle
 import Model exposing (Model)
 import Msg exposing (Msg)
@@ -27,7 +28,7 @@ header =
 
 body : Model -> List (Html.Html Msg)
 body model =
-    [ Html.div [] ((about model) ++ privacy ++ authors) ]
+    [ Html.div [] ((about model) ++ privacy ++ authors ++ tools) ]
 
 
 about : Model -> List (Html.Html Msg)
@@ -93,4 +94,19 @@ authors : List (Html.Html Msg)
 authors =
     [ Html.h1 [] [ Html.text Strings.aboutAuthorsTitle ]
     , Html.p [] Strings.aboutAuthorsCreated
+    ]
+
+
+tools : List (Html.Html Msg)
+tools =
+    [ Html.h1 [] [ Html.text Strings.aboutToolsTitle ]
+    , Html.p [] Strings.aboutToolsGeneric
+    , Html.p [] [ Html.text Strings.aboutToolsCompanies ]
+    , Html.div [ class [ Styles.Companies ] ]
+        [ Html.a
+            [ Attributes.href "https://www.browserstack.com/"
+            , Attributes.title "BrowserStack Website"
+            ]
+            [ Html.img [ Attributes.src "/assets/img/browser-stack.png" ] [] ]
+        ]
     ]
