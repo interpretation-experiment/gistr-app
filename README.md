@@ -28,3 +28,12 @@ For continuous development:
 ./makewatch       # Will continuously build development version
 npm run serve     # Will serve and live-reload on rebuilds
 ```
+
+Product Access
+--------------
+
+The following companies have donated access to their products.
+
+<a href="https://www.browserstack.com/" title="BrowserStack Website">
+  <img src="//github.com/interpretation-experiment/gistr-app/raw/master/src/assets/img/browser-stack.png" alt="BrowserStack Logo" style="width: 130px;"/>
+</a>
