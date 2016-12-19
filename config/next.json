@@ -1,5 +1,6 @@
 {
     "config-baseUrl": "//next-api.gistr.io/api",
     "config-prolificStudyUrl": "https://prolificacademic.co.uk/studies/demo",
-    "config-prolificCompletionUrl": "https://prolificacademic.co.uk/submissions/demo"
+    "config-prolificCompletionUrl": "https://prolificacademic.co.uk/submissions/demo",
+    "config-expDuration": "10 minutes"
 }

@@ -394,7 +394,12 @@ homeQuestions : List (Html.Html msg)
 homeQuestions =
     [ Html.h3 [] [ Html.text "How good is your memory?" ]
     , Html.p [] [ Html.text "How well do you remember what you read?" ]
-    , Html.p [] [ Html.text "With this experiment you'll learn how you unconsciously transform what you read. It lasts about 1 hour and it helps scientific research!" ]
+    , Html.p []
+        [ Html.text <|
+            "With this experiment you'll learn how you unconsciously transform what you read. It lasts about "
+                ++ Config.expDuration
+                ++ " and it helps scientific research!"
+        ]
     ]
 
 
@@ -532,7 +537,7 @@ aboutAboutTeaserHowGood =
 
 aboutAboutTeaserShows : String
 aboutAboutTeaserShows =
-    "This experiment shows you how you unconsciously transform what you read: you'll see detailed statistics on how you transform what you read, and see how you compare to the other participants. It lasts about 1 hour and it helps scientific research!"
+    "This experiment shows you how you unconsciously transform what you read: you'll see detailed statistics on how you transform what you read, and see how you compare to the other participants. It lasts about " ++ Config.expDuration ++ " and it helps scientific research!"
 
 
 aboutAboutTeaserMore : List (Html.Html Msg)

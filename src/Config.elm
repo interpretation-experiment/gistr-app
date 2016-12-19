@@ -22,3 +22,9 @@ prolificCompletionUrl : String
 prolificCompletionUrl =
     -- Set through Makefile according to config/<target>.json
     "{{config-prolificCompletionUrl}}"
+
+
+expDuration : String
+expDuration =
+    -- Set through Makefile according to config/<target>.json
+    "{{config-expDuration}}"
