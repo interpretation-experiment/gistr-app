@@ -443,6 +443,7 @@ css =
         , (.) CommentBox
             [ position absolute
             , backgroundColor (hex "#eff1f3")
+            , opacity (num 0.5)
             , width (px 500)
             , maxWidth (px 500)
             , top (vh 40)
@@ -451,13 +452,12 @@ css =
             , borderRadius4 (px 5) (px 0) (px 0) (px 5)
             , overflow hidden
             , property "pointer-events" "auto"
-            , property "transition" "margin-right .3s ease, max-height .3s ease, max-width .3s ease"
+            , property "transition" "margin-right .3s ease, max-height .3s ease, max-width .3s ease, opacity .3s ease"
             , displayFlex
             , children
                 [ header
                     [ flex3 (num 0) (num 0) (px 40)
                     , cursor pointer
-                    , opacity (num 0.5)
                     , backgroundColor (hex "#888")
                     , color (hex "#eff1f3")
                     , hover [ opacity (num 1), backgroundColor (hex "#666") ]
@@ -493,13 +493,13 @@ css =
                 [ marginRight (px 460)
                 , maxHeight (px 400)
                 , maxWidth (vw 80)
+                , opacity (num 1)
                 , boxShadow4 (px 0) (px 1) (px 10) (rgba 0 0 0 0.4)
                 , children
                     [ header
-                        [ opacity (num 1)
-                          -- Setting maxHeight (and animating it) is necessary
+                        [ -- Setting maxHeight (and animating it) is necessary
                           -- for a bug in Firefox 50, fixed in later releases
-                        , maxHeight (px 400)
+                          maxHeight (px 400)
                         , backgroundColor (hex "#e3e3e4")
                         , color (hex "#616469")
                         , hover [ backgroundColor (hex "#dbdbdb") ]
