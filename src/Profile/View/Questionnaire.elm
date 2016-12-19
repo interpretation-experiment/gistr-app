@@ -194,7 +194,7 @@ form lift model meta =
                 , Html.select
                     [ Attributes.id "inputEducationLevel"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Events.onInput <|
+                    , Helpers.onChange <|
                         lift
                             << QuestionnaireFormInput
                             << \e -> { input | educationLevel = e }
@@ -224,7 +224,7 @@ form lift model meta =
                 , Html.select
                     [ Attributes.id "inputJobType"
                     , Attributes.disabled (status /= Form.Entering)
-                    , Events.onInput <|
+                    , Helpers.onChange <|
                         lift
                             << QuestionnaireFormInput
                             << \j -> { input | jobType = j }

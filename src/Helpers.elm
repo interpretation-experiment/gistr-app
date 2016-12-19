@@ -28,8 +28,8 @@ module Helpers
         , notAuthed
         , notStaff
         , notify
+        , onChange
         , onEventPreventMsg
-        , onInputContent
         , readTime
         , resultToTask
         , sample
@@ -327,6 +327,11 @@ onClickMsg msg =
     onEventPreventMsg "click" msg
 
 
+onChange : (String -> msg) -> Html.Attribute msg
+onChange tagger =
+    Events.on "change" (JD.map tagger Events.targetValue)
+
+
 loading : Styles.CssClasses -> Html.Html msg
 loading size =
     Html.div [ class [ Styles.Loader, size ] ] []
@@ -356,16 +361,6 @@ notStaff =
 alreadyAuthed : Types.User -> Html.Html msg
 alreadyAuthed user =
     Html.p [] [ Html.text ("Signed in as " ++ user.username) ]
-
-
-onInputContent : (String -> msg) -> Html.Attribute msg
-onInputContent tagger =
-    Events.on "input" (JD.map tagger targetInnerText)
-
-
-targetInnerText : JD.Decoder String
-targetInnerText =
-    JD.at [ "target", "textContent" ] JD.string
 
 
 forId : a -> Html.Attribute msg
