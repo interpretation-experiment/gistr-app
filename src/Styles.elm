@@ -609,7 +609,7 @@ css =
         , (.) Companies
             [ displayFlex
             , alignItems center
-            , property "justify-content" "space-evenly"
+            , property "justify-content" "space-around"
             , marginTop (em 2)
             , descendants [ img [ maxWidth (px 130) ] ]
             , flexWrap wrap
