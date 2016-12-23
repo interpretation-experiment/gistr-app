@@ -1,13 +1,14 @@
 module Router
     exposing
-        ( ProfileRoute(..)
+        ( ExploreRoute(..)
+        , ProfileRoute(..)
         , Route(..)
         , parse
         , normalize
         , toUrl
         )
 
-import Maybe.Extra exposing (isJust, (?))
+import Maybe.Extra exposing (isJust, unwrap)
 import Navigation
 import String
 import Types
@@ -56,7 +57,7 @@ type ProfileRoute
 
 
 type ExploreRoute
-    = Trees Int Int String
+    = Trees (Maybe Int) (Maybe Int) (Maybe String)
     | Tree Int
 
 
@@ -207,7 +208,7 @@ urlParser items formatter =
         , format Profile (s "profile" </> profileUrlParser)
         , format Experiment (s "experiment")
         , format Admin (s "admin")
-        , format (\page pageSize rootBucket -> Explore <| Trees (page ? 0) (pageSize ? 10) (rootBucket ? "experiment"))
+        , format (\page pageSize rootBucket -> Explore (Trees page pageSize rootBucket))
             (s "explore" <?> maybeQ (intQ "page") <?> maybeQ (intQ "page_size") <?> maybeQ (stringQ "root_bucket"))
         , format (Explore << Tree) (s "explore" </> int)
         ]
@@ -277,13 +278,20 @@ toUrl route =
         Admin ->
             "/admin"
 
-        Explore (Trees page pageSize rootBucket) ->
-            "/explore?page="
-                ++ (toString page)
-                ++ "&page_size="
-                ++ (toString pageSize)
-                ++ "&root_bucket="
-                ++ rootBucket
+        Explore (Trees maybePage maybePageSize maybeRootBucket) ->
+            let
+                query =
+                    unwrap [] (\page -> [ "page=" ++ toString page ]) maybePage
+                        ++ (unwrap [] (\pageSize -> [ "page_size=" ++ toString pageSize ]) maybePageSize)
+                        ++ (unwrap [] (\rootBucket -> [ "root_bucket=" ++ rootBucket ]) maybeRootBucket)
+                        |> String.join "&"
+            in
+                "/explore"
+                    ++ (if String.isEmpty query then
+                            ""
+                        else
+                            "?" ++ query
+                       )
 
         Explore (Tree id) ->
             "/explore/" ++ (toString id)
