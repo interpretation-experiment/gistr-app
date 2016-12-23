@@ -65,3 +65,6 @@ routeView model =
 
         Router.Admin ->
             Admin.View.view Msg.AdminMsg model
+
+        Router.Explore exploreRoute ->
+            []
