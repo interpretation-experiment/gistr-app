@@ -12,7 +12,7 @@ import Maybe.Extra exposing (unwrap, (?))
 
 viewConfig : Params -> ViewConfig
 viewConfig { page, pageSize, rootBucket } =
-    { page = page ? 0
+    { page = page ? 1
     , pageSize = pageSize ? 10
     , rootBucket = rootBucket ? "experiment"
     }

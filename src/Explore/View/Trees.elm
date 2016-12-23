@@ -3,7 +3,7 @@ module Explore.View.Trees exposing (view)
 import Explore.Router exposing (ViewConfig)
 import Helpers
 import Html
-import Model exposing (Model)
+import Explore.Model exposing (Model)
 import Msg exposing (Msg)
 import Router
 import Styles exposing (class, classList, id)
@@ -24,5 +24,11 @@ header =
 
 
 body : Model -> ViewConfig -> List (Html.Html Msg)
-body model config =
-    []
+body { trees } { page, pageSize, rootBucket } =
+    case trees of
+        Nothing ->
+            [ Helpers.loading Styles.Big ]
+
+        Just trees ->
+            [ Html.div [] <| List.map (\t -> Html.div [] [ Html.text t.root.text ]) trees.items
+            ]

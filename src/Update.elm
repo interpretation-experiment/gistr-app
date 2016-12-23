@@ -5,6 +5,7 @@ import Auth.Update as AuthUpdate
 import Autoresize
 import Comment.Update as CommentUpdate
 import Experiment.Update as ExperimentUpdate
+import Explore.Update as ExploreUpdate
 import Helpers exposing ((!!))
 import Home.Update as HomeUpdate
 import Maybe.Extra exposing (maybeToList)
@@ -159,6 +160,20 @@ update msg model =
             Helpers.authenticatedOrIgnore model <|
                 \auth ->
                     (AdminUpdate.update AdminMsg auth msg model |> processMsgs)
+
+        {-
+           EXPLORE
+        -}
+        ExploreMsg msg ->
+            let
+                ( explore, cmd, outMsgs ) =
+                    ExploreUpdate.update ExploreMsg msg model.explore
+            in
+                processMsgs
+                    ( { model | explore = explore }
+                    , cmd
+                    , outMsgs
+                    )
 
 
 
