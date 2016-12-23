@@ -1,5 +1,6 @@
 module Home.View exposing (view, instructions)
 
+import Explore.Router
 import Helpers
 import Home.Model as HomeModel
 import Home.Msg exposing (Msg(..))
@@ -75,12 +76,15 @@ header lift model =
 
         Types.Authenticated { user } ->
             let
-                admin =
+                adminControls =
                     if user.isStaff then
-                        -- TODO: add bottom tooltip
-                        Helpers.navIcon [ class [ Styles.Big ] ] Router.Admin "user-md"
+                        [ Helpers.navIcon [ class [ Styles.Big ] ]
+                            (Router.Explore <| Router.Trees <| Explore.Router.initialParams)
+                            "globe"
+                        , Helpers.navIcon [ class [ Styles.Big ] ] Router.Admin "user-md"
+                        ]
                     else
-                        Html.div [] []
+                        []
             in
                 [ Intro.node
                     (instructionsConfig lift)
@@ -88,14 +92,14 @@ header lift model =
                     HomeModel.Profile
                     Html.div
                     [ class [ Styles.Meta, Styles.FlexCenter ] ]
-                    [ Html.span []
+                    ([ Html.span []
                         [ Html.text "Howdy, "
                         , Html.strong [] [ Html.text user.username ]
                         ]
-                      -- TODO: add bottom tooltip
-                    , Helpers.avatar user (Router.Profile Router.Dashboard)
-                    , admin
-                    ]
+                     , Helpers.avatar user (Router.Profile Router.Dashboard)
+                     ]
+                        ++ adminControls
+                    )
                 ]
 
 

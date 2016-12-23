@@ -8,6 +8,7 @@ module Router
         , toUrl
         )
 
+import Explore.Router
 import Maybe.Extra exposing (isJust, unwrap)
 import Navigation
 import String
@@ -57,7 +58,7 @@ type ProfileRoute
 
 
 type ExploreRoute
-    = Trees (Maybe Int) (Maybe Int) (Maybe String)
+    = Trees Explore.Router.Params
     | Tree Int
 
 
@@ -208,7 +209,7 @@ urlParser items formatter =
         , format Profile (s "profile" </> profileUrlParser)
         , format Experiment (s "experiment")
         , format Admin (s "admin")
-        , format (\page pageSize rootBucket -> Explore (Trees page pageSize rootBucket))
+        , format (\page pageSize rootBucket -> Explore <| Trees <| Explore.Router.Params page pageSize rootBucket)
             (s "explore" <?> maybeQ (intQ "page") <?> maybeQ (intQ "page_size") <?> maybeQ (stringQ "root_bucket"))
         , format (Explore << Tree) (s "explore" </> int)
         ]
@@ -278,13 +279,10 @@ toUrl route =
         Admin ->
             "/admin"
 
-        Explore (Trees maybePage maybePageSize maybeRootBucket) ->
+        Explore (Trees config) ->
             let
                 query =
-                    unwrap [] (\page -> [ "page=" ++ toString page ]) maybePage
-                        ++ (unwrap [] (\pageSize -> [ "page_size=" ++ toString pageSize ]) maybePageSize)
-                        ++ (unwrap [] (\rootBucket -> [ "root_bucket=" ++ rootBucket ]) maybeRootBucket)
-                        |> String.join "&"
+                    Explore.Router.query config
             in
                 "/explore"
                     ++ (if String.isEmpty query then
