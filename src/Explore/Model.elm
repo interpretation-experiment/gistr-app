@@ -1,6 +1,7 @@
 module Explore.Model
     exposing
         ( Model
+        , TreesModel
         , initialModel
         )
 
@@ -15,8 +16,14 @@ initialModel =
 
 
 type alias Model =
-    { trees : Maybe (Types.Page Types.Tree)
+    { trees : Maybe TreesModel
     , tree : Maybe TreeModel
+    }
+
+
+type alias TreesModel =
+    { lastTotalTrees : Int
+    , maybeTrees : Maybe (List Types.Tree)
     }
 
 

@@ -18,7 +18,9 @@ view model route =
             if auth.user.isStaff then
                 case route of
                     Router.Trees config ->
-                        Explore.View.Trees.view model.explore
+                        Explore.View.Trees.view Msg.ExploreMsg
+                            model.explore.trees
+                            auth
                             (Explore.Router.viewConfig config)
 
                     Router.Tree id ->

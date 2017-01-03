@@ -26,6 +26,7 @@ type Msg
       -- NAVIGATION
     | UrlUpdate String Router.Route
     | NavigateTo Router.Route
+    | NavigateToNoflush Router.Route
     | Error Types.Error
       -- STORE
     | WordSpanResult (Api.Result Types.WordSpan)

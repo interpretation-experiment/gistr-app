@@ -102,6 +102,13 @@ update msg model =
             in
                 newModel ! [ cmd, Navigation.newUrl (Router.toUrl newModel.route) ]
 
+        NavigateToNoflush route ->
+            let
+                ( newModel, cmd ) =
+                    Helpers.navigateToNoflush model route
+            in
+                newModel ! [ cmd, Navigation.newUrl (Router.toUrl newModel.route) ]
+
         Error error ->
             -- Don't use `udpate (NavigateTo ...)` here so as not to lose the form inputs
             { model | route = Router.Error, error = Just error }
