@@ -1,0 +1,5 @@
+py==1.4.32
+pytest-django==3.1.2
+pytest-pythonpath==0.7.1
+pytest==3.0.5
+selenium==3.0.2

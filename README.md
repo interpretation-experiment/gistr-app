@@ -29,6 +29,15 @@ For continuous development:
 npm run serve     # Will serve and live-reload on rebuilds
 ```
 
+Tests
+-----
+
+TODO:
+
+- elm tests
+- selenium, with Firefox+Geckodriver, checked out spreadr submodule, and pip install -r spreadr/requirements.txt && pip install -r tests/browser/requirements.txt
+
+
 Product Access
 --------------
 
