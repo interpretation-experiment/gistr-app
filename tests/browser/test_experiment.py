@@ -1,6 +1,13 @@
+from datetime import datetime
+from multiprocessing import Pool
+import inspect
+import random
 import time
 
 from selenium.webdriver.support.ui import Select
+
+from utils import send_keys
+import utils
 
 
 user_password = "abcdef"
@@ -8,15 +15,12 @@ pause = 0.5
 
 
 def register(driver, gistr_url, username):
-    # Navigate
-    driver.get(gistr_url + "/register")
-
     # Fill in all inputs
-    driver.find_element_by_id("InputAutofocus").send_keys(username)
-    driver.find_element_by_id("inputEmail").send_keys(
-        username + "@browser.test")
-    driver.find_element_by_id("inputPassword1").send_keys(user_password)
-    driver.find_element_by_id("inputPassword2").send_keys(user_password)
+    send_keys(driver.find_element_by_id("InputAutofocus"), username)
+    send_keys(driver.find_element_by_id("inputEmail"),
+              username + "@browser.test")
+    send_keys(driver.find_element_by_id("inputPassword1"), user_password)
+    send_keys(driver.find_element_by_id("inputPassword2"), user_password)
 
     # Submit
     driver.find_element_by_id("inputPassword2").submit()
@@ -28,9 +32,6 @@ def register(driver, gistr_url, username):
 
 
 def read_instructions(driver, gistr_url, path):
-    # Navigate
-    driver.get(gistr_url + path)
-
     # Wait for instructions to appear
     time.sleep(pause)
 
@@ -51,26 +52,22 @@ def read_instructions(driver, gistr_url, path):
 
 
 def fill_questionnaire(driver, gistr_url):
-    # Navigate
-    driver.get(gistr_url + "/profile/questionnaire")
-
     # Fill in all inputs
-    driver.find_element_by_id("inputAge").send_keys("20")
+    send_keys(driver.find_element_by_id("inputAge"), "20")
     driver.find_element_by_css_selector("main input[value=other]").click()
     education = Select(driver.find_element_by_id("inputEducationLevel"))
     education.select_by_visible_text("Primary")
-    driver.find_element_by_id("inputEducationFreetext")\
-        .send_keys("Some education")
+    send_keys(driver.find_element_by_id("inputEducationFreetext"),
+              "Some education")
     job = Select(driver.find_element_by_id("inputJobType"))
     job.select_by_visible_text("Other")
-    driver.find_element_by_id("inputJobFreetext").send_keys("Some job")
+    send_keys(driver.find_element_by_id("inputJobFreetext"), "Some job")
 
     # Submit, twice (for confirmation), waiting for the buttons to appear each
     # time
     driver.find_element_by_css_selector("main input[type=submit]").click()
     time.sleep(pause)
     driver.find_element_by_css_selector("main input[type=submit]").click()
-    time.sleep(pause)
 
     # Check we're at the profile page, with the questionnaire completed
     assert driver.find_element_by_css_selector("header h1").text == "Profile"
@@ -80,39 +77,84 @@ def fill_questionnaire(driver, gistr_url):
 
 def run_trial(config, driver, username):
     driver.find_element_by_id('CtrlNext').click()
-    time.sleep(pause)
 
     text = driver.find_element_by_css_selector('main blockquote').text
     read_time = config.read_factor * len(text.split(' '))
     time.sleep(read_time)
 
     # The task wait time is absorbed in the driver's implicit wait
-    driver.find_element_by_id(
-        'InputAutofocus').send_keys((username + ' ') * 10)
+    send_keys(driver.find_element_by_id('InputAutofocus'),
+              (username + ' ') * 10)
     driver.find_element_by_id('CtrlNext').click()
-    time.sleep(pause)
+
+    # Wait until the sentence is saved to return. Or raise an exception.
+    for i in range(30):
+        time.sleep(1)
+        title = driver.find_element_by_css_selector('main h3').text
+        if ("saved" in title) or ("finished" in title):
+            return
+
+    raise Exception("Never reached 'sentence saved' state")
 
 
-def test_full_run(live_server, config, sentences, driver, gistr_url):
-    username = 't1'
-
+def _full_run(config, gistr_url, username, driver):
     # Do all the pre-exp stuff
+    driver.get(gistr_url + "/register")
     register(driver, gistr_url, username)
     read_instructions(driver, gistr_url, '/')
+    driver.find_element_by_css_selector('header .layoutAvatar').click()
+    driver.find_element_by_css_selector('main .layoutWell h4 button').click()
     fill_questionnaire(driver, gistr_url)
+    driver.find_element_by_css_selector('main .layoutInfoBox button').click()
     read_instructions(driver, gistr_url, '/experiment')
 
     # Run through the trials
-    trials = 0
+    n_trials = 0
     title = driver.find_element_by_css_selector('header h1').text
     while 'Done' not in title:
         run_trial(config, driver, username)
-        trials += 1
+        n_trials += 1
         title = driver.find_element_by_css_selector('header h1').text
 
     # And make sure we saw the right amount of trials
-    assert trials == config.training_work + config.experiment_work
+    assert n_trials == config.training_work + config.experiment_work
 
 
-# TODO: make a test_concurrent_experiment() using test_experiment with several
-# drivers, then testing for tree shapes
+def full_run(config, gistr_url, username, driver=None):
+    if driver is None:
+        with utils.driver() as driver:
+            _full_run(config, gistr_url, username, driver)
+    else:
+        _full_run(config, gistr_url, username, driver)
+
+
+def test_full_run(live_server, config, sentences, driver, gistr_url):
+    full_run(config, gistr_url, 'test_guy', driver)
+
+
+def wait_then_full_run(wait_config_gistrurl_username):
+    (wait, config, gistr_url, username) = wait_config_gistrurl_username
+    time.sleep(wait)
+    full_run(config, gistr_url, username)
+
+
+def test_concurrent_full_runs(live_server, concurrent_config, sentences,
+                              gistr_url):
+    n_users = (concurrent_config.target_branch_count
+               * concurrent_config.target_branch_depth)
+    args = [(random.uniform(0, n_users),
+             concurrent_config,
+             gistr_url,
+             't{}'.format(i))
+            for i in range(n_users)]
+
+    with Pool(n_users) as pool:
+        pool.map(wait_then_full_run, args)
+
+    dump_filename = ('{name} W={work} C={branch_count} '
+                     'D={branch_depth} {time}.sql').format(
+        name=inspect.currentframe().f_code.co_name, time=datetime.now(),
+        work=concurrent_config.experiment_work,
+        branch_count=concurrent_config.target_branch_count,
+        branch_depth=concurrent_config.target_branch_depth)
+    utils.dump_sqlite_memory(dump_filename)
