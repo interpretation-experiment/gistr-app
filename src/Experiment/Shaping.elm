@@ -144,8 +144,13 @@ type Tree a
 
 
 root : Tree a -> a
-root (Tree a _) =
-    a
+root (Tree r _) =
+    r
+
+
+children : Tree a -> List (Tree a)
+children (Tree _ c) =
+    c
 
 
 tree : a -> List (Types.Edge a) -> Tree a
@@ -239,18 +244,25 @@ selectTip seed auth tree =
                     Nonempty.toList treeTips
                         |> List.filter (\( depth, _ ) -> depth < auth.meta.targetBranchDepth)
 
-                eligibleTips =
-                    case unreachedTips of
-                        [] ->
-                            treeTips
-
-                        head :: rest ->
-                            Nonempty.Nonempty head rest
+                sampleTip eligible =
+                    eligible
+                        |> Nonempty.map Tuple.second
+                        |> Nonempty.concat
+                        |> Helpers.sample newSeed
             in
-                eligibleTips
-                    |> Nonempty.map Tuple.second
-                    |> Nonempty.concat
-                    |> Helpers.sample newSeed
+                case unreachedTips of
+                    [] ->
+                        if
+                            ((List.length (children tree) < auth.meta.targetBranchCount)
+                                && (auth.meta.branchProbability > 0)
+                            )
+                        then
+                            root tree
+                        else
+                            sampleTip treeTips
+
+                    head :: rest ->
+                        sampleTip (Nonempty.Nonempty head rest)
 
 
 selectTipSentence : Types.Auth -> Types.Tree -> Task Types.Sentence
