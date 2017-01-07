@@ -1,5 +1,13 @@
+# Elm and Node modules
 elm-stuff/
 node_modules/
+
+# Gistr build folders
 build_tmp/
 build/
 dist/
+
+# Pytest cache and logs
+.cache/
+__pycache__/
+geckodriver.log
