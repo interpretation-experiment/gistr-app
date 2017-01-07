@@ -235,14 +235,19 @@ selectTip seed auth tree =
                 treeTips =
                     tips tree
 
-                minDepth =
-                    Nonempty.map Tuple.first treeTips
-                        |> Helpers.nonemptyMinimum
+                unreachedTips =
+                    Nonempty.toList treeTips
+                        |> List.filter (\( depth, _ ) -> depth < auth.meta.targetBranchDepth)
+
+                eligibleTips =
+                    case unreachedTips of
+                        [] ->
+                            treeTips
+
+                        head :: rest ->
+                            Nonempty.Nonempty head rest
             in
-                Nonempty.filter
-                    (\( depth, _ ) -> depth == minDepth)
-                    (Nonempty.head treeTips)
-                    treeTips
+                eligibleTips
                     |> Nonempty.map Tuple.second
                     |> Nonempty.concat
                     |> Helpers.sample newSeed

@@ -130,24 +130,29 @@ selectTip : Test
 selectTip =
     let
         {-
-           1 ── 11 ── 111 ── 1111 ── 11111   <-- never selected
-           │    │
+           1 ── 11 ── 111 ── 1111 ── 11111   <-- can be selected if targetBranchDepth <= 3
+           │    │                                                or targetBranchDepth >= 5
            │    └──── 112                    <-- never selected
            │
-           ├─── 12 ── 121 ── 1211            <-- selected equally with 1311
+           ├─── 12 ── 121 ── 1211            <-- can be selected
            │    │
            │    └──── 122                    <-- never selected
            │
-           └─── 13 ── 131 ── 1311            <-- selected equally with 1211
+           └─── 13 ── 131 ── 1311            <-- can be selected
+                      │
+                      └───── 1312            <-- can be selected
 
            - basics
 
              - always returns the root on a tree with no children
-             - returns either the root (== branching), or one of the deepest tips of one of the shallowest sub-trees
+             - returns either the root (== branching), or one of the deepest tips of
+                 one of the sub-trees < targetDepth, if any,
+                 any sub-tree, otherwise
 
            - effects of branchProbability
 
              - never branches when branchProbability is 0
+             - never branches when targetBranchCount is reached
              - always branches when branchProbability is 1 and targetBranchCount is not reached
 
         -}
@@ -170,6 +175,7 @@ selectTip =
                 , Experiment.Shaping.Tree 13
                     [ Experiment.Shaping.Tree 131
                         [ Experiment.Shaping.Tree 1311 []
+                        , Experiment.Shaping.Tree 1312 []
                         ]
                     ]
                 ]
@@ -177,8 +183,11 @@ selectTip =
         (Experiment.Shaping.Tree inputRoot inputChildren) =
             input
 
-        eligibleTips =
-            [ 1211, 1311 ]
+        eligibleTipsWithTargetDepth4 =
+            [ 1211, 1311, 1312 ]
+
+        eligibleTipsWithTargetDepthNot4 =
+            [ 11111, 1211, 1311, 1312 ]
 
         setBranchProbability p auth =
             let
@@ -198,17 +207,38 @@ selectTip =
                             auth
                             (Experiment.Shaping.Tree inputRoot [])
                             |> Expect.equal inputRoot
-                , fuzz2 int Fixtures.auth "returns the root or a tip at minimum depth" <|
+                , fuzz2 int Fixtures.auth "returns the root or one of (tips < targetBranchDepth) or any tip if there are none of the first" <|
                     \seeder auth ->
-                        Experiment.Shaping.selectTip (Random.initialSeed seeder) auth input
-                            |> (\t -> (t == inputRoot) || (List.member t eligibleTips))
-                            |> Expect.true "Expected the tip to be root or at minimum depth"
+                        let
+                            eligibleTips =
+                                if auth.meta.targetBranchDepth == 4 then
+                                    eligibleTipsWithTargetDepth4
+                                else
+                                    eligibleTipsWithTargetDepthNot4
+                        in
+                            Experiment.Shaping.selectTip (Random.initialSeed seeder) auth input
+                                |> (\t -> (t == inputRoot) || (List.member t eligibleTips))
+                                |> Expect.true "Expected root or an eligible tip"
                 ]
             , describe "effects of branchProbability"
                 [ fuzz2 int Fixtures.auth "never branches when branchProbability is 0" <|
                     \seeder auth ->
                         Experiment.Shaping.selectTip (Random.initialSeed seeder) (setBranchProbability 0 auth) input
                             |> Expect.notEqual inputRoot
+                , fuzz2 int Fixtures.auth "never branches when targetBranchCount is reached" <|
+                    \seeder auth ->
+                        let
+                            targetReached =
+                                List.length inputChildren >= auth.meta.targetBranchCount
+
+                            selectedTip =
+                                Experiment.Shaping.selectTip (Random.initialSeed seeder) auth input
+
+                            branched =
+                                selectedTip == inputRoot
+                        in
+                            (not targetReached || not branched)
+                                |> Expect.true "Expected to not branch if targetBranchCount is reached"
                 , fuzz2 int Fixtures.auth "always branches when branchProbability is 1 and targetBranchCount is not reached" <|
                     \seeder auth ->
                         let
