@@ -182,27 +182,27 @@ treeHelp root edges =
                 ( Tree root subTrees, remEdges )
 
 
-tips : Tree a -> Nonempty ( Int, Nonempty a )
+tips : Tree comparable -> Nonempty ( Int, comparable )
 tips (Tree root children) =
     case children of
         [] ->
-            Nonempty.fromElement ( 0, Nonempty.fromElement root )
+            Nonempty.fromElement ( 0, root )
 
         head :: tail ->
-            Nonempty.map maxTips (Nonempty head tail)
+            Nonempty.map maxTip (Nonempty head tail)
                 |> Nonempty.map (Tuple.mapFirst ((+) 1))
 
 
-maxTips : Tree a -> ( Int, Nonempty a )
-maxTips (Tree root children) =
+maxTip : Tree comparable -> ( Int, comparable )
+maxTip (Tree root children) =
     case children of
         [] ->
-            ( 0, Nonempty.fromElement root )
+            ( 0, root )
 
         head :: tail ->
             let
                 childrenTips =
-                    Nonempty.map maxTips (Nonempty head tail)
+                    Nonempty.map maxTip (Nonempty head tail)
 
                 maxDepth =
                     Nonempty.map Tuple.first childrenTips
@@ -214,7 +214,7 @@ maxTips (Tree root children) =
                     (Nonempty.head childrenTips)
                     childrenTips
                     |> Nonempty.map Tuple.second
-                    |> Nonempty.concat
+                    |> Helpers.nonemptyMinimum
                 )
 
 
@@ -227,7 +227,7 @@ branchOrNot seed auth (Tree _ children) =
         ( False, seed )
 
 
-selectTip : Random.Seed -> Types.Auth -> Tree a -> a
+selectTip : Random.Seed -> Types.Auth -> Tree comparable -> comparable
 selectTip seed auth tree =
     let
         ( branch, newSeed ) =
@@ -247,7 +247,6 @@ selectTip seed auth tree =
                 sampleTip eligible =
                     eligible
                         |> Nonempty.map Tuple.second
-                        |> Nonempty.concat
                         |> Helpers.sample newSeed
             in
                 case unreachedTips of
@@ -262,7 +261,7 @@ selectTip seed auth tree =
                             sampleTip treeTips
 
                     head :: rest ->
-                        sampleTip (Nonempty.Nonempty head rest)
+                        sampleTip (Nonempty head rest)
 
 
 selectTipSentence : Types.Auth -> Types.Tree -> Task Types.Sentence

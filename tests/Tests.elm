@@ -97,8 +97,8 @@ tips =
             Experiment.Shaping.Tree 1
                 [ Experiment.Shaping.Tree 11
                     [ Experiment.Shaping.Tree 111
-                        [ Experiment.Shaping.Tree 1111 []
-                        , Experiment.Shaping.Tree 1112 []
+                        [ Experiment.Shaping.Tree 1112 []
+                        , Experiment.Shaping.Tree 1111 []
                         ]
                     , Experiment.Shaping.Tree 112 []
                     ]
@@ -109,9 +109,9 @@ tips =
                 ]
 
         output =
-            Nonempty ( 3, Nonempty 1111 [ 1112 ] )
-                [ ( 2, Nonempty.fromElement 121 )
-                , ( 1, Nonempty.fromElement 13 )
+            Nonempty ( 3, 1111 )
+                [ ( 2, 121 )
+                , ( 1, 13 )
                 ]
     in
         describe "tree tips"
@@ -122,7 +122,7 @@ tips =
             , test "finds a single tip in a tree with a root and no leaves" <|
                 \_ ->
                     Experiment.Shaping.tips (Experiment.Shaping.Tree 2 [])
-                        |> Expect.equal (Nonempty.fromElement ( 0, Nonempty.fromElement 2 ))
+                        |> Expect.equal (Nonempty.fromElement ( 0, 2 ))
             ]
 
 
@@ -140,7 +140,7 @@ selectTip =
            │
            └─── 13 ── 131 ── 1311            <-- can be selected
                       │
-                      └───── 1312            <-- can be selected
+                      └───── 1312            <-- never selected
 
            - basics
 
@@ -185,10 +185,10 @@ selectTip =
             input
 
         eligibleTipsWithTargetDepth4 =
-            [ 1211, 1311, 1312 ]
+            [ 1211, 1311 ]
 
         eligibleTipsWithTargetDepthNot4 =
-            [ 11111, 1211, 1311, 1312 ]
+            [ 11111, 1211, 1311 ]
 
         setBranchProbability p auth =
             let
