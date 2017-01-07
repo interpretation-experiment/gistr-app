@@ -29,13 +29,67 @@ For continuous development:
 npm run serve     # Will serve and live-reload on rebuilds
 ```
 
+
 Tests
 -----
 
-TODO:
 
-- elm tests
-- selenium, with Firefox+Geckodriver, checked out spreadr submodule, and pip install -r spreadr/requirements.txt && pip install -r tests/browser/requirements.txt
+### Elm tests
+
+After running `npm install` and `node_modules/.bin/elm-github-install` in the last section, do:
+
+```
+cd tests
+../node_modules/.bin/elm-github-install
+cd ..
+node_modules/.bin/elm-test
+```
+
+And everything should be green.
+
+
+### Selenium (browser) tests
+
+These run in Python 3 (tested with Python 3.5+ only). There are two types of tests: normal, which can run on any WebDriver-enabled browser, and concurrent, which need a bit more setup and currently can only be performed using Chromium/Chrome (the behavior on Firefox changes too much when the browser window loses focus, which happens all the time since we spawn several concurrent windows).
+
+TODO: mark concurrent tests with a pytest mark
+
+TODO: run normal (non-concurrent) tests in Travis
+
+TODO: test concurrent tests in xvfb, for Travis
+
+Environment setup (using fish shell with virtualfish):
+
+```
+git submodule update --init  # to check out the spreadr submodule
+vf new -p (which python3) gistr
+pip install -r spreadr/requirements.txt
+pip install -r tests/browser/requirements.txt
+```
+
+Normal tests:
+
+```
+pytest -k test_about  # it's the only test for now
+```
+
+Concurrent tests: we run them in a nested X server so that nothing interferes with window focus. So you need to have Xephyr installed (`extra/xorg-server-xephyr` on Arch). Then, in another shell, run:
+
+```
+startx -- (which Xephyr) :1 -screen 1200x700x24
+```
+
+A nested X server opens up. **Position it such that your mouse doesn't enter it in the following steps.** It's the only reliable way I've found not to interfere with the focus of the browser windows that will open up.
+
+Back in the first shell with the `gistr` virtualenv activated, run:
+
+```
+env DISPLAY=:1 pytest -k test_concurrent_full_runs
+```
+
+Which will run the concurrent tests with browser windows in the nested X server. **Do not** enter that nested X server with your mouse while the tests are running, or they will most likely fail. The values in the `tests/browser/conftest.py` fixtures let you configure the tree shaping and concurrency parameters.
+
+Once all browser windows have closed themselves, you can kill the other shell's `startx` command. The database resulting from the concurrent tests are dumped in the `tests/browser/sqldumps` folder. Load them into another spreadr instance for exploration.
 
 
 Product Access
