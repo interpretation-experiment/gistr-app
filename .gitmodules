@@ -1,0 +1,3 @@
+[submodule "spreadr"]
+	path = spreadr
+	url = https://github.com/interpretation-experiment/spreadr.git
