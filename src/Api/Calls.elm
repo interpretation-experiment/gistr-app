@@ -2,13 +2,13 @@ module Api.Calls
     exposing
         ( Task
         , deleteEmail
+        , getFreeTree
         , getMeta
         , getPreUser
         , getProfile
         , getProfiles
         , getSentence
         , getSentences
-        , getServedTree
         , getTree
         , getTrees
         , getWordSpan
@@ -486,13 +486,13 @@ getTree { token } id =
         }
 
 
-getServedTree :
+getFreeTree :
     Types.Auth
     -> List ( String, String )
     -> Task (Maybe Types.Tree)
-getServedTree { token } query =
+getFreeTree { token } query =
     get
-        { path = "/trees/serve_long_unserved_choice/"
+        { path = "/trees/free_tree/"
         , query = query
         , token = Just token
         , expect = Http.expectJson (JD.list Decoders.tree |> JD.map List.head)

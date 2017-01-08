@@ -112,7 +112,7 @@ justOr default maybeTree =
 
 fetchUnshapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchUnshapedUntouchedTree auth =
-    Api.getServedTree auth (unshapedUntouchedFilter auth)
+    Api.getFreeTree auth (unshapedUntouchedFilter auth)
         |> Task.andThen
             (justOr <|
                 Task.fail <|
@@ -122,7 +122,7 @@ fetchUnshapedUntouchedTree auth =
 
 fetchPossiblyShapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchPossiblyShapedUntouchedTree auth =
-    Api.getServedTree auth (shapedUntouchedFilter auth)
+    Api.getFreeTree auth (shapedUntouchedFilter auth)
         |> Task.andThen (justOr <| fetchUnshapedUntouchedTree auth)
 
 

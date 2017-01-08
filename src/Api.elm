@@ -6,9 +6,9 @@ module Api
         , confirmEmail
         , deleteEmail
         , getAuth
+        , getFreeTree
         , getSentence
         , getSentences
-        , getServedTree
         , getTree
         , getTrees
         , getWordSpan
@@ -226,9 +226,9 @@ getTree =
     Calls.getTree
 
 
-getServedTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
-getServedTree =
-    Calls.getServedTree
+getFreeTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
+getFreeTree =
+    Calls.getFreeTree
 
 
 getTrees :
