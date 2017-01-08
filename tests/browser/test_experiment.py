@@ -142,7 +142,7 @@ def test_concurrent_full_runs(live_server, concurrent_config, sentences,
                               gistr_url):
     n_users = (concurrent_config.target_branch_count
                * concurrent_config.target_branch_depth)
-    args = [(i * 30 + random.uniform(-10, 10),
+    args = [(i * 30 + random.uniform(1, 10),
              concurrent_config,
              gistr_url,
              't{}'.format(i))
