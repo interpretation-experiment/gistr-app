@@ -1,15 +1,16 @@
 module Experiment.Shaping
     exposing
         ( Tree(Tree)
+        , branchTips
         , fetchPossiblyShapedUntouchedTree
         , fetchRandomizedUnshapedTrees
         , selectTip
         , selectTipSentence
-        , tips
         , tree
         )
 
 import Api
+import Array
 import Helpers
 import Helpers
 import Lifecycle
@@ -64,15 +65,6 @@ preFilter auth =
 
 
 
--- SEVERAL-TREES FILTER
-
-
-unshapedSeveralFilter : Int -> Types.Auth -> Filter
-unshapedSeveralFilter num auth =
-    (preFilter auth) ++ [ ( "sample", toString num ) ]
-
-
-
 -- SEVERAL-TREES FETCHING TASKS
 
 
@@ -82,7 +74,10 @@ type alias Task a =
 
 fetchUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
 fetchUnshapedTrees num auth =
-    Api.getTrees auth Nothing (unshapedSeveralFilter num auth) |> Task.map .items
+    Api.getTrees auth
+        (Just { pageSize = num, page = 1 })
+        (preFilter auth)
+        |> Task.map .items
 
 
 fetchRandomizedUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
@@ -91,20 +86,17 @@ fetchRandomizedUnshapedTrees num auth =
 
 
 
--- SINGLE-TREE FILTERS
+-- PROFILE AND SHAPING FILTERS
 
 
-unshapedUntouchedSingleFilter : Types.Auth -> Filter
-unshapedUntouchedSingleFilter auth =
-    (preFilter auth)
-        ++ [ ( "untouched_by_profile", toString auth.user.profile.id )
-           , ( "sample", toString 1 )
-           ]
+unshapedUntouchedFilter : Types.Auth -> Filter
+unshapedUntouchedFilter auth =
+    (preFilter auth) ++ [ ( "untouched_by_profile", toString auth.user.profile.id ) ]
 
 
-shapedUntouchedSingleFilter : Types.Auth -> Filter
-shapedUntouchedSingleFilter auth =
-    (unshapedUntouchedSingleFilter auth)
+shapedUntouchedFilter : Types.Auth -> Filter
+shapedUntouchedFilter auth =
+    (unshapedUntouchedFilter auth)
         ++ [ ( "branches_count_lte", toString auth.meta.targetBranchCount )
            , ( "shortest_branch_depth_lte", toString auth.meta.targetBranchDepth )
            ]
@@ -114,16 +106,16 @@ shapedUntouchedSingleFilter auth =
 -- SINGLE-TREE FETCHING TASKS
 
 
-firstOr : Task Types.Tree -> Types.Page Types.Tree -> Task Types.Tree
-firstOr default page =
-    unwrap default Task.succeed (List.head page.items)
+justOr : Task Types.Tree -> Maybe Types.Tree -> Task Types.Tree
+justOr default maybeTree =
+    unwrap default Task.succeed maybeTree
 
 
 fetchUnshapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchUnshapedUntouchedTree auth =
-    Api.getTrees auth Nothing (unshapedUntouchedSingleFilter auth)
+    Api.getFreeTree auth (unshapedUntouchedFilter auth)
         |> Task.andThen
-            (firstOr <|
+            (justOr <|
                 Task.fail <|
                     Types.Unrecoverable "Found no suitable tree for profile"
             )
@@ -131,8 +123,8 @@ fetchUnshapedUntouchedTree auth =
 
 fetchPossiblyShapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchPossiblyShapedUntouchedTree auth =
-    Api.getTrees auth Nothing (shapedUntouchedSingleFilter auth)
-        |> Task.andThen (firstOr <| fetchUnshapedUntouchedTree auth)
+    Api.getFreeTree auth (shapedUntouchedFilter auth)
+        |> Task.andThen (justOr <| fetchUnshapedUntouchedTree auth)
 
 
 
@@ -144,8 +136,13 @@ type Tree a
 
 
 root : Tree a -> a
-root (Tree a _) =
-    a
+root (Tree r _) =
+    r
+
+
+children : Tree a -> List (Tree a)
+children (Tree _ c) =
+    c
 
 
 tree : a -> List (Types.Edge a) -> Tree a
@@ -177,27 +174,34 @@ treeHelp root edges =
                 ( Tree root subTrees, remEdges )
 
 
-tips : Tree a -> Nonempty ( Int, Nonempty a )
-tips (Tree root children) =
+branchTips : Tree comparable -> Nonempty ( comparable, Int, comparable )
+branchTips (Tree treeRoot children) =
     case children of
         [] ->
-            Nonempty.fromElement ( 0, Nonempty.fromElement root )
+            Nonempty.fromElement ( treeRoot, 0, treeRoot )
 
         head :: tail ->
-            Nonempty.map maxTips (Nonempty head tail)
-                |> Nonempty.map (Tuple.mapFirst ((+) 1))
+            let
+                branchMaxTip subTree =
+                    let
+                        ( depth, tip ) =
+                            maxTip subTree
+                    in
+                        ( root subTree, depth + 1, tip )
+            in
+                Nonempty.map branchMaxTip (Nonempty head tail)
 
 
-maxTips : Tree a -> ( Int, Nonempty a )
-maxTips (Tree root children) =
+maxTip : Tree comparable -> ( Int, comparable )
+maxTip (Tree root children) =
     case children of
         [] ->
-            ( 0, Nonempty.fromElement root )
+            ( 0, root )
 
         head :: tail ->
             let
                 childrenTips =
-                    Nonempty.map maxTips (Nonempty head tail)
+                    Nonempty.map maxTip (Nonempty head tail)
 
                 maxDepth =
                     Nonempty.map Tuple.first childrenTips
@@ -209,7 +213,7 @@ maxTips (Tree root children) =
                     (Nonempty.head childrenTips)
                     childrenTips
                     |> Nonempty.map Tuple.second
-                    |> Nonempty.concat
+                    |> Helpers.nonemptyMinimum
                 )
 
 
@@ -222,7 +226,7 @@ branchOrNot seed auth (Tree _ children) =
         ( False, seed )
 
 
-selectTip : Random.Seed -> Types.Auth -> Tree a -> a
+selectTip : Random.Seed -> Types.Auth -> Tree comparable -> comparable
 selectTip seed auth tree =
     let
         ( branch, newSeed ) =
@@ -232,20 +236,43 @@ selectTip seed auth tree =
             root tree
         else
             let
-                treeTips =
-                    tips tree
+                orderedBranchTips =
+                    branchTips tree
+                        |> Nonempty.sortBy (\( branch, _, _ ) -> branch)
 
-                minDepth =
-                    Nonempty.map Tuple.first treeTips
-                        |> Helpers.nonemptyMinimum
+                eligibleBranchTips =
+                    if auth.meta.targetBranchCount == 0 then
+                        orderedBranchTips
+                    else
+                        Nonempty.tail orderedBranchTips
+                            |> Array.fromList
+                            |> Array.slice 0 (auth.meta.targetBranchCount - 1)
+                            |> Array.toList
+                            |> Nonempty (Nonempty.head orderedBranchTips)
+
+                depthUnreachedBranchTips =
+                    eligibleBranchTips
+                        |> Nonempty.toList
+                        |> List.filter (\( _, depth, _ ) -> depth < auth.meta.targetBranchDepth)
+
+                sampleTip eligible =
+                    eligible
+                        |> Nonempty.map (\( _, _, tip ) -> tip)
+                        |> Helpers.sample newSeed
             in
-                Nonempty.filter
-                    (\( depth, _ ) -> depth == minDepth)
-                    (Nonempty.head treeTips)
-                    treeTips
-                    |> Nonempty.map Tuple.second
-                    |> Nonempty.concat
-                    |> Helpers.sample newSeed
+                case depthUnreachedBranchTips of
+                    [] ->
+                        if
+                            ((List.length (children tree) < auth.meta.targetBranchCount)
+                                && (auth.meta.branchProbability > 0)
+                            )
+                        then
+                            root tree
+                        else
+                            sampleTip eligibleBranchTips
+
+                    head :: rest ->
+                        sampleTip (Nonempty head rest)
 
 
 selectTipSentence : Types.Auth -> Types.Tree -> Task Types.Sentence

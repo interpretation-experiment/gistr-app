@@ -9,10 +9,11 @@ module Model
 
 import Admin.Model as AdminModel
 import Autoresize
+import Comment.Model as CommentModel
 import Experiment.Model as ExpModel
+import Explore.Model as ExploreModel
 import Form
 import Home.Model as HomeModel
-import Comment.Model as CommentModel
 import Intro
 import Notification
 import Router
@@ -43,6 +44,7 @@ type alias Model =
     , questionnaire : Form.Model Types.QuestionnaireForm
     , experiment : ExpModel.Model
     , admin : AdminModel.Model
+    , explore : ExploreModel.Model
     , -- Page-related utils
       autoresize : Autoresize.Model
     , comment : CommentModel.Model
@@ -70,6 +72,7 @@ initialModel route =
     , questionnaire = Form.empty Types.emptyQuestionnaireForm
     , experiment = ExpModel.initialModel
     , admin = AdminModel.initialModel
+    , explore = ExploreModel.initialModel
     , -- Page-related utils
       autoresize = Autoresize.initialModel
     , comment = CommentModel.initialModel

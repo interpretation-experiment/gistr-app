@@ -84,7 +84,7 @@ def run_trial(config, driver, username):
 
     # The task wait time is absorbed in the driver's implicit wait
     send_keys(driver.find_element_by_id('InputAutofocus'),
-              (username + ' ') * 10)
+              (username + ' ') * random.randint(10, 15))
     driver.find_element_by_id('CtrlNext').click()
 
     # Wait until the sentence is saved to return. Or raise an exception.
@@ -142,7 +142,7 @@ def test_concurrent_full_runs(live_server, concurrent_config, sentences,
                               gistr_url):
     n_users = (concurrent_config.target_branch_count
                * concurrent_config.target_branch_depth)
-    args = [(random.uniform(0, n_users),
+    args = [(random.uniform(0, 20 * n_users),
              concurrent_config,
              gistr_url,
              't{}'.format(i))

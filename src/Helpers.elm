@@ -23,6 +23,7 @@ module Helpers
         , navButton
         , navIcon
         , navigateTo
+        , navigateToNoflush
         , nonemptyMaximum
         , nonemptyMinimum
         , notAuthed
@@ -143,12 +144,27 @@ updateProfile model profile =
 navigateTo : Model -> Router.Route -> ( Model, Cmd Msg )
 navigateTo model request =
     let
+        newModel =
+            navigateToNoflush model request |> Tuple.first
+
+        flushedModel =
+            if newModel.route /= model.route then
+                Model.emptyForms newModel
+            else
+                model
+    in
+        flushedModel ! Cmds.cmdsForModel flushedModel
+
+
+navigateToNoflush : Model -> Router.Route -> ( Model, Cmd Msg )
+navigateToNoflush model request =
+    let
         finalRoute =
             Router.normalize model.auth (Debug.log "nav request" request)
 
         newModel =
             if finalRoute /= model.route then
-                Model.emptyForms { model | route = (Debug.log "nav final" finalRoute) }
+                { model | route = (Debug.log "nav final" finalRoute) }
             else
                 model
     in

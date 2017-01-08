@@ -2,6 +2,7 @@ module Api.Calls
     exposing
         ( Task
         , deleteEmail
+        , getFreeTree
         , getMeta
         , getPreUser
         , getProfile
@@ -34,6 +35,7 @@ import Decoders
 import Encoders
 import Http
 import HttpBuilder exposing (RequestBuilder)
+import Json.Decode as JD
 import Json.Encode as JE
 import Maybe.Extra exposing (unwrap)
 import Task
@@ -481,6 +483,19 @@ getTree { token } id =
         , query = []
         , token = Just token
         , expect = Http.expectJson Decoders.tree
+        }
+
+
+getFreeTree :
+    Types.Auth
+    -> List ( String, String )
+    -> Task (Maybe Types.Tree)
+getFreeTree { token } query =
+    get
+        { path = "/trees/free_tree/"
+        , query = query
+        , token = Just token
+        , expect = Http.expectJson (JD.list Decoders.tree |> JD.map List.head)
         }
 
 

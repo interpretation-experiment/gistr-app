@@ -6,6 +6,7 @@ module Api
         , confirmEmail
         , deleteEmail
         , getAuth
+        , getFreeTree
         , getSentence
         , getSentences
         , getTree
@@ -223,6 +224,11 @@ postSentence auth sentence =
 getTree : Types.Auth -> Int -> Calls.Task Types.Tree
 getTree =
     Calls.getTree
+
+
+getFreeTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
+getFreeTree =
+    Calls.getFreeTree
 
 
 getTrees :

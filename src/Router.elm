@@ -1,13 +1,15 @@
 module Router
     exposing
-        ( ProfileRoute(..)
+        ( ExploreRoute(..)
+        , ProfileRoute(..)
         , Route(..)
         , parse
         , normalize
         , toUrl
         )
 
-import Maybe.Extra exposing (isJust)
+import Explore.Router
+import Maybe.Extra exposing (isJust, unwrap)
 import Navigation
 import String
 import Types
@@ -19,6 +21,8 @@ import UrlQueryParser
         , UrlParser
         , customQ
         , format
+        , int
+        , intQ
         , maybeQ
         , oneOf
         , s
@@ -41,6 +45,7 @@ type Route
     | Profile ProfileRoute
     | Experiment
     | Admin
+    | Explore ExploreRoute
 
 
 type ProfileRoute
@@ -50,6 +55,11 @@ type ProfileRoute
     | Confirm String
     | Questionnaire
     | WordSpan
+
+
+type ExploreRoute
+    = Trees Explore.Router.Params
+    | Tree Int
 
 
 normalize : Types.AuthStatus -> Route -> Route
@@ -81,13 +91,16 @@ normalize auth route =
                 Prolific ->
                     route
 
-                Profile profileRoute ->
+                Profile _ ->
                     Login (Just route)
 
                 Experiment ->
                     Login (Just route)
 
                 Admin ->
+                    Login (Just route)
+
+                Explore _ ->
                     Login (Just route)
 
         Types.Authenticated { user } ->
@@ -148,6 +161,12 @@ normalize auth route =
                     else
                         Home
 
+                Explore _ ->
+                    if user.isStaff then
+                        route
+                    else
+                        Home
+
         Types.Authenticating ->
             route
 
@@ -190,6 +209,9 @@ urlParser items formatter =
         , format Profile (s "profile" </> profileUrlParser)
         , format Experiment (s "experiment")
         , format Admin (s "admin")
+        , format (\page pageSize rootBucket -> Explore <| Trees <| Explore.Router.Params page pageSize rootBucket)
+            (s "explore" <?> maybeQ (intQ "page") <?> maybeQ (intQ "page_size") <?> maybeQ (stringQ "root_bucket"))
+        , format (Explore << Tree) (s "explore" </> int)
         ]
         items
         formatter
@@ -256,6 +278,21 @@ toUrl route =
 
         Admin ->
             "/admin"
+
+        Explore (Trees config) ->
+            let
+                query =
+                    Explore.Router.query config
+            in
+                "/explore"
+                    ++ (if String.isEmpty query then
+                            ""
+                        else
+                            "?" ++ query
+                       )
+
+        Explore (Tree id) ->
+            "/explore/" ++ (toString id)
 
 
 toProfileUrl : ProfileRoute -> String

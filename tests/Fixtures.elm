@@ -79,8 +79,8 @@ meta =
                 }
             )
             (Fuzz.floatRange 0 1)
-            (Fuzz.intRange 0 100)
-            (Fuzz.intRange 0 100)
+            (Fuzz.intRange 0 10)
+            (Fuzz.intRange 0 10)
 
 
 auth : Fuzzer Types.Auth

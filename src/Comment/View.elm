@@ -94,6 +94,9 @@ isAvailable model =
                 Router.Admin ->
                     True
 
+                Router.Explore _ ->
+                    True
+
         Types.Authenticating ->
             False
 

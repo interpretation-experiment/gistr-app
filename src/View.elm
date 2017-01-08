@@ -8,6 +8,7 @@ import Auth.View.Register
 import Auth.View.Reset
 import Comment.View
 import Experiment.View
+import Explore.View
 import Home.View
 import Html
 import Model exposing (Model)
@@ -65,3 +66,6 @@ routeView model =
 
         Router.Admin ->
             Admin.View.view Msg.AdminMsg model
+
+        Router.Explore exploreRoute ->
+            Explore.View.view model exploreRoute

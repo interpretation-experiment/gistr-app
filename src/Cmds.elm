@@ -3,6 +3,7 @@ module Cmds exposing (autofocus, cmdsForModel)
 import Api
 import Dom
 import Experiment.Msg as ExperimentMsg
+import Explore.Cmds
 import Home.Msg as HomeMsg
 import Lifecycle
 import Model exposing (Model)
@@ -94,6 +95,11 @@ nonFocusCmds model =
                         ]
                     else
                         []
+
+        Router.Explore exploreRoute ->
+            authenticatedOrIgnore model <|
+                \auth ->
+                    Explore.Cmds.cmdsForModel Msg.ExploreMsg auth model.explore exploreRoute
 
         _ ->
             []
