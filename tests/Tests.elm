@@ -17,7 +17,7 @@ all =
     describe "Gistr Test Suite"
         [ describe "Experiment.Shaping"
             [ tree
-            , tips
+            , branchTips
             , selectTip
             ]
         , describe "Helpers"
@@ -90,8 +90,8 @@ tree =
             ]
 
 
-tips : Test
-tips =
+branchTips : Test
+branchTips =
     let
         input =
             Experiment.Shaping.Tree 1
@@ -109,20 +109,20 @@ tips =
                 ]
 
         output =
-            Nonempty ( 3, 1111 )
-                [ ( 2, 121 )
-                , ( 1, 13 )
+            Nonempty ( 11, 3, 1111 )
+                [ ( 12, 2, 121 )
+                , ( 13, 1, 13 )
                 ]
     in
-        describe "tree tips"
+        describe "tree branch tips"
             [ test "finds tips and their depth in a given tree" <|
                 \_ ->
-                    Experiment.Shaping.tips input
+                    Experiment.Shaping.branchTips input
                         |> Expect.equal output
             , test "finds a single tip in a tree with a root and no leaves" <|
                 \_ ->
-                    Experiment.Shaping.tips (Experiment.Shaping.Tree 2 [])
-                        |> Expect.equal (Nonempty.fromElement ( 0, 2 ))
+                    Experiment.Shaping.branchTips (Experiment.Shaping.Tree 2 [])
+                        |> Expect.equal (Nonempty.fromElement ( 2, 0, 2 ))
             ]
 
 
@@ -148,6 +148,7 @@ selectTip =
              - returns either the root (== branching), or one of the deepest tips of
                  one of the sub-trees < targetDepth, if any,
                  any sub-tree, otherwise
+                 always excluding any branch > targetCount (except when it's 0)
              - never branches when targetBranchCount is reached
              - always branches if targetBranchDepth is reached on all branches, but not targetBranchCount
 
@@ -184,10 +185,28 @@ selectTip =
         (Experiment.Shaping.Tree inputRoot inputChildren) =
             input
 
-        eligibleTipsWithTargetDepth4 =
+        eligibleTipsDepth4CountGte3 =
             [ 1211, 1311 ]
 
-        eligibleTipsWithTargetDepthNot4 =
+        eligibleTipsDepth4Count2 =
+            [ 1211 ]
+
+        eligibleTipsDepth4Count1 =
+            [ 11111 ]
+
+        eligibleTipsDepth4Count0 =
+            [ 1211, 1311 ]
+
+        eligibleTipsDepthNot4CountGte3 =
+            [ 11111, 1211, 1311 ]
+
+        eligibleTipsDepthNot4Count2 =
+            [ 11111, 1211 ]
+
+        eligibleTipsDepthNot4Count1 =
+            [ 11111 ]
+
+        eligibleTipsDepthNot4Count0 =
             [ 11111, 1211, 1311 ]
 
         setBranchProbability p auth =
@@ -208,14 +227,36 @@ selectTip =
                             auth
                             (Experiment.Shaping.Tree inputRoot [])
                             |> Expect.equal inputRoot
-                , fuzz2 int Fixtures.auth "returns the root or one of (tips < targetBranchDepth) or any tip if there are none of the first" <|
+                , fuzz2 int Fixtures.auth "returns the root or one of (tips < targetBranchDepth) or any tip if there are none of the first, always in branches <= targetBranchCount" <|
                     \seeder auth ->
                         let
                             eligibleTips =
                                 if auth.meta.targetBranchDepth == 4 then
-                                    eligibleTipsWithTargetDepth4
+                                    case auth.meta.targetBranchCount of
+                                        0 ->
+                                            eligibleTipsDepth4Count0
+
+                                        1 ->
+                                            eligibleTipsDepth4Count1
+
+                                        2 ->
+                                            eligibleTipsDepth4Count2
+
+                                        _ ->
+                                            eligibleTipsDepth4CountGte3
                                 else
-                                    eligibleTipsWithTargetDepthNot4
+                                    case auth.meta.targetBranchCount of
+                                        0 ->
+                                            eligibleTipsDepthNot4Count0
+
+                                        1 ->
+                                            eligibleTipsDepthNot4Count1
+
+                                        2 ->
+                                            eligibleTipsDepthNot4Count2
+
+                                        _ ->
+                                            eligibleTipsDepthNot4CountGte3
                         in
                             Experiment.Shaping.selectTip (Random.initialSeed seeder) auth input
                                 |> (\t -> (t == inputRoot) || (List.member t eligibleTips))
@@ -247,8 +288,8 @@ selectTip =
                                 List.length inputChildren >= auth.meta.targetBranchCount
 
                             allTargetDepthsReached =
-                                Experiment.Shaping.tips input
-                                    |> Nonempty.all (\( depth, _ ) -> depth >= auth.meta.targetBranchDepth)
+                                Experiment.Shaping.branchTips input
+                                    |> Nonempty.all (\( _, depth, _ ) -> depth >= auth.meta.targetBranchDepth)
 
                             selectedTip =
                                 Experiment.Shaping.selectTip (Random.initialSeed seeder) auth input

@@ -1,15 +1,16 @@
 module Experiment.Shaping
     exposing
         ( Tree(Tree)
+        , branchTips
         , fetchPossiblyShapedUntouchedTree
         , fetchRandomizedUnshapedTrees
         , selectTip
         , selectTipSentence
-        , tips
         , tree
         )
 
 import Api
+import Array
 import Helpers
 import Helpers
 import Lifecycle
@@ -173,15 +174,22 @@ treeHelp root edges =
                 ( Tree root subTrees, remEdges )
 
 
-tips : Tree comparable -> Nonempty ( Int, comparable )
-tips (Tree root children) =
+branchTips : Tree comparable -> Nonempty ( comparable, Int, comparable )
+branchTips (Tree treeRoot children) =
     case children of
         [] ->
-            Nonempty.fromElement ( 0, root )
+            Nonempty.fromElement ( treeRoot, 0, treeRoot )
 
         head :: tail ->
-            Nonempty.map maxTip (Nonempty head tail)
-                |> Nonempty.map (Tuple.mapFirst ((+) 1))
+            let
+                branchMaxTip subTree =
+                    let
+                        ( depth, tip ) =
+                            maxTip subTree
+                    in
+                        ( root subTree, depth + 1, tip )
+            in
+                Nonempty.map branchMaxTip (Nonempty head tail)
 
 
 maxTip : Tree comparable -> ( Int, comparable )
@@ -228,19 +236,31 @@ selectTip seed auth tree =
             root tree
         else
             let
-                treeTips =
-                    tips tree
+                orderedBranchTips =
+                    branchTips tree
+                        |> Nonempty.sortBy (\( branch, _, _ ) -> branch)
 
-                unreachedTips =
-                    Nonempty.toList treeTips
-                        |> List.filter (\( depth, _ ) -> depth < auth.meta.targetBranchDepth)
+                eligibleBranchTips =
+                    if auth.meta.targetBranchCount == 0 then
+                        orderedBranchTips
+                    else
+                        Nonempty.tail orderedBranchTips
+                            |> Array.fromList
+                            |> Array.slice 0 (auth.meta.targetBranchCount - 1)
+                            |> Array.toList
+                            |> Nonempty (Nonempty.head orderedBranchTips)
+
+                depthUnreachedBranchTips =
+                    eligibleBranchTips
+                        |> Nonempty.toList
+                        |> List.filter (\( _, depth, _ ) -> depth < auth.meta.targetBranchDepth)
 
                 sampleTip eligible =
                     eligible
-                        |> Nonempty.map Tuple.second
+                        |> Nonempty.map (\( _, _, tip ) -> tip)
                         |> Helpers.sample newSeed
             in
-                case unreachedTips of
+                case depthUnreachedBranchTips of
                     [] ->
                         if
                             ((List.length (children tree) < auth.meta.targetBranchCount)
@@ -249,7 +269,7 @@ selectTip seed auth tree =
                         then
                             root tree
                         else
-                            sampleTip treeTips
+                            sampleTip eligibleBranchTips
 
                     head :: rest ->
                         sampleTip (Nonempty head rest)
