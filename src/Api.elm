@@ -8,6 +8,7 @@ module Api
         , getAuth
         , getSentence
         , getSentences
+        , getServedTree
         , getTree
         , getTrees
         , getWordSpan
@@ -223,6 +224,11 @@ postSentence auth sentence =
 getTree : Types.Auth -> Int -> Calls.Task Types.Tree
 getTree =
     Calls.getTree
+
+
+getServedTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
+getServedTree =
+    Calls.getServedTree
 
 
 getTrees :

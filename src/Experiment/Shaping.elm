@@ -64,15 +64,6 @@ preFilter auth =
 
 
 
--- SEVERAL-TREES FILTER
-
-
-unshapedSeveralFilter : Int -> Types.Auth -> Filter
-unshapedSeveralFilter num auth =
-    (preFilter auth) ++ [ ( "sample", toString num ) ]
-
-
-
 -- SEVERAL-TREES FETCHING TASKS
 
 
@@ -82,7 +73,10 @@ type alias Task a =
 
 fetchUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
 fetchUnshapedTrees num auth =
-    Api.getTrees auth Nothing (unshapedSeveralFilter num auth) |> Task.map .items
+    Api.getTrees auth
+        (Just { pageSize = num, page = 1 })
+        (preFilter auth)
+        |> Task.map .items
 
 
 fetchRandomizedUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
@@ -91,20 +85,17 @@ fetchRandomizedUnshapedTrees num auth =
 
 
 
--- SINGLE-TREE FILTERS
+-- PROFILE AND SHAPING FILTERS
 
 
-unshapedUntouchedSingleFilter : Types.Auth -> Filter
-unshapedUntouchedSingleFilter auth =
-    (preFilter auth)
-        ++ [ ( "untouched_by_profile", toString auth.user.profile.id )
-           , ( "sample", toString 1 )
-           ]
+unshapedUntouchedFilter : Types.Auth -> Filter
+unshapedUntouchedFilter auth =
+    (preFilter auth) ++ [ ( "untouched_by_profile", toString auth.user.profile.id ) ]
 
 
-shapedUntouchedSingleFilter : Types.Auth -> Filter
-shapedUntouchedSingleFilter auth =
-    (unshapedUntouchedSingleFilter auth)
+shapedUntouchedFilter : Types.Auth -> Filter
+shapedUntouchedFilter auth =
+    (unshapedUntouchedFilter auth)
         ++ [ ( "branches_count_lte", toString auth.meta.targetBranchCount )
            , ( "shortest_branch_depth_lte", toString auth.meta.targetBranchDepth )
            ]
@@ -114,16 +105,16 @@ shapedUntouchedSingleFilter auth =
 -- SINGLE-TREE FETCHING TASKS
 
 
-firstOr : Task Types.Tree -> Types.Page Types.Tree -> Task Types.Tree
-firstOr default page =
-    unwrap default Task.succeed (List.head page.items)
+justOr : Task Types.Tree -> Maybe Types.Tree -> Task Types.Tree
+justOr default maybeTree =
+    unwrap default Task.succeed maybeTree
 
 
 fetchUnshapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchUnshapedUntouchedTree auth =
-    Api.getTrees auth Nothing (unshapedUntouchedSingleFilter auth)
+    Api.getServedTree auth (unshapedUntouchedFilter auth)
         |> Task.andThen
-            (firstOr <|
+            (justOr <|
                 Task.fail <|
                     Types.Unrecoverable "Found no suitable tree for profile"
             )
@@ -131,8 +122,8 @@ fetchUnshapedUntouchedTree auth =
 
 fetchPossiblyShapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchPossiblyShapedUntouchedTree auth =
-    Api.getTrees auth Nothing (shapedUntouchedSingleFilter auth)
-        |> Task.andThen (firstOr <| fetchUnshapedUntouchedTree auth)
+    Api.getServedTree auth (shapedUntouchedFilter auth)
+        |> Task.andThen (justOr <| fetchUnshapedUntouchedTree auth)
 
 
 

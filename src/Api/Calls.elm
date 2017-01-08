@@ -8,6 +8,7 @@ module Api.Calls
         , getProfiles
         , getSentence
         , getSentences
+        , getServedTree
         , getTree
         , getTrees
         , getWordSpan
@@ -34,6 +35,7 @@ import Decoders
 import Encoders
 import Http
 import HttpBuilder exposing (RequestBuilder)
+import Json.Decode as JD
 import Json.Encode as JE
 import Maybe.Extra exposing (unwrap)
 import Task
@@ -481,6 +483,19 @@ getTree { token } id =
         , query = []
         , token = Just token
         , expect = Http.expectJson Decoders.tree
+        }
+
+
+getServedTree :
+    Types.Auth
+    -> List ( String, String )
+    -> Task (Maybe Types.Tree)
+getServedTree { token } query =
+    get
+        { path = "/trees/serve_long_unserved_choice/"
+        , query = query
+        , token = Just token
+        , expect = Http.expectJson (JD.list Decoders.tree |> JD.map List.head)
         }
 
 
