@@ -78,7 +78,7 @@ npm run serve
 Normal tests (back in shell 1):
 
 ```
-pytest -k test_about  # it's the only test for now
+pytest -k "not concurrent"
 ```
 
 Concurrent tests: we run them in a nested X server so that nothing interferes with window focus. So you need to have Xephyr installed (`extra/xorg-server-xephyr` on Arch). Then, in another shell (call it "shell 3"), run:
@@ -92,7 +92,7 @@ A nested X server opens up. **Position it such that your mouse doesn't enter it 
 Back in shell 1 with the `gistr` virtualenv activated, run:
 
 ```
-env DISPLAY=:1 pytest -k test_concurrent_full_runs
+env DISPLAY=:1 pytest -k concurrent
 ```
 
 Which will run the concurrent tests with browser windows in the nested X server. **Do not** enter that nested X server with your mouse while the tests are running, or they will most likely fail. The values in the `tests/browser/conftest.py` fixtures let you configure the tree shaping and concurrency parameters.
