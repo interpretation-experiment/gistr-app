@@ -31,6 +31,15 @@ def send_keys(el, keys):
 @contextmanager
 def driver():
     driver = webdriver.Chrome()
+    # desired_cap = {
+    #     'os': 'Windows',
+    #     'os_version': '10',
+    #     'browser': 'Firefox',
+    #     'browser_version': '50',
+    #     'browserstack.local': True
+    # }
+    # driver = webdriver.Remote(command_executor=os.environ['REMOTE_EXECUTOR'],
+    #                           desired_capabilities=desired_cap)
     driver.implicitly_wait(10)
     try:
         yield driver
