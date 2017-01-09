@@ -2,6 +2,7 @@ from datetime import datetime
 from multiprocessing import Pool
 import inspect
 import random
+import re
 import time
 
 from selenium.webdriver.support.ui import Select
@@ -79,7 +80,7 @@ def run_trial(config, driver, username):
     driver.find_element_by_id('CtrlNext').click()
 
     text = driver.find_element_by_css_selector('main blockquote').text
-    read_time = config.read_factor * len(text.split(' '))
+    read_time = config.read_factor * len(re.split(' +', text))
     time.sleep(read_time)
 
     # The task wait time is absorbed in the driver's implicit wait
