@@ -37,6 +37,8 @@ def concurrent_config(config):
 
 @pytest.fixture
 def sentences(config, admin_user):
+    base_sentence = 'root {} with more text to reach the limit'
+
     # Create a few training and experiment sentences
     admin_profile = Profile(user=admin_user, mothertongue=DEFAULT_LANGUAGE)
     admin_profile.save()
@@ -46,7 +48,7 @@ def sentences(config, admin_user):
                      read_time_proportion=0, read_time_allotted=0,
                      write_time_proportion=0, write_time_allotted=0,
                      language=DEFAULT_LANGUAGE, bucket='training',
-                     text='training root {}'.format(i))
+                     text='training ' + base_sentence.format(i))
         s.save()
     for i in range(config.experiment_work):
         t = Tree.objects.create()
@@ -54,5 +56,5 @@ def sentences(config, admin_user):
                      read_time_proportion=0, read_time_allotted=0,
                      write_time_proportion=0, write_time_allotted=0,
                      language=DEFAULT_LANGUAGE, bucket='experiment',
-                     text='experiment root {}'.format(i))
+                     text='experiment ' + base_sentence.format(i))
         s.save()
