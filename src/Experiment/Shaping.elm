@@ -3,7 +3,7 @@ module Experiment.Shaping
         ( Tree(Tree)
         , branchTips
         , fetchPossiblyShapedUntouchedTree
-        , fetchRandomizedUnshapedTrees
+        , fetchUnshapedUntouchedTree
         , selectTip
         , selectTipSentence
         , tree
@@ -65,27 +65,6 @@ preFilter auth =
 
 
 
--- SEVERAL-TREES FETCHING TASKS
-
-
-type alias Task a =
-    Task.Task Types.Error a
-
-
-fetchUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
-fetchUnshapedTrees num auth =
-    Api.getTrees auth
-        (Just { pageSize = num, page = 1 })
-        (preFilter auth)
-        |> Task.map .items
-
-
-fetchRandomizedUnshapedTrees : Int -> Types.Auth -> Task (List Types.Tree)
-fetchRandomizedUnshapedTrees num auth =
-    Task.map2 Helpers.shuffle Helpers.seed (fetchUnshapedTrees num auth)
-
-
-
 -- PROFILE AND SHAPING FILTERS
 
 
@@ -104,6 +83,10 @@ shapedUntouchedFilter auth =
 
 
 -- SINGLE-TREE FETCHING TASKS
+
+
+type alias Task a =
+    Task.Task Types.Error a
 
 
 justOr : Task Types.Tree -> Maybe Types.Tree -> Task Types.Tree

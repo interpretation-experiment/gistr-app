@@ -13,7 +13,6 @@ import Form
 import Helpers
 import Intro
 import Lifecycle
-import List
 import List.Nonempty as Nonempty
 import Maybe.Extra exposing (maybeToList)
 import Model exposing (Model)
@@ -164,68 +163,31 @@ update lift auth msg model =
         -}
         LoadTrial ->
             let
-                selectPreloaded preLoaded =
-                    case preLoaded of
-                        [] ->
-                            Err <| Types.Unrecoverable "No preloaded trees to select from"
-
-                        head :: rest ->
-                            Ok ( rest, head )
-
-                preloadTrainingAndSelect =
-                    Shaping.fetchRandomizedUnshapedTrees auth.meta.trainingWork auth
-                        |> Task.map (List.map .root)
-                        |> Task.andThen (selectPreloaded >> Helpers.resultToTask)
+                loadUnshapedTreeRootSentence =
+                    Shaping.fetchUnshapedUntouchedTree auth
+                        |> Task.map .root
                         |> Task.attempt (lift << LoadTrialResult)
 
-                loadSentence =
+                loadShapedTreeTipOrRootSentence =
                     Shaping.fetchPossiblyShapedUntouchedTree auth
                         |> Task.andThen (Shaping.selectTipSentence auth)
-                        |> Task.attempt (lift << LoadTrialResult << Result.map ((,) []))
+                        |> Task.attempt (lift << LoadTrialResult)
 
                 loadingModel =
                     { model | experiment = ExpModel.setLoading True model.experiment }
             in
                 case Lifecycle.state auth.meta auth.user.profile of
                     Lifecycle.Training _ ->
-                        case model.experiment.state of
-                            ExpModel.JustFinished ->
-                                -- Ignore, this should never happen
-                                ( model
-                                , Cmd.none
-                                , []
-                                )
-
-                            ExpModel.Instructions _ ->
-                                -- Preload training sentences
-                                ( loadingModel
-                                , preloadTrainingAndSelect
-                                , []
-                                )
-
-                            ExpModel.Trial trial ->
-                                case selectPreloaded trial.preLoaded of
-                                    Err error ->
-                                        -- Load one remote sentence
-                                        ( loadingModel
-                                        , loadSentence
-                                        , []
-                                        )
-
-                                    Ok ( preLoaded, selected ) ->
-                                        -- Use preloaded sentence
-                                        ( model
-                                        , Cmd.none
-                                        , [ Ok ( preLoaded, selected )
-                                                |> LoadTrialResult
-                                                |> lift
-                                          ]
-                                        )
+                        -- Load one remote sentence
+                        ( loadingModel
+                        , loadUnshapedTreeRootSentence
+                        , []
+                        )
 
                     Lifecycle.Experiment _ ->
                         -- Load one remote sentence
                         ( loadingModel
-                        , loadSentence
+                        , loadShapedTreeTipOrRootSentence
                         , []
                         )
 
@@ -236,7 +198,7 @@ update lift auth msg model =
                         , []
                         )
 
-        LoadTrialResult (Ok ( preLoaded, current )) ->
+        LoadTrialResult (Ok current) ->
             let
                 clock =
                     Clock.start (Helpers.readTime auth.meta current) TrialTask
@@ -246,15 +208,14 @@ update lift auth msg model =
                         ExpModel.Trial trial ->
                             -- Update current trial
                             { trial
-                                | preLoaded = preLoaded
-                                , current = current
+                                | current = current
                                 , clock = clock
                                 , state = ExpModel.Reading
                             }
 
                         _ ->
                             -- Create a new trial
-                            ExpModel.trial preLoaded current clock
+                            ExpModel.trial current clock
             in
                 ( { model
                     | experiment =
@@ -331,18 +292,12 @@ update lift auth msg model =
         WriteSubmit input ->
             -- validate if enough words
             --   if not, Fail with feedback
-            --   if yes, pause clock and:
-            --     if in training:
-            --       if sentences left, WriteResult Ok directly with same profile
-            --       if nothing left, save trained in profile, getting back profile in WriteResult
-            --     submit if not in training, getting back profile
+            --   if yes, pause clock and submit new sentence
+            --     if in training, also save trained in profile if trainingWork is reached
             let
-                profile =
-                    auth.user.profile
-
                 feedback =
                     [ Helpers.ifShorterThanWords auth.meta.minTokens
-                        ( "global", Strings.sentenceTooShort auth.meta.minTokens )
+                        ( "text", Strings.sentenceTooShort auth.meta.minTokens )
                     ]
                         |> Validate.all
                         |> Feedback.fromValidator input
@@ -358,61 +313,59 @@ update lift auth msg model =
                     , parentId = Just trial.current.id
                     }
 
+                postSentence trial =
+                    Clock.progress trial.clock
+                        |> Task.andThen (Api.postSentence auth << newSentence trial)
+
+                updateProfileTraining profile =
+                    if profile.reformulationsCounts.training == auth.meta.trainingWork then
+                        -- Save our newly trained status
+                        Api.updateProfile auth { profile | trained = True }
+                    else
+                        Task.succeed profile
+
                 trialState trial form =
                     { trial
                         | state = ExpModel.Writing (Form.setStatus Form.Sending form)
                         , clock = Clock.pause trial.clock
                     }
-
-                inputValid trial form =
-                    case Lifecycle.state auth.meta profile of
-                        Lifecycle.Training _ ->
-                            if trial.streak + 1 == auth.meta.trainingWork then
-                                -- Save our newly trained status
-                                ( trialState trial form
-                                , Api.updateProfile auth { profile | trained = True }
-                                    |> Task.attempt (lift << WriteResult)
-                                , []
-                                )
-                            else
-                                -- Move directly to next training trial
-                                ( trialState trial form
-                                , Cmd.none
-                                , [ lift <| WriteResult <| Ok profile ]
-                                )
-
-                        Lifecycle.Experiment _ ->
-                            -- Post the new sentence
-                            ( trialState trial form
-                            , Clock.progress trial.clock
-                                |> Task.andThen (Api.postSentence auth << newSentence trial)
-                                |> Task.attempt (lift << WriteResult)
-                            , []
-                            )
-
-                        Lifecycle.Done ->
-                            ( trial
-                            , Cmd.none
-                            , []
-                            )
-
-                inputInvalid trial form =
-                    ( { trial
-                        | state = ExpModel.Writing (Form.fail feedback form)
-                        , clock = Clock.resume trial.clock
-                      }
-                    , Cmd.none
-                    , []
-                    )
             in
                 updateTrialOrIgnore model <|
                     \trial ->
                         case trial.state of
                             ExpModel.Writing form ->
                                 if Feedback.isEmpty feedback then
-                                    inputValid trial form
+                                    case Lifecycle.state auth.meta auth.user.profile of
+                                        Lifecycle.Training _ ->
+                                            -- Post the new sentence
+                                            ( trialState trial form
+                                            , postSentence trial
+                                                |> Task.andThen updateProfileTraining
+                                                |> Task.attempt (lift << WriteResult)
+                                            , []
+                                            )
+
+                                        Lifecycle.Experiment _ ->
+                                            -- Post the new sentence
+                                            ( trialState trial form
+                                            , postSentence trial
+                                                |> Task.attempt (lift << WriteResult)
+                                            , []
+                                            )
+
+                                        Lifecycle.Done ->
+                                            ( trial
+                                            , Cmd.none
+                                            , []
+                                            )
                                 else
-                                    inputInvalid trial form
+                                    ( { trial
+                                        | state = ExpModel.Writing (Form.fail feedback form)
+                                        , clock = Clock.resume trial.clock
+                                      }
+                                    , Cmd.none
+                                    , []
+                                    )
 
                             _ ->
                                 ( trial
@@ -433,44 +386,38 @@ update lift auth msg model =
                 profileModel =
                     Helpers.updateProfile model profile
             in
-                case model.experiment.state of
-                    ExpModel.Trial trial ->
-                        if stateChanged then
-                            ( { profileModel
-                                | experiment =
-                                    ExpModel.setState
-                                        ExpModel.JustFinished
-                                        model.experiment
-                              }
-                            , Cmd.none
-                            , []
-                            )
-                        else
-                            let
-                                newTrial =
-                                    { trial | streak = trial.streak + 1 }
-
-                                newModel =
-                                    { profileModel
-                                        | experiment =
-                                            ExpModel.setState
-                                                (ExpModel.Trial newTrial)
-                                                profileModel.experiment
-                                    }
-                            in
-                                update lift auth TrialStandby newModel
-
-                    _ ->
-                        ( model
-                        , Cmd.none
-                        , []
-                        )
+                if stateChanged then
+                    ( { profileModel
+                        | experiment =
+                            ExpModel.setState ExpModel.JustFinished
+                                model.experiment
+                      }
+                    , Cmd.none
+                    , []
+                    )
+                else
+                    update lift auth TrialStandby profileModel
 
         WriteResult (Err error) ->
-            ( model
-            , Cmd.none
-            , [ AppMsg.Error error ]
-            )
+            Helpers.extractFeedback error model [ ( "text", "text" ) ] <|
+                \feedback ->
+                    updateTrialOrIgnore model <|
+                        \trial ->
+                            case trial.state of
+                                ExpModel.Writing form ->
+                                    ( { trial
+                                        | state = ExpModel.Writing (Form.fail feedback form)
+                                        , clock = Clock.resume trial.clock
+                                      }
+                                    , Cmd.none
+                                    , []
+                                    )
+
+                                _ ->
+                                    ( trial
+                                    , Cmd.none
+                                    , []
+                                    )
 
 
 

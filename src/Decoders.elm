@@ -74,13 +74,13 @@ profile =
         |> Pipeline.required "sentences" (JD.list JD.int)
         |> Pipeline.required "trees" (JD.list JD.int)
         |> Pipeline.required "user_username" JD.string
-        |> Pipeline.required "reformulations_count" JD.int
-        |> Pipeline.required "available_trees_counts" treeCounts
+        |> Pipeline.required "reformulations_counts" bucketCounts
+        |> Pipeline.required "available_trees_counts" bucketCounts
 
 
-treeCounts : JD.Decoder Types.TreeCounts
-treeCounts =
-    Pipeline.decode Types.TreeCounts
+bucketCounts : JD.Decoder Types.BucketCounts
+bucketCounts =
+    Pipeline.decode Types.BucketCounts
         |> Pipeline.required "training" JD.int
         |> Pipeline.required "experiment" JD.int
 

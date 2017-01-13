@@ -292,47 +292,36 @@ progress lift profile meta model =
         contents =
             case Lifecycle.state meta profile of
                 Lifecycle.Training _ ->
-                    let
-                        completed =
-                            case model.state of
-                                ExpModel.Trial trialState ->
-                                    trialState.streak
-
-                                _ ->
-                                    0
-                    in
-                        [ Html.text
-                            ("Completed "
-                                ++ (toString completed)
-                                ++ " / "
-                                ++ (toString meta.trainingWork)
-                                ++ " training texts"
-                            )
-                        , Html.div
-                            [ class [ Styles.Bar ]
-                            , widthStyle completed meta.trainingWork
-                            ]
-                            []
+                    [ Html.text
+                        ("Completed "
+                            ++ (toString profile.reformulationsCounts.training)
+                            ++ " / "
+                            ++ (toString meta.trainingWork)
+                            ++ " training texts"
+                        )
+                    , Html.div
+                        [ class [ Styles.Bar ]
+                        , widthStyle profile.reformulationsCounts.training
+                            meta.trainingWork
                         ]
+                        []
+                    ]
 
                 Lifecycle.Experiment _ ->
-                    let
-                        completed =
-                            profile.reformulationsCount
-                    in
-                        [ Html.text
-                            ("Completed "
-                                ++ (toString completed)
-                                ++ " / "
-                                ++ (toString meta.experimentWork)
-                                ++ " texts"
-                            )
-                        , Html.div
-                            [ class [ Styles.Bar ]
-                            , widthStyle completed meta.experimentWork
-                            ]
-                            []
+                    [ Html.text
+                        ("Completed "
+                            ++ (toString profile.reformulationsCounts.experiment)
+                            ++ " / "
+                            ++ (toString meta.experimentWork)
+                            ++ " texts"
+                        )
+                    , Html.div
+                        [ class [ Styles.Bar ]
+                        , widthStyle profile.reformulationsCounts.experiment
+                            meta.experimentWork
                         ]
+                        []
+                    ]
 
                 Lifecycle.Done ->
                     []
@@ -523,7 +512,7 @@ write lift model { input, feedback, status } =
         ]
         [ Html.div
             [ class [ Styles.FormBlock ]
-            , Helpers.errorStyle "global" feedback
+            , Helpers.errorStyle "text" feedback
             ]
             [ Autoresize.textarea
                 { lift = AppMsg.AutoresizeMsg
@@ -535,7 +524,10 @@ write lift model { input, feedback, status } =
                 , Attributes.disabled (status /= Form.Entering)
                 ]
                 input
-            , Html.div [] [ Html.text (Feedback.getError "global" feedback) ]
+              -- TODO: show info depending on feedback
+              -- if SpellingError, talk about spelling and browser spellchecker
+              -- if punctuation, talk about not remembering and writing something that always makes sense.
+            , Html.div [] [ Html.text (Feedback.getError "text" feedback) ]
             ]
         , Html.input
             [ Attributes.type_ "submit"
