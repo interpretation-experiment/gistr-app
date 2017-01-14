@@ -42,7 +42,7 @@ staticProfile { userId, userUsername } =
     , sentencesIds = []
     , treesIds = []
     , userUsername = userUsername
-    , reformulationsCount = 0
+    , reformulationsCounts = { training = 0, experiment = 0 }
     , availableTreeCounts = { training = 5, experiment = 50 }
     }
 
