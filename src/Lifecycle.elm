@@ -29,7 +29,14 @@ state meta profile =
         tests =
             testsRemaining profile
     in
-        case ( profile.trained, profile.reformulationsCount >= meta.experimentWork ) of
+        -- Note the small inconsistency here, whereby training could be tracked
+        -- through the number of training reformulations completed
+        -- (profile.reformulationsCounts.training), but is tracked through the
+        -- profile.trained boolean (meaning that if meta.trainingWork is later
+        -- raised, that won't affect the users' training state), whereas
+        -- completion of the experiment is tracked through the number of
+        -- experiment reformulations completed.
+        case ( profile.trained, profile.reformulationsCounts.experiment >= meta.experimentWork ) of
             ( False, _ ) ->
                 Training tests
 
@@ -57,10 +64,12 @@ stateIsCompletable : Types.Meta -> Types.Profile -> Bool
 stateIsCompletable meta profile =
     case state meta profile of
         Training _ ->
-            meta.trainingWork <= profile.availableTreeCounts.training
+            ((meta.trainingWork - profile.reformulationsCounts.training)
+                <= profile.availableTreeCounts.training
+            )
 
         Experiment _ ->
-            ((meta.experimentWork - profile.reformulationsCount)
+            ((meta.experimentWork - profile.reformulationsCounts.experiment)
                 <= profile.availableTreeCounts.experiment
             )
 

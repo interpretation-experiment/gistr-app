@@ -36,6 +36,7 @@ module Helpers
         , sample
         , seed
         , shuffle
+        , splitFirst
         , tooltip
         , trialOr
         , updateAuth
@@ -490,6 +491,27 @@ readTime { readFactor } { text } =
 writeTime : { a | writeFactor : Int } -> { b | text : String } -> Time.Time
 writeTime { writeFactor } { text } =
     toFloat (List.length (String.words text) * writeFactor) * Time.second
+
+
+
+-- STRING
+
+
+splitFirst : String -> String -> ( String, Maybe String )
+splitFirst splitter string =
+    let
+        parts =
+            String.split splitter string
+    in
+        case parts of
+            [] ->
+                ( string, Nothing )
+
+            [ head ] ->
+                ( head, Nothing )
+
+            head :: tail ->
+                ( head, Just <| String.join splitter tail )
 
 
 

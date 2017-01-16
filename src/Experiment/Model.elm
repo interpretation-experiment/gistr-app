@@ -39,9 +39,7 @@ type State
 
 
 type alias TrialModel =
-    { preLoaded : List Types.Sentence
-    , streak : Int
-    , current : Types.Sentence
+    { current : Types.Sentence
     , clock : Clock.Model Experiment.Msg.Msg
     , state : TrialState
     }
@@ -95,11 +93,9 @@ setState state model =
     { model | state = state }
 
 
-trial : List Types.Sentence -> Types.Sentence -> Clock.Model Experiment.Msg.Msg -> TrialModel
-trial preLoaded current clock =
-    { preLoaded = preLoaded
-    , streak = 0
-    , current = current
+trial : Types.Sentence -> Clock.Model Experiment.Msg.Msg -> TrialModel
+trial current clock =
+    { current = current
     , clock = clock
     , state = Reading
     }

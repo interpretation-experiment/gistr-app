@@ -85,7 +85,7 @@ def run_trial(config, driver, username):
 
     # The task wait time is absorbed in the driver's implicit wait
     send_keys(driver.find_element_by_id('InputAutofocus'),
-              (username + ' ') * random.randint(10, 15))
+              'some text ' * random.randint(5, 8))
     driver.find_element_by_id('CtrlNext').click()
 
     # Wait until the sentence is saved to return. Or raise an exception.

@@ -9,7 +9,7 @@ baseUrl =
 
 minServerVersion : ( Int, Int, Int )
 minServerVersion =
-    ( 0, 14, 2 )
+    ( 0, 15, 1 )
 
 
 prolificStudyUrl : String

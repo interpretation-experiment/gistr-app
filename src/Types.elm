@@ -2,6 +2,7 @@ module Types
     exposing
         ( Auth
         , AuthStatus(..)
+        , BucketCounts
         , Choice
         , Comment
         , Credentials
@@ -23,7 +24,6 @@ module Types
         , Sentence
         , Token
         , Tree
-        , TreeCounts
         , User
         , WordSpan
         , commentFromUserMeta
@@ -197,12 +197,12 @@ type alias Profile =
     , treesIds : List Int
     , -- COMPUTED
       userUsername : String
-    , reformulationsCount : Int
-    , availableTreeCounts : TreeCounts
+    , reformulationsCounts : BucketCounts
+    , availableTreeCounts : BucketCounts
     }
 
 
-type alias TreeCounts =
+type alias BucketCounts =
     { training : Int
     , experiment : Int
     }
