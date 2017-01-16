@@ -33,13 +33,13 @@ view lift model =
     in
         Html.div
             [ class [ Styles.CommentBoxOverlay ]
-            , classList [ ( Styles.CommentBoxActive, active && available ) ]
+            , classList [ ( Styles.CommentBoxActive, active ) ]
             ]
             [ Html.div
                 [ class [ Styles.CommentBox ]
                 , classList
-                    [ ( Styles.CommentBoxActive, active && available )
-                    , ( Styles.CommentBoxHidden, not available )
+                    [ ( Styles.CommentBoxActive, active )
+                    , ( Styles.CommentBoxHidden, not active && not available )
                     ]
                 ]
                 [ header lift model.comment

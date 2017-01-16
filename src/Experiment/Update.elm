@@ -278,7 +278,10 @@ update lift auth msg model =
                 \trial ->
                     case trial.state of
                         ExpModel.Writing form ->
-                            ( { trial | state = ExpModel.Writing (Form.input input form) }
+                            ( { trial
+                                | state = ExpModel.Writing (Form.input input form)
+                                , clock = Clock.resume trial.clock
+                              }
                             , Cmd.none
                             , []
                             )
@@ -324,9 +327,9 @@ update lift auth msg model =
                     else
                         Task.succeed profile
 
-                trialState trial form =
+                trialFormState trial form =
                     { trial
-                        | state = ExpModel.Writing (Form.setStatus Form.Sending form)
+                        | state = ExpModel.Writing form
                         , clock = Clock.pause trial.clock
                     }
             in
@@ -338,7 +341,8 @@ update lift auth msg model =
                                     case Lifecycle.state auth.meta auth.user.profile of
                                         Lifecycle.Training _ ->
                                             -- Post the new sentence
-                                            ( trialState trial form
+                                            ( trialFormState trial
+                                                (Form.setStatus Form.Sending form)
                                             , postSentence trial
                                                 |> Task.andThen updateProfileTraining
                                                 |> Task.attempt (lift << WriteResult)
@@ -347,7 +351,8 @@ update lift auth msg model =
 
                                         Lifecycle.Experiment _ ->
                                             -- Post the new sentence
-                                            ( trialState trial form
+                                            ( trialFormState trial
+                                                (Form.setStatus Form.Sending form)
                                             , postSentence trial
                                                 |> Task.attempt (lift << WriteResult)
                                             , []
@@ -359,10 +364,7 @@ update lift auth msg model =
                                             , []
                                             )
                                 else
-                                    ( { trial
-                                        | state = ExpModel.Writing (Form.fail feedback form)
-                                        , clock = Clock.resume trial.clock
-                                      }
+                                    ( trialFormState trial (Form.fail feedback form)
                                     , Cmd.none
                                     , []
                                     )
@@ -407,7 +409,6 @@ update lift auth msg model =
                                 ExpModel.Writing form ->
                                     ( { trial
                                         | state = ExpModel.Writing (Form.fail feedback form)
-                                        , clock = Clock.resume trial.clock
                                       }
                                     , Cmd.none
                                     , []

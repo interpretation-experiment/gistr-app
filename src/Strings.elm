@@ -702,6 +702,79 @@ expWrite =
     "Write down the text as you remember it"
 
 
+expSpellingError : String -> List (Html.Html Msg)
+expSpellingError mispellings =
+    [ Html.h3 [] [ Html.text "Check your spelling" ]
+    , Html.p []
+        ([ Html.text "The spell-checker doesn't recognize the following words from what you typed: " ]
+            ++ (mispellings
+                    |> String.split ", "
+                    |> List.map (\e -> Html.code [] [ Html.text e ])
+                    |> List.intersperse (Html.text ", ")
+               )
+        )
+    , Html.p []
+        [ Html.text "Please make sure your whole sentence is written properly, in "
+        , Html.strong [] [ Html.text "British spelling" ]
+        , Html.text ". You can use your browser's built-in spell-checker to help you!"
+        ]
+    , Html.p []
+        [ Html.text "If, after correcting your sentence, you think there's a mistake in the automatic spell-checking, please "
+        , Helpers.evA [] "#" (Msg.CommentMsg CommentMsg.Show) "tell us about it"
+        , Html.text "."
+        ]
+    ]
+
+
+expPunctuationRepeatedError : String -> List (Html.Html Msg)
+expPunctuationRepeatedError repeats =
+    [ Html.h3 [] [ Html.text "Don't repeat punctuation marks" ]
+    , Html.p []
+        [ Html.text "You're using repeated punctuation ("
+        , Html.code [] [ Html.text <| String.trim repeats ]
+        , Html.text ") in your sentence, which is not allowed."
+        ]
+    , Html.p []
+        [ Html.text "If you can't recall the original sentence too well, that's normal! Still, "
+        , Html.strong [] [ Html.text "write a complete sentence that makes sense" ]
+        , Html.text " based on what you "
+        , Html.em [] [ Html.text "do" ]
+        , Html.text " remember."
+        ]
+    , Html.p []
+        [ Html.text "What you write will be sent to other participants just like you, so don't replace any missing parts with "
+        , Html.code [] [ Html.text "..." ]
+        , Html.text " or say things like "
+        , Html.code [] [ Html.text "I don't know" ]
+        , Html.text "!"
+        ]
+    ]
+
+
+expPunctuationExcludedError : String -> List (Html.Html Msg)
+expPunctuationExcludedError excluded =
+    [ Html.h3 [] [ Html.text "Don't use any special punctuation" ]
+    , Html.p []
+        [ Html.text "You're using "
+        , Html.code [] [ Html.text <| String.trim excluded ]
+        , Html.text " in your sentence, which is not allowed."
+        ]
+    , Html.p []
+        ([ Html.text "None of " ]
+            ++ excludedPunctuation
+            ++ [ Html.text " are accepted in sentences, so make sure you don't use any of them!" ]
+        )
+    ]
+
+
+excludedPunctuation : List (Html.Html msg)
+excludedPunctuation =
+    "[]{}<>\\|/+=_*&^%$#@~"
+        |> String.toList
+        |> List.map (\p -> Html.code [] [ Html.text <| String.fromChar p ])
+        |> List.intersperse (Html.text ", ")
+
+
 expTimeoutTitle : String
 expTimeoutTitle =
     "Time's up!"

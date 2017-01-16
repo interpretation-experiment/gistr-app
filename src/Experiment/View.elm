@@ -524,11 +524,8 @@ write lift model { input, feedback, status } =
                 , Attributes.disabled (status /= Form.Entering)
                 ]
                 input
-              -- TODO: show info depending on feedback
-              -- if SpellingError, talk about spelling and browser spellchecker
-              -- if punctuation, talk about not remembering and writing something that always makes sense.
-            , Html.div [] [ Html.text (Feedback.getError "text" feedback) ]
             ]
+        , feedbackView feedback
         , Html.input
             [ Attributes.type_ "submit"
             , Attributes.disabled (status /= Form.Entering)
@@ -538,3 +535,30 @@ write lift model { input, feedback, status } =
             ]
             []
         ]
+
+
+feedbackView : Feedback.Feedback -> Html.Html AppMsg.Msg
+feedbackView feedback =
+    let
+        original =
+            Feedback.getError "text" feedback
+
+        message =
+            case Helpers.splitFirst ": " original of
+                ( "SpellingError", Just mispellings ) ->
+                    Strings.expSpellingError mispellings
+
+                ( "PunctuationRepeatedError", Just repeats ) ->
+                    Strings.expPunctuationRepeatedError repeats
+
+                ( "PunctuationExcludedError", Just excluded ) ->
+                    Strings.expPunctuationExcludedError excluded
+
+                _ ->
+                    [ Html.p [] [ Html.text original ] ]
+    in
+        Html.div
+            [ class [ Styles.RequestBox, Styles.SmoothAppearing ]
+            , classList [ ( Styles.Hidden, Feedback.hasError "text" feedback |> not ) ]
+            ]
+            [ Html.div [] message ]

@@ -636,6 +636,14 @@ css =
                 ]
             ]
         , ul [ margin2 (em 0.5) (em 0) ]
+        , code
+            [ fontFamilies [ (qt "DejaVu Sans Mono"), (qt "Courier New"), .value monospace ]
+            , color (hex "#666")
+            , padding3 (px 0) (px 5) (px 2)
+            , border3 (px 1) solid (hex "#ddd")
+            , borderRadius (px 3)
+            , backgroundClip paddingBox
+            ]
           -- Fixes for buttons appearing differently in Chrome vs. Firefox
         , selector
             ("button::-moz-focus-inner"
