@@ -58,8 +58,8 @@ type alias Meta =
     , targetBranchCount : Int
     , branchProbability : Float
     , -- READ-WRITE PARAMETERS
-      readFactor : Int
-    , writeFactor : Int
+      readFactor : Float
+    , writeFactor : Float
     , minTokens : Int
     , -- FORM PARAMETERS
       genderChoices : List Choice

@@ -181,8 +181,8 @@ meta =
             |> Pipeline.required "target_branch_depth" JD.int
             |> Pipeline.required "target_branch_count" JD.int
             |> Pipeline.required "branch_probability" JD.float
-            |> Pipeline.required "read_factor" JD.int
-            |> Pipeline.required "write_factor" JD.int
+            |> Pipeline.required "read_factor" JD.float
+            |> Pipeline.required "write_factor" JD.float
             |> Pipeline.required "min_tokens" JD.int
             |> Pipeline.required "gender_choices" (JD.list choice)
             |> Pipeline.required "education_level_choices" (JD.list choice)
