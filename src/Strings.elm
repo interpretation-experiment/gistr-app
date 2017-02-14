@@ -2,6 +2,7 @@ module Strings exposing (..)
 
 import Comment.Msg as CommentMsg
 import Config
+import ElmEscapeHtml
 import Helpers
 import Html
 import Html.Attributes as Attributes
@@ -200,14 +201,7 @@ expInstructionsWelcome =
 
 expInstructionsReadText : String
 expInstructionsReadText =
-    "You're going to read some text, which can be from a sentence up to several paragraphs"
-
-
-expInstructionsReadTime : List (Html.Html msg)
-expInstructionsReadTime =
-    [ Html.text "In limited time — "
-    , Html.strong [] [ Html.text "Try to read as fast as possible!" ]
-    ]
+    ElmEscapeHtml.unescape "{{strings-expInstructionsReadText}}"
 
 
 expInstructionsPause : String
@@ -217,28 +211,32 @@ expInstructionsPause =
 
 expInstructionsRewrite : String
 expInstructionsRewrite =
-    "And you must rewrite what you remember"
+    "And you must rewrite what you remember as best you can"
 
 
-expInstructionsAccurately : List (Html.Html msg)
-expInstructionsAccurately =
-    [ Html.text "Please write "
-    , Html.strong [] [ Html.text "as accurately and properly as you can" ]
-    , Html.text ", mimicking the style of the original text"
-    ]
+expInstructionsRewriteProlificBonus : String
+expInstructionsRewriteProlificBonus =
+    "Each sentence you accurately rewrite gives you bonus Prolific Academic payment. Up to +25% in total!"
 
 
 expInstructionsSentOther : String
 expInstructionsSentOther =
-    "What you write is sent to the next participant in the experiment"
+    "What you write is then sent directly to the next participant in the experiment"
+
+
+expInstructionsTakeTime : List (Html.Html msg)
+expInstructionsTakeTime =
+    [ Html.text "So "
+    , Html.strong [] [ Html.text "take your time" ]
+    , Html.text " to write as properly as possible."
+    ]
 
 
 expInstructionsMakeSense : List (Html.Html msg)
 expInstructionsMakeSense =
-    [ Html.text "So "
-    , Html.strong [] [ Html.text "whatever happens" ]
-    , Html.text ", even if you don't remember the text too well, put in your best effort to "
-    , Html.strong [] [ Html.text "write something that makes sense" ]
+    [ Html.text "Make sure you "
+    , Html.strong [] [ Html.text "send something that makes sense" ]
+    , Html.text " for the next participant, even if you can't remember the original or if it was a bit messy (correct it!)"
     ]
 
 

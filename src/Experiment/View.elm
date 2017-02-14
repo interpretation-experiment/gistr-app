@@ -121,32 +121,41 @@ instructions profile meta =
 
                 _ ->
                     []
+
+        rewriteWithBonus =
+            case profile.prolificId of
+                Just _ ->
+                    [ Html.p [] [ Html.text <| Strings.expInstructionsRewrite ++ "." ]
+                    , Html.p [] [ Html.text Strings.expInstructionsRewriteProlificBonus ]
+                    ]
+
+                Nothing ->
+                    [ Html.p [] [ Html.text Strings.expInstructionsRewrite ] ]
     in
         Nonempty.Nonempty
             ( ExpModel.Title
             , ( Intro.Right, Html.p [] [ Html.text Strings.expInstructionsWelcome ] )
             )
         <|
-            [ ( ExpModel.Read1
+            [ ( ExpModel.Read
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsReadText ] )
-              )
-            , ( ExpModel.Read2
-              , ( Intro.Left, Html.p [] Strings.expInstructionsReadTime )
               )
             , ( ExpModel.Task
               , ( Intro.Top, Html.p [] [ Html.text Strings.expInstructionsPause ] )
               )
             , ( ExpModel.Write
-              , ( Intro.Right, Html.p [] [ Html.text Strings.expInstructionsRewrite ] )
+              , ( Intro.Right, Html.div [] rewriteWithBonus )
+              )
+            , ( ExpModel.Tree
+              , ( Intro.Left, Html.p [] [ Html.text Strings.expInstructionsSentOther ] )
               )
             , ( ExpModel.Write
-              , ( Intro.Top, Html.p [] Strings.expInstructionsAccurately )
-              )
-            , ( ExpModel.Tree
-              , ( Intro.TopRight, Html.p [] [ Html.text Strings.expInstructionsSentOther ] )
-              )
-            , ( ExpModel.Tree
-              , ( Intro.Left, Html.p [] Strings.expInstructionsMakeSense )
+              , ( Intro.BottomLeft
+                , Html.div []
+                    [ Html.p [] Strings.expInstructionsTakeTime
+                    , Html.p [] Strings.expInstructionsMakeSense
+                    ]
+                )
               )
             , ( ExpModel.Images
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )
@@ -180,23 +189,13 @@ instructionsView lift profile meta loading state =
         [ Intro.node
             (instructionsConfig lift profile meta)
             state
-            ExpModel.Read1
+            ExpModel.Read
             Html.div
             [ Attributes.style [ ( "top", "0" ), ( "left", "140px" ) ]
             , class [ Styles.SmoothAppearing ]
-            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read1 state ) ]
+            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read state ) ]
             ]
             [ Html.img [ Attributes.src "/assets/img/instructions-read1.png" ] [] ]
-        , Intro.node
-            (instructionsConfig lift profile meta)
-            state
-            ExpModel.Read2
-            Html.div
-            [ Attributes.style [ ( "top", "0" ), ( "left", "140px" ) ]
-            , class [ Styles.SmoothAppearing ]
-            , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read2 state ) ]
-            ]
-            [ Html.img [ Attributes.src "/assets/img/instructions-read2.png" ] [] ]
         , Intro.node
             (instructionsConfig lift profile meta)
             state

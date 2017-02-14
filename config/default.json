@@ -2,5 +2,6 @@
     "config-baseUrl": "//127.0.0.1:8000/api",
     "config-prolificStudyUrl": "https://prolificacademic.co.uk/studies/demo",
     "config-prolificCompletionUrl": "https://prolificacademic.co.uk/submissions/demo",
-    "config-expDuration": "10 minutes"
+    "config-expDuration": "10 minutes",
+    "strings-expInstructionsReadText": "You're going to read some text, which can be a few sentences long"
 }

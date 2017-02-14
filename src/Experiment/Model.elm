@@ -59,8 +59,7 @@ type TrialState
 
 type Node
     = Title
-    | Read1
-    | Read2
+    | Read
     | Task
     | Write
     | Tree
