@@ -692,7 +692,7 @@ expReadMemorize =
 
 expTask : String
 expTask =
-    "Pause a few seconds"
+    "Wait a few seconds"
 
 
 expWrite : String

@@ -444,9 +444,7 @@ trial lift model trialModel =
     case trialModel.state of
         ExpModel.Reading ->
             [ Html.div [ class [ Styles.Header ] ]
-                [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
-                , Html.h4 [] [ Html.text Strings.expReadMemorize ]
-                ]
+                [ Html.h4 [] [ Html.text Strings.expReadMemorize ] ]
             , Html.blockquote
                 [ Helpers.onEventPreventMsg "copy" (lift CopyPasteEvent)
                 , Helpers.onEventPreventMsg "cut" (lift CopyPasteEvent)
@@ -456,9 +454,7 @@ trial lift model trialModel =
 
         ExpModel.Tasking ->
             [ Html.div [ class [ Styles.Header ] ]
-                [ Html.span [ class [ Styles.Clock ] ] [ Clock.view trialModel.clock ]
-                , Html.h4 [] [ Html.text Strings.expTask ]
-                ]
+                [ Html.h4 [] [ Html.text Strings.expTask ] ]
             ]
 
         ExpModel.Writing form ->
