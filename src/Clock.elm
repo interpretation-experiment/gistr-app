@@ -222,14 +222,14 @@ view (Model model) =
                     )
 
                 Running _ ->
-                    ( [ Attributes.stroke "red"
+                    ( [ Attributes.stroke "lightseagreen"
                       , Attributes.strokeDashoffset "0"
                       ]
                     , [ ( "animation", animation ) ]
                     )
 
                 Pausing _ ->
-                    ( [ Attributes.stroke "red"
+                    ( [ Attributes.stroke "lightseagreen"
                       , Attributes.strokeDashoffset "0"
                       ]
                     , [ ( "animation", animation ) ]
@@ -247,7 +247,7 @@ view (Model model) =
                     )
 
                 Finished ->
-                    ( [ Attributes.stroke "red"
+                    ( [ Attributes.stroke "lightseagreen"
                       , Attributes.strokeDashoffset "0"
                       ]
                     , []

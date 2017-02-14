@@ -15,8 +15,8 @@
  * specifies.
  */
 @keyframes clock {
-  0% { stroke-dashoffset: 62.831853; stroke: green; }
-  75% { stroke: green; }
-  90% { stroke: red; }
-  100% { stroke-dashoffset: 0; stroke: red; }
+  0% { stroke-dashoffset: 62.831853; stroke: lightseagreen; }
+  75% { stroke: lightseagreen; }
+  90% { stroke: yellowgreen; }
+  100% { stroke-dashoffset: 0; stroke: yellowgreen; }
 }
