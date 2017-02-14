@@ -31,6 +31,7 @@ module Helpers
         , notify
         , onChange
         , onEventPreventMsg
+        , plural
         , readTime
         , resultToTask
         , sample
@@ -516,6 +517,14 @@ splitFirst splitter string =
 
 
 -- MISC
+
+
+plural : String -> String -> Int -> String
+plural singularForm pluralForm count =
+    if count == 1 then
+        singularForm
+    else
+        pluralForm
 
 
 resultToTask : Result a b -> Task.Task a b

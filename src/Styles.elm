@@ -90,6 +90,10 @@ type CssClasses
     | CommentBoxHidden
     | CommentBoxActive
     | Companies
+    | Right
+    | RoundBorder
+    | RevealParentHover
+    | ClearFix
 
 
 type CssIds
@@ -614,6 +618,28 @@ css =
             , descendants [ img [ maxWidth (px 130) ] ]
             , flexWrap wrap
             ]
+        , (.) Right
+            [ float right
+            , margin3 (em 1) (em 0.5) (em 0.5)
+            , property "clear" "both"
+            ]
+        , (.) RoundBorder [ borderRadius (em 0.3) ]
+        , (.) RevealParentHover
+            [ opacity (num 0)
+            , property "transition" "opacity .3s ease-in-out"
+            , property "pointer-events" "none"
+            ]
+        , everything
+            [ hover
+                [ children
+                    [ (.) RevealParentHover
+                        [ opacity (num 1)
+                        , property "pointer-events" "auto"
+                        ]
+                    ]
+                ]
+            ]
+        , (.) ClearFix [ property "clear" "both" ]
           -- COMMON ELEMENTS
         , h1 [ fontWeight normal ]
         , h2 [ fontWeight normal ]

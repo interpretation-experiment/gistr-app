@@ -2,6 +2,7 @@ module Experiment.View exposing (view, instructions)
 
 import Autoresize
 import Clock
+import Comment.Msg as CommentMsg
 import Experiment.Model as ExpModel
 import Experiment.Msg exposing (Msg(..))
 import Feedback
@@ -560,4 +561,17 @@ feedbackView feedback =
             [ class [ Styles.RequestBox, Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Feedback.hasError "text" feedback |> not ) ]
             ]
-            [ Html.div [] message ]
+            [ Html.div [] <|
+                [ Html.small
+                    [ class [ Styles.Right, Styles.RevealParentHover ] ]
+                    [ Helpers.evA [] "#" (AppMsg.CommentMsg CommentMsg.Show) Strings.reportProblem ]
+                , Html.img
+                    [ Attributes.src "/assets/img/instructions-tree-wtf.png"
+                    , Attributes.style [ ( "width", "150px" ) ]
+                    , class [ Styles.Right, Styles.RoundBorder ]
+                    ]
+                    []
+                ]
+                    ++ message
+            , Html.div [ class [ Styles.ClearFix ] ] []
+            ]

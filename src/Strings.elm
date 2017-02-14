@@ -700,62 +700,63 @@ expWrite =
     "Write down the text as you remember it"
 
 
+reportProblem : String
+reportProblem =
+    "Report a problem"
+
+
 expSpellingError : String -> List (Html.Html Msg)
-expSpellingError mispellings =
-    [ Html.h3 [] [ Html.text "Check your spelling" ]
-    , Html.p []
-        ([ Html.text "The spell-checker doesn't recognize the following words from what you typed: " ]
-            ++ (mispellings
-                    |> String.split ", "
-                    |> List.map (\e -> Html.code [] [ Html.text e ])
-                    |> List.intersperse (Html.text ", ")
-               )
-        )
-    , Html.p []
-        [ Html.text "Please make sure your whole sentence is written properly, in "
-        , Html.strong [] [ Html.text "British spelling" ]
-        , Html.text ". You can use your browser's built-in spell-checker to help you!"
+expSpellingError mispellingMsg =
+    let
+        mispellings =
+            mispellingMsg
+                |> String.split ", "
+                |> List.map (\e -> Html.code [] [ Html.text e ])
+                |> List.intersperse (Html.text ", ")
+    in
+        [ Html.h3 [] [ Html.text "Check your spelling" ]
+        , Html.p [] <|
+            mispellings
+                ++ [ Html.text <|
+                        Helpers.plural " seems" " seem" (List.length mispellings)
+                            ++ " to be mispelled and could confuse the next participant reading your input."
+                   ]
+        , Html.p []
+            [ Html.text "Make sure your whole sentence is well spelled! Use your browser's built-in spell-checker for help."
+            ]
         ]
-    , Html.p []
-        [ Html.text "If, after correcting your sentence, you think there's a mistake in the automatic spell-checking, please "
-        , Helpers.evA [] "#" (Msg.CommentMsg CommentMsg.Show) "tell us about it"
-        , Html.text "."
-        ]
-    ]
 
 
 expPunctuationRepeatedError : String -> List (Html.Html Msg)
 expPunctuationRepeatedError repeats =
-    [ Html.h3 [] [ Html.text "Don't repeat punctuation marks" ]
+    [ Html.h3 [] [ Html.text "Avoid repeated punctuation" ]
     , Html.p []
-        [ Html.text "You're using repeated punctuation ("
+        [ Html.text "Using repeated punctuation ("
         , Html.code [] [ Html.text <| String.trim repeats ]
-        , Html.text ") in your sentence, which is not allowed."
+        , Html.text ") will confuse the next participant reading your input."
         ]
     , Html.p []
-        [ Html.text "If you can't recall the original sentence too well, that's normal! Still, "
+        [ Html.text "Make sure to "
         , Html.strong [] [ Html.text "write a complete sentence that makes sense" ]
-        , Html.text " based on what you "
-        , Html.em [] [ Html.text "do" ]
-        , Html.text " remember."
+        , Html.text " based on what you remember. (If you don't remember much, that's normal.)"
         ]
     , Html.p []
-        [ Html.text "What you write will be sent to other participants just like you, so don't replace any missing parts with "
+        [ Html.text "Don't send anything like "
         , Html.code [] [ Html.text "..." ]
-        , Html.text " or say things like "
+        , Html.text " or  "
         , Html.code [] [ Html.text "I don't know" ]
-        , Html.text "!"
+        , Html.text " to the next participant!"
         ]
     ]
 
 
 expPunctuationExcludedError : String -> List (Html.Html Msg)
 expPunctuationExcludedError excluded =
-    [ Html.h3 [] [ Html.text "Don't use any special punctuation" ]
+    [ Html.h3 [] [ Html.text "Avoid special punctuation" ]
     , Html.p []
-        [ Html.text "You're using "
+        [ Html.text "Using "
         , Html.code [] [ Html.text <| String.trim excluded ]
-        , Html.text " in your sentence, which is not allowed."
+        , Html.text " in your sentence is misleading for the next participant reading your input."
         ]
     , Html.p []
         ([ Html.text "None of " ]
