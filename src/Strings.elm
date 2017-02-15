@@ -885,3 +885,38 @@ commentSent =
         [ Html.p [] [ Html.text "Thanks for submitting this, it really helps us!" ]
         , Html.p [] [ Html.text "We'll get back at you if necessary." ]
         ]
+
+
+imgPathInstructionsRead : String
+imgPathInstructionsRead =
+    "/assets/img/instructions-read.png"
+
+
+imgPathInstructionsReadJabberwocky : String
+imgPathInstructionsReadJabberwocky =
+    "/assets/img/instructions-read-jabberwocky.png"
+
+
+imgPathInstructionsTask : String
+imgPathInstructionsTask =
+    "/assets/img/instructions-task.png"
+
+
+imgPathInstructionsWrite : String
+imgPathInstructionsWrite =
+    "/assets/img/instructions-write.png"
+
+
+imgPathInstructionsWriteJabberwocky : String
+imgPathInstructionsWriteJabberwocky =
+    "/assets/img/instructions-write-jabberwocky.png"
+
+
+imgPathInstructionsTree : String
+imgPathInstructionsTree =
+    "/assets/img/instructions-tree.png"
+
+
+imgPathInstructionsBreak : String
+imgPathInstructionsBreak =
+    "/assets/img/instructions-break.png"

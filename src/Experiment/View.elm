@@ -196,7 +196,15 @@ instructionsView lift profile meta loading state =
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read state ) ]
             ]
-            [ Html.img [ Attributes.src "/assets/img/instructions-read.png" ] [] ]
+            [ Html.img
+                [ Attributes.src <|
+                    if meta.jabberwockyMode then
+                        Strings.imgPathInstructionsReadJabberwocky
+                    else
+                        Strings.imgPathInstructionsRead
+                ]
+                []
+            ]
         , Intro.node
             (instructionsConfig lift profile meta)
             state
@@ -206,7 +214,7 @@ instructionsView lift profile meta loading state =
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Task state ) ]
             ]
-            [ Html.img [ Attributes.src "/assets/img/instructions-task.png" ] [] ]
+            [ Html.img [ Attributes.src Strings.imgPathInstructionsTask ] [] ]
         , Intro.node
             (instructionsConfig lift profile meta)
             state
@@ -216,7 +224,15 @@ instructionsView lift profile meta loading state =
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Write state ) ]
             ]
-            [ Html.img [ Attributes.src "/assets/img/instructions-write.png" ] [] ]
+            [ Html.img
+                [ Attributes.src <|
+                    if meta.jabberwockyMode then
+                        Strings.imgPathInstructionsWriteJabberwocky
+                    else
+                        Strings.imgPathInstructionsWrite
+                ]
+                []
+            ]
         , Intro.node
             (instructionsConfig lift profile meta)
             state
@@ -227,7 +243,7 @@ instructionsView lift profile meta loading state =
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Tree state ) ]
             ]
             [ Html.img
-                [ Attributes.src "/assets/img/instructions-tree.png"
+                [ Attributes.src Strings.imgPathInstructionsTree
                 , Attributes.style [ ( "width", "180px" ) ]
                 ]
                 []
@@ -242,7 +258,7 @@ instructionsView lift profile meta loading state =
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Break state ) ]
             ]
             [ Html.img
-                [ Attributes.src "/assets/img/instructions-break.png"
+                [ Attributes.src Strings.imgPathInstructionsBreak
                 , Attributes.style [ ( "width", "237px" ) ]
                 ]
                 []

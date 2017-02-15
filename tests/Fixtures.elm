@@ -57,6 +57,7 @@ meta =
             , readFactor = 1
             , writeFactor = 5
             , minTokens = 10
+            , jabberwockyMode = False
             , genderChoices = []
             , educationLevelChoices = []
             , jobTypeChoices = []
