@@ -185,7 +185,7 @@ instructionsView lift profile meta loading state =
         ExpModel.Images
         Html.div
         [ class [ Styles.InstructionImages, Styles.Center ]
-        , Attributes.style [ ( "width", "515px" ), ( "height", "340px" ) ]
+        , Attributes.style [ ( "width", "515px" ), ( "height", "351px" ) ]
         ]
         [ Intro.node
             (instructionsConfig lift profile meta)
@@ -196,7 +196,7 @@ instructionsView lift profile meta loading state =
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Read state ) ]
             ]
-            [ Html.img [ Attributes.src "/assets/img/instructions-read1.png" ] [] ]
+            [ Html.img [ Attributes.src "/assets/img/instructions-read.png" ] [] ]
         , Intro.node
             (instructionsConfig lift profile meta)
             state
@@ -237,7 +237,7 @@ instructionsView lift profile meta loading state =
             state
             ExpModel.Break
             Html.div
-            [ Attributes.style [ ( "top", "236px" ), ( "left", "60px" ) ]
+            [ Attributes.style [ ( "top", "247px" ), ( "left", "60px" ) ]
             , class [ Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Intro.isUnseen ExpModel.Break state ) ]
             ]
