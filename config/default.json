@@ -2,12 +2,5 @@
     "config-baseUrl": "//127.0.0.1:8000/api",
     "config-prolificStudyUrl": "https://prolificacademic.co.uk/studies/demo",
     "config-prolificCompletionUrl": "https://prolificacademic.co.uk/submissions/demo",
-    "config-expDuration": "10 minutes",
-    "strings-markdown-expInstructionsReadText": "You're going to read some text, which can be a few sentences long.",
-    "strings-markdown-expInstructionsPause": "Then there's a pause.",
-    "strings-markdown-expInstructionsRewrite": "And you must rewrite what you remember as best you can.",
-    "strings-markdown-expInstructionsRewriteProlificBonus": "Each sentence you accurately rewrite gives you bonus Prolific Academic payment. Up to +25% in total!",
-    "strings-markdown-expInstructionsSentOther": "What you write is then sent directly to the next participant in the experiment.",
-    "strings-markdown-expInstructionsTakeTime": "So **take your time** to write as properly as possible.",
-    "strings-markdown-expInstructionsMakeSense": "Make sure you **send something that makes sense** for the next participant, even if you can't remember the original or if it was a bit messy (correct it!)"
+    "config-expDuration": "10 minutes"
 }

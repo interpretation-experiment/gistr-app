@@ -86,6 +86,14 @@ header lift profile meta model =
 -- INSTRUCTIONS
 
 
+jabberwockyVersion : Types.Meta -> ( a, a ) -> a
+jabberwockyVersion meta ( normal, jabberwocky ) =
+    if meta.jabberwockyMode then
+        jabberwocky
+    else
+        normal
+
+
 instructionsConfig :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
@@ -127,12 +135,12 @@ instructions profile meta =
             case profile.prolificId of
                 Just _ ->
                     Html.div []
-                        [ Strings.expInstructionsRewrite
-                        , Strings.expInstructionsRewriteProlificBonus
+                        [ jabberwockyVersion meta Strings.expInstructionsRewrite
+                        , Html.p [] [ Html.text Strings.expInstructionsRewriteProlificBonus ]
                         ]
 
                 Nothing ->
-                    Strings.expInstructionsRewrite
+                    jabberwockyVersion meta Strings.expInstructionsRewrite
     in
         Nonempty.Nonempty
             ( ExpModel.Title
@@ -140,24 +148,19 @@ instructions profile meta =
             )
         <|
             [ ( ExpModel.Read
-              , ( Intro.Bottom, Strings.expInstructionsReadText )
+              , ( Intro.Bottom, jabberwockyVersion meta Strings.expInstructionsReadText )
               )
             , ( ExpModel.Task
-              , ( Intro.Top, Strings.expInstructionsPause )
+              , ( Intro.Top, Html.p [] [ Html.text Strings.expInstructionsPause ] )
               )
             , ( ExpModel.Write
               , ( Intro.Right, rewriteWithBonus )
               )
             , ( ExpModel.Tree
-              , ( Intro.Left, Strings.expInstructionsSentOther )
+              , ( Intro.Left, Html.p [] [ Html.text Strings.expInstructionsSentOther ] )
               )
             , ( ExpModel.Write
-              , ( Intro.BottomLeft
-                , Html.div []
-                    [ Strings.expInstructionsTakeTime
-                    , Strings.expInstructionsMakeSense
-                    ]
-                )
+              , ( Intro.BottomLeft, jabberwockyVersion meta Strings.expInstructionsTakeTime )
               )
             , ( ExpModel.Images
               , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsLoop ] )
@@ -199,10 +202,7 @@ instructionsView lift profile meta loading state =
             ]
             [ Html.img
                 [ Attributes.src <|
-                    if meta.jabberwockyMode then
-                        Strings.imgPathInstructionsReadJabberwocky
-                    else
-                        Strings.imgPathInstructionsRead
+                    jabberwockyVersion meta Strings.imgPathInstructionsRead
                 ]
                 []
             ]
@@ -227,10 +227,7 @@ instructionsView lift profile meta loading state =
             ]
             [ Html.img
                 [ Attributes.src <|
-                    if meta.jabberwockyMode then
-                        Strings.imgPathInstructionsWriteJabberwocky
-                    else
-                        Strings.imgPathInstructionsWrite
+                    jabberwockyVersion meta Strings.imgPathInstructionsWrite
                 ]
                 []
             ]

@@ -199,39 +199,58 @@ expInstructionsWelcome =
     "Welcome to the Gistr Experiment!"
 
 
-expInstructionsReadText : Html.Html msg
+expInstructionsReadText : ( Html.Html msg, Html.Html msg )
 expInstructionsReadText =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsReadText}}"
+    ( Markdown.toHtml [] "You're going to read some text, which can be a few sentences long."
+    , Markdown.toHtml [] "You're going to **read some text full of non-words** that look like real words. In spite of the non-words, you can feel some meaning in the sentences."
+    )
 
 
-expInstructionsPause : Html.Html msg
+expInstructionsPause : String
 expInstructionsPause =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsPause}}"
+    "Then there's a pause."
 
 
-expInstructionsRewrite : Html.Html msg
+expInstructionsRewrite : ( Html.Html msg, Html.Html msg )
 expInstructionsRewrite =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsRewrite}}"
+    ( Markdown.toHtml [] "And you must rewrite what you remember as best you can."
+    , Markdown.toHtml [] """
+
+And you must rewrite what you remember as best you can.
+
+**Try to reproduce what you understood of the text, with non-words wherever the original had some**, like on the example here — this might be tough.
+
+"""
+    )
 
 
-expInstructionsRewriteProlificBonus : Html.Html msg
+expInstructionsRewriteProlificBonus : String
 expInstructionsRewriteProlificBonus =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsRewriteProlificBonus}}"
+    "Each sentence you accurately rewrite gives you bonus Prolific Academic payment. Up to +25% in total!"
 
 
-expInstructionsSentOther : Html.Html msg
+expInstructionsSentOther : String
 expInstructionsSentOther =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsSentOther}}"
+    "What you write is then sent directly to the next participant in the experiment."
 
 
-expInstructionsTakeTime : Html.Html msg
+expInstructionsTakeTime : ( Html.Html msg, Html.Html msg )
 expInstructionsTakeTime =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsTakeTime}}"
+    ( Markdown.toHtml [] """
 
+So **take your time** to write as properly as possible.
 
-expInstructionsMakeSense : Html.Html msg
-expInstructionsMakeSense =
-    Markdown.toHtml [] "{{strings-markdown-expInstructionsMakeSense}}"
+Make sure you **send something that makes sense** for the next participant, even if you can't remember the original or if it was a bit messy (correct it!)
+
+"""
+    , Markdown.toHtml [] """
+
+So **take your time** to write as properly as possible.
+
+Make sure you **send something that makes some sense** in spite of the non-words, for the next participant.
+
+"""
+    )
 
 
 expInstructionsLoop : String
@@ -881,14 +900,11 @@ commentSent =
         ]
 
 
-imgPathInstructionsRead : String
+imgPathInstructionsRead : ( String, String )
 imgPathInstructionsRead =
-    "/assets/img/instructions-read.png"
-
-
-imgPathInstructionsReadJabberwocky : String
-imgPathInstructionsReadJabberwocky =
-    "/assets/img/instructions-read-jabberwocky.png"
+    ( "/assets/img/instructions-read.png"
+    , "/assets/img/instructions-read-jabberwocky.png"
+    )
 
 
 imgPathInstructionsTask : String
@@ -896,14 +912,11 @@ imgPathInstructionsTask =
     "/assets/img/instructions-task.png"
 
 
-imgPathInstructionsWrite : String
+imgPathInstructionsWrite : ( String, String )
 imgPathInstructionsWrite =
-    "/assets/img/instructions-write.png"
-
-
-imgPathInstructionsWriteJabberwocky : String
-imgPathInstructionsWriteJabberwocky =
-    "/assets/img/instructions-write-jabberwocky.png"
+    ( "/assets/img/instructions-write.png"
+    , "/assets/img/instructions-write-jabberwocky.png"
+    )
 
 
 imgPathInstructionsTree : String
