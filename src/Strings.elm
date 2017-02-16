@@ -2,10 +2,10 @@ module Strings exposing (..)
 
 import Comment.Msg as CommentMsg
 import Config
-import ElmEscapeHtml
 import Helpers
 import Html
 import Html.Attributes as Attributes
+import Markdown
 import Msg exposing (Msg)
 import Router
 import Styles exposing (class, classList, id)
@@ -199,55 +199,49 @@ expInstructionsWelcome =
     "Welcome to the Gistr Experiment!"
 
 
-expInstructionsReadText : String
+expInstructionsReadText : Html.Html msg
 expInstructionsReadText =
-    ElmEscapeHtml.unescape "{{strings-expInstructionsReadText}}"
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsReadText}}"
 
 
-expInstructionsPause : String
+expInstructionsPause : Html.Html msg
 expInstructionsPause =
-    "Then there's a pause"
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsPause}}"
 
 
-expInstructionsRewrite : String
+expInstructionsRewrite : Html.Html msg
 expInstructionsRewrite =
-    "And you must rewrite what you remember as best you can"
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsRewrite}}"
 
 
-expInstructionsRewriteProlificBonus : String
+expInstructionsRewriteProlificBonus : Html.Html msg
 expInstructionsRewriteProlificBonus =
-    "Each sentence you accurately rewrite gives you bonus Prolific Academic payment. Up to +25% in total!"
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsRewriteProlificBonus}}"
 
 
-expInstructionsSentOther : String
+expInstructionsSentOther : Html.Html msg
 expInstructionsSentOther =
-    "What you write is then sent directly to the next participant in the experiment"
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsSentOther}}"
 
 
-expInstructionsTakeTime : List (Html.Html msg)
+expInstructionsTakeTime : Html.Html msg
 expInstructionsTakeTime =
-    [ Html.text "So "
-    , Html.strong [] [ Html.text "take your time" ]
-    , Html.text " to write as properly as possible."
-    ]
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsTakeTime}}"
 
 
-expInstructionsMakeSense : List (Html.Html msg)
+expInstructionsMakeSense : Html.Html msg
 expInstructionsMakeSense =
-    [ Html.text "Make sure you "
-    , Html.strong [] [ Html.text "send something that makes sense" ]
-    , Html.text " for the next participant, even if you can't remember the original or if it was a bit messy (correct it!)"
-    ]
+    Markdown.toHtml [] "{{strings-markdown-expInstructionsMakeSense}}"
 
 
 expInstructionsLoop : String
 expInstructionsLoop =
-    "The whole process loops once you're done"
+    "The whole process loops once you're done."
 
 
 expInstructionsBreak : String
 expInstructionsBreak =
-    "And there's a break after each sentence you enter"
+    "And there's a break after each sentence you enter."
 
 
 expInstructionsDontInterrupt : List (Html.Html msg)
@@ -262,13 +256,13 @@ expInstructionsTraining : List (Html.Html msg)
 expInstructionsTraining =
     [ Html.text "Right now you're in "
     , Html.strong [] [ Html.text "training" ]
-    , Html.text ": nothing you do is recorded"
+    , Html.text ": nothing you do is recorded."
     ]
 
 
 expInstructionsRealStart : Int -> String
 expInstructionsRealStart num =
-    "The real experiment starts after " ++ (toString num) ++ " trials"
+    "The real experiment starts after " ++ (toString num) ++ " trials."
 
 
 expNoCopyPasteTitle : String

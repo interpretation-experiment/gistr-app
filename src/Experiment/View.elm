@@ -126,12 +126,13 @@ instructions profile meta =
         rewriteWithBonus =
             case profile.prolificId of
                 Just _ ->
-                    [ Html.p [] [ Html.text <| Strings.expInstructionsRewrite ++ "." ]
-                    , Html.p [] [ Html.text Strings.expInstructionsRewriteProlificBonus ]
-                    ]
+                    Html.div []
+                        [ Strings.expInstructionsRewrite
+                        , Strings.expInstructionsRewriteProlificBonus
+                        ]
 
                 Nothing ->
-                    [ Html.p [] [ Html.text Strings.expInstructionsRewrite ] ]
+                    Strings.expInstructionsRewrite
     in
         Nonempty.Nonempty
             ( ExpModel.Title
@@ -139,22 +140,22 @@ instructions profile meta =
             )
         <|
             [ ( ExpModel.Read
-              , ( Intro.Bottom, Html.p [] [ Html.text Strings.expInstructionsReadText ] )
+              , ( Intro.Bottom, Strings.expInstructionsReadText )
               )
             , ( ExpModel.Task
-              , ( Intro.Top, Html.p [] [ Html.text Strings.expInstructionsPause ] )
+              , ( Intro.Top, Strings.expInstructionsPause )
               )
             , ( ExpModel.Write
-              , ( Intro.Right, Html.div [] rewriteWithBonus )
+              , ( Intro.Right, rewriteWithBonus )
               )
             , ( ExpModel.Tree
-              , ( Intro.Left, Html.p [] [ Html.text Strings.expInstructionsSentOther ] )
+              , ( Intro.Left, Strings.expInstructionsSentOther )
               )
             , ( ExpModel.Write
               , ( Intro.BottomLeft
                 , Html.div []
-                    [ Html.p [] Strings.expInstructionsTakeTime
-                    , Html.p [] Strings.expInstructionsMakeSense
+                    [ Strings.expInstructionsTakeTime
+                    , Strings.expInstructionsMakeSense
                     ]
                 )
               )
