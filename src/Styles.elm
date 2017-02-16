@@ -403,7 +403,7 @@ css =
             , padding2 (em 0.5) (em 1)
             , children
                 [ (.) Bar
-                    [ backgroundColor (hex "#00b5ad4d")
+                    [ backgroundColor (rgba 0 178 169 0.3)
                     , minWidth (pct 5)
                     , height (pct 100)
                     , position absolute
@@ -846,7 +846,7 @@ css =
             , fontWeight normal
             , fontStyle normal
             , displayFlex
-            , color (hex "#000000e6")
+            , color (rgba 0 0 0 0.9)
             , descendants
                 [ input [ inputMixin ]
                   -- Placeholder
