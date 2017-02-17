@@ -100,10 +100,21 @@ instructionsConfig :
     -> Types.Meta
     -> Intro.ViewConfig ExpModel.Node AppMsg.Msg
 instructionsConfig lift profile meta =
-    Intro.viewConfig
-        { liftMsg = lift << InstructionsMsg
-        , tooltip = (\i -> Tuple.second <| Nonempty.get i <| instructions profile meta)
-        }
+    let
+        quit =
+            if profile.introducedExpPlay then
+                Just "Skip"
+            else
+                Nothing
+    in
+        Intro.customViewConfig
+            { maybeLabelQuit = quit
+            , labelDone = "Done"
+            , labelBack = "← Back"
+            , labelNext = "Next →"
+            , liftMsg = lift << InstructionsMsg
+            , tooltip = (\i -> Tuple.second <| Nonempty.get i <| instructions profile meta)
+            }
 
 
 instructions :

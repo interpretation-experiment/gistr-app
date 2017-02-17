@@ -196,12 +196,12 @@ update (UpdateConfig config) msg state =
                             ( Running Start newZipper, Nothing )
 
                 Quit ->
-                    ( Hidden
+                    ( state
                     , Just <| config.onQuit (currentIndex zipper)
                     )
 
                 Done ->
-                    ( Hidden, Just config.onDone )
+                    ( state, Just config.onDone )
 
                 FinishTransition ->
                     ( Running End zipper, Nothing )
@@ -244,7 +244,7 @@ type Position
 
 type ViewConfig id msg
     = ViewConfig
-        { labelQuit : String
+        { maybeLabelQuit : Maybe String
         , labelDone : String
         , labelBack : String
         , labelNext : String
@@ -260,7 +260,7 @@ viewConfig :
     -> ViewConfig id msg
 viewConfig { liftMsg, tooltip } =
     customViewConfig
-        { labelQuit = "Skip"
+        { maybeLabelQuit = Just "Skip"
         , labelDone = "Done"
         , labelBack = "← Back"
         , labelNext = "Next →"
@@ -270,7 +270,7 @@ viewConfig { liftMsg, tooltip } =
 
 
 customViewConfig :
-    { labelQuit : String
+    { maybeLabelQuit : Maybe String
     , labelDone : String
     , labelBack : String
     , labelNext : String
@@ -278,9 +278,9 @@ customViewConfig :
     , tooltip : Int -> ( Position, Html.Html msg )
     }
     -> ViewConfig id msg
-customViewConfig { labelQuit, labelDone, labelBack, labelNext, liftMsg, tooltip } =
+customViewConfig { maybeLabelQuit, labelDone, labelBack, labelNext, liftMsg, tooltip } =
     ViewConfig
-        { labelQuit = labelQuit
+        { maybeLabelQuit = maybeLabelQuit
         , labelDone = labelDone
         , labelBack = labelBack
         , labelNext = labelNext
@@ -537,12 +537,17 @@ tooltipContent (ViewConfig config) zipper =
                     ]
                     [ Html.text config.labelDone ]
             else
-                Html.button
-                    [ Events.onClick <| config.liftMsg Quit
-                    , class [ Styles.Btn, Styles.BtnSmall ]
-                    , Attributes.style [ ( "marginRight", "5px" ) ]
-                    ]
-                    [ Html.text config.labelQuit ]
+                case config.maybeLabelQuit of
+                    Just labelQuit ->
+                        Html.button
+                            [ Events.onClick <| config.liftMsg Quit
+                            , class [ Styles.Btn, Styles.BtnSmall ]
+                            , Attributes.style [ ( "marginRight", "5px" ) ]
+                            ]
+                            [ Html.text labelQuit ]
+
+                    Nothing ->
+                        Html.span [] []
 
         nextButton =
             Html.button

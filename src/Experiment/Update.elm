@@ -122,7 +122,10 @@ update lift auth msg model =
             else
                 updateInstructionsOrIgnore model <|
                     \state ->
-                        ( Intro.hide
+                        ( if auth.user.profile.introducedExpPlay then
+                            Intro.hide
+                          else
+                            state
                         , Cmd.none
                         , []
                         )
