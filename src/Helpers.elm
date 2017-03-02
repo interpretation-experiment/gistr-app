@@ -11,6 +11,7 @@ module Helpers
         , evA
         , evButton
         , evIconButton
+        , evLoadingButton
         , extractFeedback
         , forId
         , hrefIcon
@@ -276,6 +277,32 @@ tooltip text =
 evButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg
 evButton attrs msg text =
     Html.button ((onClickMsg msg) :: attrs) [ Html.text text ]
+
+
+evLoadingButton :
+    ExpModel.LoadingState
+    -> List (Html.Attribute Msg)
+    -> Msg
+    -> ( String, String, String )
+    -> Html.Html Msg
+evLoadingButton status attrs msg ( loadedText, loadingText, waitingText ) =
+    let
+        contents =
+            case status of
+                ExpModel.Loaded ->
+                    [ Html.text loadedText ]
+
+                ExpModel.Loading ->
+                    [ Html.text loadingText ]
+
+                ExpModel.Waiting ->
+                    [ Html.text waitingText
+                    , loading Styles.Small
+                    ]
+    in
+        Html.button
+            ((onClickMsg msg) :: (Attributes.disabled (status /= ExpModel.Loaded)) :: attrs)
+            contents
 
 
 evIconButton : List (Html.Attribute Msg) -> Msg -> String -> Html.Html Msg

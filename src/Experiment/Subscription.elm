@@ -13,6 +13,19 @@ import Time
 import Types
 
 
+loadTrialSub : ExpModel.LoadingState -> Types.Auth -> Sub Msg
+loadTrialSub loading { meta } =
+    case loading of
+        ExpModel.Loaded ->
+            Sub.none
+
+        ExpModel.Loading ->
+            Sub.none
+
+        ExpModel.Waiting ->
+            Time.every (Time.second * meta.heartbeat / 2) (always LoadTrial)
+
+
 heartbeatSub : ExpModel.TrialModel -> Types.Auth -> Sub Msg
 heartbeatSub trial { user, meta } =
     case ( Lifecycle.state meta user.profile, trial.state ) of
@@ -94,6 +107,12 @@ ctrlEnterSub state { user, meta } =
 subscription : (Msg -> msg) -> Model -> Sub msg
 subscription lift model =
     let
+        loadTrial =
+            Helpers.authenticatedOr
+                model
+                Sub.none
+                (Sub.map lift << loadTrialSub model.experiment.loadingNext)
+
         heartbeat =
             Helpers.trialOr model Sub.none <|
                 \trial ->
@@ -118,6 +137,7 @@ subscription lift model =
             [ Intro.subscription
                 (lift << InstructionsMsg)
                 (ExpModel.instructionsState model.experiment)
+            , loadTrial
             , heartbeat
             , trialTimer
             , ctrlEnter

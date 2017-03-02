@@ -166,34 +166,32 @@ update lift auth msg model =
         -}
         LoadTrial ->
             let
-                loadUnshapedTreeRootSentence =
-                    -- FIXME: this will fail if there are no free trees. But
-                    -- that's not relevant for training, so we should fetch
-                    -- non-free trees too.
+                loadUnshapedTree =
                     Shaping.fetchUnshapedUntouchedTree auth
-                        |> Task.map .root
-                        |> Task.attempt (lift << LoadTrialResult)
+                        |> Task.map Just
+                        |> Task.attempt (lift << LoadTreeResult)
 
-                loadShapedTreeTipOrRootSentence =
-                    Shaping.fetchPossiblyShapedUntouchedTree auth
-                        |> Task.andThen (Shaping.selectTipSentence auth)
-                        |> Task.attempt (lift << LoadTrialResult)
+                loadLockedShapedTree =
+                    Shaping.fetchLockedPossiblyShapedUntouchedTree auth
+                        |> Task.attempt (lift << LoadTreeResult)
 
                 loadingModel =
-                    { model | experiment = ExpModel.setLoading True model.experiment }
+                    if model.experiment.loadingNext == ExpModel.Loaded then
+                        { model | experiment = ExpModel.setLoading ExpModel.Loading model.experiment }
+                    else
+                        -- Leave the current Loading/Waiting state
+                        model
             in
                 case Lifecycle.state auth.meta auth.user.profile of
                     Lifecycle.Training _ ->
-                        -- Load one remote sentence
                         ( loadingModel
-                        , loadUnshapedTreeRootSentence
+                        , loadUnshapedTree
                         , []
                         )
 
                     Lifecycle.Experiment _ ->
-                        -- Load one remote sentence
                         ( loadingModel
-                        , loadShapedTreeTipOrRootSentence
+                        , loadLockedShapedTree
                         , []
                         )
 
@@ -204,7 +202,68 @@ update lift auth msg model =
                         , []
                         )
 
-        LoadTrialResult (Ok current) ->
+        LoadTreeResult (Ok (Just tree)) ->
+            let
+                loadingModel =
+                    if model.experiment.loadingNext == ExpModel.Loaded then
+                        { model | experiment = ExpModel.setLoading ExpModel.Loading model.experiment }
+                    else
+                        -- Leave the current Loading/Waiting state
+                        model
+            in
+                case Lifecycle.state auth.meta auth.user.profile of
+                    Lifecycle.Training _ ->
+                        update lift auth (LoadSentenceResult <| Ok tree.root) loadingModel
+
+                    Lifecycle.Experiment _ ->
+                        ( loadingModel
+                        , Shaping.selectTipSentence auth tree
+                            |> Task.attempt (lift << LoadSentenceResult)
+                        , []
+                        )
+
+                    Lifecycle.Done ->
+                        -- Ignore
+                        ( model
+                        , Cmd.none
+                        , []
+                        )
+
+        LoadTreeResult (Ok Nothing) ->
+            let
+                waitingModel =
+                    { model | experiment = ExpModel.setLoading ExpModel.Waiting model.experiment }
+            in
+                case Lifecycle.state auth.meta auth.user.profile of
+                    Lifecycle.Training _ ->
+                        -- Ignore. This should never happen: in training we
+                        -- request a tree without locking. If it were to fail,
+                        -- it would have gone to LoadTreeResult (Err _).
+                        ( model
+                        , Cmd.none
+                        , []
+                        )
+
+                    Lifecycle.Experiment _ ->
+                        ( waitingModel
+                        , Cmd.none
+                        , []
+                        )
+
+                    Lifecycle.Done ->
+                        -- Ignore
+                        ( model
+                        , Cmd.none
+                        , []
+                        )
+
+        LoadTreeResult (Err error) ->
+            ( model
+            , Cmd.none
+            , [ AppMsg.Error error ]
+            )
+
+        LoadSentenceResult (Ok current) ->
             let
                 clock =
                     Clock.start (Helpers.readTime auth.meta current) TrialTask
@@ -226,14 +285,14 @@ update lift auth msg model =
                 ( { model
                     | experiment =
                         model.experiment
-                            |> ExpModel.setLoading False
+                            |> ExpModel.setLoading ExpModel.Loaded
                             |> ExpModel.setState (ExpModel.Trial newTrial)
                   }
                 , Cmd.none
                 , []
                 )
 
-        LoadTrialResult (Err error) ->
+        LoadSentenceResult (Err error) ->
             ( model
             , Cmd.none
             , [ AppMsg.Error error ]

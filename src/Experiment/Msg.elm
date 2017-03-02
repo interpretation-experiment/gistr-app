@@ -20,7 +20,8 @@ type Msg
     | InstructionsDoneResult (Api.Result Types.Profile)
       -- TRIAL
     | LoadTrial
-    | LoadTrialResult (Api.Result Types.Sentence)
+    | LoadTreeResult (Api.Result (Maybe Types.Tree))
+    | LoadSentenceResult (Api.Result Types.Sentence)
     | TrialTask
     | TrialWrite
     | TrialTimeout

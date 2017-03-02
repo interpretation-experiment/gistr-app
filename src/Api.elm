@@ -6,7 +6,8 @@ module Api
         , confirmEmail
         , deleteEmail
         , getAuth
-        , getFreeTree
+        , getLockRandomTree
+        , getRandomTree
         , getSentence
         , getSentences
         , getTree
@@ -227,9 +228,14 @@ getTree =
     Calls.getTree
 
 
-getFreeTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
-getFreeTree =
-    Calls.getFreeTree
+getRandomTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
+getRandomTree =
+    Calls.getRandomTree
+
+
+getLockRandomTree : Types.Auth -> List ( String, String ) -> Calls.Task (Maybe Types.Tree)
+getLockRandomTree =
+    Calls.getLockRandomTree
 
 
 getTrees :

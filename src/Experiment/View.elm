@@ -190,7 +190,7 @@ instructionsView :
     (Msg -> AppMsg.Msg)
     -> Types.Profile
     -> Types.Meta
-    -> Bool
+    -> ExpModel.LoadingState
     -> Intro.State ExpModel.Node
     -> List (Html.Html AppMsg.Msg)
 instructionsView lift profile meta loading state =
@@ -279,17 +279,19 @@ instructionsView lift profile meta loading state =
         ]
         [ Html.h2 [] [ Html.text "Ready to go?" ]
         , Helpers.evButton
-            [ Attributes.disabled loading, class [ Styles.Btn ] ]
+            [ Attributes.disabled (loading /= ExpModel.Loaded)
+            , class [ Styles.Btn ]
+            ]
             (lift InstructionsStart)
             "Replay instructions"
-        , Helpers.evButton
-            [ Attributes.disabled loading
-            , class [ Styles.Btn, Styles.BtnPrimary ]
+        , Helpers.evLoadingButton
+            loading
+            [ class [ Styles.Btn, Styles.BtnPrimary ]
             , id Styles.CtrlNext
             , Helpers.tooltip Strings.pressCtrlEnter
             ]
             (lift LoadTrial)
-            "Start"
+            ( "Start", "Start", "Searching for sentences" )
         ]
     , Intro.overlay state
     ]
@@ -377,13 +379,13 @@ contents lift profile meta model =
                             [ Html.h3 [] [ Html.text Strings.expTrainingFinishedTitle ]
                             , Html.p [] Strings.expTrainingFinishedExpStarts
                             , Html.p []
-                                [ Helpers.evButton
-                                    [ Attributes.disabled model.experiment.loadingNext
-                                    , class [ Styles.Btn, Styles.BtnWarning ]
+                                [ Helpers.evLoadingButton
+                                    model.experiment.loadingNext
+                                    [ class [ Styles.Btn, Styles.BtnWarning ]
                                     , id Styles.CtrlNext
                                     ]
                                     (lift LoadTrial)
-                                    "On to the Experiment"
+                                    ( "On to the Experiment", "On to the Experiment", "Searching for sentences" )
                                 ]
                             ]
                         ]
@@ -494,13 +496,13 @@ trial lift model trialModel =
             [ Html.h3 [] [ Html.text Strings.expTimeoutTitle ]
             , Html.p [] [ Html.text Strings.expTimeoutExplanation ]
             , Html.p []
-                [ Helpers.evButton
-                    [ Attributes.disabled model.experiment.loadingNext
-                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                [ Helpers.evLoadingButton
+                    model.experiment.loadingNext
+                    [ class [ Styles.Btn, Styles.BtnPrimary ]
                     , id Styles.CtrlNext
                     ]
                     (lift LoadTrial)
-                    "Start again"
+                    ( "Start again", "Start again", "Searching for sentences" )
                 ]
             ]
 
@@ -508,14 +510,14 @@ trial lift model trialModel =
             [ Html.h3 [] [ Html.text Strings.expStandbyTitle ]
             , Html.p [] [ Html.text Strings.expStandbyExplanation ]
             , Html.p []
-                [ Helpers.evButton
-                    [ Attributes.disabled model.experiment.loadingNext
-                    , class [ Styles.Btn, Styles.BtnPrimary ]
+                [ Helpers.evLoadingButton
+                    model.experiment.loadingNext
+                    [ class [ Styles.Btn, Styles.BtnPrimary ]
                     , id Styles.CtrlNext
                     , Helpers.tooltip Strings.pressCtrlEnter
                     ]
                     (lift LoadTrial)
-                    "Continue"
+                    ( "Continue", "Continue", "Searching for sentences" )
                 ]
             ]
 
