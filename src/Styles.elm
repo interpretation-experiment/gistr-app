@@ -581,6 +581,22 @@ css =
                 , boxSizing borderBox
                 ]
             ]
+        , (.) BtnPrimary
+            [ descendants
+                [ (.) Loader
+                    [ before [ borderColor (rgba 255 255 255 0.8) ]
+                    , after [ borderColor3 (hex "#344f68") transparent transparent ]
+                    ]
+                ]
+            ]
+        , (.) BtnWarning
+            [ descendants
+                [ (.) Loader
+                    [ before [ borderColor (rgba 255 255 255 0.8) ]
+                    , after [ borderColor3 (hex "#9b5e05") transparent transparent ]
+                    ]
+                ]
+            ]
         , (.) WarningNotification
             [ notification
             , color (hex "#a94442")

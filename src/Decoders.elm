@@ -185,6 +185,8 @@ meta =
             |> Pipeline.required "write_factor" JD.float
             |> Pipeline.required "min_tokens" JD.int
             |> Pipeline.required "jabberwocky_mode" JD.bool
+            |> Pipeline.required "heartbeat" JD.float
+            |> Pipeline.required "heartbeat_margin" JD.float
             |> Pipeline.required "gender_choices" (JD.list choice)
             |> Pipeline.required "education_level_choices" (JD.list choice)
             |> Pipeline.required "job_type_choices" (JD.list choice)

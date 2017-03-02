@@ -1,6 +1,7 @@
 module Experiment.Model
     exposing
-        ( Model
+        ( LoadingState(..)
+        , Model
         , Node(..)
         , State(..)
         , TrialModel
@@ -21,15 +22,21 @@ import Types
 
 initialModel : Model
 initialModel =
-    { loadingNext = False
+    { loadingNext = Loaded
     , state = Instructions Intro.hide
     }
 
 
 type alias Model =
-    { loadingNext : Bool
+    { loadingNext : LoadingState
     , state : State
     }
+
+
+type LoadingState
+    = Loaded
+    | Loading
+    | Waiting
 
 
 type State
@@ -82,7 +89,7 @@ instructionsState model =
             Intro.hide
 
 
-setLoading : Bool -> Model -> Model
+setLoading : LoadingState -> Model -> Model
 setLoading loading model =
     { model | loadingNext = loading }
 

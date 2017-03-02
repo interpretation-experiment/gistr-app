@@ -2,7 +2,7 @@ module Experiment.Shaping
     exposing
         ( Tree(Tree)
         , branchTips
-        , fetchPossiblyShapedUntouchedTree
+        , fetchLockedPossiblyShapedUntouchedTree
         , fetchUnshapedUntouchedTree
         , selectTip
         , selectTipSentence
@@ -70,15 +70,12 @@ preFilter auth =
 
 unshapedUntouchedFilter : Types.Auth -> Filter
 unshapedUntouchedFilter auth =
-    (preFilter auth) ++ [ ( "untouched_by_profile", toString auth.user.profile.id ) ]
+    ( "untouched_by_profile", toString auth.user.profile.id ) :: (preFilter auth)
 
 
 shapedUntouchedFilter : Types.Auth -> Filter
 shapedUntouchedFilter auth =
-    (unshapedUntouchedFilter auth)
-        ++ [ ( "branches_count_lte", toString auth.meta.targetBranchCount )
-           , ( "shortest_branch_depth_lte", toString auth.meta.targetBranchDepth )
-           ]
+    ( "priority_shaping", "true" ) :: (unshapedUntouchedFilter auth)
 
 
 
@@ -96,7 +93,7 @@ justOr default maybeTree =
 
 fetchUnshapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchUnshapedUntouchedTree auth =
-    Api.getFreeTree auth (unshapedUntouchedFilter auth)
+    Api.getRandomTree auth (unshapedUntouchedFilter auth)
         |> Task.andThen
             (justOr <|
                 Task.fail <|
@@ -104,10 +101,9 @@ fetchUnshapedUntouchedTree auth =
             )
 
 
-fetchPossiblyShapedUntouchedTree : Types.Auth -> Task Types.Tree
-fetchPossiblyShapedUntouchedTree auth =
-    Api.getFreeTree auth (shapedUntouchedFilter auth)
-        |> Task.andThen (justOr <| fetchUnshapedUntouchedTree auth)
+fetchLockedPossiblyShapedUntouchedTree : Types.Auth -> Task (Maybe Types.Tree)
+fetchLockedPossiblyShapedUntouchedTree auth =
+    Api.getLockRandomTree auth (shapedUntouchedFilter auth)
 
 
 

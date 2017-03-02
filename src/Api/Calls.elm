@@ -2,11 +2,12 @@ module Api.Calls
     exposing
         ( Task
         , deleteEmail
-        , getFreeTree
+        , getLockRandomTree
         , getMeta
         , getPreUser
         , getProfile
         , getProfiles
+        , getRandomTree
         , getSentence
         , getSentences
         , getTree
@@ -27,6 +28,7 @@ module Api.Calls
         , postSentence
         , putEmail
         , putProfile
+        , putTreeHeartbeat
         , putUser
         )
 
@@ -486,13 +488,26 @@ getTree { token } id =
         }
 
 
-getFreeTree :
+getRandomTree :
     Types.Auth
     -> List ( String, String )
     -> Task (Maybe Types.Tree)
-getFreeTree { token } query =
+getRandomTree { token } query =
     get
-        { path = "/trees/free_tree/"
+        { path = "/trees/random_tree/"
+        , query = query
+        , token = Just token
+        , expect = Http.expectJson (JD.list Decoders.tree |> JD.map List.head)
+        }
+
+
+getLockRandomTree :
+    Types.Auth
+    -> List ( String, String )
+    -> Task (Maybe Types.Tree)
+getLockRandomTree { token } query =
+    get
+        { path = "/trees/lock_random_tree/"
         , query = query
         , token = Just token
         , expect = Http.expectJson (JD.list Decoders.tree |> JD.map List.head)
@@ -510,4 +525,15 @@ getTrees { token } maybePage query =
         , query = query ++ (pageQuery maybePage)
         , token = Just token
         , expect = Http.expectJson (Decoders.page Decoders.tree)
+        }
+
+
+putTreeHeartbeat : Types.Auth -> Int -> Task ()
+putTreeHeartbeat { token } id =
+    put
+        { path = "/trees/" ++ (toString id) ++ "/heartbeat/"
+        , query = []
+        , token = Just token
+        , body = Nothing
+        , expect = expectNothing
         }
