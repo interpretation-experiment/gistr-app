@@ -27,6 +27,7 @@ module Api.Calls
         , postSentence
         , putEmail
         , putProfile
+        , putTreeHeartbeat
         , putUser
         )
 
@@ -510,4 +511,15 @@ getTrees { token } maybePage query =
         , query = query ++ (pageQuery maybePage)
         , token = Just token
         , expect = Http.expectJson (Decoders.page Decoders.tree)
+        }
+
+
+putTreeHeartbeat : Types.Auth -> Int -> Task ()
+putTreeHeartbeat { token } id =
+    put
+        { path = "/trees/" ++ (toString id) ++ "/heartbeat/"
+        , query = []
+        , token = Just token
+        , body = Nothing
+        , expect = expectNothing
         }

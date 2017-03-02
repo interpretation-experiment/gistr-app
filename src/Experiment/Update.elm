@@ -167,6 +167,9 @@ update lift auth msg model =
         LoadTrial ->
             let
                 loadUnshapedTreeRootSentence =
+                    -- FIXME: this will fail if there are no free trees. But
+                    -- that's not relevant for training, so we should fetch
+                    -- non-free trees too.
                     Shaping.fetchUnshapedUntouchedTree auth
                         |> Task.map .root
                         |> Task.attempt (lift << LoadTrialResult)
@@ -422,6 +425,33 @@ update lift auth msg model =
                                     , Cmd.none
                                     , []
                                     )
+
+        Heartbeat ->
+            let
+                heartbeat =
+                    Helpers.trialOr model Cmd.none <|
+                        \{ current } ->
+                            Api.heartbeatTree auth current.treeId
+                                |> Task.attempt (lift << HeartbeatResult)
+            in
+                ( model
+                , heartbeat
+                , []
+                )
+
+        HeartbeatResult (Ok ()) ->
+            -- Do nothing, we kept our lock
+            ( model
+            , Cmd.none
+            , []
+            )
+
+        HeartbeatResult (Err error) ->
+            -- We lost our lock, this should never happen
+            ( model
+            , Cmd.none
+            , [ AppMsg.Error error ]
+            )
 
 
 

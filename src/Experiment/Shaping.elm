@@ -106,6 +106,10 @@ fetchUnshapedUntouchedTree auth =
 
 fetchPossiblyShapedUntouchedTree : Types.Auth -> Task Types.Tree
 fetchPossiblyShapedUntouchedTree auth =
+    -- FIXME: this can fail for 2 undistinguishable reasons:
+    -- - no free *shaped* trees
+    -- - no free trees at all
+    -- trying one after the other is bad, since the situation can change in the meantime.
     Api.getFreeTree auth (shapedUntouchedFilter auth)
         |> Task.andThen (justOr <| fetchUnshapedUntouchedTree auth)
 

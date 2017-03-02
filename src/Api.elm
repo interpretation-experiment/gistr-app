@@ -12,6 +12,7 @@ module Api
         , getTree
         , getTrees
         , getWordSpan
+        , heartbeatTree
         , login
         , logout
         , postComment
@@ -238,3 +239,8 @@ getTrees :
     -> Calls.Task (Types.Page Types.Tree)
 getTrees =
     Calls.getTrees
+
+
+heartbeatTree : Types.Auth -> Int -> Calls.Task ()
+heartbeatTree =
+    Calls.putTreeHeartbeat

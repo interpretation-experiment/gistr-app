@@ -62,6 +62,8 @@ type alias Meta =
     , writeFactor : Float
     , minTokens : Int
     , jabberwockyMode : Bool
+    , heartbeat : Float
+    , heartbeatMargin : Float
     , -- FORM PARAMETERS
       genderChoices : List Choice
     , educationLevelChoices : List Choice

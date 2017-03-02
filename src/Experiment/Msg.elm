@@ -28,3 +28,5 @@ type Msg
     | WriteInput String
     | WriteSubmit String
     | WriteResult (Api.Result Types.Profile)
+    | Heartbeat
+    | HeartbeatResult (Api.Result ())
