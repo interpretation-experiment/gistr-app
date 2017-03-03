@@ -6,6 +6,7 @@ from selenium import webdriver
 
 
 def dump_sqlite_memory(filename):
+    # FIXME: get this to work with MySQL
     folder = os.path.join(os.path.dirname(__file__), 'sqldumps')
     try:
         os.mkdir(folder)
@@ -40,7 +41,7 @@ def driver():
     # }
     # driver = webdriver.Remote(command_executor=os.environ['REMOTE_EXECUTOR'],
     #                           desired_capabilities=desired_cap)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(30)
     try:
         yield driver
     finally:

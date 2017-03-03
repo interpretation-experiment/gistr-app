@@ -39,16 +39,16 @@ def read_instructions(driver, gistr_url, path):
     # And loop through them
     controls = driver.find_elements_by_css_selector(
         ".elm-intro-tooltipActive button")
-    finish, next = controls[0], controls[2]
-    while finish.text == "Skip":
+    prev_or_finish, next = controls[0], controls[-1]
+    while len(controls) < 3 or prev_or_finish.text == 'Skip':
         next.click()
         time.sleep(pause)
         controls = driver.find_elements_by_css_selector(
             ".elm-intro-tooltipActive button")
-        finish, next = controls[0], controls[2]
+        prev_or_finish, next = controls[0], controls[-1]
 
-    assert finish.text == "Done"
-    finish.click()
+    assert prev_or_finish.text == "Done"
+    prev_or_finish.click()
     time.sleep(pause)
 
 
@@ -143,7 +143,8 @@ def test_concurrent_full_runs(live_server, concurrent_config, sentences,
                               gistr_url):
     n_users = (concurrent_config.target_branch_count
                * concurrent_config.target_branch_depth)
-    args = [(random.uniform(0, 20 * n_users),
+    # n_users = 8
+    args = [(random.uniform(0, n_users),
              concurrent_config,
              gistr_url,
              't{}'.format(i))

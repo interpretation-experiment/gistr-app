@@ -29,7 +29,7 @@ def config():
 @pytest.fixture
 def concurrent_config(config):
     config.experiment_work = 10
-    config.target_branch_count = 3
+    config.target_branch_count = 2
     config.target_branch_depth = 5
     config.save()
     return config
