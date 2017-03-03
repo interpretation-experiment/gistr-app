@@ -2,25 +2,22 @@ from contextlib import contextmanager
 import os
 import time
 
+from django.core.management.commands import dumpdata
+
 from selenium import webdriver
 
 
-def dump_sqlite_memory(filename):
-    # FIXME: get this to work with MySQL
-    folder = os.path.join(os.path.dirname(__file__), 'sqldumps')
+def dump_db(filename):
+    folder = os.path.join(os.path.dirname(__file__), 'dbdumps')
     try:
         os.mkdir(folder)
     except FileExistsError:
         pass
 
-    from django.db import connection
-    con = connection.get_new_connection(connection.get_connection_params())
-
-    with open(os.path.join(folder, filename), 'w') as f:
-        for line in con.iterdump():
-            f.write('%s\n' % line)
-
-    con.close()
+    dumper = dumpdata.Command()
+    dumper.run_from_argv(
+        ['', '', '--output', os.path.join(folder, filename),
+         'gists', 'solo', 'auth'])
 
 
 def send_keys(el, keys):
@@ -41,7 +38,7 @@ def driver():
     # }
     # driver = webdriver.Remote(command_executor=os.environ['REMOTE_EXECUTOR'],
     #                           desired_capabilities=desired_cap)
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(60)
     try:
         yield driver
     finally:

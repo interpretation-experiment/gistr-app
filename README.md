@@ -50,7 +50,9 @@ And everything should be green.
 
 ### Selenium (browser) tests
 
-These run in Python 3 (tested with Python 3.5+ only). There are two types of tests: normal, which can run on any WebDriver-enabled browser, and concurrent, which need a bit more setup and currently can only be performed using Chromium/Chrome (the behavior on Firefox changes too much when the browser window loses focus, which happens all the time since we spawn several concurrent windows).
+These run in Python 3 (tested with Python 3.5+ only) with a backing MySQL database (because database locking isn't supported by sqlite). So you need a running instance of MySQL in the background.
+
+There are two types of tests: normal, which can run on any WebDriver-enabled browser, and concurrent, which need a bit more setup and currently can only be performed using Chromium/Chrome (the behavior on Firefox changes too much when the browser window loses focus, which happens all the time since we spawn several concurrent windows).
 
 TODO: mark concurrent tests with a pytest mark
 
@@ -80,8 +82,6 @@ Normal tests (back in shell 1):
 ```
 pytest -k "not concurrent"
 ```
-
-FIXME: this will not work as of spreadr 0.17.0, incompatible with sqlite
 
 Concurrent tests: we run them in a nested X server so that nothing interferes with window focus. So you need to have Xephyr installed (`extra/xorg-server-xephyr` on Arch). Then, in another shell (call it "shell 3"), run:
 

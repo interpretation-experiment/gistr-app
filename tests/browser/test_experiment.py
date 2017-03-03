@@ -143,7 +143,6 @@ def test_concurrent_full_runs(live_server, concurrent_config, sentences,
                               gistr_url):
     n_users = (concurrent_config.target_branch_count
                * concurrent_config.target_branch_depth)
-    # n_users = 8
     args = [(random.uniform(0, n_users),
              concurrent_config,
              gistr_url,
@@ -154,9 +153,9 @@ def test_concurrent_full_runs(live_server, concurrent_config, sentences,
         pool.map(wait_then_full_run, args)
 
     dump_filename = ('{name} W={work} C={branch_count} '
-                     'D={branch_depth} {time}.sql').format(
+                     'D={branch_depth} {time}.json').format(
         name=inspect.currentframe().f_code.co_name, time=datetime.now(),
         work=concurrent_config.experiment_work,
         branch_count=concurrent_config.target_branch_count,
         branch_depth=concurrent_config.target_branch_depth)
-    utils.dump_sqlite_memory(dump_filename)
+    utils.dump_db(dump_filename)
