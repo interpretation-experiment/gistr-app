@@ -566,16 +566,28 @@ feedbackView feedback =
         original =
             Feedback.getError "text" feedback
 
+        metaContent =
+            [ Html.small
+                [ class [ Styles.Right, Styles.RevealParentHover ] ]
+                [ Helpers.evA [] "#" (AppMsg.CommentMsg CommentMsg.Show) Strings.reportProblem ]
+            , Html.img
+                [ Attributes.src "/assets/img/instructions-tree-wtf.png"
+                , Attributes.style [ ( "width", "150px" ) ]
+                , class [ Styles.Right, Styles.RoundBorder ]
+                ]
+                []
+            ]
+
         message =
             case Helpers.splitFirst ": " original of
                 ( "SpellingError", Just mispellings ) ->
-                    Strings.expSpellingError mispellings
+                    metaContent ++ (Strings.expSpellingError mispellings)
 
                 ( "PunctuationRepeatedError", Just repeats ) ->
-                    Strings.expPunctuationRepeatedError repeats
+                    metaContent ++ (Strings.expPunctuationRepeatedError repeats)
 
                 ( "PunctuationExcludedError", Just excluded ) ->
-                    Strings.expPunctuationExcludedError excluded
+                    metaContent ++ (Strings.expPunctuationExcludedError excluded)
 
                 _ ->
                     [ Html.p [] [ Html.text original ] ]
@@ -584,17 +596,6 @@ feedbackView feedback =
             [ class [ Styles.RequestBox, Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Feedback.hasError "text" feedback |> not ) ]
             ]
-            [ Html.div [] <|
-                [ Html.small
-                    [ class [ Styles.Right, Styles.RevealParentHover ] ]
-                    [ Helpers.evA [] "#" (AppMsg.CommentMsg CommentMsg.Show) Strings.reportProblem ]
-                , Html.img
-                    [ Attributes.src "/assets/img/instructions-tree-wtf.png"
-                    , Attributes.style [ ( "width", "150px" ) ]
-                    , class [ Styles.Right, Styles.RoundBorder ]
-                    ]
-                    []
-                ]
-                    ++ message
+            [ Html.div [] message
             , Html.div [ class [ Styles.ClearFix ] ] []
             ]
