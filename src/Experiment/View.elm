@@ -578,24 +578,34 @@ feedbackView feedback =
                 []
             ]
 
-        message =
+        content =
             case Helpers.splitFirst ": " original of
                 ( "SpellingError", Just mispellings ) ->
-                    metaContent ++ (Strings.expSpellingError mispellings)
+                    [ Html.div [] <|
+                        metaContent
+                            ++ (Strings.expSpellingError mispellings)
+                    , Html.div [ class [ Styles.ClearFix ] ] []
+                    ]
 
                 ( "PunctuationRepeatedError", Just repeats ) ->
-                    metaContent ++ (Strings.expPunctuationRepeatedError repeats)
+                    [ Html.div [] <|
+                        metaContent
+                            ++ (Strings.expPunctuationRepeatedError repeats)
+                    , Html.div [ class [ Styles.ClearFix ] ] []
+                    ]
 
                 ( "PunctuationExcludedError", Just excluded ) ->
-                    metaContent ++ (Strings.expPunctuationExcludedError excluded)
+                    [ Html.div [] <|
+                        metaContent
+                            ++ (Strings.expPunctuationExcludedError excluded)
+                    , Html.div [ class [ Styles.ClearFix ] ] []
+                    ]
 
                 _ ->
-                    [ Html.p [] [ Html.text original ] ]
+                    [ Html.div [] [ Html.p [] [ Html.text original ] ] ]
     in
         Html.div
             [ class [ Styles.RequestBox, Styles.SmoothAppearing ]
             , classList [ ( Styles.Hidden, Feedback.hasError "text" feedback |> not ) ]
             ]
-            [ Html.div [] message
-            , Html.div [ class [ Styles.ClearFix ] ] []
-            ]
+            content
