@@ -402,34 +402,41 @@ update lift auth msg model =
                     \trial ->
                         case trial.state of
                             ExpModel.Writing form ->
-                                if Feedback.isEmpty feedback then
-                                    case Lifecycle.state auth.meta auth.user.profile of
-                                        Lifecycle.Training _ ->
-                                            -- Post the new sentence
-                                            ( trialFormState trial
-                                                (Form.setStatus Form.Sending form)
-                                            , postSentence trial
-                                                |> Task.andThen updateProfileTraining
-                                                |> Task.attempt (lift << WriteResult)
-                                            , []
-                                            )
+                                if form.status == Form.Entering then
+                                    if Feedback.isEmpty feedback then
+                                        case Lifecycle.state auth.meta auth.user.profile of
+                                            Lifecycle.Training _ ->
+                                                -- Post the new sentence
+                                                ( trialFormState trial
+                                                    (Form.setStatus Form.Sending form)
+                                                , postSentence trial
+                                                    |> Task.andThen updateProfileTraining
+                                                    |> Task.attempt (lift << WriteResult)
+                                                , []
+                                                )
 
-                                        Lifecycle.Experiment _ ->
-                                            -- Post the new sentence
-                                            ( trialFormState trial
-                                                (Form.setStatus Form.Sending form)
-                                            , postSentence trial
-                                                |> Task.attempt (lift << WriteResult)
-                                            , []
-                                            )
+                                            Lifecycle.Experiment _ ->
+                                                -- Post the new sentence
+                                                ( trialFormState trial
+                                                    (Form.setStatus Form.Sending form)
+                                                , postSentence trial
+                                                    |> Task.attempt (lift << WriteResult)
+                                                , []
+                                                )
 
-                                        Lifecycle.Done ->
-                                            ( trial
-                                            , Cmd.none
-                                            , []
-                                            )
+                                            Lifecycle.Done ->
+                                                ( trial
+                                                , Cmd.none
+                                                , []
+                                                )
+                                    else
+                                        ( trialFormState trial (Form.fail feedback form)
+                                        , Cmd.none
+                                        , []
+                                        )
                                 else
-                                    ( trialFormState trial (Form.fail feedback form)
+                                    -- We're already sending something, so ignore this
+                                    ( trial
                                     , Cmd.none
                                     , []
                                     )
